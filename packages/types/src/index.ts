@@ -106,12 +106,37 @@ export type {
   SiAiPmQuestion,
   SiAiPmBindTurnInput,
   SiAiPmBindTurnResult,
+  RequiredReviewId,
+  EvidenceSourceKind,
+  ProjectAttribution,
+  ValidationOutcome,
+  DecisionTieBreak,
+  ReviewRunStatus,
+  ReviewCompletion,
+  EvidenceHistoryEntry,
+  HypothesisEvidenceBinding,
+  ValidationCriterion,
+  HypothesisRole,
+  HypothesisJudgment,
+  OpenUncertainty,
+  ValidationPlanStatus,
+  ValidationPlan,
+  DecisionBranch,
+  DecisionCandidate,
+  EliminatedCandidate,
+  DecisionRecord,
+  UnresolvedConflict,
+  JudgmentChangeClass,
+  FounderAnswerAct,
+  PreviewBranchRecord,
+  ApplyFounderAnswerResult,
 } from './domain/strategic-intelligence';
 
 export {
   SI_AXIS_LABELS,
   SI_VERDICT_LABELS,
   SI_STAGE_LABELS,
+  REQUIRED_REVIEW_IDS,
 } from './domain/strategic-intelligence';
 
 export type {

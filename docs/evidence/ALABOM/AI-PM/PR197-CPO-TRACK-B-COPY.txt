@@ -1,0 +1,431 @@
+PR #197 Track B — 온슬롯 엔진 검증 (테스트 어댑터 전용). 이 블록만 복사.
+8턴 도달은 품질 PASS가 아니다. 로그인 UI PASS도 아니다. Production PASS도 아니다.
+어댑터: apps/web/features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-scenario-adapter.ts
+런타임 import: 0건 (__tests__ 외). 엔진 SoT 파일 git diff: 공집합.
+구현 SHA: a14938af49f0e045e590dffe2fc6a92c9cae29ba
+덤프 SHA: a14938af49f0e045e590dffe2fc6a92c9cae29ba
+실행 시각: 2026-10-13T14:31:06.681Z
+명령: pnpm --filter web exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-t1-t8-divergence.test.ts features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-scenario-adapter.test.ts
+원문 결과: adapter 8 passed. divergence 1 passed. Track B S1-S6 reachedEight=true. qualityStatus 전부 NEEDS FIX.
+
+--- Track B S1 eight=true quality=NEEDS FIX ---
+askedGaps: customerPersona -> problemJtbd -> solution -> customerPersona -> payer -> payer -> payer -> payer
+qualityReason: consecutiveSameGap=3; payerStreak=4; questionRepeat=2; gapRevisit=customerPersona@T4
+consecutiveSameGap=3 payerStreak=4 questionRepeat=2 unresolvedGapEarlyStop=false
+gapRevisits: customerPersona@T4
+T1
+  질문갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  답변: 반찬가게  source=frozen-mapped frozenTurn=2
+  답변반영: customerPersona OPEN->OPEN moved=false
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T2
+  질문갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  답변: 주문과 배송을 따로 관리해야 함  source=frozen-mapped frozenTurn=1
+  답변반영: problemJtbd OPEN->CLOSED moved=true
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  customer=OPEN problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T3
+  질문갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  답변: 하루에 주문을 한 번에 보고 싶다  source=frozen-mapped frozenTurn=6
+  답변반영: solution OPEN->CLOSED moved=true
+  다음갭: customerPersona  다음질문: 「주문과 배송을 따로 관리해야 함」을 가장 절실히 느끼는 사람은 누구인가요?
+  customer=OPEN problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T4
+  질문갭: customerPersona
+  실제질문: 「주문과 배송을 따로 관리해야 함」을 가장 절실히 느끼는 사람은 누구인가요?
+  답변: 이 서비스를 가장 필요로 하는 사람은 문서에 적은 대상입니다  source=fallback frozenTurn=null
+  답변반영: customerPersona OPEN->CLOSED moved=true
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=true 연속동일갭=false
+T5
+  질문갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  답변: 아직 모르겠음  source=frozen-mapped frozenTurn=3
+  답변반영: payer OPEN->OPEN moved=false
+  다음갭: payer  다음질문: 문서에 적은 대상에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T6
+  질문갭: payer
+  실제질문: 문서에 적은 대상에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  답변: 도입을 결정하는 사람은 아직 모르겠음  source=fallback frozenTurn=null
+  답변반영: payer OPEN->OPEN moved=false
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=true
+T7
+  질문갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  답변: 도입을 결정하는 사람은 아직 모르겠음  source=fallback frozenTurn=null
+  답변반영: payer OPEN->OPEN moved=false
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=true 갭회귀=false 연속동일갭=true
+T8
+  질문갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  답변: 도입을 결정하는 사람은 아직 모르겠음  source=fallback frozenTurn=null
+  답변반영: payer OPEN->OPEN moved=false
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=true 갭회귀=false 연속동일갭=true
+
+--- Track B S2 eight=true quality=NEEDS FIX ---
+askedGaps: customerPersona -> problemJtbd -> payer -> alternativesCompetitors -> validationTestability -> solution -> validationTestability -> revenueModel
+qualityReason: gapRevisit=validationTestability@T7
+consecutiveSameGap=0 payerStreak=1 questionRepeat=0 unresolvedGapEarlyStop=false
+gapRevisits: validationTestability@T7
+T1
+  질문갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  답변: 선물하는 30–40대  source=frozen-mapped frozenTurn=2
+  답변반영: customerPersona OPEN->CLOSED moved=true
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  customer=CLOSED problem=OPEN payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T2
+  질문갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  답변: 전통주를 발견하기 어렵다  source=frozen-mapped frozenTurn=1
+  답변반영: problemJtbd OPEN->CLOSED moved=true
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T3
+  질문갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  답변: 선물하는 사람이 냄  source=frozen-mapped frozenTurn=3
+  답변반영: payer OPEN->CLOSED moved=true
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+T4
+  질문갭: alternativesCompetitors
+  실제질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  답변: 지인에게 물어 추천받는다  source=frozen-mapped frozenTurn=5
+  답변반영: alternativesCompetitors OPEN->CLOSED moved=true
+  다음갭: validationTestability  다음질문: 그 차별점이 고객에게 왜 중요한가요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+T5
+  질문갭: validationTestability
+  실제질문: 그 차별점이 고객에게 왜 중요한가요?
+  답변: 아직 없다  source=frozen-mapped frozenTurn=7
+  답변반영: validationTestability OPEN->OPEN moved=false
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+T6
+  질문갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  답변: 문제를 한곳에서 보이게 하는 방식입니다  source=fallback frozenTurn=null
+  답변반영: solution OPEN->CLOSED moved=true
+  다음갭: validationTestability  다음질문: 그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+T7
+  질문갭: validationTestability
+  실제질문: 그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?
+  답변: 창업자 확인  source=frozen-mapped frozenTurn=8
+  답변반영: validationTestability OPEN->PARTIAL moved=true
+  다음갭: revenueModel  다음질문: 수익은 어떤 구조로 발생하나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=true 연속동일갭=false
+T8
+  질문갭: revenueModel
+  실제질문: 수익은 어떤 구조로 발생하나요?
+  답변: 일단 병 판매가 먼저고 수수료는 나중  source=frozen-mapped frozenTurn=4
+  답변반영: revenueModel OPEN->CLOSED moved=true
+  다음갭: validationTestability  다음질문: 그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요? 조금 더 구체적으로 알려 주세요.
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+
+--- Track B S3 eight=true quality=NEEDS FIX ---
+askedGaps: customerPersona -> problemJtbd -> solution -> solution -> customerPersona -> payer -> payer -> payer
+qualityReason: consecutiveSameGap=3; payerStreak=3; questionRepeat=2; gapRevisit=customerPersona@T5
+consecutiveSameGap=3 payerStreak=3 questionRepeat=2 unresolvedGapEarlyStop=false
+gapRevisits: customerPersona@T5
+T1
+  질문갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  답변: 영업관리자  source=frozen-mapped frozenTurn=2
+  답변반영: customerPersona OPEN->OPEN moved=false
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T2
+  질문갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  답변: 메일 숫자를 엑셀에 옮기다 나는 오타  source=frozen-mapped frozenTurn=1
+  답변반영: problemJtbd OPEN->CLOSED moved=true
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  customer=OPEN problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T3
+  질문갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  답변: 잘못된 단가로 발주  source=frozen-mapped frozenTurn=6
+  답변반영: solution OPEN->PARTIAL moved=true
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  customer=OPEN problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T4
+  질문갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  답변: 문제를 한곳에서 보이게 하는 방식입니다  source=fallback frozenTurn=null
+  답변반영: solution PARTIAL->CLOSED moved=true
+  다음갭: customerPersona  다음질문: 「문제를 한곳에서 보이게 하는 방식」을 가장 절실히 느끼는 사람은 누구인가요?
+  customer=OPEN problem=CLOSED payer=OPEN
+  반복질문=true 갭회귀=false 연속동일갭=true
+T5
+  질문갭: customerPersona
+  실제질문: 「문제를 한곳에서 보이게 하는 방식」을 가장 절실히 느끼는 사람은 누구인가요?
+  답변: 이 서비스를 가장 필요로 하는 사람은 문서에 적은 대상입니다  source=fallback frozenTurn=null
+  답변반영: customerPersona OPEN->CLOSED moved=true
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=true 연속동일갭=false
+T6
+  질문갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  답변: 대표  source=frozen-mapped frozenTurn=3
+  답변반영: payer OPEN->OPEN moved=false
+  다음갭: payer  다음질문: 문서에 적은 대상에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T7
+  질문갭: payer
+  실제질문: 문서에 적은 대상에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  답변: 도입을 결정하는 사람은 아직 모르겠음  source=fallback frozenTurn=null
+  답변반영: payer OPEN->OPEN moved=false
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=true
+T8
+  질문갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  답변: 도입을 결정하는 사람은 아직 모르겠음  source=fallback frozenTurn=null
+  답변반영: payer OPEN->OPEN moved=false
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=true 갭회귀=false 연속동일갭=true
+
+--- Track B S4 eight=true quality=NEEDS FIX ---
+askedGaps: customerPersona -> problemJtbd -> solution -> customerPersona -> payer -> payer -> payer -> payer
+qualityReason: consecutiveSameGap=3; payerStreak=4; questionRepeat=3; gapRevisit=customerPersona@T4
+consecutiveSameGap=3 payerStreak=4 questionRepeat=3 unresolvedGapEarlyStop=false
+gapRevisits: customerPersona@T4
+T1
+  질문갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  답변: 아이  source=frozen-mapped frozenTurn=2
+  답변반영: customerPersona OPEN->OPEN moved=false
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T2
+  질문갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  답변: 무엇을 줄지 고르기 싫다  source=frozen-mapped frozenTurn=1
+  답변반영: problemJtbd OPEN->CLOSED moved=true
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  customer=OPEN problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T3
+  질문갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  답변: 문제를 한곳에서 보이게 하는 방식입니다  source=fallback frozenTurn=null
+  답변반영: solution OPEN->CLOSED moved=true
+  다음갭: customerPersona  다음질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  customer=OPEN problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T4
+  질문갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  답변: 사실 아이가 아니라 혼자 사는 20대가 메인이에요  source=frozen-mapped frozenTurn=6
+  답변반영: customerPersona OPEN->CLOSED moved=true
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=true 갭회귀=true 연속동일갭=false
+T5
+  질문갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  답변: 부모  source=frozen-mapped frozenTurn=3
+  답변반영: payer OPEN->OPEN moved=false
+  다음갭: payer  다음질문: 혼자 사는 20대가 메인에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T6
+  질문갭: payer
+  실제질문: 혼자 사는 20대가 메인에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  답변: 도입을 결정하는 사람은 아직 모르겠음  source=fallback frozenTurn=null
+  답변반영: payer OPEN->OPEN moved=false
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=true
+T7
+  질문갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  답변: 도입을 결정하는 사람은 아직 모르겠음  source=fallback frozenTurn=null
+  답변반영: payer OPEN->OPEN moved=false
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=true 갭회귀=false 연속동일갭=true
+T8
+  질문갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  답변: 도입을 결정하는 사람은 아직 모르겠음  source=fallback frozenTurn=null
+  답변반영: payer OPEN->OPEN moved=false
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=true 갭회귀=false 연속동일갭=true
+
+--- Track B S5 eight=true quality=NEEDS FIX ---
+askedGaps: customerPersona -> problemJtbd -> solution -> payer -> alternativesCompetitors -> differentiationVsAlternatives -> revenueModel -> alternativesCompetitors
+qualityReason: gapRevisit=alternativesCompetitors@T8
+consecutiveSameGap=0 payerStreak=1 questionRepeat=0 unresolvedGapEarlyStop=false
+gapRevisits: alternativesCompetitors@T8
+T1
+  질문갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  답변: 헬스장 다니는 20–30대  source=frozen-mapped frozenTurn=2
+  답변반영: customerPersona OPEN->CLOSED moved=true
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  customer=CLOSED problem=OPEN payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T2
+  질문갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  답변: 맛이 없다  source=frozen-mapped frozenTurn=1
+  답변반영: problemJtbd OPEN->PARTIAL moved=true
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  customer=CLOSED problem=PARTIAL payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T3
+  질문갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  답변: 문제를 한곳에서 보이게 하는 방식입니다  source=fallback frozenTurn=null
+  답변반영: solution OPEN->CLOSED moved=true
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T4
+  질문갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  답변: 헬스 트레이너가 회원에게 추천하고 회원이 결제  source=frozen-mapped frozenTurn=5
+  답변반영: payer OPEN->CLOSED moved=true
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+T5
+  질문갭: alternativesCompetitors
+  실제질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  답변: 시중 단백질바  source=frozen-mapped frozenTurn=3
+  답변반영: alternativesCompetitors OPEN->PARTIAL moved=true
+  다음갭: differentiationVsAlternatives  다음질문: 경쟁 대비 이 서비스만의 차별점은 무엇인가요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+T6
+  질문갭: differentiationVsAlternatives
+  실제질문: 경쟁 대비 이 서비스만의 차별점은 무엇인가요?
+  답변: 더 맛있다  source=frozen-mapped frozenTurn=4
+  답변반영: differentiationVsAlternatives OPEN->PARTIAL moved=true
+  다음갭: revenueModel  다음질문: 수익은 어떤 구조로 발생하나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+T7
+  질문갭: revenueModel
+  실제질문: 수익은 어떤 구조로 발생하나요?
+  답변: 월 구독  source=fallback frozenTurn=null
+  답변반영: revenueModel OPEN->CLOSED moved=true
+  다음갭: alternativesCompetitors  다음질문: 헬스장 다니는 20–30대이 「문제를 한곳에서 보이게 하는 방식」을 풀 때 이미 쓰는 대안·서비스는 무엇인가요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+T8
+  질문갭: alternativesCompetitors
+  실제질문: 헬스장 다니는 20–30대이 「문제를 한곳에서 보이게 하는 방식」을 풀 때 이미 쓰는 대안·서비스는 무엇인가요?
+  답변: 지금은 기존 방식으로 처리합니다  source=fallback frozenTurn=null
+  답변반영: alternativesCompetitors PARTIAL->CLOSED moved=true
+  다음갭: validationTestability  다음질문: 그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=true 연속동일갭=false
+
+--- Track B S6 eight=true quality=NEEDS FIX ---
+askedGaps: customerPersona -> problemJtbd -> solution -> payer -> alternativesCompetitors -> differentiationVsAlternatives -> revenueModel -> alternativesCompetitors
+qualityReason: gapRevisit=alternativesCompetitors@T8
+consecutiveSameGap=0 payerStreak=1 questionRepeat=0 unresolvedGapEarlyStop=false
+gapRevisits: alternativesCompetitors@T8
+T1
+  질문갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  답변: 이 서비스를 가장 필요로 하는 사람은 문서에 적은 대상입니다  source=fallback frozenTurn=null
+  답변반영: customerPersona OPEN->CLOSED moved=true
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  customer=CLOSED problem=OPEN payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T2
+  질문갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  답변: 사람을 못 믿음  source=frozen-mapped frozenTurn=2
+  답변반영: problemJtbd OPEN->PARTIAL moved=true
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  customer=CLOSED problem=PARTIAL payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T3
+  질문갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  답변: 문제를 한곳에서 보이게 하는 방식입니다  source=fallback frozenTurn=null
+  답변반영: solution OPEN->CLOSED moved=true
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  반복질문=false 갭회귀=false 연속동일갭=false
+T4
+  질문갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  답변: 집이 냄  source=frozen-mapped frozenTurn=4
+  답변반영: payer OPEN->CLOSED moved=true
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+T5
+  질문갭: alternativesCompetitors
+  실제질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  답변: 지인 소개  source=frozen-mapped frozenTurn=3
+  답변반영: alternativesCompetitors OPEN->PARTIAL moved=true
+  다음갭: differentiationVsAlternatives  다음질문: 경쟁 대비 이 서비스만의 차별점은 무엇인가요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+T6
+  질문갭: differentiationVsAlternatives
+  실제질문: 경쟁 대비 이 서비스만의 차별점은 무엇인가요?
+  답변: 신원 확인  source=frozen-mapped frozenTurn=5
+  답변반영: differentiationVsAlternatives OPEN->PARTIAL moved=true
+  다음갭: revenueModel  다음질문: 수익은 어떤 구조로 발생하나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+T7
+  질문갭: revenueModel
+  실제질문: 수익은 어떤 구조로 발생하나요?
+  답변: 월 구독  source=fallback frozenTurn=null
+  답변반영: revenueModel OPEN->CLOSED moved=true
+  다음갭: alternativesCompetitors  다음질문: 사람을 못 믿음이 「문제를 한곳에서 보이게 하는 방식」을 풀 때 이미 쓰는 대안·서비스는 무엇인가요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=false 연속동일갭=false
+T8
+  질문갭: alternativesCompetitors
+  실제질문: 사람을 못 믿음이 「문제를 한곳에서 보이게 하는 방식」을 풀 때 이미 쓰는 대안·서비스는 무엇인가요?
+  답변: 지금은 기존 방식으로 처리합니다  source=fallback frozenTurn=null
+  답변반영: alternativesCompetitors PARTIAL->CLOSED moved=true
+  다음갭: validationTestability  다음질문: 그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  반복질문=false 갭회귀=true 연속동일갭=false
+
+Track B 판정: 어댑터 범위 8턴 도달. 대화 품질 NEEDS FIX (S1 payer 4연속, S3 solution 후 customer 회귀 후 payer 3연속, S4 payer 4연속, S2/S5/S6 갭 재방문). 엔진 수정 제출 없음.

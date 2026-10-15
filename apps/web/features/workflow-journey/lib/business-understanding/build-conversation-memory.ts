@@ -1,7 +1,12 @@
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 
+import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
+
 import {
   emptyConversationMemory,
+  getConflictFact,
+  getFact,
+  parkUnresolvedContradiction,
   upsertConfirmedFact,
   type ConversationFactKey,
   type ConversationMemory,
@@ -13,6 +18,7 @@ import {
 import { interpretAnswerSemantics } from './interpret-answer-semantics';
 import {
   extractCorrectedFactValue,
+  isCustomerCorrectionWithoutPayerEvidence,
   isMisroutedCustomerDescription,
   parseNotXButYCorrection,
   scrubRejectedCustomerMention,
@@ -99,6 +105,9 @@ function upsertSemanticFacts(
   let next = memory;
   const unique = filterMemoryFactKeys([...new Set(keys)], targetGap);
   for (const key of unique) {
+    if (key === 'buyer' && isCustomerCorrectionWithoutPayerEvidence(answer)) {
+      continue;
+    }
     const value =
       intent === 'correction' ? extractCorrectedFactValue(key, answer) : answer;
     if (!value || value.trim().length < 2) continue;
@@ -107,10 +116,12 @@ function upsertSemanticFacts(
   if (intent === 'correction' && unique.includes('customer')) {
     next = applyCustomerCorrectionRevision(next, answer);
   }
-  // Payer-oriented answers also lock buyer when payment cue present
+  // Payer-oriented answers also lock buyer when payment cue present.
+  // Customer-correction leftovers must not become the current 구매자.
   if (
-    unique.includes('buyer') ||
-    (unique.includes('customer') && /(결제|지불|payer)/i.test(answer))
+    !isCustomerCorrectionWithoutPayerEvidence(answer) &&
+    (unique.includes('buyer') ||
+      (unique.includes('customer') && /(결제|지불|payer)/i.test(answer)))
   ) {
     next = upsertConfirmedFact(next, 'buyer', answer, 'user_turn');
   }
@@ -124,12 +135,60 @@ function upsertSemanticFacts(
  * - Why / mid-judgment / nonsense never become Facts
  * - Superseded turns skipped
  */
+function latestCustomerGapCompleteness(
+  turns: AiPmLoopTurn[],
+  gapState?: GapKnowledgeState | null,
+): string | null {
+  if (gapState?.gaps.customerPersona?.completeness) {
+    return gapState.gaps.customerPersona.completeness;
+  }
+  for (const turn of [...turns].reverse()) {
+    const completeness = turn.review?.gapVerdicts?.customerPersona?.completeness;
+    if (completeness) return completeness;
+  }
+  return null;
+}
+
+function valuesOverlap(left: string, right: string): boolean {
+  if (left.length < 2 || right.length < 2) return false;
+  return left === right || left.includes(right) || right.includes(left);
+}
+
+function applyOpenCustomerContradiction(
+  memory: ConversationMemory,
+  turns: AiPmLoopTurn[],
+): ConversationMemory {
+  if (getConflictFact(memory, 'customer') && !getFact(memory, 'customer')) {
+    return memory;
+  }
+  const correctionTurn = [...turns]
+    .reverse()
+    .find(
+      (turn) =>
+        !turn.superseded &&
+        (turn.review?.gapVerdicts?.customerPersona?.completeness === 'CONTRADICTED' ||
+          turn.intent === 'correction'),
+    );
+  const parsed = correctionTurn ? parseNotXButYCorrection(correctionTurn.answer) : null;
+  const incoming = parsed?.accepted.trim() || correctionTurn?.answer.trim() || '';
+  const priorFact = memory.facts.find((fact) => {
+    if (fact.key !== 'customer') return false;
+    const value = fact.value.trim();
+    if (value.length < 2) return false;
+    return !valuesOverlap(value, incoming);
+  });
+  const prior = priorFact?.value.trim() ?? '';
+  if (prior.length < 2 && incoming.length < 2) return memory;
+  return parkUnresolvedContradiction(memory, 'customer', prior || incoming, incoming || prior);
+}
+
 export function buildConversationMemoryFromSources(input: {
   projectId: string;
   documentText: string;
   turns: AiPmLoopTurn[];
   entities?: LaunchLensDomainContext | null;
   previous?: ConversationMemory | null;
+  gapState?: GapKnowledgeState | null;
 }): ConversationMemory {
   let memory = emptyConversationMemory(input.projectId);
 
@@ -200,6 +259,10 @@ export function buildConversationMemoryFromSources(input: {
         ? semantic.facts.map((f) => f.key)
         : [semantic.factKey];
     memory = upsertSemanticFacts(memory, answer, keys, turn.targetGap, turn.intent);
+  }
+
+  if (latestCustomerGapCompleteness(input.turns, input.gapState) === 'CONTRADICTED') {
+    memory = applyOpenCustomerContradiction(memory, input.turns);
   }
 
   return memory;

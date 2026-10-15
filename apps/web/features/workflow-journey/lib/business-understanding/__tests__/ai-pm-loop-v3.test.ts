@@ -378,8 +378,8 @@ describe('PR2 — gapVerdicts / extractedFacts completeness (AC1–AC12)', () =>
     expect(fact).toMatchObject({
       key: 'buyer',
       targetGap: 'payer',
-      evidenceClass: 'FACT',
-      confidence: 'high',
+      evidenceClass: 'ASSUMPTION',
+      confidence: 'medium',
       source: 'explicit',
     });
     expect(typeof fact?.value).toBe('string');

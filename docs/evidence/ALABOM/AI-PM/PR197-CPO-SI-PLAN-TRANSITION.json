@@ -1,0 +1,109 @@
+{
+  "rows": [
+    {
+      "step": "7",
+      "event": "bindLiteralFact payment-literal",
+      "uncertainties": [
+        {
+          "id": "u-conflict-h-customer",
+          "hypothesisId": "h-customer",
+          "resolvableByQuestion": true,
+          "evidenceIds": [
+            "b-affirm-h-customer-1",
+            "b-h-customer-next-2"
+          ]
+        },
+        {
+          "id": "u-payer",
+          "hypothesisId": "h-payer",
+          "resolvableByQuestion": true,
+          "evidenceIds": []
+        },
+        {
+          "id": "u-conflict-h-business-model",
+          "hypothesisId": "h-business-model",
+          "resolvableByQuestion": true,
+          "evidenceIds": [
+            "b-absence",
+            "b-fact-payment-literal-h-business-model"
+          ]
+        }
+      ],
+      "conflicts": [
+        {
+          "hypothesisId": "h-customer",
+          "leftId": "b-affirm-h-customer-1",
+          "rightId": "b-h-customer-next-2",
+          "resolved": false
+        },
+        {
+          "hypothesisId": "h-business-model",
+          "leftId": "b-absence",
+          "rightId": "b-fact-payment-literal-h-business-model",
+          "resolved": false
+        }
+      ],
+      "attribution": "unreviewed",
+      "authenticityGuaranteed": false,
+      "modelOutcome": "conflict_unresolved",
+      "planStatus": "not_required",
+      "contractStatus": "not_required",
+      "evidenceNeeded": "",
+      "reviewCompletion": "decision_ready",
+      "externalUncertaintyIds": []
+    },
+    {
+      "step": "8",
+      "event": "resolveConflict chooses the literal fact",
+      "uncertainties": [
+        {
+          "id": "u-conflict-h-customer",
+          "hypothesisId": "h-customer",
+          "resolvableByQuestion": true,
+          "evidenceIds": [
+            "b-affirm-h-customer-1",
+            "b-h-customer-next-2"
+          ]
+        },
+        {
+          "id": "u-payer",
+          "hypothesisId": "h-payer",
+          "resolvableByQuestion": true,
+          "evidenceIds": []
+        },
+        {
+          "id": "u-attribution",
+          "hypothesisId": "h-business-model",
+          "resolvableByQuestion": false,
+          "evidenceIds": [
+            "b-fact-payment-literal-h-business-model"
+          ]
+        }
+      ],
+      "conflicts": [
+        {
+          "hypothesisId": "h-customer",
+          "leftId": "b-affirm-h-customer-1",
+          "rightId": "b-h-customer-next-2",
+          "resolved": false
+        },
+        {
+          "hypothesisId": "h-business-model",
+          "leftId": "b-absence",
+          "rightId": "b-fact-payment-literal-h-business-model",
+          "resolved": true
+        }
+      ],
+      "attribution": "unreviewed",
+      "authenticityGuaranteed": false,
+      "modelOutcome": "insufficient_record",
+      "planStatus": "proposed",
+      "contractStatus": "proposed",
+      "evidenceNeeded": "선택한 문자 기록이 이 사업의 거래인지에 대한 귀속 판단",
+      "reviewCompletion": "decision_ready",
+      "externalUncertaintyIds": [
+        "u-attribution"
+      ]
+    }
+  ]
+}

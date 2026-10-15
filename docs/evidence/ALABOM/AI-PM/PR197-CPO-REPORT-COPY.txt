@@ -1,0 +1,780 @@
+PR #197 CPO 보고 — T1-T8 계약 분리 (전문 복사본)
+이 블록 전체를 선택해 복사하면 됩니다. 표 없음. 링크 없이 판정 가능.
+
+CEO: problem-first 엔진 변경은 승인하지 않음.
+CPO: 엔진 SoT 유지. 5263e83e는 승인 전 검토용 시나리오 문서. 1:1 기대 문구를 낮추지 않음.
+T6 buyer 차단 / T7 next=payer 재구현 없음. 모순 모델 재작성 없음. 병합 없음. Production 배포 없음.
+상태 어휘: NOT STARTED / IMPLEMENTED / CTO VERIFIED / CPO VERIFIED / NEEDS FIX / NOT VERIFIED
+엔진 PASS와 UI PASS를 한 줄로 합치지 않는다.
+
+한 줄: 두 계약을 분리한다. Track A 1:1은 FAIL 0/35. Track B 온슬롯은 S1-S6 모두 8턴. 어댑터는 테스트 전용이며 엔진 SoT를 바꾸지 않았다.
+
+식별
+PR: 197
+브랜치: cursor/ai-pm-mcq-understanding-e648
+구현 SHA: 77147a56
+덤프 시각: 2026-10-13T13:34:18.876Z
+동결 본문 SHA: 5263e83e
+Production 잠금: 0b465226
+1:1 덤프: docs/evidence/ALABOM/AI-PM/PR197-CPO-FROZEN-T1-T8-DUMP.json
+분류 덤프: docs/evidence/ALABOM/AI-PM/PR197-CPO-T1-T8-DIVERGENCE-DUMP.json
+
+===== 확정 계약 =====
+
+A. 런타임 엔진 SoT (유지)
+Stage A: businessOneLiner -> customerPersona -> payer -> problemJtbd
+문서에 고객/문제가 있으면 one-liner skip. 첫 질문 = customerPersona
+FIX-10: 고객 -> 문제 -> solution
+고객과 문제가 CLOSED이고 payer가 OPEN이면 다음 질문 = payer (T7)
+followEngine 첫 갭=problemJtbd는 시나리오 재생기이지 엔진 SoT가 아님
+
+B. 검토용 시나리오 문서 (런타임 승격 안 함)
+SHA 5263e83e. T1-T8 문구 미수정. 1:1 비교 0/35는 FAIL로 기록.
+S6 T1 「지금 먼저 풀 쪽은 어디인가요?」는 엔진 갭이 없음 (면 선택 프레젠터).
+
+어댑터가 엔진 SoT를 바꾸지 않는 증거
+파일: apps/web/features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-scenario-adapter.ts
+런타임 import (apps 아래 __tests__ 제외): 0건
+STAGE_A_REQUIRED_GAPS 단언: businessOneLiner, customerPersona, payer, problemJtbd
+엔진 파일 git diff: 공집합
+미변경: evaluate-stage-readiness.ts, ai-pm-judgment-next-question-binding.ts, ai-pm-anti-repeat-policy.ts, ai-pm-no-gap-termination.ts
+problem-first SoT 변경안: 제출하지 않음 (CEO 미승인)
+
+===== Track A. 동결 문구 1:1 (기대 불변) =====
+명령: pnpm --filter web exec vitest run pr197-frozen-t1-t8-wording.test.ts pr197-frozen-t1-t8-divergence.test.ts
+결과: compared=35 exactMatches=0 allScenariosExact=false
+경로: resolveNextQuestionDecision -> applyTypedAnswerThroughLoop
+방식: 엔진이 물은 갭에 동결 T{n} 답을 턴 번호로 넣음 (오프슬롯)
+
+--- Track A S1 turnCount=5 exact=0 stoppedEarly=True firstAskedGap=customerPersona firstExpectedGap=problemJtbd
+T1 FAIL exact=False
+  기대질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답: 주문과 배송을 따로 관리해야 함
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  spine customer=OPEN problem=OPEN payer=OPEN
+  class=FIRST_QUESTION,ORDER,OFF_SLOT_ANSWER
+T2 FAIL exact=False
+  기대질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답: 반찬가게
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  spine customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T3 FAIL exact=False
+  기대질문: 반찬가게에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답: 아직 모르겠음
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T4 FAIL exact=False
+  기대질문: 수익은 어떤 구조로 발생하나요?
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 월 구독
+  next갭: None
+  next질문: (없음)
+  spine customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER STOP nextNull=True noAskableGap=False reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+T5 FAIL exact=False
+  기대질문: 지금은 이 문제를 어떻게 처리하나요?
+  실제갭: None
+  실제질문: (없음)
+  창업자답: 지금은 주문과 배송을 따로 관리함
+  next갭: None
+  next질문: (없음)
+  spine customer=OPEN problem=PARTIAL payer=OPEN
+  class=STOP STOP nextNull=True noAskableGap=False reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+
+--- Track A S2 turnCount=7 exact=0 stoppedEarly=True firstAskedGap=customerPersona firstExpectedGap=problemJtbd
+T1 FAIL exact=False
+  기대질문: 지금 가장 크게 풀려는 불편은 무엇인가요?
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답: 전통주를 발견하기 어렵다
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  spine customer=OPEN problem=PARTIAL payer=OPEN
+  class=FIRST_QUESTION,ORDER,OFF_SLOT_ANSWER
+T2 FAIL exact=False
+  기대질문: 이 브랜드를 가장 필요로 하는 사람은 누구인가요?
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답: 선물하는 30–40대
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  spine customer=PARTIAL problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T3 FAIL exact=False
+  기대질문: 술값을 실제로 내는 사람은 누구인가요?
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답: 선물하는 사람이 냄
+  next갭: customerPersona
+  next질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=PARTIAL problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T4 FAIL exact=False
+  기대질문: 매출은 어디서 더 나오나요?
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 일단 병 판매가 먼저고 수수료는 나중
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T5 FAIL exact=False
+  기대질문: 선물하는 30–40대는 좋은 전통주를 찾기 어려울 때 지금은 어떻게 하나요?
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 지인에게 물어 추천받는다
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=OPEN problem=CLOSED payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T6 FAIL exact=False
+  기대질문: 지인 추천 대비 이 브랜드만의 차이는 무엇인가요?
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 여러 양조장을 한곳에서 고른다
+  next갭: None
+  next질문: (없음)
+  spine customer=OPEN problem=CLOSED payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER STOP nextNull=True noAskableGap=False reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+T7 FAIL exact=False
+  기대질문: 그 이유로 이미 산 사람이 있나요?
+  실제갭: None
+  실제질문: (없음)
+  창업자답: 아직 없다
+  next갭: None
+  next질문: (없음)
+  spine customer=OPEN problem=CLOSED payer=OPEN
+  class=STOP STOP nextNull=True noAskableGap=False reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+
+--- Track A S3 turnCount=5 exact=0 stoppedEarly=True firstAskedGap=customerPersona firstExpectedGap=problemJtbd
+T1 FAIL exact=False
+  기대질문: 지금 가장 크게 줄이려는 실수는 무엇인가요?
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답: 메일 숫자를 엑셀에 옮기다 나는 오타
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  spine customer=OPEN problem=OPEN payer=OPEN
+  class=FIRST_QUESTION,ORDER,OFF_SLOT_ANSWER
+T2 FAIL exact=False
+  기대질문: 이 툴을 매일 쓰는 사람은 누구인가요?
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답: 영업관리자
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  spine customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T3 FAIL exact=False
+  기대질문: 월 구독료 결재자는 누구인가요?
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답: 대표
+  next갭: customerPersona
+  next질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T4 FAIL exact=False
+  기대질문: 한 달에 견적 메일이 얼마나 오나요?
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 아직 모르겠음
+  next갭: None
+  next질문: (없음)
+  spine customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER STOP nextNull=True noAskableGap=False reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+T5 FAIL exact=False
+  기대질문: 지금은 이 숫자를 어떻게 옮기나요?
+  실제갭: None
+  실제질문: (없음)
+  창업자답: 엑셀에 손으로
+  next갭: None
+  next질문: (없음)
+  spine customer=OPEN problem=PARTIAL payer=OPEN
+  class=STOP STOP nextNull=True noAskableGap=False reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+
+--- Track A S4 turnCount=5 exact=0 stoppedEarly=True firstAskedGap=customerPersona firstExpectedGap=problemJtbd
+T1 FAIL exact=False
+  기대질문: 부모가 지금 가장 귀찮아하는 점은 무엇인가요?
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답: 무엇을 줄지 고르기 싫다
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  spine customer=OPEN problem=OPEN payer=OPEN
+  class=FIRST_QUESTION,ORDER,OFF_SLOT_ANSWER
+T2 FAIL exact=False
+  기대질문: 박스를 가장 반기는 사람은 누구인가요?
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답: 아이
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  spine customer=OPEN problem=OPEN payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T3 FAIL exact=False
+  기대질문: 구독료는 누가 내나요?
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답: 부모
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=OPEN problem=OPEN payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T4 FAIL exact=False
+  기대질문: 지금은 아이 간식을 어떻게 사나요?
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 쿠팡 검색
+  next갭: None
+  next질문: (없음)
+  spine customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER STOP nextNull=True noAskableGap=False reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+T5 FAIL exact=False
+  기대질문: 쿠팡 대신 이 박스를 고르는 이유는 무엇인가요?
+  실제갭: None
+  실제질문: (없음)
+  창업자답: 고민 없이 온다
+  next갭: None
+  next질문: (없음)
+  spine customer=OPEN problem=PARTIAL payer=OPEN
+  class=STOP STOP nextNull=True noAskableGap=False reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+
+--- Track A S5 turnCount=8 exact=0 stoppedEarly=False firstAskedGap=customerPersona firstExpectedGap=problemJtbd
+T1 FAIL exact=False
+  기대질문: 고객이 지금 단백질 간식에서 가장 불만인 점은 무엇인가요?
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답: 맛이 없다
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  spine customer=OPEN problem=OPEN payer=OPEN
+  class=FIRST_QUESTION,ORDER,OFF_SLOT_ANSWER
+T2 FAIL exact=False
+  기대질문: 그 불만을 가장 세게 느끼는 사람은 누구인가요?
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답: 헬스장 다니는 20–30대
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T3 FAIL exact=False
+  기대질문: 지금은 어떤 단백질 간식을 사나요?
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 시중 단백질바
+  next갭: payer
+  next질문: 헬스장 다니는 20–30대에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T4 FAIL exact=False
+  기대질문: 기존 바 대신 고르는 이유는 무엇인가요?
+  실제갭: payer
+  실제질문: 헬스장 다니는 20–30대에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 더 맛있다
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T5 FAIL exact=False
+  기대질문: 쿠키값은 누가 내나요?
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 헬스 트레이너가 회원에게 추천하고 회원이 결제
+  next갭: alternativesCompetitors
+  next질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+  class=WORDING
+T6 FAIL exact=False
+  기대질문: 이미 두 번 이상 산 고객이 있나요?
+  실제갭: alternativesCompetitors
+  실제질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  창업자답: 한 번만
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+  class=ORDER,OFF_SLOT_ANSWER
+T7 FAIL exact=False
+  기대질문: 그 1회 구매를 어떻게 보나요?
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답: 내가 지인에게 판 것
+  next갭: revenueModel
+  next질문: 수익은 어떤 구조로 발생하나요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+  class=ORDER,OFF_SLOT_ANSWER
+T8 FAIL exact=False
+  기대질문: 다음에 무슨 증거가 있으면 판단이 바뀌나요?
+  실제갭: revenueModel
+  실제질문: 수익은 어떤 구조로 발생하나요?
+  창업자답: 창업자 확인
+  next갭: marketSizeEvidence
+  next질문: 이 시장에 수요가 있다는 근거는 무엇인가요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+  class=ORDER,OFF_SLOT_ANSWER
+
+--- Track A S6 turnCount=5 exact=0 stoppedEarly=True firstAskedGap=customerPersona firstExpectedGap=marketplaceSide
+T1 FAIL exact=False
+  기대질문: 지금 먼저 풀 쪽은 어디인가요?
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답: 집이 믿을 사람을 못 구함
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  spine customer=CLOSED problem=OPEN payer=OPEN
+  class=FIRST_QUESTION,ORDER,OFF_SLOT_ANSWER
+T2 FAIL exact=False
+  기대질문: 집이 지금 가장 걱정하는 점은 무엇인가요?
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답: 사람을 못 믿음
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  spine customer=CLOSED problem=PARTIAL payer=OPEN
+  class=WORDING
+T3 FAIL exact=False
+  기대질문: 지금은 도우미를 어떻게 구하나요?
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답: 지인 소개
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=CLOSED problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T4 FAIL exact=False
+  기대질문: 중개 수수료는 누가 내나요?
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 집이 냄
+  next갭: None
+  next질문: (없음)
+  spine customer=CLOSED problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER STOP nextNull=True noAskableGap=False reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+T5 FAIL exact=False
+  기대질문: 지인 소개 대신 이 앱을 쓰는 이유는 무엇인가요?
+  실제갭: None
+  실제질문: (없음)
+  창업자답: 신원 확인
+  next갭: None
+  next질문: (없음)
+  spine customer=CLOSED problem=PARTIAL payer=OPEN
+  class=STOP STOP nextNull=True noAskableGap=False reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+
+===== Track B. 온슬롯 엔진 계약 =====
+방식: 엔진 SoT 첫 질문 유지. 답만 물은 갭에 매핑. 런타임 코드 미변경.
+전원 reachedEight=true stoppedEarly=false
+
+--- Track B S1 turnCount=8 reachedEight=True askedGaps=customerPersona,problemJtbd,solution,customerPersona,payer,payer,payer,payer
+T1
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답: 반찬가게
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  spine customer=OPEN problem=OPEN payer=OPEN
+T2
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답: 주문과 배송을 따로 관리해야 함
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  spine customer=OPEN problem=CLOSED payer=OPEN
+T3
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답: 하루에 주문을 한 번에 보고 싶다
+  next갭: customerPersona
+  next질문: 「주문과 배송을 따로 관리해야 함」을 가장 절실히 느끼는 사람은 누구인가요?
+  spine customer=OPEN problem=CLOSED payer=OPEN
+T4
+  실제갭: customerPersona
+  실제질문: 「주문과 배송을 따로 관리해야 함」을 가장 절실히 느끼는 사람은 누구인가요?
+  창업자답: 이 서비스를 가장 필요로 하는 사람은 문서에 적은 대상입니다
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T5
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 아직 모르겠음
+  next갭: payer
+  next질문: 문서에 적은 대상에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T6
+  실제갭: payer
+  실제질문: 문서에 적은 대상에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 도입을 결정하는 사람은 아직 모르겠음
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T7
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 도입을 결정하는 사람은 아직 모르겠음
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T8
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 도입을 결정하는 사람은 아직 모르겠음
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+
+--- Track B S2 turnCount=8 reachedEight=True askedGaps=customerPersona,problemJtbd,payer,alternativesCompetitors,validationTestability,solution,validationTestability,revenueModel
+T1
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답: 선물하는 30–40대
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  spine customer=CLOSED problem=OPEN payer=OPEN
+T2
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답: 전통주를 발견하기 어렵다
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T3
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 선물하는 사람이 냄
+  next갭: alternativesCompetitors
+  next질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T4
+  실제갭: alternativesCompetitors
+  실제질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  창업자답: 지인에게 물어 추천받는다
+  next갭: validationTestability
+  next질문: 그 차별점이 고객에게 왜 중요한가요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T5
+  실제갭: validationTestability
+  실제질문: 그 차별점이 고객에게 왜 중요한가요?
+  창업자답: 아직 없다
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T6
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답: 문제를 한곳에서 보이게 하는 방식입니다
+  next갭: validationTestability
+  next질문: 그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T7
+  실제갭: validationTestability
+  실제질문: 그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?
+  창업자답: 창업자 확인
+  next갭: revenueModel
+  next질문: 수익은 어떤 구조로 발생하나요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T8
+  실제갭: revenueModel
+  실제질문: 수익은 어떤 구조로 발생하나요?
+  창업자답: 일단 병 판매가 먼저고 수수료는 나중
+  next갭: validationTestability
+  next질문: 그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+
+--- Track B S3 turnCount=8 reachedEight=True askedGaps=customerPersona,problemJtbd,solution,solution,customerPersona,payer,payer,payer
+T1
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답: 영업관리자
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  spine customer=OPEN problem=OPEN payer=OPEN
+T2
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답: 메일 숫자를 엑셀에 옮기다 나는 오타
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  spine customer=OPEN problem=CLOSED payer=OPEN
+T3
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답: 잘못된 단가로 발주
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=OPEN problem=CLOSED payer=OPEN
+T4
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 문제를 한곳에서 보이게 하는 방식입니다
+  next갭: customerPersona
+  next질문: 「문제를 한곳에서 보이게 하는 방식」을 가장 절실히 느끼는 사람은 누구인가요?
+  spine customer=OPEN problem=CLOSED payer=OPEN
+T5
+  실제갭: customerPersona
+  실제질문: 「문제를 한곳에서 보이게 하는 방식」을 가장 절실히 느끼는 사람은 누구인가요?
+  창업자답: 이 서비스를 가장 필요로 하는 사람은 문서에 적은 대상입니다
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T6
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 대표
+  next갭: payer
+  next질문: 문서에 적은 대상에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T7
+  실제갭: payer
+  실제질문: 문서에 적은 대상에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 도입을 결정하는 사람은 아직 모르겠음
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T8
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 도입을 결정하는 사람은 아직 모르겠음
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+
+--- Track B S4 turnCount=8 reachedEight=True askedGaps=customerPersona,problemJtbd,solution,customerPersona,payer,payer,payer,payer
+T1
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답: 아이
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  spine customer=OPEN problem=OPEN payer=OPEN
+T2
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답: 무엇을 줄지 고르기 싫다
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  spine customer=OPEN problem=CLOSED payer=OPEN
+T3
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답: 문제를 한곳에서 보이게 하는 방식입니다
+  next갭: customerPersona
+  next질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=OPEN problem=CLOSED payer=OPEN
+T4
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 사실 아이가 아니라 혼자 사는 20대가 메인이에요
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T5
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 부모
+  next갭: payer
+  next질문: 혼자 사는 20대가 메인에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T6
+  실제갭: payer
+  실제질문: 혼자 사는 20대가 메인에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 도입을 결정하는 사람은 아직 모르겠음
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T7
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답: 도입을 결정하는 사람은 아직 모르겠음
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T8
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 도입을 결정하는 사람은 아직 모르겠음
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+
+--- Track B S5 turnCount=8 reachedEight=True askedGaps=customerPersona,problemJtbd,solution,payer,alternativesCompetitors,differentiationVsAlternatives,revenueModel,alternativesCompetitors
+T1
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답: 헬스장 다니는 20–30대
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  spine customer=CLOSED problem=OPEN payer=OPEN
+T2
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답: 맛이 없다
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  spine customer=CLOSED problem=PARTIAL payer=OPEN
+T3
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답: 문제를 한곳에서 보이게 하는 방식입니다
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T4
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 헬스 트레이너가 회원에게 추천하고 회원이 결제
+  next갭: alternativesCompetitors
+  next질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T5
+  실제갭: alternativesCompetitors
+  실제질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  창업자답: 시중 단백질바
+  next갭: differentiationVsAlternatives
+  next질문: 경쟁 대비 이 서비스만의 차별점은 무엇인가요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T6
+  실제갭: differentiationVsAlternatives
+  실제질문: 경쟁 대비 이 서비스만의 차별점은 무엇인가요?
+  창업자답: 더 맛있다
+  next갭: revenueModel
+  next질문: 수익은 어떤 구조로 발생하나요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T7
+  실제갭: revenueModel
+  실제질문: 수익은 어떤 구조로 발생하나요?
+  창업자답: 월 구독
+  next갭: alternativesCompetitors
+  next질문: 헬스장 다니는 20–30대이 「문제를 한곳에서 보이게 하는 방식」을 풀 때 이미 쓰는 대안·서비스는 무엇인가요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T8
+  실제갭: alternativesCompetitors
+  실제질문: 헬스장 다니는 20–30대이 「문제를 한곳에서 보이게 하는 방식」을 풀 때 이미 쓰는 대안·서비스는 무엇인가요?
+  창업자답: 지금은 기존 방식으로 처리합니다
+  next갭: validationTestability
+  next질문: 그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+
+--- Track B S6 turnCount=8 reachedEight=True askedGaps=customerPersona,problemJtbd,solution,payer,alternativesCompetitors,differentiationVsAlternatives,revenueModel,alternativesCompetitors
+T1
+  실제갭: customerPersona
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답: 이 서비스를 가장 필요로 하는 사람은 문서에 적은 대상입니다
+  next갭: problemJtbd
+  next질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  spine customer=CLOSED problem=OPEN payer=OPEN
+T2
+  실제갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답: 사람을 못 믿음
+  next갭: solution
+  next질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  spine customer=CLOSED problem=PARTIAL payer=OPEN
+T3
+  실제갭: solution
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답: 문제를 한곳에서 보이게 하는 방식입니다
+  next갭: payer
+  next질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  spine customer=CLOSED problem=CLOSED payer=OPEN
+T4
+  실제갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답: 집이 냄
+  next갭: alternativesCompetitors
+  next질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T5
+  실제갭: alternativesCompetitors
+  실제질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  창업자답: 지인 소개
+  next갭: differentiationVsAlternatives
+  next질문: 경쟁 대비 이 서비스만의 차별점은 무엇인가요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T6
+  실제갭: differentiationVsAlternatives
+  실제질문: 경쟁 대비 이 서비스만의 차별점은 무엇인가요?
+  창업자답: 신원 확인
+  next갭: revenueModel
+  next질문: 수익은 어떤 구조로 발생하나요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T7
+  실제갭: revenueModel
+  실제질문: 수익은 어떤 구조로 발생하나요?
+  창업자답: 월 구독
+  next갭: alternativesCompetitors
+  next질문: 사람을 못 믿음이 「문제를 한곳에서 보이게 하는 방식」을 풀 때 이미 쓰는 대안·서비스는 무엇인가요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+T8
+  실제갭: alternativesCompetitors
+  실제질문: 사람을 못 믿음이 「문제를 한곳에서 보이게 하는 방식」을 풀 때 이미 쓰는 대안·서비스는 무엇인가요?
+  창업자답: 지금은 기존 방식으로 처리합니다
+  next갭: validationTestability
+  next질문: 그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?
+  spine customer=CLOSED problem=CLOSED payer=CLOSED
+
+===== 종료 원인 요약 (Track A next=null) =====
+공통: noAskableGap=false. 물을 갭이 없어서가 아님.
+원인: next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+S1 T4 next=null. customer=OPEN problem=PARTIAL payer=OPEN
+S2 T6 next=null. customer=OPEN problem=CLOSED payer=OPEN
+S3 T4 next=null. customer=OPEN problem=PARTIAL payer=OPEN
+S4 T4 next=null. customer=OPEN problem=PARTIAL payer=OPEN
+S5 중단 없음. 8턴. 문구 0/8. T2 next=payer. T2 spine customer=CLOSED problem=CLOSED payer=OPEN
+S6 T4 next=null. customer=CLOSED problem=PARTIAL payer=OPEN
+Track B는 6사업 모두 8턴. 제품 공백으로 T5 종료 아님.
+고객+문제가 온슬롯 CLOSED이면 next=payer (S2 T2, S1 T4, S4 T4, S5 T3, S6 T3).
+
+===== 회귀 (분리 보고) =====
+엔진 T6 buyer 오사용 차단
+명령: pnpm --filter web exec vitest run pr197-login-ui-s4-routing.test.ts
+결과: 7 passed
+판정: CPO VERIFIED 유지. 재구현하지 않음.
+
+엔진 T7 next=payer
+명령: pnpm --filter web exec vitest run pr197-t7-payer-hold.test.ts
+결과: 5 passed
+판정: CPO VERIFIED 유지. 재구현하지 않음.
+
+엔진 S6/S2/S3/S5 포함 대화 품질
+명령: pnpm --filter web exec vitest run pr197-conversation-quality.test.ts
+결과: 24 passed
+판정: 엔진 PASS. UI 로그인 8턴은 이번 미실행 = NOT VERIFIED (이전 제출 PASS 유지)
+
+AC16 / AC5 기존 부채 (완화하지 않음)
+명령: pnpm --filter web exec vitest run ai-pm-loop-v3.test.ts -t "AC16: V3-08|AC5 V3-09"
+결과: 2 failed
+AC16 원문: expected 'alternativesCompetitors' to be 'businessOneLiner'
+AC5 원문: expected 'alternativesCompetitors' to be 'marketChannel'
+
+Google OAuth 8턴 = NOT VERIFIED (계정 동의·세션 없음)
+Production 대화 = NOT VERIFIED (SHA 0b465226, PR 미배포)
+
+===== 병합 게이트 =====
+T6 buyer 오사용 차단 = CPO VERIFIED 유지
+T7 next=payer = CPO VERIFIED 유지
+S6/S2/S3/S5 엔진 회귀 = PASS
+S6/S2/S3/S5 로그인 UI = 이번 NOT VERIFIED
+동결 T1-T8 1:1 문구 = FAIL 0/35
+AC16 / AC5 = 기존 부채
+Google OAuth 8턴 = NOT VERIFIED
+Production 대화 = NOT VERIFIED
+PR #197 전체 병합 = 승인 보류
+
+CTO는 병합하지 않는다. Production 배포하지 않는다.
+(CTO) CPO 요청 작업: T1-T8 계약 분리 증거 제출 — Track A FAIL 유지, Track B 8턴, 엔진 SoT 미변경, 병합 보류
+(CPO) 검토·지시 필요: 예 — 계약 분리 후 재판정. OAuth·Production은 별도 NOT VERIFIED
+Next Autonomous Target
+Epic A-G 유지 / 계약 분리 제출 / CPO 재판정 대기 / 다음 보고 08:00

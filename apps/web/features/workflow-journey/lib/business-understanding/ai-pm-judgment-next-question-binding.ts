@@ -16,12 +16,22 @@ import {
   buildDynamicNextCheckPrompt,
 } from './ai-pm-judgment-next-focus';
 import { inferTargetGapFromQuestionText } from './gap-question-map';
+import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
+
 import type { NextQuestionDecision } from './decide-next-question-from-review';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import { whyNowForGapField } from './living-understanding-state';
 import { isRepeatedQuestion } from './ai-pm-no-gap-termination';
+import { isGapAskable } from './update-gap-state-from-review';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 import type { JudgmentTurnTrace } from './ai-pm-judgment-trace';
+
+const STAGE_B_AFTER_ONELINER = [
+  'alternativesCompetitors',
+  'validationTestability',
+  'differentiationVsAlternatives',
+  'marketChannel',
+] as const;
 
 const DIMENSION_TO_PRIMARY_GAP: Record<CeoJudgmentDimensionId, string> = {
   customer: 'customerPersona',
@@ -44,8 +54,75 @@ const FIX10_FOCUS_ORDER: CeoJudgmentDimensionId[] = [
 const OFF_TRACK_GAP_RE =
   /^(payer|pricingHint|revenueModel|marketChannel|marketSizeEvidence|problemFrequencySeverity)$/;
 
-export function isOffTrackGapForFix10(gapId: string): boolean {
-  return OFF_TRACK_GAP_RE.test(gapId.trim());
+function isGapClosedInState(
+  gapState: GapKnowledgeState | null | undefined,
+  gapId: string,
+): boolean {
+  return gapState?.gaps[gapId]?.completeness === 'CLOSED';
+}
+
+function isCustomerAndProblemClosed(
+  gapState: GapKnowledgeState | null | undefined,
+): boolean {
+  return (
+    isGapClosedInState(gapState, 'customerPersona') &&
+    isGapClosedInState(gapState, 'problemJtbd')
+  );
+}
+
+/** D4 — solution is illegal while customer or problem is not yet clear. */
+export function isIdentityStillOpenForFix10(
+  judgment: CeoJudgmentState,
+  gapState?: GapKnowledgeState | null,
+): boolean {
+  const customer = judgment.dimensions.customer.status;
+  const problem = judgment.dimensions.problem.status;
+  if (customer === 'unknown' || customer === 'needs_check') return true;
+  if (problem === 'unknown' || problem === 'needs_check') return true;
+  if (gapState && isGapAskable('customerPersona', gapState)) return true;
+  if (gapState && isGapAskable('problemJtbd', gapState)) return true;
+  return false;
+}
+
+/**
+ * Stage A remaining required gap: after customer+problem CLOSE, ask payer
+ * before FIX-10 solution / Stage B. Intended policy — not solution-first.
+ */
+export function shouldHoldOpenStageAPayer(
+  gapState?: GapKnowledgeState | null,
+): boolean {
+  if (!isCustomerAndProblemClosed(gapState) || !gapState) return false;
+  return isGapAskable('payer', gapState);
+}
+
+function buildPayerHoldDecision(
+  decision: NextQuestionDecision,
+  reason: string,
+  actionRationale: string,
+): NextQuestionDecision {
+  const payerBinding = resolveGapQuestionBinding('payer');
+  return {
+    ...decision,
+    targetGap: 'payer',
+    targetGapId: 'payer',
+    issueId: payerBinding.issueId,
+    questionText: payerBinding.questionText,
+    whyNow: whyNowForGapField('payer') || payerBinding.whyNow,
+    rationale: payerBinding.whyNow,
+    actionRationale,
+    reason,
+  };
+}
+
+export function isOffTrackGapForFix10(
+  gapId: string,
+  gapState?: GapKnowledgeState | null,
+): boolean {
+  if (!OFF_TRACK_GAP_RE.test(gapId.trim())) return false;
+  if (gapId.trim() === 'payer' && isCustomerAndProblemClosed(gapState)) {
+    return false;
+  }
+  return true;
 }
 
 export function isJudgmentBoundDecision(decision: NextQuestionDecision): boolean {
@@ -58,14 +135,21 @@ export function isJudgmentBoundDecision(decision: NextQuestionDecision): boolean
 
 export function listFix10UnresolvedDimensions(
   judgment: CeoJudgmentState,
+  gapState?: GapKnowledgeState | null,
 ): CeoJudgmentDimensionId[] {
-  return FIX10_FOCUS_ORDER.filter((id) => isFix10DimensionUnresolved(judgment, id));
+  return FIX10_FOCUS_ORDER.filter((id) =>
+    isFix10DimensionUnresolved(judgment, id, gapState),
+  );
 }
 
 function isFix10DimensionUnresolved(
   state: CeoJudgmentState,
   id: CeoJudgmentDimensionId,
+  gapState?: GapKnowledgeState | null,
 ): boolean {
+  if (isGapClosedInState(gapState, gapForJudgmentDimension(id))) {
+    return false;
+  }
   const d = state.dimensions[id];
   if (id === 'customer') {
     return d.status === 'unknown' || (d.status === 'needs_check' && !d.summary.trim());
@@ -88,28 +172,31 @@ function isFix10DimensionUnresolved(
 /** FIX-10: core dimensions before hypothesis slots (customer → problem → solution → change). */
 export function pickFix10JudgmentFocus(
   judgment: CeoJudgmentState,
+  gapState?: GapKnowledgeState | null,
 ): CeoJudgmentDimensionId | null {
   const recent = new Set(judgment.recentCorrections ?? []);
 
   if (recent.has('customer') && judgment.dimensions.customer.status !== 'unknown') {
-    if (isFix10DimensionUnresolved(judgment, 'problem')) return 'problem';
+    if (isFix10DimensionUnresolved(judgment, 'problem', gapState)) return 'problem';
   }
 
   if (recent.has('problem')) {
     const prob = judgment.dimensions.problem;
     if (
-      isFix10DimensionUnresolved(judgment, 'problem') &&
+      isFix10DimensionUnresolved(judgment, 'problem', gapState) &&
       prob.status === 'needs_check' &&
       hasCanonicalProblemPrimary(prob)
     ) {
       return 'problem';
     }
-    if (isFix10DimensionUnresolved(judgment, 'customer')) return 'customer';
-    if (isFix10DimensionUnresolved(judgment, 'problem')) return 'problem';
+    if (isFix10DimensionUnresolved(judgment, 'customer', gapState)) return 'customer';
+    if (isFix10DimensionUnresolved(judgment, 'problem', gapState)) return 'problem';
   }
 
+  const identityOpen = isIdentityStillOpenForFix10(judgment, gapState);
   for (const id of FIX10_FOCUS_ORDER) {
-    if (isFix10DimensionUnresolved(judgment, id)) return id;
+    if (identityOpen && (id === 'solution' || id === 'customerChange')) continue;
+    if (isFix10DimensionUnresolved(judgment, id, gapState)) return id;
   }
   return null;
 }
@@ -206,9 +293,10 @@ export function turnMapsToGapByJudgment(input: {
 
 export function resolveJudgmentBoundTargetGap(
   judgment: CeoJudgmentState,
+  gapState?: GapKnowledgeState | null,
 ): { focus: CeoJudgmentDimensionId; gapId: string } | null {
   if (!isAiPmJudgmentFix10V1Active()) return null;
-  const focus = pickFix10JudgmentFocus(judgment);
+  const focus = pickFix10JudgmentFocus(judgment, gapState);
   if (!focus) return null;
   return { focus, gapId: gapForJudgmentDimension(focus) };
 }
@@ -216,22 +304,25 @@ export function resolveJudgmentBoundTargetGap(
 /** Ordered focus candidates — primary first, then remaining unresolved dimensions. */
 export function listFix10FocusCandidates(
   judgment: CeoJudgmentState,
+  gapState?: GapKnowledgeState | null,
 ): Array<{ focus: CeoJudgmentDimensionId; gapId: string }> {
-  const primary = pickFix10JudgmentFocus(judgment);
+  const primary = pickFix10JudgmentFocus(judgment, gapState);
   const out: Array<{ focus: CeoJudgmentDimensionId; gapId: string }> = [];
   const seen = new Set<CeoJudgmentDimensionId>();
   const coreOpen =
-    isFix10DimensionUnresolved(judgment, 'customer') ||
-    isFix10DimensionUnresolved(judgment, 'problem') ||
-    isFix10DimensionUnresolved(judgment, 'solution');
+    isFix10DimensionUnresolved(judgment, 'customer', gapState) ||
+    isFix10DimensionUnresolved(judgment, 'problem', gapState) ||
+    isFix10DimensionUnresolved(judgment, 'solution', gapState);
 
   if (primary) {
     out.push({ focus: primary, gapId: gapForJudgmentDimension(primary) });
     seen.add(primary);
   }
-  for (const id of listFix10UnresolvedDimensions(judgment)) {
+  const identityOpen = isIdentityStillOpenForFix10(judgment, gapState);
+  for (const id of listFix10UnresolvedDimensions(judgment, gapState)) {
     if (seen.has(id)) continue;
     if (coreOpen && id === 'customerChange') continue;
+    if (identityOpen && (id === 'solution' || id === 'customerChange')) continue;
     out.push({ focus: id, gapId: gapForJudgmentDimension(id) });
     seen.add(id);
   }
@@ -248,6 +339,7 @@ export function buildJudgmentBoundQuestion(input: {
   focus: CeoJudgmentDimensionId;
   gapId: string;
   judgment: CeoJudgmentState;
+  gapState?: GapKnowledgeState | null;
 }): Pick<NextQuestionDecision, 'questionText' | 'whyNow' | 'issueId' | 'questionType' | 'confirmKnownValue'> {
   const binding = resolveGapQuestionBinding(input.gapId);
   const whyNow =
@@ -261,7 +353,8 @@ export function buildJudgmentBoundQuestion(input: {
     input.focus === 'problem' &&
     dim.status === 'needs_check' &&
     summary &&
-    hasCanonicalProblemPrimary(dim)
+    hasCanonicalProblemPrimary(dim) &&
+    !isGapClosedInState(input.gapState, 'problemJtbd')
   ) {
     const primary = extractProblemPrimaryText(summary) || summary.replace(/^PRIMARY:\s*/i, '');
     return {
@@ -288,6 +381,7 @@ export function applyJudgmentNextQuestionBinding(input: {
   decision: NextQuestionDecision;
   judgment: CeoJudgmentState | null | undefined;
   turns?: AiPmLoopTurn[];
+  gapState?: GapKnowledgeState | null;
 }): NextQuestionDecision {
   if (!isAiPmJudgmentFix10V1Active() || !input.judgment) {
     return input.decision;
@@ -300,17 +394,82 @@ export function applyJudgmentNextQuestionBinding(input: {
     return input.decision;
   }
 
-  const candidates = listFix10FocusCandidates(input.judgment);
+  if (input.gapState?.gaps.customerPersona?.completeness === 'CONTRADICTED') {
+    const built = buildJudgmentBoundQuestion({
+      focus: 'customer',
+      gapId: 'customerPersona',
+      judgment: input.judgment,
+      gapState: input.gapState,
+    });
+    return {
+      ...input.decision,
+      targetGap: 'customerPersona',
+      targetGapId: 'customerPersona',
+      issueId: built.issueId,
+      questionText:
+        '어느 쪽이 지금 맞는 고객인가요? 이전 고객 이해와 방금 답이 충돌합니다.',
+      whyNow:
+        '고객 이해가 뒤집혔습니다. 이전 고객을 사실로 남기지 않고 다시 확인합니다.',
+      rationale: built.whyNow,
+      questionType: 'open',
+      actionRationale: 'CONTRADICTED customer — reconfirm before advancing',
+      reason: 'judgment-bound customer reconfirm after contradiction',
+    };
+  }
+
+  if (isCustomerAndProblemClosed(input.gapState)) {
+    if (shouldHoldOpenStageAPayer(input.gapState)) {
+      if (input.decision.targetGapId === 'payer') {
+        return input.decision;
+      }
+      return buildPayerHoldDecision(
+        input.decision,
+        input.decision.targetGapId === 'businessOneLiner'
+          ? 'judgment-bound skip one-liner → payer'
+          : `judgment-bound hold open Stage A payer (was ${input.decision.targetGapId})`,
+        input.decision.targetGapId === 'businessOneLiner'
+          ? 'CLOSED customer+problem — skip document one-liner for payer'
+          : 'CLOSED customer+problem — Stage A payer still OPEN, ask payer before solution',
+      );
+    }
+    if (input.decision.targetGapId === 'businessOneLiner') {
+      const nextStageB = STAGE_B_AFTER_ONELINER.find((gapId) =>
+        isGapAskable(gapId, input.gapState ?? { version: 1, gaps: {}, lastReviewByGap: {} }),
+      );
+      if (nextStageB) {
+        const stageBBinding = resolveGapQuestionBinding(nextStageB);
+        return {
+          ...input.decision,
+          targetGap: nextStageB,
+          targetGapId: nextStageB,
+          issueId: stageBBinding.issueId,
+          questionText: stageBBinding.questionText,
+          whyNow: whyNowForGapField(nextStageB) || stageBBinding.whyNow,
+          rationale: stageBBinding.whyNow,
+          actionRationale: 'CLOSED Stage A spine — skip document one-liner for Stage B',
+          reason: 'judgment-bound skip one-liner → Stage B',
+        };
+      }
+    }
+    return input.decision;
+  }
+
+  const candidates = listFix10FocusCandidates(input.judgment, input.gapState);
   if (candidates.length === 0) return input.decision;
 
   let bound = candidates[0]!;
-  let built = buildJudgmentBoundQuestion({ ...bound, judgment: input.judgment });
+  let built = buildJudgmentBoundQuestion({
+    ...bound,
+    judgment: input.judgment,
+    gapState: input.gapState,
+  });
 
   if (input.turns?.length) {
     for (const candidate of candidates) {
       const candidateBuilt = buildJudgmentBoundQuestion({
         ...candidate,
         judgment: input.judgment,
+        gapState: input.gapState,
       });
       if (!isRepeatedQuestion(input.turns, candidateBuilt.questionText)) {
         bound = candidate;
@@ -322,7 +481,7 @@ export function applyJudgmentNextQuestionBinding(input: {
 
   const staleTargetDetected =
     input.decision.targetGapId !== bound.gapId ||
-    isOffTrackGapForFix10(input.decision.targetGapId);
+    isOffTrackGapForFix10(input.decision.targetGapId, input.gapState);
 
   return {
     ...input.decision,
@@ -344,11 +503,35 @@ export function applyJudgmentNextQuestionBinding(input: {
 /** Bootstrap next question purely from canonical judgment when V3 decision is null. */
 export function createJudgmentBoundDecision(
   judgment: CeoJudgmentState,
+  gapState?: GapKnowledgeState | null,
 ): NextQuestionDecision | null {
   if (!isAiPmJudgmentFix10V1Active()) return null;
-  const bound = resolveJudgmentBoundTargetGap(judgment);
+  if (shouldHoldOpenStageAPayer(gapState)) {
+    const payerBinding = resolveGapQuestionBinding('payer');
+    return {
+      targetGap: 'payer',
+      targetGapId: 'payer',
+      issueId: payerBinding.issueId,
+      questionText: payerBinding.questionText,
+      whyNow: whyNowForGapField('payer') || payerBinding.whyNow,
+      rationale: payerBinding.whyNow,
+      score: 45_000,
+      reframed: true,
+      excludedGaps: [],
+      drivenByReview: true,
+      sourceAnswerId: 'judgment-bound',
+      sourceReviewId: 'judgment-bound',
+      reviewAction: 'advance',
+      action: 'advance',
+      actionRationale: 'CLOSED customer+problem — Stage A payer still OPEN, ask payer before solution',
+      reason: 'judgment-bootstrap hold open Stage A payer',
+      questionType: 'open',
+    };
+  }
+  const bound = resolveJudgmentBoundTargetGap(judgment, gapState);
   if (!bound) return null;
-  const built = buildJudgmentBoundQuestion({ ...bound, judgment });
+  if (isGapClosedInState(gapState, bound.gapId)) return null;
+  const built = buildJudgmentBoundQuestion({ ...bound, judgment, gapState });
   return {
     targetGap: bound.gapId,
     targetGapId: bound.gapId,

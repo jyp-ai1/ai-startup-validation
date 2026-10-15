@@ -3,6 +3,8 @@
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
+import type { BusinessChoiceOption } from '../../lib/business-understanding/build-business-choice-question';
+
 type PriorAnswer = {
   issueId: string;
   label: string;
@@ -30,6 +32,9 @@ type WorkspaceAnswerComposerProps = {
   onAcceptNew?: () => void;
   onAcceptBoth?: () => void;
   qualityHint?: string | null;
+  choiceOptions?: BusinessChoiceOption[] | null;
+  selectedChoiceId?: string | null;
+  onSelectChoice?: (option: BusinessChoiceOption) => void;
   className?: string;
 };
 
@@ -54,8 +59,17 @@ export function WorkspaceAnswerComposer({
   onAcceptNew,
   onAcceptBoth,
   qualityHint = null,
+  choiceOptions = null,
+  selectedChoiceId = null,
+  onSelectChoice,
   className,
 }: WorkspaceAnswerComposerProps) {
+  const selectedChoice = choiceOptions?.find((option) => option.id === selectedChoiceId) ?? null;
+  const showFreeText =
+    !choiceOptions?.length ||
+    selectedChoice?.kind === 'other' ||
+    Boolean(contradiction) ||
+    editingPrior;
   const canSubmit = !readOnly && draft.trim().length >= 2;
 
   return (
@@ -93,6 +107,25 @@ export function WorkspaceAnswerComposer({
 
       {editingPrior ? (
         <p className="text-sm font-medium">내 답변 수정</p>
+      ) : null}
+
+      {choiceOptions && choiceOptions.length > 0 && !contradiction && !editingPrior ? (
+        <div data-testid="business-choice-options" className="grid gap-2 sm:grid-cols-2">
+          {choiceOptions.map((option) => (
+            <Button
+              key={option.id}
+              type="button"
+              variant={selectedChoiceId === option.id ? 'default' : 'outline'}
+              className="h-auto min-h-11 justify-start whitespace-normal rounded-xl px-3 py-2 text-left text-sm"
+              data-testid={`business-choice-${option.kind}`}
+              data-choice-id={option.id}
+              disabled={readOnly}
+              onClick={() => onSelectChoice?.(option)}
+            >
+              ○ {option.label}
+            </Button>
+          ))}
+        </div>
       ) : null}
 
       {contradiction ? (
@@ -137,31 +170,39 @@ export function WorkspaceAnswerComposer({
         </div>
       ) : (
         <>
-          <textarea
-            data-testid="answer-input"
-            value={draft}
-            onChange={(event) => onDraftChange(event.target.value)}
-            rows={4}
-            readOnly={readOnly}
-            placeholder={placeholder}
-            className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[4.5rem]"
-            aria-label="답변을 입력해 주세요."
-          />
+          {showFreeText ? (
+            <textarea
+              data-testid="answer-input"
+              value={draft}
+              onChange={(event) => onDraftChange(event.target.value)}
+              rows={4}
+              readOnly={readOnly}
+              placeholder={
+                selectedChoice?.kind === 'other'
+                  ? '해당 사업에 맞는 내용을 적어 주세요.'
+                  : placeholder
+              }
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[4.5rem]"
+              aria-label="답변을 입력해 주세요."
+            />
+          ) : null}
           {qualityHint ? (
             <p data-testid="answer-quality-hint" className="text-sm text-amber-800 dark:text-amber-200" role="status">
               {qualityHint}
             </p>
           ) : null}
           <div className="flex flex-wrap gap-2 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:bg-gradient-to-t max-sm:from-background max-sm:via-background max-sm:to-background/80 max-sm:pt-2">
-            <Button
-              type="button"
-              className="rounded-xl max-sm:w-full"
-              data-testid="submit-answer-cta"
-              disabled={!canSubmit}
-              onClick={onSubmit}
-            >
-              {editingPrior ? '수정 내용 반영' : '답변 제출'}
-            </Button>
+            {showFreeText ? (
+              <Button
+                type="button"
+                className="rounded-xl max-sm:w-full"
+                data-testid="submit-answer-cta"
+                disabled={!canSubmit}
+                onClick={onSubmit}
+              >
+                {editingPrior ? '수정 내용 반영' : '답변 제출'}
+              </Button>
+            ) : null}
             {editingPrior && onCancelEdit ? (
               <Button type="button" variant="outline" className="rounded-xl" onClick={onCancelEdit}>
                 취소

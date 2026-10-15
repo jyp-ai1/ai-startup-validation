@@ -9,6 +9,7 @@ import type {
 } from './ai-pm-ceo-judgment-dimensions';
 import type { BusinessReviewReadiness, BusinessReviewVerdict } from './ai-pm-business-review';
 import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
+import { hasValidationEvidenceCue } from './semantic-slot-normalization';
 
 export type JudgmentKnowledgeSource = 'ceo_confirmed' | 'ai_inference';
 
@@ -28,11 +29,11 @@ export function resolveCustomerJudgmentStatus(input: {
   fromInference?: boolean;
   isCorrection?: boolean;
 }): { status: 'clear' | 'needs_check'; knowledgeSource: JudgmentKnowledgeSource } {
+  if (hasValidationEvidenceCue(input.conclusion)) {
+    return { status: 'clear', knowledgeSource: 'ceo_confirmed' };
+  }
   if (input.fromInference && !input.isCorrection) {
     return { status: 'needs_check', knowledgeSource: 'ai_inference' };
-  }
-  if (input.isCorrection || isExplicitCustomerDefinition(input.conclusion)) {
-    return { status: 'clear', knowledgeSource: 'ceo_confirmed' };
   }
   return { status: 'needs_check', knowledgeSource: 'ceo_confirmed' };
 }

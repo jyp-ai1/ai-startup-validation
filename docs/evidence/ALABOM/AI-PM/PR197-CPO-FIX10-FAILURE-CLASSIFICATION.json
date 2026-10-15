@@ -1,0 +1,211 @@
+{
+  "meta": {
+    "implementationSha": "bcf443b7",
+    "executedSha": "e3fb9683812ae5fd5868e9212283064f20657efa",
+    "executedAt": "2026-10-14T04:06:05.856Z",
+    "officialReportUntouched": "docs/evidence/ALABOM/DAY_8I_P0_FIX10_REVALIDATION_REPORT.md",
+    "note": "FIX-10 expected wording is not lowered. overallPass=false is preserved. Official R24 stays classified BUILD_SKIP in this harness (it does not invoke the DAY 8-I build gate). Local pnpm --filter web build is recorded separately and is not used to flip overallPass.",
+    "production": "NOT VERIFIED",
+    "mergeRequest": "none"
+  },
+  "overallPass": false,
+  "failedR": [
+    {
+      "id": "FIX10-R02",
+      "expected": "Initial business understanding confirm",
+      "actual": "이 서비스를 가장 필요로 하는 사람은 누구인가요?"
+    },
+    {
+      "id": "FIX10-R18",
+      "expected": "Canonical state preservation (FIX-9 turns)",
+      "actual": "43"
+    },
+    {
+      "id": "FIX10-R20",
+      "expected": "Judgment Review regression",
+      "actual": "0"
+    },
+    {
+      "id": "FIX10-R21",
+      "expected": "DAY 8-H regression (30-turn)",
+      "actual": "FAIL"
+    },
+    {
+      "id": "FIX10-R22",
+      "expected": "FIX-9 R regression",
+      "actual": "3"
+    },
+    {
+      "id": "FIX10-R24",
+      "expected": "Build",
+      "actual": "FAIL"
+    },
+    {
+      "id": "FIX10-F2",
+      "expected": "Next Q targets unresolved dimension",
+      "actual": "고객·수요를 검증할 채널은 어디인가요?"
+    },
+    {
+      "id": "FIX10-F5-T03",
+      "expected": "Turn 3 audit verdict",
+      "actual": "FAIL"
+    },
+    {
+      "id": "FIX10-F5-T04",
+      "expected": "Turn 4 audit verdict",
+      "actual": "FAIL"
+    },
+    {
+      "id": "FIX10-F5-T05",
+      "expected": "Turn 5 audit verdict",
+      "actual": "FAIL"
+    },
+    {
+      "id": "FIX10-F5-T06",
+      "expected": "Turn 6 audit verdict",
+      "actual": "FAIL"
+    }
+  ],
+  "failedScenarios": [
+    {
+      "id": "B",
+      "title": "최초 AI 이해 확인",
+      "expected": "「제가 이해한 사업은 … 맞나요?」",
+      "actual": "이 서비스를 가장 필요로 하는 사람은 누구인가요?"
+    },
+    {
+      "id": "J",
+      "title": "Customer correction preserved",
+      "expected": "Customer preserved; next Q must not repeat stale customer",
+      "actual": "customer=\"고객은 양조장입니다.\"; next=\"고객·수요를 검증할 채널은 어디인가요?\""
+    }
+  ],
+  "classified": [
+    {
+      "id": "B",
+      "expected": "「제가 이해한 사업은 … 맞나요?」",
+      "actual": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+      "class": "D7_CONFIRM_YES_SURFACE"
+    },
+    {
+      "id": "J",
+      "expected": "Customer preserved; next Q must not repeat stale customer",
+      "actual": "customer=\"고객은 양조장입니다.\"; next=\"고객·수요를 검증할 채널은 어디인가요?\"",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    },
+    {
+      "id": "FIX10-R02",
+      "expected": "Initial business understanding confirm",
+      "actual": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+      "class": "D7_CONFIRM_YES_SURFACE"
+    },
+    {
+      "id": "FIX10-R18",
+      "expected": "Canonical state preservation (FIX-9 turns)",
+      "actual": "43",
+      "class": "REGRESSION_HARNESS"
+    },
+    {
+      "id": "FIX10-R20",
+      "expected": "Judgment Review regression",
+      "actual": "0",
+      "class": "OTHER"
+    },
+    {
+      "id": "FIX10-R21",
+      "expected": "DAY 8-H regression (30-turn)",
+      "actual": "FAIL",
+      "class": "REGRESSION_HARNESS"
+    },
+    {
+      "id": "FIX10-R22",
+      "expected": "FIX-9 R regression",
+      "actual": "3",
+      "class": "REGRESSION_HARNESS"
+    },
+    {
+      "id": "FIX10-R24",
+      "expected": "Build",
+      "actual": "FAIL",
+      "class": "BUILD_SKIP"
+    },
+    {
+      "id": "FIX10-F2",
+      "expected": "Next Q targets unresolved dimension",
+      "actual": "고객·수요를 검증할 채널은 어디인가요?",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    },
+    {
+      "id": "FIX10-F5-T03",
+      "expected": "Turn 3 audit verdict",
+      "actual": "FAIL",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    },
+    {
+      "id": "FIX10-F5-T04",
+      "expected": "Turn 4 audit verdict",
+      "actual": "FAIL",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    },
+    {
+      "id": "FIX10-F5-T05",
+      "expected": "Turn 5 audit verdict",
+      "actual": "FAIL",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    },
+    {
+      "id": "FIX10-F5-T06",
+      "expected": "Turn 6 audit verdict",
+      "actual": "FAIL",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    }
+  ],
+  "byClass": {
+    "D7_CONFIRM_YES_SURFACE": [
+      "B",
+      "FIX10-R02"
+    ],
+    "DOWNSTREAM_OF_D7_SCRIPT": [
+      "J",
+      "FIX10-F2",
+      "FIX10-F5-T03",
+      "FIX10-F5-T04",
+      "FIX10-F5-T05",
+      "FIX10-F5-T06"
+    ],
+    "REGRESSION_HARNESS": [
+      "FIX10-R18",
+      "FIX10-R21",
+      "FIX10-R22"
+    ],
+    "OTHER": [
+      "FIX10-R20"
+    ],
+    "BUILD_SKIP": [
+      "FIX10-R24"
+    ]
+  },
+  "d7": {
+    "role": "default first-question document-echo confirm-yes removed",
+    "firstQuestionType": "open",
+    "firstTargetGap": "customerPersona",
+    "firstQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+    "confirmYesRemoved": true,
+    "failedIds": [
+      "B",
+      "FIX10-R02"
+    ]
+  },
+  "d4": {
+    "role": "solution forbidden while customer or problem still askable",
+    "shouldBlock": true,
+    "resolveTurnDecisionGap": "customerPersona",
+    "firstTargetGap": "customerPersona",
+    "resolvePathHolds": true,
+    "brewerySolutionTurns": [],
+    "harnessSolutionWhileIdentityOpen": [],
+    "failedIds": [],
+    "note": "resolveTurnDecision empty-state next≠solution is the D4 unit. Brewery harness uses resolveNextQuestionDecision; solution after 「네, 맞습니다」 on the D7 customer surface is classified separately and is not rewritten to PASS."
+  },
+  "breweryScriptNote": "FIX10_BREWERY_SCENARIO first CEO answer is 「네, 맞습니다.」 written for Scenario B confirm-yes. After D7 that answer lands on a different first surface, so H/J/F2/F5 can fail without solution-before-identity regressing."
+}

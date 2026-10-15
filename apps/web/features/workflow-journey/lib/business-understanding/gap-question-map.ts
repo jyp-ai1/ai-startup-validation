@@ -31,7 +31,8 @@ const GAP_BINDINGS: Record<string, Omit<GapQuestionBinding, 'targetGap' | 'whyNo
     issueId: 'customer_definition',
   },
   payer: {
-    questionText: '서비스 비용은 누가 지불하나요?',
+    questionText:
+      '이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?',
     factKey: 'buyer',
     issueId: 'bm_design',
   },

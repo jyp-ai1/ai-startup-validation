@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   extractCorrectedFactValue,
+  isCustomerCorrectionWithoutPayerEvidence,
   isCustomerFieldCorrection,
   parseNotXButYCorrection,
 } from '../ai-pm-correction-semantics';
@@ -53,6 +54,18 @@ describe('ai-pm-correction-semantics (DAY 8-B P0)', () => {
   it('detects customer field correction cues', () => {
     expect(isCustomerFieldCorrection(CORRECTION)).toBe(true);
     expect(classifyAiPmCeoIntent(CORRECTION, 'correction').intent).toBe('CORRECT');
+  });
+
+  it('does not treat customer correction as payer evidence', () => {
+    expect(
+      isCustomerCorrectionWithoutPayerEvidence(
+        '사실 아이가 아니라 혼자 사는 20대가 메인이에요',
+      ),
+    ).toBe(true);
+    expect(isCustomerCorrectionWithoutPayerEvidence('집이 낸다')).toBe(false);
+    expect(
+      isCustomerCorrectionWithoutPayerEvidence('아니요 집이 아니라 본사가 결제합니다.'),
+    ).toBe(false);
   });
 
   it('routes CORRECT utterance to customer (not problem) when asked problemJtbd', () => {

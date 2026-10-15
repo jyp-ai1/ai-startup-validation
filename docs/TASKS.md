@@ -4,6 +4,54 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## AI PM 사업 이해 · 객관식 대화
+
+**CPO Gate:** 엔진 SoT 유지 · 5263e83e 검토 문서 · T1–T8 1:1 FAIL · T6/T7 CPO VERIFIED · OAuth·Production NOT VERIFIED · 병합·배포 보류  
+**Branch:** `cursor/ai-pm-mcq-understanding-e648`  
+**Scenarios:** `docs/product/ai-pm-closed-conversation-scenarios.md` (본문 동결 `5263e83e`)  
+**Quality package:** `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-IMPROVEMENT.md`  
+**Baseline:** 일괄 수정안 `83596930` · Production `0b465226`  
+**Reuse:** V3 living / review / next-question / DAY 8-G presenter. 엔진 재작성 없음.  
+**#196 P1:** Merge 보류 유지 · 이 작업에 포함하지 않음
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 기존 대화·객관식 구현 점검 | ✅ 재사용: living·review·next Q. 미구현: 사업 특화 MCQ |
+| 2 | 요약 · 사실/가정 · 1개 미확인 · 객관식 | ✅ `build-business-choice-question.ts` |
+| 3 | 선택 → 기존 답변 파이프라인 · 다음 질문 변경 | ✅ composer + `apply-business-choice.ts` |
+| 4 | 시나리오 A–G 테스트 | ✅ 7/7 · 관련 루프 회귀는 main 기존 실패와 동일 |
+| 5 | 문제·구매자·수익·대안 객관식 + 재판단 경로 | ✅ `apply-business-choice-turn.ts` · journey 5 |
+| 6 | Preview SHA | 별도 추적 · 개발 차단 아님 |
+| 7 | CPO 승인 전 Merge/Production | 금지 |
+| 8 | 실사용 루프 7문 검증 | ✅ 함수 경로 전후 수집 · UI는 미검증 |
+| 9 | `아직 모르겠음` 막힘 | ✅ 턴 저장 · Fact 미병합 · 다음 공백 이동 |
+| 10 | 선택지 품질 | ✅ 문제 문장 미절단 · 이/가 조사 · 대안 파편 제거 |
+| 11 | 결제 증거 재판단 | 1차 검증: 결론/customerChange 불변 · 엔진 미개작 |
+| 12 | 완결형 시나리오 초안 | 📤 1차 패키지 `d151b25d` · CPO: 수정 후 재검토 |
+| 13 | R1–R4 시나리오 수정 · 재검토 패키지 | 📤 패키지 `03415eed` · CPO: 문서 수용, 구현 재개 보류 |
+| 14 | R1–R4 엔진 실패 원인 · 가드 실행 증거 | 📤 증상 로그 `20eb6985` · 제품 코드 미변경 |
+| 15 | V3 단계 추적 · 일괄 수정안 | 📤 `docs/evidence/ALABOM/AI-PM/PR197-JUDGMENT-ENGINE-BATCH-FIX-PLAN.md` · 구현 보류 |
+| 16 | 대화 품질 기준 · 6사업 전후 · 공통 원인 | 📤 패키지 `47f62572` · CPO: 구현 지시 |
+| 17 | 대화 엔진 구현 · 1차 회귀 | 📤 `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-EXECUTION.md` · 1차 실행 증거 |
+| 18 | CPO 2차 검증 패키지 (A–I) | 📤 CTO 1차 `PR197-CPO-SECOND-VERIFY-PACKAGE.md` · I/O `PR197-CPO-SECOND-VERIFY-DUMP.json` |
+| 19 | CPO 2차 검증 · CEO 보고 | 📤 **NEEDS FIX** `PR197-CPO-SECOND-VERIFY-VERDICT.md` · S6 지속·한 줄 후퇴·S4 판단 반영이 다음 수정 |
+| 20 | NEEDS FIX 3건 수정 + CPO 인라인 보고서 | 📤 `PR197-CPO-REVIEW-READY.md` · FIX-S6/ONELINER CPO 확인 · S4 판단만 부분 해결 |
+| 21 | S4 고객 모순 상태 일관성 · T6/T7 실행 증거 | 📤 엔진 CPO VERIFIED (`8965af43`) · 고객 모순 모델 추가 확장 없음 · 병합 금지 |
+| 22 | PR #197 로그인 UI 검증 | 📤 `PR197-CPO-LOGIN-UI-VERIFY.md` · 당시 S4 T6/T7 FAIL · S6/S2/S3/S5 PASS |
+| 23 | 로그인 UI S4 입력 라우팅 | 📤 `PR197-CPO-LOGIN-UI-S4-ROUTING-COPY.txt` · T6/T7 CPO VERIFIED · 병합 금지 |
+| 24 | 병합 전 잔여 위험 확인 | 📤 당시 buyer 오사용 FAIL · 확인 dump `12:04` |
+| 25 | buyer 오사용 차단 | 📤 `PR197-CPO-LOGIN-UI-BUYER-FIX-COPY.txt` · T6 payer 미CLOSED · CPO VERIFIED · 병합 금지 |
+| 26 | T7 next=payer 정책 | 📤 `PR197-CPO-LOGIN-UI-T7-PAYER-COPY.txt` · next=payer · **CPO VERIFIED** · 병합 금지 |
+| 27 | 남은 병합 게이트 증거 | 📤 `PR197-CPO-MERGE-GATE-COPY.txt` · T1–T8 문구 FAIL 0/8 · OAuth·Production NOT VERIFIED · AC16/AC5 유지 · 병합 금지 |
+| 28 | T1–T8 불일치 원인 · 계약 | 📤 `PR197-CPO-T1-T8-DIVERGENCE-COPY.txt` · 동결=시나리오 문서, 엔진 SoT=고객 먼저 · 1:1 0/35 FAIL 유지 · 5턴 중단=오프슬롯 하네스 · 온슬롯 8턴 · SoT 미개작 · 병합 금지 |
+| 29 | T1–T8 계약 분리 · Track A/B | 📤 `PR197-CPO-CONTRACT-SEPARATION-COPY.txt` · CEO problem-first 미승인 · Track A 0/35 FAIL · Track B 8턴 · 어댑터 비런타임 · T6/T7/CQ PASS · AC16/AC5 유지 · OAuth·Prod NOT VERIFIED · 병합 금지 |
+| 30 | D1–D7 전략 복원 1단계 | 📤 `PR197-CPO-STRATEGY-RESTORE-PHASE1-COPY.txt` · resolveTurnDecision · 이해 검증 MCQ · CLOSED≠FACT · T6/T7 PASS · Track A FAIL · AC16/AC5 FAIL · 병합 금지 |
+| 31 | 1단계 후속 검증 FIX-10·S1–S6 | 📤 `PR197-CPO-STRATEGY-RESTORE-FOLLOWUP-COPY.txt` · D7≠D4 분리 · D4 하네스 solution 누수 최소 수정 · `b78e4d29` Preview 2/2 PASS(TS2367 수정) · FIX-10 overallPass=false 유지 · Track A exact=0 · AC16/AC5 FAIL · 병합 금지 |
+| 32 | S1–S6 전략 품질 검증 | 📤 `PR197-CPO-S1-S6-VERIFY-COPY.txt` · 답에 따라 이해·증거·판단·다음 이유 분기 · next gap은 problemJtbd 유지 · Track A FAIL · AC16/AC5 FAIL · 로그인/OAuth/Prod NOT VERIFIED · 병합 금지 |
+| 33 | 신규 페이지 인수인계 | 📤 `PR197-NEW-PAGE-HANDOVER.md` · 프롬프트 `PR197-NEW-PAGE-PROMPT.txt` · HEAD `956a9438` · 병합 금지 · CPO 다음 지시 대기 |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  

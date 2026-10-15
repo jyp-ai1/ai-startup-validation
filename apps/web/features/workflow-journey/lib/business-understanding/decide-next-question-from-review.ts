@@ -11,13 +11,14 @@ import { selectAdaptiveNextGaps } from './adaptive-question-select';
 import {
   isStageBGap,
   STAGE_A_REQUIRED_GAPS,
-  STAGE_B_REQUIRED_GAPS,
   type StageReadiness,
 } from './evaluate-stage-readiness';
 import type { ConversationFactKey, ConversationMemory } from './conversation-memory';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import { whyNowForGapField } from './living-understanding-state';
+import { resolveTurnDecision } from './resolve-turn-decision';
+import type { SiTurnInsight } from './si-turn-insight';
 import {
   countUnclosedGapAsks,
   type QuestionDecision,
@@ -27,6 +28,7 @@ import {
   isSameMeaningQuestion,
   reframeQuestion,
 } from './reframe-question';
+import { hasValidationEvidenceCue } from './semantic-slot-normalization';
 import { isGapAskable } from './update-gap-state-from-review';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
@@ -55,6 +57,8 @@ export type DecideNextQuestionFromReviewInput = {
   /** PR5 SoT — decision engine consumes readiness; does not compute it. */
   stageReadiness: StageReadiness;
   previousQuestionText?: string | null;
+  /** Optional in-app S.I. ranking hint. Never a per-turn @repo/agents call. */
+  siInsight?: SiTurnInsight | null;
 };
 
 function closedGapExcludeSet(gapState: GapKnowledgeState): Set<string> {
@@ -127,40 +131,23 @@ function lastAskTextForGap(turns: AiPmLoopTurn[], targetGap: string): string | n
   return null;
 }
 
-function pickBootstrapGap(gapState: GapKnowledgeState): string {
-  for (const gapId of STAGE_A_REQUIRED_GAPS) {
-    if (isGapAskable(gapId, gapState)) return gapId;
-  }
-  for (const gapId of STAGE_B_REQUIRED_GAPS) {
-    if (isGapAskable(gapId, gapState)) return gapId;
-  }
-  return STAGE_A_REQUIRED_GAPS[0]!;
-}
-
-/** First askable Required gap — Stage B blocked until PR5 readiness allows entry. */
-function pickNextRequiredGap(
-  gapState: GapKnowledgeState,
-  stageReadiness: StageReadiness,
-): string | null {
-  for (const gapId of STAGE_A_REQUIRED_GAPS) {
-    if (isGapAskable(gapId, gapState)) return gapId;
-  }
-  if (stageReadiness.stageBAllowed) {
-    for (const gapId of STAGE_B_REQUIRED_GAPS) {
-      if (isGapAskable(gapId, gapState)) return gapId;
-    }
-  }
-  return null;
-}
-
 function pickAdvanceTargetGap(input: {
   living: LivingUnderstandingState;
   turns: AiPmLoopTurn[];
   gapState: GapKnowledgeState;
   stageReadiness: StageReadiness;
+  lastReview?: AnswerReview | null;
+  siInsight?: SiTurnInsight | null;
 }): string | null {
-  const requiredNext = pickNextRequiredGap(input.gapState, input.stageReadiness);
-  if (requiredNext) return requiredNext;
+  const turned = resolveTurnDecision({
+    living: input.living,
+    gapState: input.gapState,
+    stageReadiness: input.stageReadiness,
+    turns: input.turns,
+    lastReview: input.lastReview,
+    siInsight: input.siInsight,
+  });
+  if (turned.targetGapId) return turned.targetGapId;
 
   const exclude = closedGapExcludeSet(input.gapState);
   const candidates = selectAdaptiveNextGaps(input.living, {
@@ -169,10 +156,7 @@ function pickAdvanceTargetGap(input: {
   });
 
   for (const candidate of candidates) {
-    if (
-      !input.stageReadiness.stageBAllowed &&
-      isStageBGap(candidate.fieldKey)
-    ) {
+    if (!input.stageReadiness.stageBAllowed && isStageBGap(candidate.fieldKey)) {
       continue;
     }
     if (isGapAskable(candidate.fieldKey, input.gapState)) {
@@ -190,9 +174,28 @@ function resolveTargetGapId(
   living: LivingUnderstandingState,
   turns: AiPmLoopTurn[],
   stageReadiness: StageReadiness,
+  siInsight?: SiTurnInsight | null,
 ): string {
+  const turned = resolveTurnDecision({
+    living,
+    gapState,
+    stageReadiness,
+    turns,
+    lastReview: review,
+    siInsight,
+  });
+  if (turned.mode === 'contradiction' && turned.targetGapId) {
+    return turned.targetGapId;
+  }
   if (action === 'advance') {
-    const next = pickAdvanceTargetGap({ living, turns, gapState, stageReadiness });
+    const next = pickAdvanceTargetGap({
+      living,
+      turns,
+      gapState,
+      stageReadiness,
+      lastReview: review,
+      siInsight,
+    });
     if (next) return next;
   }
 
@@ -277,6 +280,80 @@ function buildQuestionForDecision(input: {
   return { questionText, whyNow, reframed };
 }
 
+export function whyNowAfterEvidence(
+  review: AnswerReview | null,
+  base: string,
+): string {
+  if (!review || review.askedGapId !== 'validationTestability') return base;
+  if (
+    base.includes('결제·사용 단서는 약증거이며') ||
+    base.includes('아직 결제·사용 증거가 없어')
+  ) {
+    return base;
+  }
+  const answer = review.userAnswer ?? '';
+  const denied = /아직.{0,16}(없|없습)|증거는 없/.test(answer);
+  if (denied) {
+    return `아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. ${base}`;
+  }
+  if (hasValidationEvidenceCue(answer) || /결제\s*\d|돈을 내고/.test(answer)) {
+    return `결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. ${base}`;
+  }
+  return `아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. ${base}`;
+}
+
+function quotedHypothesis(question: string): string | null {
+  const matches = [...question.matchAll(/「([^」]+)」/g)].map((m) => m[1] ?? '');
+  return matches.find((text) => text.length >= 4) ?? null;
+}
+
+/** Understanding answers change why the next ask exists. They do not change next-gap coverage. */
+export function whyNowAfterUnderstanding(
+  review: AnswerReview | null,
+  base: string,
+): string {
+  if (!review) return base;
+  const gap = review.askedGapId;
+  if (gap !== 'customerPersona' && gap !== 'problemJtbd') return base;
+  if (
+    base.includes('창업자 확인은 이해 마감이지') ||
+    base.includes('고객 가설이 바뀌었습니다') ||
+    base.includes('문제 가설이 바뀌었습니다') ||
+    base.includes('고객은 아직 확정되지 않았고') ||
+    base.includes('문제는 아직 확정되지 않았습니다')
+  ) {
+    return base;
+  }
+  const answer = review.userAnswer ?? '';
+  if (/아직.{0,12}모르|모르겠/.test(answer)) {
+    return gap === 'customerPersona'
+      ? `고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. ${base}`
+      : `문제는 아직 확정되지 않았습니다. ${base}`;
+  }
+  const hypothesis = quotedHypothesis(review.askedQuestionText ?? '');
+  const revised =
+    Boolean(hypothesis) &&
+    hypothesis!.length >= 4 &&
+    !answer.includes(hypothesis!.slice(0, Math.min(8, hypothesis!.length)));
+  if (revised && gap === 'customerPersona') {
+    return `고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. ${base}`;
+  }
+  if (revised && gap === 'problemJtbd') {
+    return `문제 가설이 바뀌었습니다. 이전 문제 가정은 현재 사실이 아닙니다. ${base}`;
+  }
+  if (gap === 'customerPersona') {
+    return `창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. ${base}`;
+  }
+  return base;
+}
+
+export function applyAnswerSensitiveWhyNow(
+  review: AnswerReview | null,
+  base: string,
+): string {
+  return whyNowAfterEvidence(review, whyNowAfterUnderstanding(review, base));
+}
+
 /**
  * Decide next question from last AnswerReview + authoritative gapState.
  * Bootstrap (lastReview=null): first OPEN Stage A Required gap.
@@ -284,11 +361,27 @@ function buildQuestionForDecision(input: {
 export function decideNextQuestionFromReview(
   input: DecideNextQuestionFromReviewInput,
 ): NextQuestionDecision | null {
-  const { living, turns, gapState, lastReview, previousQuestionText, stageReadiness } =
-    input;
+  const {
+    living,
+    turns,
+    gapState,
+    lastReview,
+    previousQuestionText,
+    stageReadiness,
+    siInsight,
+  } = input;
 
   if (!lastReview) {
-    const targetGapId = pickBootstrapGap(gapState);
+    const bootstrapped = resolveTurnDecision({
+      living,
+      gapState,
+      stageReadiness,
+      turns,
+      lastReview: null,
+      siInsight,
+    });
+    const targetGapId =
+      bootstrapped.targetGapId ?? STAGE_A_REQUIRED_GAPS[0]!;
     if (!isGapAskable(targetGapId, gapState) && gapState.gaps[targetGapId]) {
       return null;
     }
@@ -311,7 +404,7 @@ export function decideNextQuestionFromReview(
       reviewAction: 'advance',
       action: 'advance',
       actionRationale,
-      reason: traceReason('advance', targetGapId, null),
+      reason: bootstrapped.reason || traceReason('advance', targetGapId, null),
     };
   }
 
@@ -324,6 +417,7 @@ export function decideNextQuestionFromReview(
     living,
     turns,
     stageReadiness,
+    siInsight,
   );
 
   if (!isGapAskable(targetGapId, gapState)) {
@@ -335,24 +429,39 @@ export function decideNextQuestionFromReview(
       turns,
       gapState,
       stageReadiness,
+      lastReview,
+      siInsight,
     });
     if (!fallback || !isGapAskable(fallback, gapState)) return null;
   }
 
   const finalTarget =
     action === 'advance' && !isGapAskable(targetGapId, gapState)
-      ? pickAdvanceTargetGap({ living, turns, gapState, stageReadiness }) ??
-        targetGapId
+      ? pickAdvanceTargetGap({
+          living,
+          turns,
+          gapState,
+          stageReadiness,
+          lastReview,
+          siInsight,
+        }) ?? targetGapId
       : action === 'advance' &&
           !stageReadiness.stageBAllowed &&
           isStageBGap(targetGapId)
-        ? pickNextRequiredGap(gapState, stageReadiness) ?? targetGapId
+        ? pickAdvanceTargetGap({
+            living,
+            turns,
+            gapState,
+            stageReadiness,
+            lastReview,
+            siInsight,
+          }) ?? targetGapId
         : targetGapId;
 
   if (!isGapAskable(finalTarget, gapState)) return null;
 
   const binding = resolveGapQuestionBinding(finalTarget);
-  const { questionText, whyNow, reframed } = buildQuestionForDecision({
+  const built = buildQuestionForDecision({
     action,
     targetGapId: finalTarget,
     review: lastReview,
@@ -360,6 +469,9 @@ export function decideNextQuestionFromReview(
     turns,
     previousQuestionText,
   });
+  const questionText = built.questionText;
+  const whyNow = applyAnswerSensitiveWhyNow(lastReview, built.whyNow);
+  const reframed = built.reframed;
 
   const priorAsks = countUnclosedGapAsks(turns, finalTarget);
   const actionRationale = actionRationaleForReview(lastReview, action);

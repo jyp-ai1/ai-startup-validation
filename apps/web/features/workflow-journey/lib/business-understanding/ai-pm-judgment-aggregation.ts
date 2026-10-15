@@ -15,6 +15,11 @@ import {
 } from './ai-pm-ceo-judgment-dimensions';
 import { extractDimensionSummaries } from './ai-pm-dimension-extract';
 import { finalizeJudgmentPresentation } from './ai-pm-judgment-conclusion';
+import { hasValidationEvidenceCue } from './semantic-slot-normalization';
+import {
+  answerRevisesQuotedHypothesis,
+  isUncertainFounderAnswer,
+} from './validation-action-for-answer';
 import { isAiPmJudgmentAggregationV1Active } from './ai-pm-judgment-aggregation-v1';
 import {
   isDocumentEchoSummary,
@@ -94,8 +99,11 @@ function toStatus(
   if (!value.trim() || value.trim().length < 4) {
     return { status: 'unknown', reason: '아직 확인되지 않음' };
   }
+  if (strength === 'strong' && hasValidationEvidenceCue(value)) {
+    return { status: 'clear', reason: '검증 단서가 있는 답변' };
+  }
   if (strength === 'strong') {
-    return { status: 'clear', reason: 'CEO 답변에 구체적으로 나타남' };
+    return { status: 'needs_check', reason: '구체적으로 답했으나 검증된 사실은 아닙니다.' };
   }
   return { status: 'needs_check', reason: '방향은 보이나 구체성이 더 필요함' };
 }
@@ -128,6 +136,19 @@ function mergeDimension(
     prior.id === 'customerChange' &&
     next.summary?.trim()
   ) {
+    const weakValidation =
+      next.evidenceType === 'hypothesis' &&
+      /약증거|미확정|지인 1회|반복 수요/.test(next.statusReason ?? '');
+    if (weakValidation) {
+      return {
+        ...prior,
+        ...next,
+        id: 'customerChange',
+        status: next.status === 'unknown' ? 'unknown' : 'needs_check',
+        evidenceType: 'hypothesis',
+        statusReason: next.statusReason,
+      };
+    }
     const ceoSupplementConfirmed =
       isAiPmP02cSupplementHandoffActive() &&
       isValidationTestabilitySupplementTarget(options?.targetGap) &&
@@ -320,7 +341,7 @@ function dimensionFromLiving(living: LivingUnderstandingState): Partial<
 
   const customerSpine = living.spine.customer?.trim() ?? '';
   if (!isPending(customerSpine)) {
-    const { status, reason } = toStatus(customerSpine, 'strong');
+    const { status, reason } = toStatus(customerSpine, 'partial');
     out.customer = {
       id: 'customer',
       label: CEO_JUDGMENT_DIMENSION_LABELS.customer,
@@ -504,7 +525,114 @@ function dimensionsFromAnswerText(
     };
   }
 
+  if (askedGap === 'customerPersona' && !out.customer && !isVagueOrUnknownAnswer(trimmed)) {
+    const persona = clip(
+      trimmed
+        .replace(/^이 서비스를 가장 필요로 하는 사람은\s*/, '')
+        .replace(/입니다\.?$/, ''),
+    );
+    if (persona.length >= 2) {
+      out.customer = {
+        id: 'customer',
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customer,
+        status: 'needs_check',
+        summary: persona,
+        statusReason: '창업자가 고객 후보를 확인함. 구매자·결제와는 별개',
+        knowledgeSource: 'ceo_confirmed',
+      };
+      meta.customer = {
+        interpretedMeaning: 'asked-gap customer persona — not payer or payment',
+        evidence: trimmed,
+        reason: 'customerPersona 답변',
+      };
+    }
+  }
+
+  const validationHit = classifyValidationEvidence(trimmed, askedGap);
+  if (validationHit) {
+    out.customerChange = validationHit.dimension;
+    meta.customerChange = validationHit.meta;
+  }
+
   return { dimensions: out, meta, frozen: false };
+}
+
+function classifyValidationEvidence(
+  text: string,
+  askedGap?: string,
+): {
+  dimension: CeoJudgmentDimension;
+  meta: {
+    interpretedMeaning: string;
+    evidence: string;
+    reason: string;
+    evidenceType?: 'fact' | 'hypothesis' | 'expectation';
+  };
+} | null {
+  if (askedGap !== 'validationTestability' && askedGap !== 'marketSizeEvidence') {
+    if (!/(결제|지인|사용 증거)/.test(text)) return null;
+  }
+  const friendOnce = /지인|친구/.test(text) && /(1회|한\s*번|한번|판 것)/.test(text);
+  const noPayment =
+    /(아직\s*(없|없습)|증거는\s*없|결제[·\s]*사용 증거는 없|낸 적은 없)/.test(text) &&
+    !/\d+\s*건/.test(text);
+  const weakPayment = /(결제\s*\d+\s*건|돈을\s*내고|실제\s*결제)/.test(text) && !friendOnce;
+
+  if (noPayment) {
+    return {
+      dimension: {
+        id: 'customerChange',
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
+        status: 'needs_check',
+        summary: '결제·사용 증거 없음',
+        statusReason: '결제 의향·지불 사실 미확정',
+        evidenceType: 'hypothesis',
+      },
+      meta: {
+        interpretedMeaning: 'no payment evidence — unconfirmed',
+        evidence: text,
+        reason: '결제 의향·지불 사실 미확정',
+        evidenceType: 'hypothesis',
+      },
+    };
+  }
+  if (friendOnce) {
+    return {
+      dimension: {
+        id: 'customerChange',
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
+        status: 'needs_check',
+        summary: clip(text),
+        statusReason: '지인 1회 — 반복 수요 검증 아님',
+        evidenceType: 'hypothesis',
+      },
+      meta: {
+        interpretedMeaning: 'acquaintance one-time sale — weak evidence',
+        evidence: text,
+        reason: '지인 1회 ≠ 반복 수요',
+        evidenceType: 'hypothesis',
+      },
+    };
+  }
+  if (weakPayment) {
+    return {
+      dimension: {
+        id: 'customerChange',
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
+        status: 'needs_check',
+        summary: clip(text),
+        statusReason: '약증거 — 검증 완료·Fact 아님',
+        evidenceType: 'hypothesis',
+      },
+      meta: {
+        interpretedMeaning: 'weak payment evidence — not validated',
+        evidence: text,
+        reason: '약증거',
+        evidenceType: 'hypothesis',
+      },
+    };
+  }
+  return null;
 }
 
 type DimensionHitMap = Partial<Record<CeoJudgmentDimensionId, CeoJudgmentDimension>>;
@@ -566,6 +694,74 @@ function seedJudgmentFromLivingSpine(
     };
   }
   return next;
+}
+
+function customerBackedByFact(turns: AiPmLoopTurn[], customer: CeoJudgmentDimension): boolean {
+  if (hasValidationEvidenceCue(customer.summary)) return true;
+  if (hasValidationEvidenceCue(customer.currentConclusion ?? '')) return true;
+  return turns.some((turn) =>
+    (turn.review?.extractedFacts ?? []).some(
+      (fact) => fact.evidenceClass === 'FACT' && fact.targetGap === 'customerPersona',
+    ),
+  );
+}
+
+/** ASSUMPTION must not render as clear. A revised customer hypothesis records why. */
+function alignClaimJudgment(
+  state: CeoJudgmentState,
+  turns: AiPmLoopTurn[],
+): CeoJudgmentState {
+  let next = state;
+  const customer = next.dimensions.customer;
+  if (customer.status === 'clear' && !customerBackedByFact(turns, customer)) {
+    next = {
+      ...next,
+      dimensions: {
+        ...next.dimensions,
+        customer: {
+          ...customer,
+          status: 'needs_check',
+          statusReason: '창업자 확인은 이해 마감입니다. 검증된 사실이 아닙니다.',
+          knowledgeSource: customer.knowledgeSource ?? 'ceo_confirmed',
+        },
+      },
+    };
+  }
+
+  const last = [...turns].reverse().find((turn) => Boolean(turn.answer?.trim()) && !turn.superseded);
+  const answer = last?.answer?.trim() ?? '';
+  const question = last?.askedQuestionText ?? '';
+  if (
+    !last ||
+    !question ||
+    !answer ||
+    isUncertainFounderAnswer(answer) ||
+    answer === '지금 이해한 내용은 아닙니다.' ||
+    !answerRevisesQuotedHypothesis(question, answer)
+  ) {
+    return next;
+  }
+
+  const subject = answer.match(/사람은\s+(.+?)(?:입니다|이에요|예요|[.。]|$)/)?.[1]?.trim();
+  const summary = subject
+    ? `고객 가설을 「${clip(subject, 40)}」(으)로 수정`
+    : '고객 가설이 바뀌었습니다';
+  return {
+    ...next,
+    dimensions: {
+      ...next.dimensions,
+      customerChange: {
+        ...next.dimensions.customerChange,
+        id: 'customerChange',
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
+        status: 'needs_check',
+        summary,
+        statusReason: '고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다.',
+        evidenceType: 'hypothesis',
+      },
+    },
+    recentCorrections: [...new Set([...(next.recentCorrections ?? []), 'customer' as const])],
+  };
 }
 
 function countActionableTurns(turns: AiPmLoopTurn[]): number {
@@ -696,7 +892,7 @@ export function buildCeoJudgmentState(input: {
     };
   }
 
-  return finalizeJudgmentPresentation(state);
+  return finalizeJudgmentPresentation(alignClaimJudgment(state, input.turns));
 }
 
 export function applyAnswerToJudgment(input: {

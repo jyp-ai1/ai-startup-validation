@@ -1,0 +1,251 @@
+PR #197 CPO 최소 변경 설계안. 이 블록 전체를 복사. 표 없음. 구현 없음. 병합 요청 없음.
+
+한 줄: 새 엔진을 만들지 않는다. 갭 순서를 질문 SoT에서 빼고, 객관식을 이해 검증으로 되돌리며, 증거 클래스와 갭 CLOSED를 분리한다. Stage A·T6·T7은 제약으로 남긴다.
+
+기준점
+진단 SHA: efefaed6 (SI 오버레이 정정 cf23aad7)
+구현 SHA: a14938af
+Production 잠금: 0b465226
+브랜치: cursor/ai-pm-mcq-understanding-e648
+이 문서는 진단서 반복이 아니다. CPO 검토 전 코드 변경 없음.
+
+PR #197 상태 보존 (재분류 금지)
+Track A FAIL 0/35. Track B NEEDS FIX. 로그인 UI 8턴 FAIL.
+T6 CPO VERIFIED. T7 CPO VERIFIED. AC16/AC5 FAIL.
+OAuth NOT VERIFIED. Production NOT VERIFIED.
+
+===== 1. 현재 구현 → 목표 전략 =====
+
+현재 (진단 결과, 반복하지 않음)
+문서 추출 → 열린 Required 갭 선택 → 그 갭에 MCQ 오버레이 → 선택 문자열이 리뷰를 통과하면 FACT/CLOSED → 다음 열린 갭.
+SI는 원라이너 문구만 덮을 수 있음. 검증 행동은 다음 질문 whyNow의 별칭.
+
+목표
+문서+답변 → 이해 모델 → 잠정 이해와 불확실성을 객관식으로 보여 줌 → 선택의 의미·증거 평가 → 판단 갱신 → 판단을 흔들 다음 질문 또는 검증 행동.
+
+이탈 여섯 개가 한 원인으로 묶인다
+질문 SoT가 gap completeness 순서이고, 객관식·FACT·CLOSED·다음 갭이 그 순서에 종속된다. Stage A / FIX-10 / T7은 그 위에 다른 순서를 덧씌운다.
+개별 anti-repeat 패치로는 이 구조가 바뀌지 않는다.
+
+===== 2. 최소 변경 아키텍처 · SoT =====
+
+원칙: 모듈을 재사용한다. 질문 선택의 입력만 바꾼다. 신규 엔진 금지.
+
+재사용할 모듈
+buildBusinessUnderstanding — 문서 필드 추출
+buildLivingUnderstandingState — claims / spine / 미확인 점수
+buildConversationMemoryFromSources — 턴 사실
+buildAnswerReview / updateGapStateFromReview — 리뷰와 gapState
+buildCeoJudgmentState / syncJudgmentAfterAnswer — 내부 판단 차원
+traceBusinessChoiceImpact — 전후 diff (지금은 선택 입력이 아님)
+buildBusinessChoiceQuestion / applyBusinessChoiceThroughLoop — MCQ 경로
+resolveSiJourneyIntegration — 앱 내부 SI (지금은 원라이너 오버레이)
+shouldHoldOpenStageAPayer — T7
+buyer≠payer 가드 — T6
+evaluateStageReadiness — Stage A 바닥 (전부 CLOSED여야 Stage B 허용)
+workspace-ai-pm-simple-question — 이해 요약 UI 부품
+
+변경이 필요한 모듈 (착수는 CPO 승인 후)
+decide-next-question-from-review.ts — pickNextRequiredGap 선형 walk를 제약 필터 + 판단 영향 순위로 교체
+build-answer-review.ts — on-slot VALID → FACT/CLOSED 자동 승격 끊기
+build-business-choice-question.ts — 보기를 「현재 이해 주장 + 판단을 가르는 대안 + 수정/유보」로
+ai-pm-simple-question-presenter.ts — 첫 표면을 갭 질문이 아니라 이해 검증으로
+apply-business-choice-through-loop.ts — specific 클릭이 곧 적용+CLOSED가 되지 않게
+workspace-ai-pm-loop-panel.tsx — SI 결과를 다음 갭 SoT에 넘김 (문구 덮기만 하지 않음)
+
+유지할 엔진 계약
+STAGE_A_REQUIRED_GAPS 집합. 배열을 질문 순서로 쓰지 않는다. Stage B 진입 바닥으로만 쓴다.
+T7: customer+problem 이 창업자 확인이고 payer 미확인이면 다음 행위는 payer 관련 질문 또는 payer 검증. solution/Stage B로 건너뛰지 않음.
+T6: buyer 답을 payer CLOSED로 쓰지 않음.
+FIX-10: customer 또는 problem 미확인이면 solution을 다음 행위로 고르지 않음. problem 확인 후 solution을 강제하지는 않음.
+5263e83e 문구 런타임 승격 금지.
+Track A 0/35 FAIL 유지. 기대 문구 미하향.
+AC16/AC5 FAIL 유지.
+
+신규 SoT가 필요한가
+새 대화 엔진은 필요 없다.
+얇은 오케스트레이션 함수 하나면 충분하다. 가칭 resolveTurnDecision.
+책임: 이해 스냅샷 → 검증할 주장 → 증거 클래스 → 판단 diff → 제약(T6/T7/FIX-10/Stage A 바닥) 하에서 다음 질문 또는 검증 행동.
+기존 resolveNextQuestionDecision 의 정책 체인(anti-repeat, no-gap, no-ask)은 뒤에 남긴다. 앞단 입력만 바꾼다.
+
+EvidenceClass 에 CLAIM을 추가할 것인가
+V3 answer-review 계약은 FACT/INFERENCE/ASSUMPTION/UNKNOWN/CONTRADICTION 이다. CLAIM과 VALIDATED는 없음.
+최소 변경: 새 enum을 지금 넣지 않는다. CLAIM = ASSUMPTION + living status confirmed/inferred. VALIDATED = FACT + 검증 단서(결제·반복 사용).
+CPO가 이름 분리를 원하면 types 변경은 별도 승인. 구현 1단계는 매핑으로 충분하다.
+
+===== A. 사업 이해 모델 =====
+
+통합하는 정보
+문서 추출 필드 (서비스/대상/문제/수익).
+이전 턴의 living claims 와 memory facts.
+명시적 수정(모순 해소, 기타 자유입력).
+쓰지 않는 것: 시나리오 전용 휴리스틱을 이해 SoT로 승격.
+
+재사용
+이미 값이 있는 claim은 다음 질문의 빈칸이 아니라 「잠정 이해」로 보여 준다.
+문서에 대상이 있으면 고객을 처음부터 빈 갭으로 묻지 않고, 「맞벌이 부모의 간식 구독으로 이해했습니다. 맞습니까?」로 확인한다.
+확인된 claim은 같은 의미로 재질문하지 않는다. anti-repeat 리프레임이 아니라 미확인 집합에서 제외.
+
+기본 인터페이스
+객관식 이해 검증. 자유 입력은 기타·새 정보만.
+표면 순서:
+1) AI 잠정 이해 한 줄 + 확인된 주장 / 불확실 / 모순
+2) 지금 검증할 주장 하나
+3) 선택지: 정확함 / 일부 수정 / 이 이해가 아님 / 아직 판단 어려움 + 해당 사업의 구체 대안 0~3개
+이진 confirm-yes(문서 원문 에코)는 1단계 기본 표면에서 내린다. 카드는 읽기 직후 초안으로만 남긴다.
+
+미확인과 모순
+미확인: living unknown + gap OPEN. 「아직 판단 어려움」은 OPEN 유지.
+모순: 기존 CONTRADICTED + 모순 UI(이전/새/둘 다). 일부 수정은 해당 claim만 superseded 하고 관련 판단을 재검토. 전체를 다음 갭으로 건너뛰지 않음.
+
+===== B. 응답 및 증거 평가 =====
+
+객관식 선택 ≠ 사실 확인
+정확함: 창업자가 AI 주장에 동의. 증거 클래스는 CLAIM(매핑: ASSUMPTION). living confirmed. 검증 단서 없으면 FACT/VALIDATED 아님.
+구체 대안 클릭: 새 CLAIM. 슬롯이 맞을 때만 해당 필드 갱신.
+이 이해가 아님 / 기타: 기존 주장 미확정, 자유입력 또는 재서술. CLOSED 금지.
+아직 모르겠음: UNKNOWN. 가짜 사실 없음. 기존 unknown 경로 유지.
+
+상태 기준 (1단계 매핑)
+FACT: 문서에 있는 원문 인용 또는 검증 단서가 있는 관찰. 창업자  rambling 주장이 아님.
+CLAIM: 창업자가 동의하거나 고른 사업 서술. ASSUMPTION으로 저장.
+INFERENCE: 엔진이 문서에서 추론. 창업자 미확인.
+ASSUMPTION: 가설·WTP·미검증 차별점.
+VALIDATED: 결제·반복 사용 등 검증 단서. FACT로 저장.
+UNKNOWN: 모르겠음.
+CONTRADICTION: 이전 확인과 충돌.
+
+CLOSED 조건 (갭 completeness — 대화 진행)
+증거 클래스와 분리한다. 이것이 최소 변경의 핵심이다.
+지금: FACT이면 종종 CLOSED. 그래서 객관식 클릭이 칸을 닫는다.
+목표:
+- 슬롯이 틀린 답은 물은 갭을 CLOSED 하지 않음 (T6 확장: 의미 불일치).
+- UNKNOWN / 이 이해가 아님 → OPEN 유지.
+- 증거민감 갭(validationTestability, differentiation, marketChannel, pricingHint, payer의 지불 증거): CLAIM이면 PARTIAL. FACT/VALIDATED만 CLOSED.
+- Stage A 바닥용 고객·문제: 슬롯이 맞는 창업자 확인이면 completeness CLOSED 가능. 단 evidenceClass는 CLAIM. UI는 「확인된 주장」이지 「검증된 사실」이 아님.
+- payer: T7을 위해 창업자가 지불 주체를 슬롯에 맞게 지정하면 completeness CLOSED 가능. 「아직 모르겠음」은 OPEN. 지불 의사·결제 증거는 별도 증거민감 칸.
+T7이 깨지지 않게, Stage A completeness와 증거 VALIDATED를 한 플래그로 묶지 않는다.
+
+잘못된 갭을 닫지 않기
+T6 유지: buyer 서술로 payer CLOSED 금지.
+추가 규칙: 물은 갭의 의미와 선택 라벨의 의미가 다르면 적용 거부. 로그인 UI S4 T3처럼 문제 질문에 「구독 박스 대상」이 올라와 닫히는 경로를 막음.
+구현 위치: interpretAnswerSemantics 슬롯 검사 + build-business-choice-question 보기 필터. 새 모순 모델 재작성 없음.
+
+===== C. 판단 갱신과 다음 행동 =====
+
+전후 비교
+이미 있는 traceBusinessChoiceImpact + syncJudgmentAfterAnswer 를 선택 엔진 입력으로 승격한다.
+비교 항목: living spine, claim 상태, CeoJudgmentState 차원, SI 뷰가 있으면 그 근거 줄.
+영향 0: 같은 갭을 「조금 더 구체적으로」로 리프레임하지 않음. 유보 이유를 남기거나 검증 행동으로 전환.
+
+다음 질문 SoT
+resolveTurnDecision 의 순위.
+후보 = 아직 창업자 확인이 없거나 모순인 미확인.
+점수 = 현재 판단을 바꿀 가능성 (기존 DOMAIN_IMPACT_WEIGHT / living.gaps.priorityScore 재사용).
+필터 제약 (순서 SoT가 아님):
+- T6
+- T7 payer hold
+- FIX-10: customer/problem 미확인이면 solution 제외
+- Stage A 바닥: Stage B 갭은 stageAReady 또는 skipOneLiner 이후에만
+선형 pickNextRequiredGap walk 는 사용하지 않음.
+
+고정 Stage A 순서와 FIX-10
+Stage A 네 칸: 질문 순서가 아니라 「비어 있으면 사업성 판단 준비 안 됨」.
+FIX-10: solution 선행 금지 제약. solution 강제 순서가 아님.
+T7: payer를 건너뛰지 못하는 제약. payer를 네 칸 중 세 번째에 고정하는 순서가 아님.
+
+검증 행동 전환
+다음이 validationTestability 이고 추가 MCQ가 판단을 가르지 못할 때.
+unknown이 반복되어 영향 0일 때 (리프레임 금지).
+판단이 「고객 확보·결제 증거가 병목」일 때.
+행동은 새 엔진이 아니라 기존 whyNow/nextValidationAction 필드를 질문 대신 실행 카드로 렌더. 지금은 별칭이라 렌더 분기만 추가하면 된다.
+
+서로 다른 답이 다음을 바꿔야 한다
+같은 Stage A walk를 성공으로 보지 않음.
+검증: S4 고객=맞벌이 부모 vs 고객=혼자 사는 20대 이면 다음 이해 문장·보기·우선 미확인이 달라야 함.
+로그인 UI S1-S6 가 모두 alternativesCompetitors 로 가는 현상은 설계 실패 신호로 유지 기록. 8턴 완주로 덮지 않음.
+
+===== 4. 대표 사업 S4 — 응답 전후 (설계, 미실행) =====
+
+문서: 아이 간식 주간 구독. 대상 맞벌이 부모. 문제 장보기·선택 피로. 수익 월 구독.
+
+현재 실측 (로그인 UI, 성공 아님)
+T1 문서 원문 confirm → T2 고객 MCQ CLOSED → T3 문제 MCQ CLOSED (슬롯 틀린 보기 가능) → T4 payer CLOSED → T5-T6 alternatives 반복 FAIL.
+
+목표 턴 0 (묻기 전)
+이해: 맞벌이 부모가 아이 간식 선택을 덜어 주는 주간 구독으로 잠정 이해.
+불확실: 실제 사용자가 부모인지 아이인지, 지불자가 부모인지, 쿠팡 대비 이유, 결제 증거.
+판단: 문서 CLAIM. VALIDATED 없음. 실패 위험=대안(쿠팡)과 미결제.
+다음: 갭 customerPersona 질문이 아니라 이해 검증 객관식.
+
+목표 응답 A — 「정확함, 맞벌이 부모」
+이해 후: 고객 CLAIM 확인. 문제는 문서 가설로 남음.
+판단 후: 병목이 고객 정의에서 대안·지불로 이동.
+다음: 문제 이해를 검증 (고르기 피로 vs 다른 페인) 또는 지불 주체. solution 아님. alternatives 고정 아님.
+CLOSED: customer completeness CLOSED 가능, evidence CLAIM.
+
+목표 응답 B — 「사실 메인 고객은 혼자 사는 20대」
+이해 후: 고객 claim superseded. 부모/아이 가설 폐기. 문제(과자 고르기)와 지불(부모) 재검토.
+판단 후: 구독 박스의 페인·WTP가 바뀜. 쿠팡 대안 질문의 의미도 바뀜.
+다음: 20대 1인 가구의 문제 이해 검증. 부모 payer 질문을 그대로 두지 않음.
+이것이 「답이 달라도 다음이 같다」를 깨는 최소 기준.
+
+목표 응답 C — 「아직 모르겠음」 (고객)
+이해 후: 고객 OPEN. 문서 가설은 INFERENCE로 남김.
+판단 후: 고객 미확인이 최대 병목.
+다음: 고객을 리프레임 반복하지 않음. 문서의 두 가설(부모 vs 아이)을 판단 분기 보기로 다시 보여 주거나, 고객 정의 없이는 검증 행동이 더 낫다고 표시.
+T7: customer 미확인이므로 payer hold 미적용. solution 금지(FIX-10 제약).
+
+===== 5. 서로 다른 응답 → 다른 다음 행동 (설계 기준) =====
+
+S4 고객=부모 vs 고객=20대: 다음 이해 문장과 우선 미확인이 달라야 함.
+S1 payer=사장 vs payer=모르겠음: 전자는 Stage A 바닥에서 payer completeness CLOSED 가능. 후자는 OPEN + T7 제약으로 payer 검증 행동 또는 구체 분기. 둘 다 같은 alternatives 질문이 되면 실패.
+S6 집 vs 도우미: 면이 바뀌면 문제·지불 이해가 바뀜. 같은 Stage B 첫 칸으로 가면 실패.
+8턴 도달은 이 설계의 성공 지표가 아님.
+
+===== D. 변경 경계 · 파일 · 테스트 · 회귀 =====
+
+단계 0 지금: 설계 제출. 코드 없음.
+단계 1 CPO 승인 후: 증거 클래스와 CLOSED 분리. build-answer-review, apply-business-choice.
+검증: 객관식 specific이 FACT가 아님. 슬롯 불일치가 물은 갭을 닫지 않음. T6 7 passed 유지. T7 5 passed 유지 (customer+problem 확인 후 payer 유지).
+단계 2: 이해 검증 객관식 표면. presenter + choice builder + 원문 confirm 기본 경로 축소.
+검증: S4 턴0 요약이 문서 원문 에코가 아님. 보기 4분+사업 구체. Track A 0/35 FAIL 유지.
+단계 3: pickNextRequiredGap 교체. 제약 필터 + living/judgment 순위. SI 뷰를 순위 입력으로 (갭 선택). 검증 행동 렌더 분기.
+검증: S4 응답 A/B의 다음 갭이 다름. S1-S6 동일 alternatives 고정이 깨짐. 8턴 PASS로 선언하지 않음. Track B 품질을 8턴이 아니라 판단 변화로 채점. AC16/AC5 FAIL 추적 유지.
+
+회귀 위험
+customer를 CLAIM만 하고 completeness를 안 닫으면 T7이 안 켜짐 → Stage A 고객·문제는 확인 시 completeness CLOSED 허용 (증거는 CLAIM).
+판단 순위로 payer를 미루면 T7 위반 → 필터로 금지.
+specific을 닫지 않으면 기존 갭 테스트 대량 실패 → 실패를 숨기지 않음. Track A FAIL 유지. 새 테스트는 전략 시나리오 1-8.
+시나리오 휴리스틱으로 보기를 맞추면 테스트에 제품이 맞춰짐 → 금지. 보기는 현재 이해 모델에서만.
+
+테스트 계획 (성공≠전략 왜곡)
+1 요약이 해당 사업의 고객·문제를 연결하는가.
+2 객관식이 그 사업의 실제 불확실성을 가르는가.
+3 응답 전후 이해·판단 diff가 있는가.
+4 동일 답이 무조건 FACT/CLOSED가 아닌가.
+5 다른 답이 다음 질문/행동을 바꾸는가.
+6 확인된 주장을 같은 의미로 재질문하지 않는가.
+7 검증 병목에서 질문 대신 행동 카드가 나오는가.
+8 T6/T7 passed, AC16/AC5 FAIL 원문 유지.
+
+===== 7. 구현 착수 전 CPO 결정 =====
+
+D1. Stage A 네 칸을 질문 순서가 아니라 바닥 제약으로 바꿔도 되는가. CTO 권고: 예.
+D2. 고객·문제 창업자 확인을 completeness CLOSED + evidence CLAIM 으로 둘 것인가. CTO 권고: 예. T7 보존.
+D3. payer 창업자 지정은 completeness CLOSED, 결제 증거는 별도 증거민감 칸인가. CTO 권고: 예.
+D4. FIX-10을 solution 선행 금지 제약으로만 남길 것인가. CTO 권고: 예. solution 강제 순서 제거.
+D5. 1단계에서 EvidenceClass enum에 CLAIM/VALIDATED를 추가할 것인가. CTO 권고: 아니오. 기존 ASSUMPTION/FACT에 매핑.
+D6. 앱 내부 SI를 다음 행위 순위 입력으로 연결할 것인가, CeoJudgmentState만 키울 것인가. CTO 권고: 기존 resolveSiJourneyIntegration 출력을 순위 입력으로 재사용. @repo/agents 매 턴 호출은 하지 않음.
+D7. 원문 confirm-yes를 기본 첫 질문에서 빼도 되는가. CTO 권고: 예. 읽기 카드만 남김.
+
+권고가 기각되면 해당 단계만 재설계한다. 기각을 개별 질문 패치로 해석하지 않는다.
+
+완료 조건: 이 설계안 제출. 코드 변경 아님.
+병합 요청: 없음. Production 배포: 없음. 질문별 패치: 없음.
+
+[CTO] CPO 요청 작업: 제출 — 최소 변경 설계안. 구현·병합·배포 보류
+[CPO] 검토·지시 필요: 예 — D1–D7 과 변경 범위 승인 후 구현 착수
+
+Next Autonomous Target
+Epic PR197 전략 복원 설계 / 제출 완료 / 다음 보고 08:00

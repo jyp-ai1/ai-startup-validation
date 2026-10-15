@@ -1,0 +1,125 @@
+{
+  "rows": [
+    {
+      "step": "0 seed",
+      "input": "0 seed",
+      "expected": "q-customer",
+      "actual": "q-customer",
+      "critical": "u-unconfirmed-h-customer",
+      "plan": "not_required",
+      "stage": "S0",
+      "modelOutcome": "not_run",
+      "failure": ""
+    },
+    {
+      "step": "1 confirm customer",
+      "input": "1 confirm customer",
+      "expected": "q-problem",
+      "actual": "q-problem",
+      "critical": "u-unconfirmed-h-problem",
+      "plan": "not_required",
+      "stage": "S0",
+      "modelOutcome": "not_run",
+      "failure": ""
+    },
+    {
+      "step": "2 replace customer",
+      "input": "2 replace customer",
+      "expected": "q-problem-next",
+      "actual": "q-problem-next",
+      "critical": "u-empty-problem",
+      "plan": "not_required",
+      "stage": "S0",
+      "modelOutcome": "not_run",
+      "failure": ""
+    },
+    {
+      "step": "3 unknown new problem",
+      "input": "3 unknown new problem",
+      "expected": "q-problem-next",
+      "actual": "q-problem-next",
+      "critical": "u-empty-problem",
+      "plan": "not_required",
+      "stage": "S0",
+      "modelOutcome": "not_run",
+      "failure": ""
+    },
+    {
+      "step": "4 affirm new problem",
+      "input": "4 affirm new problem",
+      "expected": "q-resolve-h-customer",
+      "actual": "q-resolve-h-customer",
+      "critical": "u-conflict-h-customer",
+      "plan": "not_required",
+      "stage": "S0",
+      "modelOutcome": "not_run",
+      "failure": ""
+    },
+    {
+      "step": "5 weak payment",
+      "input": "5 weak payment",
+      "expected": "q-resolve-h-customer",
+      "actual": "q-resolve-h-customer",
+      "critical": "u-conflict-h-customer",
+      "plan": "not_required",
+      "stage": "S0",
+      "modelOutcome": "not_run",
+      "failure": ""
+    },
+    {
+      "step": "6 absence",
+      "input": "6 absence",
+      "expected": "q-resolve-h-customer",
+      "actual": "q-resolve-h-customer",
+      "critical": "u-conflict-h-customer",
+      "plan": "proposed",
+      "stage": "S0",
+      "modelOutcome": "not_run",
+      "failure": ""
+    },
+    {
+      "step": "7 literal fact",
+      "input": "7 literal fact",
+      "expected": "q-resolve-h-customer",
+      "actual": "q-resolve-h-customer",
+      "critical": "u-conflict-h-customer",
+      "plan": "not_required",
+      "stage": "S0",
+      "modelOutcome": "conflict_unresolved",
+      "failure": ""
+    },
+    {
+      "step": "8 resolve literal",
+      "input": "8 resolve literal",
+      "expected": "q-resolve-h-customer",
+      "actual": "q-resolve-h-customer",
+      "critical": "u-conflict-h-customer",
+      "plan": "proposed",
+      "stage": "S0",
+      "modelOutcome": "insufficient_record",
+      "failure": ""
+    },
+    {
+      "step": "9 criterion",
+      "input": "9 criterion",
+      "expected": "q-resolve-h-customer",
+      "actual": "q-resolve-h-customer",
+      "critical": "u-conflict-h-customer",
+      "plan": "proposed",
+      "stage": "S0",
+      "modelOutcome": "insufficient_record",
+      "failure": ""
+    },
+    {
+      "step": "10 off-selection unknown",
+      "input": "10 off-selection unknown",
+      "expected": "q-resolve-h-customer",
+      "actual": "q-resolve-h-customer",
+      "critical": "u-conflict-h-customer",
+      "plan": "proposed",
+      "stage": "S0",
+      "modelOutcome": "insufficient_record",
+      "failure": ""
+    }
+  ]
+}

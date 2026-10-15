@@ -1,0 +1,79 @@
+PR #197 T1–T8 계약 분리 — CTO 제출 (병합 보류)
+
+CEO: problem-first 엔진 변경은 승인하지 않음. CPO: 엔진 SoT 유지, 5263e83e는 승인 전 검토용 문서. 1:1 기대 문구를 낮추지 않음. T6/T7 재구현 없음. 모순 모델 재작성 없음. 병합·Production 배포 없음.
+
+상태 어휘: NOT STARTED / IMPLEMENTED / CTO VERIFIED / CPO VERIFIED / NEEDS FIX / NOT VERIFIED
+엔진 PASS와 UI PASS를 한 줄로 합치지 않는다.
+
+한 줄: 두 계약을 분리해 기록한다. Track A 1:1은 FAIL 0/35. Track B 온슬롯은 S1–S6 모두 8턴. 어댑터는 __tests__ 전용이며 런타임 SoT 파일을 바꾸지 않았다.
+
+A. 런타임 엔진 SoT (유지)
+Stage A: businessOneLiner → customerPersona → payer → problemJtbd
+문서에 고객/문제 있으면 one-liner skip → 첫 질문=customerPersona
+FIX-10: 고객 → 문제 → solution
+고객+문제 CLOSED, payer OPEN → next=payer (T7)
+followEngine 첫 갭=problemJtbd는 재생기이지 SoT가 아님
+
+B. 검토용 시나리오 문서 (승격하지 않음)
+SHA 5263e83e. T1–T8 문구 미수정. 1:1 0/35 FAIL 기록.
+
+어댑터가 엔진 SoT를 바꾸지 않는 증거
+경로: apps/web/.../__tests__/pr197-frozen-scenario-adapter.ts
+런타임 import 검색: apps 아래 __tests__ 제외 0건
+STAGE_A_REQUIRED_GAPS 단언: businessOneLiner, customerPersona, payer, problemJtbd
+이번 작업 git diff 엔진 파일: 공집합
+evaluate-stage-readiness.ts / judgment-next-question-binding.ts / anti-repeat / no-gap-termination 미변경
+
+구현 SHA 77147a56 (덤프 meta.implSha와 동일)
+
+Track A — 동결 문구 1:1 (기대 불변)
+명령: pnpm --filter web exec vitest run pr197-frozen-t1-t8-wording.test.ts pr197-frozen-t1-t8-divergence.test.ts
+결과: compared=35 exactMatches=0
+덤프: docs/evidence/ALABOM/AI-PM/PR197-CPO-FROZEN-T1-T8-DUMP.json
+      docs/evidence/ALABOM/AI-PM/PR197-CPO-T1-T8-DIVERGENCE-DUMP.json
+
+S1 T1 ask=customerPersona q=이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? expected=고객이 지금 가장 불편해하는 점은 무엇인가요? next=problemJtbd spine customer=OPEN problem=OPEN payer=OPEN
+S1 T4 ask=problemJtbd next=null spine customer=OPEN problem=PARTIAL payer=OPEN noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+S1 T5 asked=null 동일 spine / noAskableGap=false
+S2 T6 next=null spine customer=OPEN problem=CLOSED payer=OPEN noAskableGap=false
+S3 T4 next=null spine customer=OPEN problem=PARTIAL payer=OPEN noAskableGap=false
+S4 T4 next=null spine customer=OPEN problem=PARTIAL payer=OPEN noAskableGap=false
+S5 8턴 exact 0. T2 next=payer. spine T2 customer=CLOSED problem=CLOSED payer=OPEN
+S6 T4 next=null spine customer=CLOSED problem=PARTIAL payer=OPEN noAskableGap=false
+
+Track B — 온슬롯 엔진 계약 (8턴)
+S1 8턴 asked=customerPersona,problemJtbd,solution,customerPersona,payer,payer,payer,payer  T4 이후 customer+problem CLOSED → next=payer
+S2 8턴 asked=customerPersona,problemJtbd,payer,alternatives,validation,solution,validation,revenue  T2 next=payer
+S3 8턴 asked=customerPersona,problemJtbd,solution,solution,customerPersona,payer,payer,payer
+S4 8턴 asked=customerPersona,problemJtbd,solution,customerPersona,payer,payer,payer,payer  T4 next=payer
+S5 8턴 asked=customerPersona,problemJtbd,solution,payer,alternatives,differentiation,revenue,alternatives
+S6 8턴 asked=customerPersona,problemJtbd,solution,payer,alternatives,differentiation,revenue,alternatives
+stoppedEarly=false 전부. 제품 공백으로 T5 종료 아님.
+
+회귀 (분리)
+엔진 T6 buyer: pnpm --filter web exec vitest run pr197-login-ui-s4-routing.test.ts → 7 passed
+엔진 T7 payer-hold: pnpm --filter web exec vitest run pr197-t7-payer-hold.test.ts → 5 passed
+엔진 S6/S2/S3/S5: pnpm --filter web exec vitest run pr197-conversation-quality.test.ts → 24 passed
+UI S6/S2/S3/S5 로그인 8턴: 이번 미실행 NOT VERIFIED (이전 제출 PASS 유지)
+AC16: pnpm --filter web exec vitest run ai-pm-loop-v3.test.ts -t "AC16: V3-08|AC5 V3-09"
+  expected 'alternativesCompetitors' to be 'businessOneLiner'
+AC5: expected 'alternativesCompetitors' to be 'marketChannel'
+Google OAuth 8턴: NOT VERIFIED
+Production 대화: NOT VERIFIED · SHA 0b465226
+
+엔진 SoT 변경 필요 여부
+필요 없음. problem-first는 별도 제품 계약 안이며 CEO가 승인하지 않았다. 설계안 구현하지 않음.
+
+판정 표
+T6 buyer 오사용 차단 = CPO VERIFIED 유지 · 엔진 재실행 PASS
+T7 next=payer = CPO VERIFIED 유지 · 엔진 재실행 PASS
+S6/S2/S3/S5 엔진 회귀 = PASS · UI 이번 NOT VERIFIED
+동결 T1–T8 1:1 = FAIL 0/35
+AC16 / AC5 = 기존 부채
+Google OAuth 8턴 = NOT VERIFIED
+Production 대화 = NOT VERIFIED
+PR #197 전체 병합 = 승인 보류
+
+CTO는 병합하지 않는다. Production 배포하지 않는다.
+(CTO) CPO 요청 작업: T1–T8 계약 분리 증거 제출 — Track A FAIL 유지, Track B 8턴, 엔진 SoT 미변경, 병합 보류
+(CPO) 검토·지시 필요: 예 — 계약 분리 후 재판정. OAuth·Production은 별도 NOT VERIFIED

@@ -11,9 +11,23 @@ import { cn } from '@repo/ui/lib/utils';
 
 import { applyWorkspaceLoopAnswer } from '../../lib/business-understanding/workspace-state-update';
 import {
+  trackBlindSpotDetected,
   trackBusinessUnderstandingConfirmed,
   trackBusinessUnderstandingCorrected,
+  trackClarityQuestionAnswered,
+  trackClarityQuestionRaised,
 } from '../../lib/business-understanding/track-understanding-funnel';
+import {
+  type BusinessChoiceOption,
+  isEscapeChoice,
+  isUnknownChoice,
+} from '../../lib/business-understanding/build-business-choice-question';
+import { resolveBusinessChoiceAnswer } from '../../lib/business-understanding/apply-business-choice';
+import { applyBusinessChoiceThroughLoop } from '../../lib/business-understanding/apply-business-choice-through-loop';
+import {
+  applyTypedAnswerThroughLoop,
+  shouldRouteTypedAnswerThroughLoop,
+} from '../../lib/business-understanding/route-typed-answer-through-loop';
 import { buildAiPmRuntimeJudgment } from '../../lib/business-understanding/build-workspace-ai-pm-state';
 import {
   appendAiPmLoopTurn,
@@ -30,7 +44,7 @@ import {
   saveAnswerDraft,
 } from '../../lib/business-understanding/workspace-answer-draft-store';
 import { resolveNextQuestionDecision } from '../../lib/business-understanding/resolve-next-question-decision';
-import { isBusinessUnderstandingConfirmQuestion } from '../../lib/business-understanding/gap-question-map';
+import { resolveSiMatchedAnswerStorage } from '../../lib/business-understanding/si-matched-answer-storage';
 import type { SiAiPmQuestion } from '@repo/types/domain/strategic-intelligence';
 import { shouldSkipLiveRankOnRemount } from '../../lib/business-understanding/resolve-remount-ask-surface';
 import { resolveV3DisplayPriority } from '../../lib/business-understanding/v3-legacy-bypass-guards';
@@ -173,6 +187,7 @@ function AiPmQuestionSurface({
   s11Surface,
   displayQuestionText,
   className,
+  hidden = false,
 }: {
   focusedUiActive: boolean;
   focusedSnapshot: AiPmFocusedSnapshot | null;
@@ -182,7 +197,9 @@ function AiPmQuestionSurface({
   s11Surface: ReturnType<typeof presentS11Surface>;
   displayQuestionText: string;
   className?: string;
+  hidden?: boolean;
 }) {
+  if (hidden) return null;
   if (simpleQuestionUiActive && simpleSnapshot) {
     return (
       <WorkspaceAiPmSimpleQuestion
@@ -231,6 +248,7 @@ function ConversationSecondaryBlocks({
   whyNow,
   displayQuestionText,
   hideForFocusedUi,
+  hidden = false,
 }: {
   s11Surface: ReturnType<typeof presentS11Surface>;
   livingState: ReturnType<typeof buildLivingUnderstandingState>;
@@ -239,6 +257,7 @@ function ConversationSecondaryBlocks({
   whyNow: string | null | undefined;
   displayQuestionText: string;
   hideForFocusedUi?: boolean;
+  hidden?: boolean;
 }) {
   const understandingRows = useMemo(
     () => buildConversationUnderstandingRows(livingState),
@@ -246,7 +265,7 @@ function ConversationSecondaryBlocks({
   );
   const v3Active = isV3ReviewPipelineActive();
 
-  if (hideForFocusedUi) {
+  if (hidden || hideForFocusedUi) {
     return null;
   }
 
@@ -293,9 +312,11 @@ type WorkspaceAiPmLoopPanelProps = {
   workspaceSnapshotUpdatedAt?: string | null;
   /** After C1, hide interpretation-style 맞습니다 on the composer. */
   hideInterpretationConfirm?: boolean;
-  /** PR #97 — S.I. validation ask. Does not rewrite decideNextQuestionFromReview. */
+  /** Ignored. The ledger view owns the next-action sentence. */
   siValidationAsk?: SiAiPmQuestion | null;
   onSiValidationAnswer?: (answer: string) => void;
+  /** When set, answers go to the judgment classifier and this panel does not render a second question. */
+  onLedgerAnswer?: (answer: string) => void;
   className?: string;
 };
 
@@ -312,13 +333,14 @@ export function WorkspaceAiPmLoopPanel({
   onSessionPause,
   workspaceSnapshotUpdatedAt = null,
   hideInterpretationConfirm = false,
-  siValidationAsk = null,
   onSiValidationAnswer,
+  onLedgerAnswer,
   className,
 }: WorkspaceAiPmLoopPanelProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmLoop');
   const [loopState, setLoopState] = useState(() => loadAiPmLoopState(projectId));
   const [answerDraft, setAnswerDraft] = useState('');
+  const [selectedChoiceId, setSelectedChoiceId] = useState<string | null>(null);
   const [reanalyzing, setReanalyzing] = useState(false);
   const [processingStageIds, setProcessingStageIds] = useState<ThinkingStageId[]>([
     'confirmAnswer',
@@ -380,8 +402,9 @@ export function WorkspaceAiPmLoopPanel({
       turns: loopState.turns,
       entities,
       previous: loadConversationMemory(projectId),
+      gapState: loopState.gapState,
     });
-  }, [projectId, documentText, loopState.turns, entities]);
+  }, [projectId, documentText, loopState.turns, loopState.gapState, entities]);
 
   const livingState = useMemo(
     () =>
@@ -392,6 +415,7 @@ export function WorkspaceAiPmLoopPanel({
         turns: loopState.turns,
         memory: conversationMemory,
         resolvedIssueIds: getResolvedIssueIds(loopState),
+        gapState: loopState.gapState,
       }),
     [conversationMemory, documentText, entities, loopState, understanding],
   );
@@ -554,15 +578,6 @@ export function WorkspaceAiPmLoopPanel({
       }
     }
 
-    if (
-      siValidationAsk &&
-      targetGap === 'businessOneLiner' &&
-      !isBusinessUnderstandingConfirmQuestion(questionText)
-    ) {
-      questionText = siValidationAsk.questionText;
-      whyNow = siValidationAsk.whyAsking;
-    }
-
     const purity = enforceQuestionPurity({
       questionText,
       targetGap,
@@ -589,7 +604,6 @@ export function WorkspaceAiPmLoopPanel({
     livingState,
     lockedAskSurface,
     questionLockActive,
-    siValidationAsk,
   ]);
   const s11Surface = useMemo(() => {
     const askIssueId = loopState.currentIssueId ?? nextIssue;
@@ -757,6 +771,8 @@ export function WorkspaceAiPmLoopPanel({
       questionCount: loopState.ceoJudgment?.questionCount ?? loopState.turns.filter(
         (t) => !t.superseded && t.answer?.trim() && t.intent !== 'why_meta' && t.intent !== 'mid_judgment',
       ).length,
+      living: livingState,
+      documentText,
     });
   }, [
     simpleQuestionUiActive,
@@ -767,7 +783,36 @@ export function WorkspaceAiPmLoopPanel({
     s11Surface.question.purpose,
     loopState.ceoJudgment?.questionCount,
     loopState.turns,
+    livingState,
+    documentText,
   ]);
+  const choiceOptions = useMemo(() => {
+    if (simpleQuestionSnapshot?.choiceOptions?.length) {
+      return simpleQuestionSnapshot.choiceOptions;
+    }
+    if (!documentText?.trim()) return null;
+    return buildAiPmSimpleQuestionSnapshot({
+      displayQuestionText,
+      targetGap: activeTargetGap,
+      questionCount: loopState.turns.length,
+      living: livingState,
+      documentText,
+    }).choiceOptions ?? null;
+  }, [
+    simpleQuestionSnapshot?.choiceOptions,
+    documentText,
+    displayQuestionText,
+    activeTargetGap,
+    loopState.turns.length,
+    livingState,
+  ]);
+
+  useEffect(() => {
+    if (!choiceOptions?.length || !activeTargetGap) return;
+    trackClarityQuestionRaised({ projectId, targetGap: activeTargetGap });
+    trackBlindSpotDetected({ projectId, targetGap: activeTargetGap });
+  }, [activeTargetGap, choiceOptions?.length, projectId]);
+
   const focusedSnapshot = useMemo(() => {
     if (!focusedUiActive) return null;
     return buildAiPmFocusedSnapshot({
@@ -958,6 +1003,7 @@ export function WorkspaceAiPmLoopPanel({
   const resetAnswerDraft = useCallback(() => {
     clearAnswerDraft(projectId);
     setAnswerDraft('');
+    setSelectedChoiceId(null);
     setConfirmCorrectionMode(false);
   }, [projectId]);
 
@@ -1606,18 +1652,34 @@ export function WorkspaceAiPmLoopPanel({
   ]);
 
   const submitAnswer = useCallback((forcedText?: string) => {
+    const trimmed = (forcedText ?? answerDraft).trim();
+    if (onLedgerAnswer) {
+      if (trimmed.length < 1 || readOnly) return;
+      onLedgerAnswer(trimmed);
+      setAnswerDraft('');
+      return;
+    }
     const storedLoop = loadAiPmLoopState(projectId);
     const issueId = storedLoop.currentIssueId ?? loopState.currentIssueId ?? nextIssue;
-    const trimmed = (forcedText ?? answerDraft).trim();
     if (!issueId || trimmed.length < 2 || readOnly) return;
+    if (selectedChoiceId || simpleQuestionSnapshot?.choiceOptions?.length) {
+      trackClarityQuestionAnswered({
+        projectId,
+        targetGap: activeTargetGap,
+        kind: selectedChoiceId ? 'choice' : 'text',
+      });
+    }
 
-    const siAskText = siValidationAsk?.questionText?.trim();
+    const siAskText = null;
     const liveAskText =
       whyThisQuestionNow?.questionText?.trim() ||
       lastAskSurfaceRef.current.questionText?.trim() ||
       '';
-    if (siAskText && liveAskText === siAskText && onSiValidationAnswer) {
+    const siStorage = resolveSiMatchedAnswerStorage({ siAskText, liveAskText });
+    if (siStorage.appendDocument && onSiValidationAnswer) {
       onSiValidationAnswer(trimmed);
+    }
+    if (!siStorage.updateLoop) {
       setAnswerDraft('');
       return;
     }
@@ -1679,6 +1741,66 @@ export function WorkspaceAiPmLoopPanel({
     const visibleGap =
       inferTargetGapFromQuestionText(displayedQuestionText) ?? displayedGap;
     let resolvedAskedGap = visibleGap ?? askedTargetGap;
+
+    const askedGapForRoute =
+      visibleGap ?? resolvedAskedGap ?? storedLoop.lastDecision?.targetGap ?? null;
+    const customerCompleteness =
+      storedLoop.gapState?.gaps.customerPersona?.completeness ?? null;
+    if (
+      shouldRouteTypedAnswerThroughLoop({
+        answer: trimmed,
+        askedGap: askedGapForRoute,
+        customerCompleteness,
+      })
+    ) {
+      const doc = loadWorkspaceDocumentText(projectId) ?? documentText ?? '';
+      const result = applyTypedAnswerThroughLoop({
+        projectId,
+        documentText: doc,
+        answer: trimmed,
+        askedGap: askedGapForRoute || 'payer',
+        askedQuestionText: displayedQuestionText,
+        customerCompleteness,
+      });
+      if (result.nextTargetGap && result.nextQuestionText && result.nextIssueId) {
+        const purity = enforceQuestionPurity({
+          questionText: result.nextQuestionText,
+          targetGap: result.nextTargetGap,
+        });
+        setQuestionOverride({
+          targetGap: result.nextTargetGap,
+          questionText: purity.sanitizedText,
+          whyNow: result.nextWhyNow ?? '',
+          reason: 'adaptive',
+        });
+        commitQuestionLock(
+          captureLockedAskSurface({
+            issueId: result.nextIssueId,
+            targetGap: result.nextTargetGap,
+            questionText: purity.sanitizedText,
+            whyNow: result.nextWhyNow ?? '',
+            fallbackIssueId: result.nextIssueId,
+          }),
+        );
+      }
+      setContradiction(null);
+      setAnswerQualityHint(null);
+      resetAnswerDraft();
+      const afterLoop = loadAiPmLoopState(projectId);
+      saveConversationMemory(
+        buildConversationMemoryFromSources({
+          projectId: projectId ?? 'default',
+          documentText: doc,
+          turns: afterLoop.turns,
+          entities,
+          previous: loadConversationMemory(projectId),
+          gapState: afterLoop.gapState,
+        }),
+        projectId,
+      );
+      syncState(afterLoop);
+      return;
+    }
 
     let semantic = interpretAnswerSemantics({
       answer: trimmed,
@@ -2200,10 +2322,71 @@ export function WorkspaceAiPmLoopPanel({
     syncState,
     understanding,
     whyThisQuestionNow,
-    siValidationAsk,
+    onLedgerAnswer,
     onSiValidationAnswer,
     answerDraft,
+    selectedChoiceId,
+    simpleQuestionSnapshot?.choiceOptions?.length,
+    activeTargetGap,
   ]);
+
+  const handleSelectBusinessChoice = useCallback(
+    (option: BusinessChoiceOption) => {
+      if (readOnly) return;
+      setSelectedChoiceId(option.id);
+      const resolved = resolveBusinessChoiceAnswer(option, answerDraft);
+      if (isEscapeChoice(option) || resolved.needsFreeText) {
+        setAnswerQualityHint(null);
+        return;
+      }
+      if (isUnknownChoice(option)) {
+        const doc = loadWorkspaceDocumentText(projectId) ?? documentText ?? '';
+        const result = applyBusinessChoiceThroughLoop({
+          projectId,
+          documentText: doc,
+          option,
+          askedQuestionText: displayQuestionText,
+        });
+        if (result.nextTargetGap && result.nextQuestionText && result.nextIssueId) {
+          const purity = enforceQuestionPurity({
+            questionText: result.nextQuestionText,
+            targetGap: result.nextTargetGap,
+          });
+          setQuestionOverride({
+            targetGap: result.nextTargetGap,
+            questionText: purity.sanitizedText,
+            whyNow: result.nextWhyNow ?? '',
+            reason: 'unknown_signal',
+          });
+          commitQuestionLock(
+            captureLockedAskSurface({
+              issueId: result.nextIssueId,
+              targetGap: result.nextTargetGap,
+              questionText: purity.sanitizedText,
+              whyNow: result.nextWhyNow ?? '',
+              fallbackIssueId: result.nextIssueId,
+            }),
+          );
+        }
+        syncState(loadAiPmLoopState(projectId));
+        resetAnswerDraft();
+        setAnswerQualityHint(null);
+        return;
+      }
+      submitAnswer(resolved.answerText);
+    },
+    [
+      answerDraft,
+      commitQuestionLock,
+      displayQuestionText,
+      documentText,
+      projectId,
+      readOnly,
+      resetAnswerDraft,
+      submitAnswer,
+      syncState,
+    ],
+  );
 
   const submitSupplementAnswer = useCallback(
     (answer: string) => {
@@ -2502,12 +2685,14 @@ export function WorkspaceAiPmLoopPanel({
       onSubmit={() => submitAnswer(confirmCorrectionMode ? answerDraft : undefined)}
       readOnly={readOnly}
       placeholder={
-        confirmCorrectionMode
-          ? '수정할 내용을 입력하세요'
-          : simpleQuestionUiActive
-            ? '답변을 입력해 주세요.'
-            : whyThisQuestionNow?.questionText?.trim() ||
-              (activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : '답변을 입력해 주세요.')
+        onLedgerAnswer
+          ? '답변을 입력해 주세요.'
+          : confirmCorrectionMode
+            ? '수정할 내용을 입력하세요'
+            : simpleQuestionUiActive
+              ? '답변을 입력해 주세요.'
+              : whyThisQuestionNow?.questionText?.trim() ||
+                (activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : '답변을 입력해 주세요.')
       }
       questionIndex={questionIndex}
       lastAnswer={confirmCorrectionMode ? null : lastSavedAnswer}
@@ -2525,11 +2710,11 @@ export function WorkspaceAiPmLoopPanel({
         resetAnswerDraft();
       }}
       showConfirmYes={
-        isConfirmQuestion && !confirmCorrectionMode && !contradiction && !hideInterpretationConfirm
+        isConfirmQuestion && !confirmCorrectionMode && !contradiction && !hideInterpretationConfirm && !onLedgerAnswer
       }
       onConfirmYes={handleConfirmYes}
       showConfirmNo={
-        isConfirmQuestion && !confirmCorrectionMode && !contradiction && !hideInterpretationConfirm
+        isConfirmQuestion && !confirmCorrectionMode && !contradiction && !hideInterpretationConfirm && !onLedgerAnswer
       }
       onConfirmNo={handleConfirmNo}
       contradiction={
@@ -2539,6 +2724,9 @@ export function WorkspaceAiPmLoopPanel({
       onAcceptNew={() => resolveContradiction('accept_new')}
       onAcceptBoth={() => resolveContradiction('accept_both')}
       qualityHint={answerQualityHint ? t(`answerQuality.${answerQualityHint}`) : null}
+      choiceOptions={onLedgerAnswer || isConfirmQuestion || contradiction ? null : choiceOptions}
+      selectedChoiceId={selectedChoiceId}
+      onSelectChoice={handleSelectBusinessChoice}
     />
   );
 
@@ -2579,6 +2767,7 @@ export function WorkspaceAiPmLoopPanel({
   }
 
   if (
+    !onLedgerAnswer &&
     simpleQuestionUiActive &&
     isAiPmBusinessReviewV1Active() &&
     loopState.viewMode === 'review' &&
@@ -2600,6 +2789,7 @@ export function WorkspaceAiPmLoopPanel({
   }
 
   if (
+    !onLedgerAnswer &&
     simpleQuestionUiActive &&
     isAiPmBusinessReviewV1Active() &&
     loopState.viewMode === 'supplement' &&
@@ -2621,6 +2811,7 @@ export function WorkspaceAiPmLoopPanel({
   }
 
   if (
+    !onLedgerAnswer &&
     simpleQuestionUiActive &&
     loopState.viewMode === 'judgment' &&
     loopState.ceoJudgment
@@ -2753,6 +2944,7 @@ export function WorkspaceAiPmLoopPanel({
           onShowInterimJudgment={showInterimJudgment}
           s11Surface={s11Surface}
           displayQuestionText={displayQuestionText}
+          hidden={Boolean(onLedgerAnswer)}
         />
         {whyPanel ? (
           <div
@@ -2794,7 +2986,7 @@ export function WorkspaceAiPmLoopPanel({
             </div>
           </div>
         ) : null}
-        {midJudgmentText ? (
+        {midJudgmentText && !onLedgerAnswer ? (
           <div
             data-testid="mid-judgment-panel"
             className="mt-4 whitespace-pre-wrap rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm leading-relaxed"
@@ -2823,6 +3015,7 @@ export function WorkspaceAiPmLoopPanel({
           whyNow={whyNowText}
           displayQuestionText={displayQuestionText}
           hideForFocusedUi={focusedUiActive || simpleQuestionUiActive}
+          hidden={Boolean(onLedgerAnswer)}
         />
       </section>
     );
@@ -2869,6 +3062,7 @@ export function WorkspaceAiPmLoopPanel({
               onShowInterimJudgment={showInterimJudgment}
               s11Surface={s11Surface}
               displayQuestionText={displayQuestionText}
+              hidden={Boolean(onLedgerAnswer)}
             />
             <ConversationSecondaryBlocks
               s11Surface={s11Surface}
@@ -2878,6 +3072,7 @@ export function WorkspaceAiPmLoopPanel({
               whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
               displayQuestionText={displayQuestionText}
               hideForFocusedUi={focusedUiActive || simpleQuestionUiActive}
+              hidden={Boolean(onLedgerAnswer)}
             />
             <div className="mt-4">{answerComposer}</div>
             <Button
@@ -2904,6 +3099,7 @@ export function WorkspaceAiPmLoopPanel({
                 onShowInterimJudgment={showInterimJudgment}
                 s11Surface={s11Surface}
                 displayQuestionText={displayQuestionText}
+                hidden={Boolean(onLedgerAnswer)}
               />
               {whyPanel ? (
                 <div
@@ -2945,7 +3141,7 @@ export function WorkspaceAiPmLoopPanel({
                   </div>
                 </div>
               ) : null}
-              {midJudgmentText ? (
+              {midJudgmentText && !onLedgerAnswer ? (
                 <div
                   data-testid="mid-judgment-panel"
                   className="mt-4 whitespace-pre-wrap rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm leading-relaxed"
@@ -2976,6 +3172,7 @@ export function WorkspaceAiPmLoopPanel({
                 whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
                 displayQuestionText={displayQuestionText}
                 hideForFocusedUi={focusedUiActive || simpleQuestionUiActive}
+                hidden={Boolean(onLedgerAnswer)}
               />
             </section>
             {loopState.turns.length > 0 ? (

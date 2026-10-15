@@ -1,0 +1,125 @@
+PR #197 CPO 전략 복원 1단계 작업보고. 이 블록 전체를 한 번에 복사. 표 없음. 병합 요청 없음. Production 배포 없음.
+
+한 줄: 갭 순서 walk를 얇은 resolveTurnDecision으로 바꿨고, 객관식을 이해 검증으로 되돌렸으며, 창업자 확인은 completeness CLOSED + evidence ASSUMPTION(CLAIM)으로 분리했다. 8턴 완주는 성공이 아니다.
+
+기준점
+구현 SHA: bcf443b7
+구현 전 SHA: 89dc391a
+브랜치: cursor/ai-pm-mcq-understanding-e648
+PR: https://github.com/jyp-ai1/ai-startup-validation/pull/197
+Production 잠금: 0b465226
+D1–D7: CPO 승인 그대로 적용. 새 엔진 없음. 새 EvidenceClass enum 없음.
+
+===== 상태 분리. 한 줄로 합치지 않음 =====
+
+Phase 1 전략 경로: IMPLEMENTED. phase1 테스트 8/8 PASS
+T6 buyer 오사용 차단: CPO VERIFIED 유지. pr197-login-ui-s4-routing 7/7 PASS
+T7 payer hold: CPO VERIFIED 유지. pr197-t7-payer-hold 5/5 PASS
+Track A 동결 문구 1:1: FAIL. compared=36 exact=0. 기대 미하향
+Track B 품질: NEEDS FIX. 8턴 도달을 PASS로 선언하지 않음
+V3 AC16: FAIL 유지. expected businessOneLiner. received validationTestability
+V3 AC5: FAIL 유지. expected marketChannel. received validationTestability
+Vercel Preview: 0ef7ac80 FAIL (Stage B solution 비교 typecheck). bcf443b7에서 제거 후 2/2 PASS. Preview PASS는 Production 검증이 아님
+로그인 UI 8턴: 이번 SHA에서 재실행하지 않음. 기존 FAIL 유지. NOT VERIFIED
+Google OAuth: NOT VERIFIED
+Production: NOT VERIFIED. lock 0b465226
+병합: 금지. CPO 재검토 전 merge/deploy 없음
+
+===== 변경 파일과 SoT 책임 =====
+
+새 파일
+resolve-turn-decision.ts — 질문 선택 입력. 제약 필터 + 영향 순위. 선형 STAGE_A walk 제거
+si-turn-insight.ts — 이미 계산된 in-app SI ask를 순위 힌트로만 사용. @repo/agents 호출 없음. analyze 재실행 없음
+pr197-strategy-restore-phase1.test.ts — 이해 검증. 증거와 CLOSED 분리. 답 분기
+
+수정
+build-answer-review.ts — 창업자 확인 FACT 자동 승격 제거. CLAIM=ASSUMPTION. VALIDATED=FACT+검증 단서. 갭 CLOSED는 별축
+decide-next-question-from-review.ts — pickNextRequiredGap/pickBootstrapGap walk를 resolveTurnDecision으로 교체
+resolve-next-question-decision.ts — siInsight 전달. 정책 체인(no-ask/FIX-10/anti-repeat) 유지
+ai-pm-question-policy.ts — 문서 spine이 있으면 bootstrap one-liner walk로 덮지 않음
+ai-pm-no-ask-policy.ts — 기본 첫 질문 원문 confirm-yes 제거 (D7)
+build-business-choice-question.ts — 정확함 / 일부 수정 / 이 이해가 아님 / 모르겠음 + 사업 구체 대안
+apply-business-choice.ts · apply-business-choice-through-loop.ts — reject/unknown은 가짜 FACT 없음
+workspace-ai-pm-loop-panel.tsx — SI 문구를 one-liner가 아니라 preferred gap에만 덮음
+workspace-ai-pm-simple-question.tsx — 확인된 주장. 검증된 사실이 아님
+ai-pm-loop-v3.test.ts AC2 — CLAIM 매핑에 맞춰 evidenceClass ASSUMPTION
+
+유지한 SoT. 의도적으로 안 고침
+evaluate-stage-readiness.ts STAGE_A_REQUIRED_GAPS 집합. 커버리지 바닥 (D1)
+shouldHoldOpenStageAPayer. T7
+buyer≠payer 가드. T6
+FIX-10 solution 선행 금지. 제약만 (D4)
+5263e83e 문구. 미하향
+Track A 0 exact FAIL. AC16/AC5 FAIL 원문 유지
+
+===== AI가 파악한 사업 요약 및 객관식 =====
+
+S4 문서: 아이 간식 주간 구독. 대상 맞벌이 부모. 문제 장보기·선택 피로. 수익 월 구독
+
+턴 0. 묻기 전
+bootstrap targetGap은 businessOneLiner가 아님
+questionText에 제가 이해한 사업은 「…」입니다. 맞나요? 없음
+요약: 맞벌이 부모 · 간식 · 구독이 연결됨
+객관식 mode=understanding-verification
+보기: 정확함 / 사업 구체 대안 / 일부 수정 / 기타 / 이 이해가 아님 / 아직 모르겠음
+질문: 지금 이해로는 … 입니다. 이 이해가 맞나요?
+
+UI
+확인된 주장 / 아직 불확실한 가정
+확인은 CLAIM이지 VALIDATED가 아님
+
+===== 객관식 응답 전후 =====
+
+정확함. 맞벌이 부모
+completeness customerPersona=CLOSED
+evidenceClass=ASSUMPTION (CLAIM). FACT 아님
+이해: spine.customer에 맞벌이·부모 유지
+
+구체 대안. 혼자 사는 20대
+이해: spine.customer가 20대/혼자로 바뀜
+부모 가설을 확인된 주장으로 남기지 않음
+
+아직 모르겠음
+completeness CLOSED 아님
+FACT 추출 없음
+
+검증 단서
+분명히 낼 것 같습니다 → FACT/CLOSED 아님
+실제 결제 cue → VALIDATED 매핑(FACT) 가능. 창업자 동의만으로는 승격 안 함
+
+===== 서로 다른 답에서 다음 행동이 달라짐 =====
+
+S4 부모 vs 20대: spine이 다르고, 다음 질문 문장 또는 요약 또는 nextTargetGap이 다름. 둘 다 solution 아님
+S1 payer 지정 vs 모르겠음: 모르겠음은 payer CLOSED 아님. next 또는 completeness가 다름. solution 아님
+T7: customer+problem CLOSED이고 payer OPEN이면 next=payer. mode=t7-payer
+FIX-10: customer OPEN이면 next는 solution이 아님. Stage B alternatives로 건너뛰지 않음
+
+8턴 도달은 이 단계의 성공 지표가 아님
+
+===== 회귀 =====
+
+T6 routing 7 passed
+T7 hold 5 passed
+MCQ understanding 7 passed
+conversation-quality 24 passed
+no-ask 7 passed
+bootstrap policy 12 passed. 직접 pickBootstrapGapWithPolicy는 기존 one-liner 유지. 런타임 bootstrap은 문서 spine이 있으면 skip
+frozen T1–T8 dump 재기록: Track A FAIL 0 exact. Track B NEEDS FIX
+V3 AC16/AC5 FAIL 유지. 기대를 맞춰 고치지 않음
+DAY 8-I FIX-10 revalidation overallPass=false. D7로 원문 confirm-yes 게이트가 깨진 결과. solution 선행 금지는 resolveTurnDecision에서 유지. 이 FAIL을 PASS로 바꾸지 않음
+로그인 UI Playwright 8턴: 이번 구현 SHA에서 재실행하지 않음. 이전 덤프 FAIL. 엔진 PASS와 합치지 않음
+OAuth: NOT VERIFIED
+Production: NOT VERIFIED
+Vercel Preview: bcf443b7 2/2 PASS. Production 검증 아님
+
+===== CPO 재검토 =====
+
+1단계 핵심 판단 경로와 객관식 이해 검증은 구현됐다. 전략 정합성 증거는 위 테스트다
+아직 안 한 것: 로그인 UI 실기기 8턴, OAuth, Production 배포, S1–S6 전 시나리오 Playwright
+별도 승인 전 병합 및 Production 배포는 하지 않는다
+
+[CTO] CPO 요청 작업: 제출 — D1–D7 1단계 구현 + 회귀 증거. 병합·배포 보류
+[CPO] 검토·지시 필요: 예 — 구현 결과와 회귀 증거 제출 후 병합 여부 결정
+
+Next Autonomous Target
+Epic PR197 전략 복원 1단계 / 증거 제출 / 다음 보고 08:00

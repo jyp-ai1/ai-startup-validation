@@ -1,0 +1,862 @@
+{
+  "meta": {
+    "implSha": "a14938af49f0e045e590dffe2fc6a92c9cae29ba",
+    "executedAt": "2026-10-13T14:12:55.197Z",
+    "path": "QA magic-link → /ko/workspace create → 8 typed/MCQ turns",
+    "login": "qa-magic-link (not Google OAuth)",
+    "enginePassIsNotUiPass": true,
+    "googleOauth": "NOT VERIFIED",
+    "production": "NOT VERIFIED",
+    "mergeRequest": "none",
+    "note": " Playwright collected evidence on the tree committed as a14938af. 6 passed is dump recording, not UI 8-turn PASS."
+  },
+  "scenarios": {
+    "S1": {
+      "turnCount": 6,
+      "askedGaps": [
+        "businessOneLiner",
+        "customerPersona",
+        "problemJtbd",
+        "payer",
+        "alternativesCompetitors",
+        "alternativesCompetitors"
+      ],
+      "reachedEight": false,
+      "quality": {
+        "reachedEight": false,
+        "consecutiveSameGapCount": 1,
+        "maxPayerStreak": 1,
+        "questionRepeat": 1,
+        "gapRevisits": [],
+        "unresolvedGapEarlyStop": true,
+        "lastAskedGap": "alternativesCompetitors",
+        "qualityStatus": "NEEDS FIX",
+        "qualityReason": "questionRepeat=1; unresolvedGapEarlyStop"
+      },
+      "uiStatus": "FAIL",
+      "error": null,
+      "login": "qa-magic-link (not Google OAuth)",
+      "turns": [
+        {
+          "turn": 1,
+          "askedQuestion": "제가 이해한 사업은 「서비스: 주문부터 배송까지 관리하는 B2B SaaS 대상: 반찬가게·꽃집 등 직접 배…」입니다. 맞나요?",
+          "askedGap": "businessOneLiner",
+          "founderAnswer": "[confirm-yes]",
+          "via": "confirm-yes",
+          "optionLabels": [],
+          "nextQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "nextTargetGap": "customerPersona",
+          "spineAfter": {
+            "customerPersona": "OPEN",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 2,
+          "askedQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "askedGap": "customerPersona",
+          "founderAnswer": "[choice /반찬|꽃|소상공/]",
+          "via": "choice-click",
+          "optionLabels": [
+            "○ 직접 배송 소상공인",
+            "○ 반찬가게·꽃집 등 직접 배…",
+            "○ 주문부터 배송까지 관리하는 B2B SaaS 대상",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "nextTargetGap": "problemJtbd",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 3,
+          "askedQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "[first-specific]",
+          "via": "first-specific",
+          "optionLabels": [
+            "○ 주문과 배송을 따로 관리해야 함",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "nextTargetGap": "payer",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 4,
+          "askedQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "askedGap": "payer",
+          "founderAnswer": "[first-specific]",
+          "via": "first-specific",
+          "optionLabels": [
+            "○ AI PM 확인",
+            "○ 사장님 본인",
+            "○ 매장·팀 관리자",
+            "○ 본사·가맹본부",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "경쟁·대안은(는) 「서비스: 주문부터 배송까지 관리하는 B2B SaaS 대상: 반찬가게·꽃집 등 직접 배…」으로 이해했습니다. 맞나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        },
+        {
+          "turn": 5,
+          "askedQuestion": "경쟁·대안은(는) 「서비스: 주문부터 배송까지 관리하는 B2B SaaS 대상: 반찬가게·꽃집 등 직접 배…」으로 이해했습니다. 맞나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "[confirm-yes]",
+          "via": "confirm-yes",
+          "optionLabels": [],
+          "nextQuestion": "경쟁·대안은(는) 「서비스: 주문부터 배송까지 관리하는 B2B SaaS 대상: 반찬가게·꽃집 등 직접 배…」으로 이해했습니다. 맞나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        },
+        {
+          "turn": 6,
+          "askedQuestion": "경쟁·대안은(는) 「서비스: 주문부터 배송까지 관리하는 B2B SaaS 대상: 반찬가게·꽃집 등 직접 배…」으로 이해했습니다. 맞나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "창업자 확인",
+          "via": "submit-failed",
+          "optionLabels": [],
+          "nextQuestion": "경쟁·대안은(는) 「서비스: 주문부터 배송까지 관리하는 B2B SaaS 대상: 반찬가게·꽃집 등 직접 배…」으로 이해했습니다. 맞나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        }
+      ]
+    },
+    "S2": {
+      "turnCount": 6,
+      "askedGaps": [
+        "businessOneLiner",
+        "customerPersona",
+        "problemJtbd",
+        "payer",
+        "alternativesCompetitors",
+        "alternativesCompetitors"
+      ],
+      "reachedEight": false,
+      "quality": {
+        "reachedEight": false,
+        "consecutiveSameGapCount": 1,
+        "maxPayerStreak": 1,
+        "questionRepeat": 1,
+        "gapRevisits": [],
+        "unresolvedGapEarlyStop": true,
+        "lastAskedGap": "alternativesCompetitors",
+        "qualityStatus": "NEEDS FIX",
+        "qualityReason": "questionRepeat=1; unresolvedGapEarlyStop"
+      },
+      "uiStatus": "FAIL",
+      "error": null,
+      "login": "qa-magic-link (not Google OAuth)",
+      "turns": [
+        {
+          "turn": 1,
+          "askedQuestion": "제가 이해한 사업은 「서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를…」입니다. 맞나요?",
+          "askedGap": "businessOneLiner",
+          "founderAnswer": "[confirm-yes]",
+          "via": "confirm-yes",
+          "optionLabels": [],
+          "nextQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "nextTargetGap": "customerPersona",
+          "spineAfter": {
+            "customerPersona": "OPEN",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 2,
+          "askedQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "askedGap": "customerPersona",
+          "founderAnswer": "[choice /선물|30|40|애호/]",
+          "via": "choice-click",
+          "optionLabels": [
+            "○ 전통주를 선물·취미로 찾는 30–40대",
+            "○ 전통주를…",
+            "○ 소규모 양조장 전통주를 브랜드로 묶어 온라인",
+            "○ 팝업으로 판매 대상",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "nextTargetGap": "problemJtbd",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 3,
+          "askedQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "[first-specific]",
+          "via": "first-specific",
+          "optionLabels": [
+            "○ 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "nextTargetGap": "payer",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 4,
+          "askedQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "askedGap": "payer",
+          "founderAnswer": "[choice /선물|30|40|애호/]",
+          "via": "choice-click",
+          "optionLabels": [
+            "○ AI PM 확인",
+            "○ 쓰는 사람이 직접 낸다",
+            "○ 선물하는 사람이 낸다",
+            "○ 부모가 낸다",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        },
+        {
+          "turn": 5,
+          "askedQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "[first-specific]",
+          "via": "first-specific",
+          "optionLabels": [
+            "○ 이미 아는 술만 마트에서 산다",
+            "○ 지인에게 물어 추천받는다",
+            "○ 아는 양조장만 찾아간다",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        },
+        {
+          "turn": 6,
+          "askedQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "창업자 확인",
+          "via": "submit-failed",
+          "optionLabels": [],
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        }
+      ]
+    },
+    "S3": {
+      "turnCount": 6,
+      "askedGaps": [
+        "businessOneLiner",
+        "customerPersona",
+        "problemJtbd",
+        "payer",
+        "alternativesCompetitors",
+        "alternativesCompetitors"
+      ],
+      "reachedEight": false,
+      "quality": {
+        "reachedEight": false,
+        "consecutiveSameGapCount": 1,
+        "maxPayerStreak": 1,
+        "questionRepeat": 1,
+        "gapRevisits": [],
+        "unresolvedGapEarlyStop": true,
+        "lastAskedGap": "alternativesCompetitors",
+        "qualityStatus": "NEEDS FIX",
+        "qualityReason": "questionRepeat=1; unresolvedGapEarlyStop"
+      },
+      "uiStatus": "FAIL",
+      "error": null,
+      "login": "qa-magic-link (not Google OAuth)",
+      "turns": [
+        {
+          "turn": 1,
+          "askedQuestion": "제가 이해한 사업은 「서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상…」입니다. 맞나요?",
+          "askedGap": "businessOneLiner",
+          "founderAnswer": "[confirm-yes]",
+          "via": "confirm-yes",
+          "optionLabels": [],
+          "nextQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "nextTargetGap": "customerPersona",
+          "spineAfter": {
+            "customerPersona": "OPEN",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 2,
+          "askedQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "askedGap": "customerPersona",
+          "founderAnswer": "[choice /영업|관리자|제조/]",
+          "via": "choice-click",
+          "optionLabels": [
+            "○ 직원 20–80명 제조사 영업관리자",
+            "○ 중소 제조사의 견적",
+            "○ 발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상…",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "nextTargetGap": "problemJtbd",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 3,
+          "askedQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "[first-specific]",
+          "via": "first-specific",
+          "optionLabels": [
+            "○ 메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "nextTargetGap": "payer",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 4,
+          "askedQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "askedGap": "payer",
+          "founderAnswer": "[choice /영업|관리자|제조/]",
+          "via": "choice-click",
+          "optionLabels": [
+            "○ AI PM 확인",
+            "○ 사장님 본인",
+            "○ 매장·팀 관리자",
+            "○ 본사·가맹본부",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        },
+        {
+          "turn": 5,
+          "askedQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "[first-specific]",
+          "via": "first-specific",
+          "optionLabels": [
+            "○ 엑셀·수기 관리",
+            "○ 엑셀에 손으로 옮긴다",
+            "○ ERP에 다시 친다",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        },
+        {
+          "turn": 6,
+          "askedQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "창업자 확인",
+          "via": "submit-failed",
+          "optionLabels": [],
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        }
+      ]
+    },
+    "S4": {
+      "turnCount": 6,
+      "askedGaps": [
+        "businessOneLiner",
+        "customerPersona",
+        "problemJtbd",
+        "payer",
+        "alternativesCompetitors",
+        "alternativesCompetitors"
+      ],
+      "reachedEight": false,
+      "quality": {
+        "reachedEight": false,
+        "consecutiveSameGapCount": 1,
+        "maxPayerStreak": 1,
+        "questionRepeat": 1,
+        "gapRevisits": [],
+        "unresolvedGapEarlyStop": true,
+        "lastAskedGap": "alternativesCompetitors",
+        "qualityStatus": "NEEDS FIX",
+        "qualityReason": "questionRepeat=1; unresolvedGapEarlyStop"
+      },
+      "uiStatus": "FAIL",
+      "error": null,
+      "login": "qa-magic-link (not Google OAuth)",
+      "turns": [
+        {
+          "turn": 1,
+          "askedQuestion": "제가 이해한 사업은 「서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…」입니다. 맞나요?",
+          "askedGap": "businessOneLiner",
+          "founderAnswer": "[confirm-yes]",
+          "via": "confirm-yes",
+          "optionLabels": [],
+          "nextQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "nextTargetGap": "customerPersona",
+          "spineAfter": {
+            "customerPersona": "OPEN",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 2,
+          "askedQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "askedGap": "customerPersona",
+          "founderAnswer": "[choice /아이|부모/]",
+          "via": "choice-click",
+          "optionLabels": [
+            "○ 맞벌이 부모",
+            "○ 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "nextTargetGap": "problemJtbd",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 3,
+          "askedQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "[choice /아이|부모/]",
+          "via": "choice-click",
+          "optionLabels": [
+            "○ 장을 볼 시간이 없고 과자 고르기가 피곤하다",
+            "○ 장…",
+            "○ 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "nextTargetGap": "payer",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 4,
+          "askedQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "askedGap": "payer",
+          "founderAnswer": "[choice /아이|부모/]",
+          "via": "choice-click",
+          "optionLabels": [
+            "○ AI PM 확인",
+            "○ 쓰는 사람이 직접 낸다",
+            "○ 선물하는 사람이 낸다",
+            "○ 부모가 낸다",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        },
+        {
+          "turn": 5,
+          "askedQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "[first-specific]",
+          "via": "first-specific",
+          "optionLabels": [
+            "○ 마트·편의점에서 산다",
+            "○ 쿠팡에서 검색한다",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        },
+        {
+          "turn": 6,
+          "askedQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "창업자 확인",
+          "via": "submit-failed",
+          "optionLabels": [],
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        }
+      ]
+    },
+    "S5": {
+      "turnCount": 6,
+      "askedGaps": [
+        "businessOneLiner",
+        "customerPersona",
+        "problemJtbd",
+        "payer",
+        "alternativesCompetitors",
+        "alternativesCompetitors"
+      ],
+      "reachedEight": false,
+      "quality": {
+        "reachedEight": false,
+        "consecutiveSameGapCount": 1,
+        "maxPayerStreak": 1,
+        "questionRepeat": 1,
+        "gapRevisits": [],
+        "unresolvedGapEarlyStop": true,
+        "lastAskedGap": "alternativesCompetitors",
+        "qualityStatus": "NEEDS FIX",
+        "qualityReason": "questionRepeat=1; unresolvedGapEarlyStop"
+      },
+      "uiStatus": "FAIL",
+      "error": null,
+      "login": "qa-magic-link (not Google OAuth)",
+      "turns": [
+        {
+          "turn": 1,
+          "askedQuestion": "제가 이해한 사업은 「서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단…」입니다. 맞나요?",
+          "askedGap": "businessOneLiner",
+          "founderAnswer": "[confirm-yes]",
+          "via": "confirm-yes",
+          "optionLabels": [],
+          "nextQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "nextTargetGap": "customerPersona",
+          "spineAfter": {
+            "customerPersona": "OPEN",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 2,
+          "askedQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "askedGap": "customerPersona",
+          "founderAnswer": "[choice /20|30|헬스|운동/]",
+          "via": "choice-click",
+          "optionLabels": [
+            "○ 운동하는 20–30대",
+            "○ 단백질 쿠키를 자사몰에서 팝니다 대상",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "nextTargetGap": "problemJtbd",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 3,
+          "askedQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "[first-specific]",
+          "via": "first-specific",
+          "optionLabels": [
+            "○ 시중 단백질바는 맛없거나 비싸다",
+            "○ 시중 단…",
+            "○ 단백질 쿠키를 자사몰에서 팝니다 대상",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "nextTargetGap": "payer",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 4,
+          "askedQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "askedGap": "payer",
+          "founderAnswer": "[first-specific]",
+          "via": "first-specific",
+          "optionLabels": [
+            "○ AI PM 확인",
+            "○ 쓰는 사람이 직접 낸다",
+            "○ 선물하는 사람이 낸다",
+            "○ 부모가 낸다",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        },
+        {
+          "turn": 5,
+          "askedQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "[first-specific]",
+          "via": "first-specific",
+          "optionLabels": [
+            "○ 시중 단백질바를 산다",
+            "○ 일반 쿠키를 산다",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        },
+        {
+          "turn": 6,
+          "askedQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "창업자 확인",
+          "via": "submit-failed",
+          "optionLabels": [],
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        }
+      ]
+    },
+    "S6": {
+      "turnCount": 6,
+      "askedGaps": [
+        "businessOneLiner",
+        "customerPersona",
+        "problemJtbd",
+        "payer",
+        "alternativesCompetitors",
+        "alternativesCompetitors"
+      ],
+      "reachedEight": false,
+      "quality": {
+        "reachedEight": false,
+        "consecutiveSameGapCount": 1,
+        "maxPayerStreak": 1,
+        "questionRepeat": 1,
+        "gapRevisits": [],
+        "unresolvedGapEarlyStop": true,
+        "lastAskedGap": "alternativesCompetitors",
+        "qualityStatus": "NEEDS FIX",
+        "qualityReason": "questionRepeat=1; unresolvedGapEarlyStop"
+      },
+      "uiStatus": "FAIL",
+      "error": null,
+      "login": "qa-magic-link (not Google OAuth)",
+      "turns": [
+        {
+          "turn": 1,
+          "askedQuestion": "제가 이해한 사업은 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」입니다. 맞나요?",
+          "askedGap": "businessOneLiner",
+          "founderAnswer": "[confirm-yes]",
+          "via": "confirm-yes",
+          "optionLabels": [],
+          "nextQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "nextTargetGap": "customerPersona",
+          "spineAfter": {
+            "customerPersona": "OPEN",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 2,
+          "askedQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "askedGap": "customerPersona",
+          "founderAnswer": "[choice /맞벌이|집|가정/]",
+          "via": "choice-click",
+          "optionLabels": [
+            "○ 맞벌이 가정",
+            "○ 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "nextTargetGap": "problemJtbd",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 3,
+          "askedQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "[first-specific]",
+          "via": "first-specific",
+          "optionLabels": [
+            "○ 믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "nextTargetGap": "payer",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "OPEN"
+          }
+        },
+        {
+          "turn": 4,
+          "askedQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "askedGap": "payer",
+          "founderAnswer": "[choice /맞벌이|집|가정/]",
+          "via": "choice-click",
+          "optionLabels": [
+            "○ AI PM 확인",
+            "○ 집이 낸다",
+            "○ 도우미가 낸다",
+            "○ 양쪽이 낸다",
+            "○ 기타",
+            "○ 아직 모르겠음"
+          ],
+          "nextQuestion": "경쟁·대안은(는) 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」으로 이해했습니다. 맞나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        },
+        {
+          "turn": 5,
+          "askedQuestion": "경쟁·대안은(는) 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」으로 이해했습니다. 맞나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "[confirm-yes]",
+          "via": "confirm-yes",
+          "optionLabels": [],
+          "nextQuestion": "경쟁·대안은(는) 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」으로 이해했습니다. 맞나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        },
+        {
+          "turn": 6,
+          "askedQuestion": "경쟁·대안은(는) 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」으로 이해했습니다. 맞나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "창업자 확인",
+          "via": "submit-failed",
+          "optionLabels": [],
+          "nextQuestion": "경쟁·대안은(는) 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」으로 이해했습니다. 맞나요?",
+          "nextTargetGap": "alternativesCompetitors",
+          "spineAfter": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "payer": "CLOSED"
+          }
+        }
+      ]
+    }
+  },
+  "summary": {
+    "loginUi": "NEEDS FIX or FAIL — see per-scenario uiStatus. Not engine PASS.",
+    "googleOauth": "NOT VERIFIED",
+    "production": "NOT VERIFIED",
+    "recorded": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6"
+    ]
+  }
+}

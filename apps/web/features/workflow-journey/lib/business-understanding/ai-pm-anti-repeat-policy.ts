@@ -4,10 +4,20 @@
 
 import { selectAdaptiveNextGaps } from './adaptive-question-select';
 import type { NextQuestionDecision } from './decide-next-question-from-review';
-import { isOffTrackGapForFix10, listFix10FocusCandidates, buildJudgmentBoundQuestion } from './ai-pm-judgment-next-question-binding';
+import {
+  isIdentityStillOpenForFix10,
+  isOffTrackGapForFix10,
+  listFix10FocusCandidates,
+  buildJudgmentBoundQuestion,
+  shouldHoldOpenStageAPayer,
+} from './ai-pm-judgment-next-question-binding';
 import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
 import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
-import { STAGE_A_REQUIRED_GAPS, STAGE_B_REQUIRED_GAPS } from './evaluate-stage-readiness';
+import {
+  isStageBGap,
+  STAGE_A_REQUIRED_GAPS,
+  STAGE_B_REQUIRED_GAPS,
+} from './evaluate-stage-readiness';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import { whyNowForGapField } from './living-understanding-state';
@@ -49,6 +59,7 @@ function pickAlternateGap(input: {
   living: LivingUnderstandingState;
   turns: AiPmLoopTurn[];
   gapState: GapKnowledgeState;
+  blockSolution?: boolean;
 }): string | null {
   const exclude = new Set<string>([input.currentGap]);
   for (const gapId of Object.keys(input.gapState.gaps)) {
@@ -57,6 +68,7 @@ function pickAlternateGap(input: {
 
   for (const gapId of [...STAGE_A_REQUIRED_GAPS, ...STAGE_B_REQUIRED_GAPS]) {
     if (exclude.has(gapId)) continue;
+    if (input.blockSolution && isStageBGap(gapId)) continue;
     if (isGapAskable(gapId, input.gapState)) return gapId;
   }
 
@@ -94,14 +106,62 @@ export function applyAntiRepeatPolicy(input: {
 
   if (repeatCount === 0) return decision;
 
+  // T6 may have shown the payer question on a remapped slot (customer
+  // correction). That is not a payer answer. Do not skip OPEN Stage A payer
+  // to FIX-10 solution.
+  if (shouldHoldOpenStageAPayer(gapState)) {
+    const payerBinding = resolveGapQuestionBinding('payer');
+    const realPayerAsk = turns.some(
+      (t) => !t.superseded && t.targetGap?.trim() === 'payer' && Boolean(t.askedQuestionText?.trim()),
+    );
+    if (!realPayerAsk) {
+      return {
+        ...decision,
+        targetGap: 'payer',
+        targetGapId: 'payer',
+        issueId: payerBinding.issueId,
+        questionText: payerBinding.questionText,
+        whyNow: whyNowForGapField('payer') || payerBinding.whyNow,
+        action: 'advance',
+        reviewAction: 'advance',
+        actionRationale:
+          'Stage A payer still OPEN — 이전 화면의 결제 질문은 고객 정정이었고 결제자 답이 아닙니다.',
+        reason: 'anti-repeat hold open Stage A payer (surface-only prior ask)',
+        reframed: decision.targetGapId !== 'payer',
+      };
+    }
+    const reframed = reframeWithSuffix(payerBinding.questionText, repeatCount);
+    return {
+      ...decision,
+      targetGap: 'payer',
+      targetGapId: 'payer',
+      issueId: payerBinding.issueId,
+      questionText: reframed,
+      whyNow: whyNowForGapField('payer') || payerBinding.whyNow,
+      action: 'advance',
+      reviewAction: 'advance',
+      actionRationale: 'Stage A payer still OPEN — 표현을 바꿔 결제자를 확인합니다.',
+      reason: 'anti-repeat hold open Stage A payer (reframe)',
+      reframed: true,
+    };
+  }
+
   if (isAiPmJudgmentFix10V1Active() && judgment) {
-    for (const candidate of listFix10FocusCandidates(judgment)) {
+    for (const candidate of listFix10FocusCandidates(judgment, gapState)) {
       if (candidate.gapId === decision.targetGapId) continue;
-      if (isOffTrackGapForFix10(candidate.gapId)) continue;
+      if (!isGapAskable(candidate.gapId, gapState)) continue;
+      if (isOffTrackGapForFix10(candidate.gapId, gapState)) continue;
+      if (
+        isIdentityStillOpenForFix10(judgment, gapState) &&
+        (candidate.gapId === 'solution' || isStageBGap(candidate.gapId))
+      ) {
+        continue;
+      }
       const built = buildJudgmentBoundQuestion({
         focus: candidate.focus,
         gapId: candidate.gapId,
         judgment,
+        gapState,
       });
       if (!wasQuestionAskedBefore(turns, built.questionText)) {
         return {
@@ -137,6 +197,7 @@ export function applyAntiRepeatPolicy(input: {
     living,
     turns,
     gapState,
+    blockSolution: Boolean(judgment && isIdentityStillOpenForFix10(judgment, gapState)),
   });
 
   if (alternateGap && repeatCount >= 1) {

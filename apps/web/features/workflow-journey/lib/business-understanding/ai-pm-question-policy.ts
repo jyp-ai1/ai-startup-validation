@@ -23,6 +23,7 @@ import type { LivingUnderstandingState } from './living-understanding-state';
 import { whyNowForGapField } from './living-understanding-state';
 import { isGapAskable } from './update-gap-state-from-review';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
+import { shouldSkipDocumentOneLiner } from './resolve-turn-decision';
 
 /** Bootstrap order — business understanding before gap checklist. */
 export const BOOTSTRAP_GAP_PRIORITY = [
@@ -232,12 +233,23 @@ export function applyQuestionPolicy(
   let decision = input.decision;
 
   if (input.isBootstrap || decision.sourceAnswerId === 'bootstrap') {
-    const policyGap = pickBootstrapGapWithPolicy(
+    const skipOneLiner = shouldSkipDocumentOneLiner(
       input.gapState,
-      input.stageReadiness,
+      input.living,
     );
-    if (policyGap !== decision.targetGapId) {
-      decision = rebuildBootstrapDecision(policyGap, input.gapState);
+    // D1/D7 — do not overwrite a ranked Stage A pick with the one-liner walk
+    // when the document already supplied a business draft.
+    if (
+      !skipOneLiner ||
+      (!decision.targetGapId && !decision.targetGap)
+    ) {
+      const policyGap = pickBootstrapGapWithPolicy(
+        input.gapState,
+        input.stageReadiness,
+      );
+      if (policyGap !== decision.targetGapId) {
+        decision = rebuildBootstrapDecision(policyGap, input.gapState);
+      }
     }
   } else if (
     !input.stageReadiness.stageBAllowed &&

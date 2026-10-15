@@ -1,0 +1,102 @@
+PR #197 순수 SI 판단 맥락과 질문 정보가치 실행 기록. 화면 연결 없음. DB 없음. 모델 호출 없음. 병합 없음. Production 배포 없음. Production 잠금 0b465226.
+
+이 통과는 전략 적합성이 아니다. 테스트 개수와 통과율로 사업 판단의 질을 승인하지 않는다.
+
+이전 실행 b8536b49 는 30행을 통과로 기록했지만, 고객 정정 판단이 옛 고객과 새 고객을 한 작업 기준으로 말했고 결제 뒤 질문이 문제 문장을 다시 확인했다. 그 기록의 기대 문장을 이번 통과로 읽지 않는다.
+
+명령
+pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts --reporter=verbose
+
+시각
+2026-10-14 09:26:01 UTC
+
+출력
+Test Files  2 passed (2)
+Tests  24 passed (24)
+Duration  556ms
+Start at  09:26:01
+실패 행 없음.
+
+항목
+AT-01 passed. 고객·문제 확인 후 판단은 고정 문장이 아니고 단계 S1, judgment_deferred. closeReview 는 closed_complete 가 아니다.
+AT-02 passed. 한 줄 요약은 passed 도 FACT 도 아니다.
+AT-03 passed. 지불자 문장이 고객 statement 를 바꾸지 않는다.
+AT-04 passed. replace 후 옛 고객 statement 유지, outcome conflict_unresolved, 후속 h-customer-next 는 CLAIM, h-problem-next 는 빈 문장. 선택은 q-problem-next. prompt 에 물류본부가 있고 옛 문제 문장은 없다. replace 는 충돌을 해소하지 않는다.
+AT-05 passed. 옛 문제 affirm 은 장부를 유지하고 선택은 q-problem-next 로 남는다.
+AT-06 passed. 부재는 h-business-model CLAIM. 문제·시장은 FACT 가 아니다. 단계는 그대로다.
+AT-07 passed. 결제 3건은 CLAIM. 단계는 그대로다. 판단에 주체·금액·기록 문장이 있다.
+AT-08 passed. 문자 한 줄은 FACT, authenticityGuaranteed false, 귀속 unreviewed, outcome insufficient_record. S3 가 아니다.
+AT-09 passed. 부재와 문자 FACT 의 두 순서 모두 conflict_unresolved. 두 id 유지. S3 가 아니다.
+AT-10 passed. unknown 다음 질문 해시가 달라진다.
+AT-11 passed. 공급 후보의 순서를 뒤집어도 selectedId, tieBreak, priorityReason 이 같다. T1 q-problem none. T3 v-repeat critical-unknown. T4 v-a stable-id. 이유에 사업 근거가 아니다.
+AT-12 passed. S3 에서 h-repeat 가 not_run 이면 closed_complete 가 아니다. budget_held 는 단계와 판정을 유지한다.
+AT-13 passed. 필수 다섯이 passed 또는 failed 이고 충돌이 없을 때만 closed_complete. 실패 판단에 FAIL_IF 가 있다. h-repeat 미판정과 고객 충돌은 완료를 막는다.
+AT-14 passed. 모듈 소스에 api.openai.com, openai-http, fetch(, .chat( 가 없다. chat 호출 0. OpenAI HTTP 0. offerModelDraft 는 head 를 바꾸지 않는다.
+
+보완 A passed 2. 해소 전 충돌은 S0. 빈 이유와 없는 evidenceId 는 거절된다. 선택한 binding 직후 outcome 은 not_run. 두 binding 이 남는다. resolveConflict 는 closed_complete 를 주지 않는다. 문자 FACT 를 골라도 귀속은 unreviewed, outcome 은 passed 가 아니고 단계는 S3 가 아니다.
+보완 B passed. 시드 선택 q-customer, tieBreak critical-unknown. 이유에 단계 변화는 없다. 고객만 CLAIM 이면 선택은 h-problem 이고 affirm 미리보기는 S0 에서 S1. 고객과 문제가 CLAIM 이면 선택은 h-payer. 고객이 ASSUMPTION 이고 지불자만 CLAIM 이면 선택은 h-customer. 시드 replace 후 선택은 q-problem-next. resolve 미리보기는 남고 선택되지 않는다.
+
+30행 회귀
+파일 docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-CAUSE-RECOVERY-REPLAY.json
+branchCount 30. passed 30. failed 0. failures 길이 0.
+revise 6행, paymentYes 6행, paymentNone 6행을 실패 건수에서 빼지 않았다. 단언이 어긋나면 failures 에 들어 테스트가 실패한다.
+각 행은 confirm 분기의 고객·문제·수익으로 createProjectLedger 한 뒤, 분기 id 와 appliesToGap 으로 행위를 만들어 applyFounderAnswer 에 넘겼다. 사업 문구 목록으로 가설을 고르지 않았다.
+화면 일치는 읽지 않았다. 30행 모두 screenMismatch 판단 불가.
+
+행 형식. 입력은 그 턴의 행위와 대상. 판단 변화는 답 전 판단과 답 후 판단이 다른지. 다음은 답 뒤에 고른 가설, 선택 id, 이유.
+
+S1 confirm. 입력 턴 2 affirm payer 「서비스 비용은 사장님 본인이 지불합니다.」 판단 변화 true. S1 judgment_deferred. 가설 h-business-model. 선택 v-business-model. tie none. 이유 v-business-model의 payment_claim 분기가 단계 변화는 없다.
+S1 revise. 입력 턴 0 replace h-customer 「이 서비스를 가장 필요로 하는 사람은 대기업 물류본부입니다.」 판단 변화 true. S0. 가설 h-problem-next. 선택 q-problem-next. tie open-pair. critical h-problem-next. 이유 q-problem-next는 새 고객과 문제의 짝이 비어 있다. affirm 분기는 판단 문장이 달라진다. 단계 변화는 없다.
+S1 unknown. 입력 턴 0 unknown h-customer. 판단 변화 true. S0. 가설 h-customer. 선택 q-customer. tie critical-unknown. 이유 q-customer의 replace 분기가 단계 변화는 없다. tieBreak는 critical-unknown다.
+S1 paymentYes. 입력 턴 1 payment_claim 「이미 결제 3건이 있어 고객이 돈을 내고 있습니다.」 판단 변화 true. S0. 가설 h-payer. 선택 q-payer. tie payment-gap. critical h-payer. 이유 q-payer는 확인할 가설이 h-payer다. affirm 분기는 판단 문장이 달라진다. 금액과 기록은 이 질문으로 생기지 않는다. 문제 문장 재확인보다 결제 주체의 불확실성을 줄인다. 단계 변화는 없다.
+S1 paymentNone. 입력 턴 1 absence_claim 「아직 실제 결제·사용 증거는 없습니다.」 판단 변화 true. S0. 가설 h-business-model. 선택 v-business-model. tie payment-gap. critical h-business-model. 이유 literal_unreviewed 분기는 판단 변화 등급 conflict. 문제 문장을 다시 확인해도 기록이 생기지 않는다. 필요한 증거는 주체와 금액이 적힌 문자 기록이다. 단계 변화는 없다.
+S2 confirm. 입력 턴 2 affirm payer 「쓰는 사람이 직접 낸다」. 판단 변화 true. S1. 가설 h-business-model. 선택 v-business-model. tie none. 이유 payment_claim 분기가 단계 변화는 없다.
+S2 revise. 입력 턴 0 replace 「이 브랜드를 가장 필요로 하는 사람은 혼자 마시는 20대입니다.」 판단 변화 true. S0. 가설 h-problem-next. 선택 q-problem-next. tie open-pair. 이유 affirm 분기는 판단 문장이 달라진다. 단계 변화는 없다.
+S2 unknown. 입력 턴 0 unknown. 판단 변화 true. S0. 가설 h-customer. 선택 q-customer. tie critical-unknown.
+S2 paymentYes. 입력 턴 1 payment_claim. 판단 변화 true. S0. 가설 h-payer. 선택 q-payer. tie payment-gap. 이유와 질문은 S1 paymentYes 와 같은 구조이고 고객 문장만 전통주를 선물·취미로 찾는 30–40대다.
+S2 paymentNone. 입력 턴 1 absence_claim. 판단 변화 true. S0. 가설 h-business-model. 선택 v-business-model. tie payment-gap. prompt 는 paymentYes 의 누구의 결제 질문이 아니다.
+S3 confirm. 입력 턴 2 affirm payer 「서비스 비용은 사장님 본인이 지불합니다.」 판단 변화 true. S1. 가설 h-business-model. 선택 v-business-model. tie none.
+S3 revise. 입력 턴 0 replace 「이 툴을 가장 필요로 하는 사람은 개인 프리랜서입니다.」 판단 변화 true. S0. 가설 h-problem-next. 선택 q-problem-next. tie open-pair.
+S3 unknown. 입력 턴 0 unknown. 판단 변화 true. S0. 가설 h-customer. 선택 q-customer. tie critical-unknown.
+S3 paymentYes. 입력 턴 1 payment_claim. 판단 변화 true. S0. 가설 h-payer. 선택 q-payer. tie payment-gap. 고객 문장은 직원 20–80명 제조사 영업관리자.
+S3 paymentNone. 입력 턴 1 absence_claim. 판단 변화 true. S0. 가설 h-business-model. 선택 v-business-model. tie payment-gap.
+S4 confirm. 입력 턴 2 affirm payer 「쓰는 사람이 직접 낸다」. 판단 변화 true. S1. 가설 h-business-model. 선택 v-business-model. tie none.
+S4 revise. 입력 턴 0 replace 「이 서비스를 가장 필요로 하는 사람은 혼자 사는 20대입니다.」 판단 변화 true. S0. 가설 h-problem-next. 선택 q-problem-next. tie open-pair.
+S4 unknown. 입력 턴 0 unknown. 판단 변화 true. S0. 가설 h-customer. 선택 q-customer. tie critical-unknown.
+S4 paymentYes. 입력 턴 1 payment_claim. 판단 변화 true. S0. 가설 h-payer. 선택 q-payer. tie payment-gap. 고객 문장은 맞벌이 부모.
+S4 paymentNone. 입력 턴 1 absence_claim. 판단 변화 true. S0. 가설 h-business-model. 선택 v-business-model. tie payment-gap.
+S5 confirm. 입력 턴 2 affirm payer 「쓰는 사람이 직접 낸다」. 판단 변화 true. S1. 가설 h-business-model. 선택 v-business-model. tie none.
+S5 revise. 입력 턴 0 replace 「이 쿠키를 가장 필요로 하는 사람은 간식 찾는 초등학생 부모입니다.」 판단 변화 true. S0. 가설 h-problem-next. 선택 q-problem-next. tie open-pair.
+S5 unknown. 입력 턴 0 unknown. 판단 변화 true. S0. 가설 h-customer. 선택 q-customer. tie critical-unknown.
+S5 paymentYes. 입력 턴 1 payment_claim. 판단 변화 true. S0. 가설 h-payer. 선택 q-payer. tie payment-gap. 고객 문장은 운동하는 20–30대.
+S5 paymentNone. 입력 턴 1 absence_claim. 판단 변화 true. S0. 가설 h-business-model. 선택 v-business-model. tie payment-gap.
+S6 confirm. 입력 턴 2 affirm payer 「집이 낸다」. 판단 변화 true. S1. 가설 h-business-model. 선택 v-business-model. tie none.
+S6 revise. 입력 턴 0 replace 「이 앱을 가장 필요로 하는 사람은 1인 가구 대학생입니다.」 판단 변화 true. S0. 가설 h-problem-next. 선택 q-problem-next. tie open-pair.
+S6 unknown. 입력 턴 0 unknown. 판단 변화 true. S0. 가설 h-customer. 선택 q-customer. tie critical-unknown.
+S6 paymentYes. 입력 턴 1 payment_claim. 판단 변화 true. S0. 가설 h-payer. 선택 q-payer. tie payment-gap. 고객 문장은 맞벌이 가정 / 도우미.
+S6 paymentNone. 입력 턴 1 absence_claim. 판단 변화 true. S0. 가설 h-business-model. 선택 v-business-model. tie payment-gap.
+
+S4 와 S6 는 맞벌이 전체 문장으로 구분한다. S4 과거 고객은 맞벌이 부모. S6 과거 고객은 맞벌이 가정 / 도우미. 한 행의 판단에 다른 행의 고객 문장은 없다.
+
+불일치 A 기대와 실제
+기대. 새 고객 CLAIM 은 활성 판단에만 있다. 새 문제가 확인되기 전에는 활성 판단이 그 공백을 말한다. 옛 고객과 옛 문제는 과거 기록이고, 그 문제는 새 고객의 문제가 아니다. 다음 행동과 critical unknown 은 h-problem-next 다. 옛 binding 은 남고 resolveConflict 는 별도다. 새 문제 CLAIM 이 생긴 뒤에는 활성 판단이 그 문제를 새 고객의 문제로 말하고, 다음은 활성 고객의 결제 주체이며 충돌 해소 질문이 아니다.
+실제 S1 턴 0 판단. 활성 판단의 고객은 새 CLAIM 「이 서비스를 가장 필요로 하는 사람은 대기업 물류본부입니다.」이다. 활성 판단의 문제는 아직 확인되지 않았다. 과거 기록의 고객은 「반찬가게·꽃집 등 직접 배송 소상공인」이고 그 문제는 「주문과 배송을 따로 관리해야 함」이다. 그 문제는 새 고객의 문제가 아니다. 과거 기록은 활성 판단이 아니다.
+S2 부터 S6 의 턴 0 판단은 같은 두 구간이다. 활성 구간에 각 행의 새 고객 문장이 있고 옛 문제 문장은 없다. 과거 기록 구간에 옛 고객, 옛 문제, 「그 문제는 새 고객의 문제가 아니다」가 있다. 「어느 쪽도 작업 기준이 아니다」와 「새 고객의 문제는 아직 없다」는 없다.
+30행 재생은 이후 턴에서 옛 문제 문장을 다시 넣는다. 그 입력은 새 문제를 만들지 않고 선택은 h-problem-next 로 남는다. 새 문제 전후의 일치는 독립 테스트가 실행했다. 전통주에서 혼자 마시는 20대로 바꾼 뒤 새 문제 「동네 편의점에는 찾는 술이 없다」를 h-problem-next 에 넣으면 단계는 S0, 옛 문제 문장은 유지, 충돌은 미해소, 활성 판단은 그 새 문제를 새 고객의 문제라고 말하고 과거 문제와 다르다고 말한다. 다음은 q-payer. prompt 에 옛 문제 문장은 없다. 이유는 affirm 분기가 판단 문장을 바꾸고 과거 문제는 새 고객의 문제가 아니며 단계 변화는 없다고 말한다. 제조사에서 개인 프리랜서로 바꾼 경우도 같다. 그 경우는 옛 문제가 이미 CLAIM 이라 resolve_retain_old 미리보기가 S1 로 움직이지만 선택되지 않는다.
+차이. 잠근 기대와 실제의 차이는 없다. b8536b49 의 판단 문장과는 다르다. 그때는 두 고객을 함께 작업 기준으로 말했다.
+
+불일치 B 기대와 실제
+기대. paymentYes 와 paymentNone 은 다른 질문이다. 결제 3건 뒤에는 문제 문장 재확인보다, 판단을 바꾸는 비어 있는 결제 주체를 고른다. 금액과 기록은 그 질문으로 생기지 않는다고 말한다. 부재 뒤에는 문자 기록이 있어야 부재와 구분된다고 말하고, 그 검증이 문제 재확인보다 앞이다. 질문이 기록을 만들지 못하면 필요한 증거가 부족하다고 적는다.
+실제 S2 paymentYes. 판단은 전통주 고객 CLAIM, 결제 3건, 주체·금액·기록이 없어 단계를 움직이지 않았다. 단계 S0. 선택 q-payer. prompt 는 이미 알려진 고객 CLAIM 과 주체·금액·기록이 없는 결제 주장을 말하고 「이 결제는 누구의 결제인가?」를 묻는다. 양조장 문제 문장은 prompt 에 없다. q-problem 후보는 순위에 남고 affirm 미리보기는 S0 에서 S1 이지만 q-payer 가 앞이다. tieBreak payment-gap. h-customer 와 v-business-model 은 선택되지 않는다.
+실제 S2 paymentNone. 같은 고객 CLAIM 뒤에 부재 CLAIM. 선택 v-business-model. prompt 는 부재와 문자 기록을 말하고 누구의 결제를 묻지 않는다. 문제 문장은 prompt 에 없다. literal_unreviewed 미리보기의 판단 변화 등급은 conflict, 단계 변화는 없다. q-problem 은 순위 뒤에 남는다. 이유는 필요한 증거가 주체와 금액이 적힌 문자 기록이라고 말한다.
+S1 과 S3 부터 S6 의 결제 두 분기도 같은 선택이다. 고객 문장만 그 행의 문장이다.
+고객·문제·지불자가 이미 CLAIM 인 뒤의 부재는 독립 테스트에서 v-business-model 을 고르고, 문제 후보는 alreadyKnown 으로 빠지며, 이유에 문제 문장을 다시 확인해도 기록이 생기지 않는다고 적는다.
+고객이 아직 ASSUMPTION 인 고정 입력의 결제 다음은 h-customer 다. 그 입력은 30행의 결제 턴이 아니다.
+차이. 잠근 기대와 실제의 차이는 없다. b8536b49 실제값은 결제 두 분기 모두 q-problem 과 문제 문장 재확인, 이유 「단계를 S0에서 S1로 바꾼다」였다. 이번 실행의 그 문장은 탈락한 q-problem 미리보기에만 있다.
+한도. 비교한 후보는 기존 질문 집합과 검증 후보다. 결제 상품을 별도 가설로 두지 않았다. paymentYes 가 고른 한 항목은 비어 있는 결제 주체다. 금액과 거래 기록은 그 질문이 만들지 않는다고 이유에 남아 있다. 상품 가설이 없다는 사실을 테스트 통과로 가리지 않는다.
+
+남은 문
+전략 적합성을 이 테스트 통과로 승인하지 않는다.
+화면이 이 prompt 를 보여주는지는 판단 불가.
+2단계 화면, 3단계 DB, 4단계 모델, 병합, Production 배포는 하지 않았다.
+Production 잠금 0b465226.

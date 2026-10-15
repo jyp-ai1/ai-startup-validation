@@ -1,0 +1,141 @@
+PR #197 순수 SI 전략 재생. 모듈 cce572f5. 기준 재생 b17161ec. 화면 연결 없음. DB 없음. 모델 호출 없음. 병합 없음. Production 배포 없음. Production 잠금 0b465226.
+
+이 파일은 테스트를 실행한 뒤의 기록이다. vitest 1 passed 는 분기 30개가 파일로 쓰였다는 뜻이다. 전략 적합성 통과가 아니다. 2단계 화면 연결은 시작하지 않았다.
+
+명령
+pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts
+
+실행 시각
+2026-10-14 08:09:29
+
+결과
+ RUN  v3.2.7 /workspace/apps/web
+ ✓ features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts (1 test) 34ms
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Duration  275ms (transform 65ms, setup 0ms, collect 69ms, tests 34ms, environment 0ms, prepare 63ms)
+
+테스트가 검사한 것
+분기 길이 30. 판정 합이 30. 그 외 단언 없음.
+
+산출
+docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-STRATEGY-REPLAY.json
+moduleCommit cce572f5
+baselineReplay b17161ec
+branchCount 30
+counts 개선 2, 미개선 28, 판단 불가 0
+턴 150. 답변이 장부에 반영된 턴 29. 반영되지 않은 턴 121. 새 판단 문장에 「현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다」가 있는 턴 0.
+runStatus 는 150턴 모두 open. 최종 reviewCompletion 은 decision_ready 3, in_progress 27. closed_complete 와 closed_incomplete 는 0.
+
+재생 방법
+각 분기는 createSeedLedger() 로 시작한다. 시나리오 문서의 고객·문제를 시드로 넣지 않는다. 시드는 항상 반찬가게·꽃집 / 주문과 배송이다. 각 턴은 selectNextAction 후 commitFounderStatement({ proposition }) 이다. hypothesisId 는 넘기지 않았다. 화면 스냅샷은 읽지 않고, 모듈이 고른 prompt 한 개만 기록했다.
+
+분기 판정 규칙
+기본값은 미개선이다. 개선은 둘 중 하나일 때만 준다.
+1. revise 이고 첫 답이 반영되고, 다음 hypothesisId 가 h-problem-logistics 이며, 그 prompt 에 시나리오의 옛 문제 문장이 없다.
+2. paymentYes 이고 시드 고객이 시나리오 고객과 같고, 어떤 턴에 weak-payment CLAIM 이 있으며, 그 턴의 단계가 그대로이고, 다음 hypothesis 가 h-problem 이며, 고정 문장이 없고, 판단이 그대로인 채 채널 질문이 반복되지 않는다.
+화면 불일치는 분기 판정이 아니다. 순수 모듈에는 두 번째 스냅샷이 없으므로 30개 모두 실패 항목 screenMismatch 는 판단 불가다.
+
+30개 분기
+
+S1 confirm 미개선. 반영 3/5. 판단 문장 변화 있음. 단계 S0→S1. 최종 S1 / judgment_deferred / decision_ready / open. 최종 판단 「고객 확인과 문제 확인을 반영했다. h-customer는 반찬가게·꽃집 등 직접 배송 소상공인 CLAIM이다. h-problem은 주문과 배송을 따로 관리해야 함 CLAIM이다.」 최종 다음 h-channel / 어느 채널에서 만나는지 확인해 달라. 이유 「h-channel의 단계 변화가 남아 있는 후보 중 유일하다.」 T0 b-customer-claim CLAIM founder-confirm. T1 b-problem-claim CLAIM founder-confirm, 단계 S1, review decision_ready. T2 b-payer-claim CLAIM founder-confirm, 판단 문장 불변, 다음 h-channel. T3–T4 시장 답 미반영, 같은 질문 해시, 판단 불변.
+근거: 앞의 세 답은 판단을 움직인다. 뒤의 두 답은 채널 질문을 반복하고 판단을 바꾸지 않는다. 분기 전체는 미개선.
+
+S1 revise 개선. 반영 2/5. 판단 문장 변화 있음. 단계 이동 없음. 최종 S0 / insufficient_basis / decision_ready / open. 최종 판단 「고객이 물류본부로 수정되었다. 이전 고객과 문제의 짝은 깨졌다.」 최종 다음 h-problem-logistics / 물류본부 고객이 겪는 불편은 무엇입니까? 이유 「h-problem-logistics는 새 고객과 문제의 짝이 비어 있다.」 T0 「대기업 물류본부」만 고객 수정으로 반영. 근거 b-customer-logistics / h-customer-logistics / CLAIM / customer-revision. 코드상 이전 h-customer outcome 은 conflict_unresolved, evidenceClass CONFLICT. T1 옛 문제 「주문과 배송을 따로 관리해야 함」은 미반영. 다음 질문은 물류본부 불편으로 유지. T2 사장님 본인 CLAIM 은 반영되나 판단 문장과 다음 질문은 그대로.
+근거: 옛 문제에 종속된 질문이 선택되지 않았다. 이 개선은 문장에 「물류본부」가 있을 때만 발생한다.
+
+S1 unknown 미개선. 반영 3/5. 판단 문장 변화 있음. 단계 S0→S1. 최종 S1 / judgment_deferred / decision_ready / open. 최종 판단은 S1 confirm 과 같다. 최종 다음 h-channel. T0 「아직 모르겠습니다.」는 head 를 올리지 않는다. 질문 해시는 한 번 바뀌고 prompt 에 「더 좁혀 근거가 될 기록의 범위를 지정해 달라.」가 붙는다. 판단 문장은 시드 그대로. T1–T3 은 confirm 과 같이 고객·문제·지불자를 반영. T4 시장 답 미반영, 채널 질문 해시 동일, 판단 불변.
+근거: 첫 불확실성에서 같은 해시 반복은 없다. 그 뒤 채널에서 판단이 멈춘다.
+
+S1 paymentYes 개선. 반영 3/5. 판단 문장 변화 있음. 단계 이동 없음. 최종 S0 / insufficient_basis / in_progress / open. 최종 판단 「고객 가설은 창업자 확인을 받았다. … CLAIM. 주체·금액·기록이 없어 단계를 움직이지 않았다.」 최종 다음 h-problem / 주문과 배송을 따로 관리해야 하는 문제가 맞는지 확인해 달라. T0 b-customer-claim CLAIM. T1 b-weak-payment / h-business-model / CLAIM / weak-payment. 단계와 verdict 는 답 전과 같다. T2 b-payer-claim CLAIM. T3–T4 시장 답 미반영. 문제는 아직 답이 없으므로 다음 행동은 문제 질문으로 남는다.
+근거: 「이미 결제 3건」이 FACT 나 VALIDATED 가 되지 않았고 단계를 움직이지 않았다. 시드가 이 시나리오와 같다.
+
+S1 paymentNone 미개선. 반영 3/5. 판단 문장은 고객 확인에서만 변한다. 단계 이동 없음. 최종 S0 / insufficient_basis / in_progress / open. 최종 판단은 고객 CLAIM 문장이고 부재를 말하지 않는다. 최종 다음 h-problem. T1 b-absence / h-business-model / CLAIM / absence. h-problem 과 h-market 에 FACT 없음. 부재 턴의 판단 문장과 다음 질문은 답 전과 같다. T3 수익, T4 대안은 미반영.
+근거: FACT 복사 버그는 재발하지 않았다. 부재 답이 보이는 판단과 다음 행동을 바꾸지 않아 분기는 미개선.
+
+S2 confirm 미개선. 반영 0/5. 판단 문장 불변. 단계 S0. 최종 insufficient_basis / in_progress / open. 최종 판단 「문서의 고객, 문제, 수익은 아직 확인되지 않은 가정이다.」 최종 다음 h-customer / 반찬가게·꽃집 확인. 해시 5턴 동일. 입력은 전통주 30–40대, 양조장 채널, 「쓰는 사람이 직접 낸다」, 전통주 브랜드, 시장 문장. 근거 추가 없음.
+근거: 시나리오 답이 장부에 들어가지 않는다. 시드는 반찬가게로 고정이다.
+
+S2 revise 미개선. 반영 0/5. 판단 불변. 최종 판단 시드 문장. 최종 다음 반찬가게 고객. 입력 T0 「혼자 마시는 20대」. reviseIgnored true. 옛 고객을 conflict 로 바꾸지 않는다.
+근거: 물류본부가 아닌 고객 수정은 무시된다.
+
+S2 unknown 미개선. 반영 0/5. 판단 불변. T0 해시 한 번 변경 후, 좁혀진 반찬가게 질문이 T1–T4 에서 같은 해시로 반복. 전통주 답은 무시.
+근거: 즉시 동일 해시 반복은 없다. 그 다음 답부터 같은 질문이 반복되고 판단은 시드다.
+
+S2 paymentYes 미개선. 반영 1/5. T1 만 반영. b-weak-payment / h-business-model / CLAIM / weak-payment. 판단은 시드 문장에 「주체·금액·기록이 없어 단계를 움직이지 않았다.」가 붙는다. 단계 S0 유지. 최종 다음 반찬가게 고객. 전통주 고객 답은 미반영.
+근거: 약한 결제는 CLAIM 으로 남는다. 그 결제는 전통주 사업이 아니라 시드 장부에 붙는다. 다음 행동은 시드 고객 질문이다.
+
+S2 paymentNone 미개선. 반영 1/5. T1 b-absence / h-business-model / CLAIM / absence. 판단 문장 불변. 최종 다음 반찬가게 고객. h-problem·h-market FACT 없음.
+
+S3 confirm 미개선. 반영 1/5. 제조사 영업관리자·메일 엑셀 ERP 문제는 미반영. T2 「서비스 비용은 사장님 본인이 지불합니다.」만 b-payer-claim CLAIM. 판단 문장은 시드 그대로. 다음이 h-channel 로 바뀐다. 이유 「키 1부터 5가 같다. hypothesisId 사전순으로 h-channel를 고른다. tieBreak는 stable-id다. 사업 근거가 아니다.」 T3–T4 같은 해시, 판단 불변. 최종 S0 / insufficient_basis / in_progress / open.
+
+S3 revise 미개선. 반영 1/5. T0 「개인 프리랜서」 미반영. reviseIgnored true. T2 사장님 본인 이후 채널 stable-id. 판단 시드 문장.
+
+S3 unknown 미개선. 반영 1/5. T0 해시 한 번 변경. T1 제조사 답 미반영, 좁힌 반찬가게 질문 해시 반복. T3 사장님 본인 이후 채널 stable-id. 판단 시드 문장.
+
+S3 paymentYes 미개선. 반영 2/5. T1 b-weak-payment CLAIM, 판단에 주체·금액 문장, 단계 S0. T2 사장님 본인 이후 채널 stable-id, 판단 문장은 그 결제 문장 유지. 제조사 고객은 미반영.
+
+S3 paymentNone 미개선. 반영 2/5. T1 b-absence CLAIM, 판단 문장 불변. T2 사장님 본인 이후 채널 stable-id. 문제·시장 FACT 없음.
+
+S4 confirm 미개선. 반영 0/5. 맞벌이 부모, 장보기 문제, 「쓰는 사람이 직접 낸다」, 구독 박스, 맘카페. 전부 미반영. 판단 시드. 다음 반찬가게 고객. 해시 동일.
+
+S4 revise 미개선. 반영 0/5. T0 「혼자 사는 20대」 미반영. reviseIgnored true. 다음 반찬가게 고객.
+
+S4 unknown 미개선. 반영 0/5. T0 해시 한 번 변경 후 좁힌 반찬가게 질문 반복. 판단 시드.
+
+S4 paymentYes 미개선. 반영 1/5. T1 b-weak-payment CLAIM 이 시드 장부에 붙음. 판단에 주체·금액 문장. 다음 반찬가게 고객. 맞벌이 부모 답은 미반영.
+
+S4 paymentNone 미개선. 반영 1/5. T1 b-absence CLAIM. 판단 불변. 다음 반찬가게 고객. 문제·시장 FACT 없음.
+
+S5 confirm 미개선. 반영 0/5. 운동하는 20–30대, 단백질바 문제, 「쓰는 사람이 직접 낸다」, 단백질 쿠키, 헬스장. 전부 미반영. 판단 시드. 다음 반찬가게 고객.
+
+S5 revise 미개선. 반영 0/5. T0 「간식 찾는 초등학생 부모」 미반영. reviseIgnored true. 다음 반찬가게 고객.
+
+S5 unknown 미개선. 반영 0/5. T0 해시 한 번 변경 후 반복. 판단 시드.
+
+S5 paymentYes 미개선. 반영 1/5. T1 b-weak-payment CLAIM 이 시드에 붙음. 다음 반찬가게 고객.
+
+S5 paymentNone 미개선. 반영 1/5. T1 b-absence CLAIM. 판단 불변. 다음 반찬가게 고객.
+
+S6 confirm 미개선. 반영 0/5. 맞벌이 가정 / 도우미, 믿을 사람 문제, 「집이 낸다」, 가사 중개, 단지 단톡. 전부 미반영. 판단 시드. 다음 반찬가게 고객.
+
+S6 revise 미개선. 반영 0/5. T0 「이 앱을 가장 필요로 하는 사람은 1인 가구 대학생입니다.」 미반영. reviseIgnored true. 다음 반찬가게 고객. 판단 시드.
+
+S6 unknown 미개선. 반영 0/5. T0 해시 한 번 변경 후 반복. 판단 시드.
+
+S6 paymentYes 미개선. 반영 1/5. T1 b-weak-payment CLAIM 이 시드에 붙음. 다음 반찬가게 고객.
+
+S6 paymentNone 미개선. 반영 1/5. T1 b-absence CLAIM. 판단 불변. 다음 반찬가게 고객.
+
+이전 재생 b17161ec 와의 차이
+이전 30개 분기는 답 뒤 결론이 모두 「현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다」였다. 이번 150턴의 새 판단 문장에는 그 문장이 0번 나온다.
+이전 결제 없음은 S1–S6 의 problemJtbd 와 marketChannel 에 FACT 로 저장됐다. 이번 6개 paymentNone 은 b-absence / h-business-model / CLAIM / absence 만 추가한다. 문제·시장 FACT 는 0이다.
+이전 불확실성 응답은 같은 질문을 바로 반복했다. 이번 6개 unknown 의 첫 턴은 질문 해시가 바뀐다.
+이전 고객 수정 뒤에도 옛 문제 질문이 남았다. 이번에는 S1 revise 의 물류본부 한 갈래만 h-problem-logistics 를 고른다. S2–S6 revise 5개는 수정 문장을 무시하고 반찬가게 고객을 다시 묻는다.
+차이가 없는 부분: S2–S6 의 사업 문장은 판단에 들어가지 않는다. S1 confirm 은 앞부분에서 S0 에서 S1 로 움직인 뒤 채널 질문에서 멈춘다. 화면과 엔진 질문의 일치는 측정하지 못했다.
+
+여섯 실패의 재검증
+1. 답변 뒤 판단 결론 고정. 그 고정 문장은 150턴 중 0. 그러나 판단이 움직이지 않은 분기가 많다. 남는 고정 문장은 「문서의 고객, 문제, 수익은 아직 확인되지 않은 가정이다.」 실패 수준 판정은 미개선. 문장만 바뀌고 판단이 사업 답을 따라가지 않는다.
+2. 질문 순서만 바뀌고 판단에 영향을 주는 행동을 고르지 못함. S1 confirm 은 지불자 다음 h-channel 를 고르고 T3–T4 가 같은 해시를 반복한다. 이유 문장은 단계 변화가 유일하다고 말하지만 그 턴의 단계 델타는 0이다. S2 confirm 은 반찬가게 고객 질문을 5번 반복한다. S3 은 사장님 본인 다음 stable-id 로 h-channel 를 고른다. 실패 수준 미개선.
+3. 고객 가설 수정 후 이전 고객에 종속된 질문. S1 revise 만 개선. S2 revise, S3 revise, S4 revise, S5 revise, S6 revise 는 미개선. 다섯 입력은 각각 혼자 마시는 20대, 개인 프리랜서, 혼자 사는 20대, 초등학생 부모, 1인 가구 대학생이다.
+4. 결제 증거 부재가 FACT 로 취급됨. 6개 paymentNone 에서 재발하지 않음. 근거는 h-business-model 의 CLAIM. 실패 수준은 이 버그에 한해 개선. 분기 판정을 개선으로 올리지 않는다. 부재 턴의 판단 문장과 다음 행동은 S1 을 빼고 시드 그대로다. S1 paymentNone 도 판단 문장이 부재를 말하지 않는다.
+5. 불확실성 응답에 동일 질문 반복. 첫 턴에서 같은 해시가 나온 unknown 분기는 0/6. 해시는 한 번 바뀐다. 다음 답이 인식되지 않으면 좁혀진 질문이 반복된다. 즉시 해시 실패는 개선. unknown 분기 6개는 모두 미개선.
+6. 사업 판단과 화면에 표시될 질문 불일치. 판단 불가. 모듈은 prompt 하나만 반환한다. 워크스페이스 화면을 호출하지 않았다. 개선으로 세지 않는다.
+
+CTO 판정
+전략 적합성 미승인.
+근거: 개선 2 (S1 revise, S1 paymentYes), 미개선 28, 분기 판단 불가 0. 계약 테스트 AT-01–AT-14 통과가 30개 분기 개선으로 이어지지 않았다. 모듈은 시나리오 문서로 시드를 만들지 않고, 반찬가게·물류본부·사장님 본인·모르겠·결제 3건·결제 없음 문장만 반영한다. 121/150 답은 장부를 바꾸지 않는다. 「새 답변이 실제 사업 판단을 바꾸고, 그 판단에 가장 큰 영향을 주는 다음 질문이나 검증 행동을 선택하는가」는 S2–S6 에서 보이지 않았고 S1 에서도 채널 반복으로 끊긴다.
+
+재현 가능한 실패
+F1 S2 confirm. 입력 다섯 개: 전통주를 선물·취미로 찾는 30–40대, 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다, 쓰는 사람이 직접 낸다, 전통주 브랜드, 양조장 시장 문장. 출력 판단은 다섯 턴 모두 시드 문장. 다음 질문은 다섯 턴 모두 반찬가게·꽃집 고객. 질문 해시 동일. 근거 추가 없음.
+F2 S1 confirm T2–T4. T2 입력 「서비스 비용은 사장님 본인이 지불합니다.」 출력 다음 h-channel. 이유 「h-channel의 단계 변화가 남아 있는 후보 중 유일하다.」 단계 S1 유지, 판단 문장 불변. T3 「시장은 사장님 단톡·상인 모임입니다.」와 T4 같은 취지 문장은 미반영. 질문 해시가 T2 와 같다.
+F3 S6 revise. 입력 「이 앱을 가장 필요로 하는 사람은 1인 가구 대학생입니다.」 출력 판단 시드 문장. 다음 질문 반찬가게·꽃집 고객. head 불변. 이전 고객 conflict 없음.
+F4 S3 confirm T2. 입력 「서비스 비용은 사장님 본인이 지불합니다.」 그 전 제조사 영업관리자 답은 미반영. 출력 판단 시드 문장. 다음 h-channel. 이유 「키 1부터 5가 같다. hypothesisId 사전순으로 h-channel를 고른다. tieBreak는 stable-id다. 사업 근거가 아니다.」 T3–T4 같은 해시. S3 paymentNone T2 도 같은 선택이다.
+F5 S2 paymentYes T1. 입력 「이미 결제 3건이 있어 고객이 돈을 내고 있습니다.」 그 전 전통주 고객 답은 미반영. 출력 근거 b-weak-payment / h-business-model / CLAIM / weak-payment. 판단은 시드 문장에 주체·금액·기록 문장이 붙는다. 단계 S0. 다음 질문은 반찬가게 고객.
+
+미해결
+2단계 화면 연결은 시작하지 않았다. 기존 워크스페이스는 이 모듈을 부르지 않는다.
+3단계 DB 와 마이그레이션은 하지 않았다.
+4단계 모델 초안기와 유료 API 는 연결하지 않았다.
+병합과 Production 배포는 하지 않았다.
+이 재생으로 전략 적합성을 승인하지 않는다. 모듈 문구 매칭을 넓혀 미개선을 지우는 수정도 이 검증에서 하지 않았다.

@@ -1,0 +1,310 @@
+PR #197 CTO 보완안. SI 근거·단계·다음 행동 계약. 이 블록 전체를 한 번에 복사. 표 없음. 제품 코드 수정 없음. DECISIONS.md 수정 없음. 병합 없음. Production 배포 없음. 비용 실측 없음.
+
+한 줄: 이전 설계의 방향은 유지한다. 이번 문서는 그 방향 위에, 구현자가 슬롯 순서나 기록의 존재만으로 단계와 VALIDATED를 올리지 못하게 하는 계약을 고정한다. 이 계약은 제안이다. 실행 증거가 아니다.
+
+[CTO] CPO 요청 작업: 진행중 — SI 근거·단계·다음 행동 계약 보완안 제출
+[CPO] 검토·지시 필요: 예 — 단계 판정과 근거 계약이 명확해진 뒤 구현 여부 결정
+
+기준과 분리
+유지하는 설계: docs/evidence/ALABOM/AI-PM/PR197-CPO-ORCHESTRATION-SI-DESIGN.txt 커밋 b94ca470.
+이전 재생 증거: docs/evidence/ALABOM/AI-PM/PR197-CPO-STRATEGY-FIT-COPY.txt 커밋 b17161ec. 그 재생을 이번 턴에 다시 실행하지 않았다.
+이번 턴에 연 파일: packages/types/src/domain/strategic-intelligence.ts, packages/types/src/domain/answer-review.ts, apps/web/features/strategic-intelligence/lib/classify-founder-evidence.ts, 같은 디렉터리의 analyze-strategic-intelligence.ts 중 decideStage와 decideVerdict 시작부, quantity-unit.ts의 PAYMENT_VERB와 hasCountedPaidConversion, packages/ai/src/providers/provider.port.ts, apps/web/features/workflow-journey/lib/business-understanding/workspace-ai-pm-loop-store.ts, apps/web/features/workflow-journey/lib/workspace-ai-pm-messages.ts의 sessionStorage 저장 줄, packages/db/src/repositories/startup-project.repository.ts의 StartupProjectRow.
+이번 턴에 하지 않은 것. vitest. 재생 JSON 재생성. 마이그레이션 파일 열람. DB 쓰기. 브라우저. 모델 호출. 따라서 아래 수용 기준은 통과 선언이 아니다. 구현 후 대조할 기준이다.
+
+이름
+S0–S4는 판단 단계다. PR #197의 S1–S6는 사업 시나리오다. 예시는 배송 SaaS로 부른다.
+
+===== 0. 유지 =====
+
+유지한다. 외부 모델은 초안 공급자다. 사업 판단의 머리는 SI가 쓴다. ProjectJudgmentLedger가 버전 기준이다. 갭 CLOSED는 답변 기록이지 검증 완료가 아니다. 호출 실패는 머리를 보존한다. 브라우저 자동화는 상용 경로에서 빠진다. 공식 API는 기존 AIProviderPort가 기본 후보다. 창업자 확인은 FACT나 VALIDATED가 아니다. 부재 문장을 다른 슬롯의 FACT로 복사하지 않는다. 질문 다섯 개로 검토를 끝내지 않는다.
+
+이번 보완이 이전 설계에서 바꾸는 문장.
+FACT를 「기록으로 대조된 관찰」로 두고, VALIDATED를 그 FACT에 단계 규칙을 한 번 더 얹는 식으로 둔 정의. 기록의 범위와 가설의 범위를 분리한다.
+S2 진입을 「지불자 CLAIM과 검증 과제가 있다」로 둔 조건. 과제 문장의 존재만으로는 진입하지 않는다.
+S3에 들어온 뒤 지표가 그대로여도 단계에 남는 조건. 지표가 움직이지 않았으면 S3에 들어가지 않는다.
+프로젝트당 8회를 품질 보장처럼 읽힐 수 있는 배치. 8회는 초기 운영 상한이고 완료 조건이 아니다.
+「세션을 비워도 복구된다」를 이 설계 단계의 충족 기준으로 둔 문장. 영속 저장이 구현되기 전에는 충족이라고 쓰지 않는다.
+
+===== 1. 근거 판정 계약 =====
+
+유지. 유형 이름은 기존 SiEvidenceClass 여섯 개다. FACT, CLAIM, INFERENCE, ASSUMPTION, VALIDATED, CONFLICT. 창업자 확인의 자동 승격 금지는 유지한다.
+
+모호했던 부분. 이전 설계는 VALIDATED를 「FACT 가운데 단계가 요구하는 검증 행위를 한 것」으로 적어, 결제 기록이 생기면 그 기록이 반복 구매와 문제 해결과 수익성까지 끌어올릴 수 있게 읽힌다. 현재 SiEvidenceItem은 id, text, evidenceClass, axisId만 가진다. 가설 id, 출처, 판정 이유, 이력이 없다. classifyFounderEvidence는 항목 id를 항상 founder-ev-1로 둔다. classifyFounderEvidenceClass는 마지막에 return 'FACT'다. 「이미 결제 3건」은 PAYMENT_VERB(결제했, 지불했, 유료로 썼)에 맞지 않아 수량 결제 분기를 타지 않고, 이 기본 FACT로 떨어진다. 이것은 이번 턴의 코드 읽기이며 테스트 실행이 아니다. 「아직 실제 결제·사용 증거는 없습니다」는 같은 함수의 아직·없다 분기로 ASSUMPTION에 떨어진다. 역시 실행이 아니다. V3 EvidenceClass에는 CLAIM과 VALIDATED가 없다.
+
+제안 계약.
+근거 한 건은 명제 하나와 가설 하나에 묶인다. 유형은 그 묶음에 붙는다. 사업 전체에 일괄로 붙지 않는다.
+각 근거가 추적하는 최소 항목. 원문 또는 원문 참조 id. 출처(문서, 창업자 답, 기록, 모델 초안, SI 추론). 가설 id. 유형을 매긴 이유 한 문장. 상태 변경 이력(이전 유형, 새 유형, 커밋 id). 이 항목은 현재 SiEvidenceItem에 없다. 구현 전에 타입을 넓히는 승인이 따로 필요하다. 이번 턴에는 타입을 바꾸지 않는다.
+
+정의와 전환.
+ASSUMPTION. 문서에 있으나 창업자가 그 문장을 자기 주장으로 받지 않았고, 기록도 없다. 창업자가 그 문장 자체를 확인하면 CLAIM이 된다.
+CLAIM. 창업자가 자기 말로 선 명제다. 이해 확인, 수정, 의향, 예정, 「3건이 있다」처럼 기록 범위가 없는 수량 문장이 여기 있다. CLAIM에서 FACT로 가는 경로는 창업자 문장이 아니다.
+INFERENCE. 원문에 그대로 없는 해석이다. 사용한 근거 id를 인용한다. 그 id의 문자적 범위가 해석을 함의하지 않으면 INFERENCE로 남고 단계를 올리지 못한다. 모델 문장도 같다.
+FACT. 기록이 문자 그대로 말하는 범위만 사실이다. 세금계산서의 「2026-03-02 반찬가게 A, 3만 원, 1회」는 그 한 줄만 FACT다. 반복 구매, 문제 해결, 수익성, 다른 고객의 결제는 그 FACT가 아니다.
+VALIDATED. 가설에 붙는다. 근거 더미 전체에 붙지 않는다. 조건은 셋이다. 그 가설의 통과 기준이 결과를 보기 전에 적혀 있다. 기준이 요구하는 문자적 FACT id가 연결되어 있다. 결과가 passed다. 하나가 빠지면 VALIDATED가 아니다.
+CONFLICT. 같은 가설에서 두 명제가 양립하지 않는다. 둘 다 이력에 남긴다. 새 값으로 옛 값을 지우지 않는다. 머리는 충돌을 해결하기 전까지 그 가설을 단계 상승의 근거로 쓰지 않는다.
+
+기록과 가설의 분리.
+결제 기록 FACT가 있어도 가설 「고객이 반복 구매한다」, 「문제가 줄었다」, 「수익성이 있다」는 각 가설의 기준과 그 기준의 FACT가 없으면 미검증이다. 그 해석을 쓰면 유형은 INFERENCE다.
+창업자 확인은 CLAIM에서 멈춘다.
+부재 문장은 검증 가설에 대한 CLAIM 또는 ASSUMPTION이다. 문제 슬롯과 시장 슬롯의 FACT가 아니다.
+
+수용 기준. 구현 후 대조. 이번 턴의 통과 선언이 아니다.
+배송 SaaS 고객 확인 문장은 CLAIM이고 가설 id는 고객이다. FACT와 VALIDATED 이력은 없다.
+「이미 결제 3건」은 결제 가설의 CLAIM이다. FACT와 VALIDATED가 아니다. 이유 문장에 주체·금액·기록 부재가 있다.
+세금계산서 한 줄은 그 한 줄만 FACT다. 반복 구매 가설과 문제 해결 가설의 유형은 바뀌지 않는다.
+기준이 적히기 전의 기록은 VALIDATED를 만들지 않는다.
+classifyFounderEvidenceClass의 기본 FACT와, 수량 결제를 곧 VALIDATED로 두는 분기는 이 계약과 충돌한다. 구현 시 그 함수가 유형의 최종 결정권이면 실패다. 최종 결정권은 SI commit이다.
+
+확인하지 못한 것. 이 함수를 이번 턴에 실행하지 않았다. 기본 FACT 분기는 본문 순서의 읽기다. 루프 쪽 evidenceForExtractedFact가 같은 문장에 어떤 클래스를 쓰는지는 이번 턴에 다시 열지 않았다. 이전 재생 보고서의 결제 없음 FACT 저장은 과거 증거로만 인용한다.
+
+===== 2. 단계 계약 =====
+
+유지. 사용자가 보는 단계 의미는 이전 지시의 다섯이다. S0 판단 근거 부족. S1 가설 수준의 가능성. S2 초기 사업화 가능성. S3 사업모델 검증. S4 확장성 검증. 코드의 SI_STAGE_LABELS는 이와 다르다. S0 아이디어, S1 문제·고객 가설, S2 해법·모델 설계, S3 출시·초기 매출, S4 반복 검증. decideStage는 문제 단어가 있으면 S1, 매출·출시 단어가 있으면 S3, 반복 단어가 있으면 S4를 반환한다. 이번 턴에 그 함수 본문을 읽었다. 실행하지 않았다. 키워드 승격은 이 계약의 단계 함수가 아니다.
+
+모호했던 부분. 이전 설계의 S2는 지불자 CLAIM과 검증 과제 문장이 있으면 진입했다. 과제가 적혔다는 사실은 사업화 가능성이 높아졌다는 증거가 아니다. S3는 지표가 그대로여도 단계에 남을 수 있게 적혀 있었다. verdict 네 값에는 부정 결과가 없다. viable, conditionally_viable, judgment_deferred, insufficient_basis. judgment_deferred의 화면 라벨은 「지금은 판단을 보류한다」다. 이것을 사업성이 없다는 뜻으로 쓰지 않는다.
+
+판정 어휘.
+insufficient_basis. S0에서만 쓴다. 고객과 문제의 짝이 없어 가설로서의 이길 이유와 실패 이유를 쓸 수 없다. 사업성이 없다는 뜻이 아니다.
+judgment_deferred. S1과 S2, 그리고 가설 기준이 실패했으나 사업 전체를 기각할 근거는 없는 상태에서 쓴다. 뜻은 사업성 판단을 내릴 만큼의 결과가 없다는 것이다. 부정 결과의 뜻으로 재사용하지 않는다.
+부정 결과는 verdict를 새로 만들지 않고 가설의 validationOutcome으로 둔다. not_run, insufficient_record, passed, failed. 이 필드는 현재 SiStrategicJudgment에 없다. 구현 전 타입 승인 대상이다.
+failed일 때 화면 문장은 「이 가설은 미리 적은 기준을 통과하지 못했다」이다. verdict 라벨은 유보다. 두 문장이 같은 뜻이면 실패다.
+conditionally_viable. S3이고 사업모델 가설의 outcome이 passed일 때만.
+viable. S4이고 결제 가설과 반복 가설의 outcome이 모두 passed이며 둘 다 CONFLICT가 아닐 때만.
+질문 수, 갭 CLOSED, 모델 호출 횟수는 단계와 verdict의 입력이 아니다.
+
+S0 판단 근거 부족.
+진입. 초기 상태. 또는 고객 CLAIM과 문제 CLAIM의 짝이 CONFLICT나 철회로 깨질 때.
+최소 증거. 없다.
+진입을 막는 반대 증거. 없다. 바닥이다.
+상향. 고객 CLAIM과 문제 CLAIM이 서로 CONFLICT가 아니고, whyPossible과 whyFail이 그 두 id만 인용해 가설로 쓰일 때 S1.
+하향. 없다.
+verdict. insufficient_basis.
+화면. 판단할 근거가 부족하다. 사업성이 없다고 쓰지 않는다.
+
+S1 가설 수준의 가능성.
+진입 최소 증거. 위 상향 조건.
+막는 증거. 고객 또는 문제가 ASSUMPTION이거나 CONFLICT. whyPossible이 비어 있음.
+유지. 지불자 명제가 CLAIM이 아니거나, 검증 기준의 통과·실패 분기가 결과 전에 적히지 않음.
+상향. S2 조건을 충족할 때. 검증 과제 문장만으로는 오르지 않는다.
+하향. 고객 또는 문제 짝이 깨지면 S0. verdict는 insufficient_basis로 돌아간다.
+verdict. judgment_deferred.
+화면. 고객과 문제 가설은 있다. 사업성 판단은 유보한다.
+
+S2 초기 사업화 가능성.
+진입 최소 증거. S1 유지 조건. 지불자 CLAIM. 그리고 결과를 보기 전에 적은 검증 기준. 그 기준은 가설 id를 가지고, 통과 시 어느 필드가 어떻게 바뀌는지와 실패 시 어느 필드가 어떻게 바뀌는지를 둘 다 적는다. 과제 문장만 있는 상태는 S1에 남는다.
+막는 증거. 지불자가 ASSUMPTION. 기준에 통과 분기 또는 실패 분기가 없음. 고객·문제 CONFLICT.
+유지. 사업모델 가설의 outcome이 not_run이거나 insufficient_record이거나 failed.
+상향. S3 조건.
+하향. 지불자 CLAIM이 CONFLICT로 풀리고 다른 지불자 CLAIM이 없으면 S1. 고객·문제 짝이 깨지면 S0.
+verdict. judgment_deferred.
+부정. 기준이 실행되고 failed면 단계에 남지 않거나 S1으로 내릴 수 있다. 지불 가설이 하나뿐이고 거절 기록이 그 기준의 실패 분기와 같으면 S1로 내린다. 화면은 가설 실패를 말하고, verdict는 유보다. 「사업성이 없다」로 바꾸지 않는다.
+화면. 초기 사업화 가설과 검증 기준은 있다. 결과는 아직 없거나, 기준을 통과하지 못했다. 둘을 같은 문장으로 합치지 않는다.
+
+S3 사업모델 검증.
+진입 최소 증거. S2의 유지 조건이 깨지지 않음. 사업모델 가설의 기준이 결과 전에 적혀 있음. 그 기준의 통과는 두 범위를 모두 요구한다. 주체·금액·기록이 문자적으로 있는 결제 FACT. 그리고 문제 지표가 정해진 방향으로 움직였다는 별도 FACT. outcome passed.
+막는 증거. 지표가 측정되지 않음. 결제만 있고 지표가 없음. 지표가 측정됐으나 움직이지 않음. 결제 문장이 CLAIM. 다른 가설의 VALIDATED를 이 가설에 재사용.
+이전 설계 수정. 지표가 그대로인 채 S3에 머무는 규칙을 철회한다. 그 경우는 S3에 들어오지 않는다. outcome은 failed 또는 insufficient_record다. 단계는 S2 이하다. verdict는 judgment_deferred다.
+상향. S4 조건.
+하향. 결제 FACT가 CONFLICT로 깨져 그 가설의 passed가 취소되면 S2. 고객·문제 짝이 깨지면 S0.
+verdict. conditionally_viable는 passed일 때만.
+화면. 미리 적은 사업모델 기준을 통과했다. 확장 여부는 아직이다.
+
+S4 확장성 검증.
+진입 최소 증거. 반복 가설의 기준이 코호트와 기간을 결과 전에 적고, 그 기준의 FACT로 outcome이 passed. 결제 가설의 passed가 동시에 살아 있음. 한 건의 결제는 이 기준이 아니다.
+막는 증거. 반복이 CLAIM 또는 의향. 코호트나 기간이 없음. 결제 가설이 깨짐.
+상향. 없다.
+하향. 반복 passed가 취소되고 결제 passed가 남으면 S3. 결제 passed도 취소되면 S2 이하.
+verdict. viable는 위 진입이 유지될 때만.
+화면. 반복 검증 기준을 통과했다.
+
+매핑이 모순이면 실패인 경우.
+S0인데 judgment_deferred. S1인데 insufficient_basis. S2인데 conditionally_viable. S3인데 지표 FACT가 없음. S4인데 반복 가설이 CLAIM. VALIDATED가 가설 id 없이 근거 더미에 붙음. 화면이 「사업성이 없다」인데 verdict가 judgment_deferred.
+
+수용 기준. 구현 후 대조.
+고객 확인만으로는 S0과 insufficient_basis가 유지되고 judgment 문장만 바뀐다.
+고객 CLAIM과 문제 CLAIM이 생기면 S1과 judgment_deferred가 되고 whyPossible과 whyFail이 그 id를 인용한다.
+지불자 CLAIM만 있고 통과·실패 분기가 없으면 S1에 남는다.
+지표 없는 결제 FACT는 S3로 올리지 않는다.
+지표가 움직이지 않은 측정은 S3로 올리지 않고 failed로 남긴다.
+decideStage의 단어 승격이 사용자 단계를 쓰면 실패다.
+
+확인하지 못한 것. decideVerdict 전체를 이번 턴에 다시 실행하지 않았다. 시작부만 읽었다. evidenceCount가 2 미만이고 S0일 때 insufficient_basis를 반환하는 줄은 읽었다. 그 함수가 매출 단어로 viable을 주는지는 이번 턴에 호출로 확인하지 않았다.
+
+===== 3. 다음 행동 선택 계약 =====
+
+유지. 다음 행동은 이해 확인 또는 검증 과제다. 선택 이유에 슬롯 순서와 CLOSED를 쓰지 않는다. 이미 아는 명제를 다시 묻지 않는다. 질문으로 닫히지 않는 불확실성은 검증 과제로 바꾼다. 스냅샷이 SI 문장을 문서 인용으로 바꾸지 못한다.
+
+모호했던 부분. 「판단을 바꿀 가능성이 높다」만 있으면 구현자가 순서를 다시 넣을 수 있다. 현재 SiValidationAsk는 kind, criticalUnknown, decisionChangingEvidence, validationPriority, source만 가진다. 답변 전에 후보를 비교하는 필드가 없다. 답변 뒤에 이유를 붙이면 이전 PR #197의 whyNow와 같은 형태가 된다.
+
+제안 계약.
+답을 받기 전에 DecisionRecord를 커밋한다. 머리의 다음 행동과 함께 저장한다. 필드가 현재 타입에 없다. 구현 전 승인 대상이다.
+후보마다 필수인 항목.
+targetHypothesisId. 현재 판단의 어느 부분인가. whyPossible, whyFail, stage, verdict, criticalUnknown 중 이름.
+branches. 최소 둘. 결과를 보기 전에 적는다. 확인 또는 통과일 때 바뀌는 필드. 수정 또는 실패일 때 바뀌는 필드. 모르겠음일 때 바뀌는 필드.
+alreadyKnown. 그 명제가 이미 CLAIM 이상으로 있으면 true.
+resolvableByQuestion. 창업자가 자기 의도만으로 답할 수 있으면 true. 대화 밖의 기록이 필요하면 false.
+priorityReason. 바로 아래 후보의 어느 분기보다 이 후보의 어느 분기가 큰지 한 문장.
+
+선택 절차. 이 순서만 쓴다.
+1. alreadyKnown이 true인 후보를 뺀다.
+2. 모든 분기가 stage, verdict, whyPossible, whyFail을 그대로 두는 후보를 뺀다.
+3. 남은 후보에서 단계나 verdict가 바뀌는 분기를, 문장만 바뀌는 분기보다 앞에 둔다.
+4. 그다음, 실패 분기가 단계를 내리는 후보를 문장만 추가하는 후보보다 앞에 둔다.
+5. 1위가 resolvableByQuestion false이면 검증 과제다. true이면 이해 확인이다.
+6. 동점이면 가설 id의 이름 순서나 갭 id 순서로 고르지 않는다. DecisionRecord에 동점과 보류를 적고, 창업자에게는 판단을 가장 크게 내리는 실패 분기를 가진 쪽을 고른다고 한 줄로 말한다. 그것도 같으면 검증 과제를 고른다. 슬롯 목록의 첫 항목은 쓰지 않는다.
+7. CLOSED, 질문 번호, 갭 배열 순서는 입력이 아니다.
+
+답변 후. 실제 변화를 예측 분기와 대조한다. 어느 분기에도 없으면 「예측 밖」으로 이력에 남긴다. 선택 이유를 그때 고쳐 쓰지 않는다. 선택 이유는 답을 받기 전의 priorityReason이다.
+
+배송 SaaS. 고객 CLAIM 이후, 답을 받기 전의 비교.
+후보 문제 확인. 영향은 S0에서 S1로 가는 짝. 확인 분기: 문제 CLAIM이 생기고 단계가 S1이 될 수 있다. 수정 분기: 문제 명제가 바뀌고 S0에 남는다. 모르겠음 분기: 단계는 그대로이고 다음부터는 질문이 아니라 검증이다. alreadyKnown false. resolvableByQuestion true.
+후보 지불자. 확인 분기: 지불자 CLAIM만 생긴다. 문제 짝이 없어 S1 진입 조건을 충족하지 못한다. 단계와 verdict는 그대로다. 절차 2에서 탈락한다.
+후보 채널. 채널 CLAIM은 stage와 verdict와 이길·실패 이유를 바꾸지 못한다. 탈락한다.
+후보 결제 기록 검증. resolvableByQuestion false. 문제 후보가 단계 분기를 가지므로 결제 검증보다 앞이다.
+선택. 문제 이해 확인. priorityReason. 지불자와 채널은 단계 분기가 없고, 문제 확인은 S0과 S1이 갈린다.
+이 비교가 장부에 없이 나중에 「문제를 물어야 해서」라고만 적히면 실패다.
+
+수용 기준.
+고객 확인 다음 행동의 DecisionRecord가 답변 시각보다 이르다.
+지불자 후보의 분기가 단계를 바꾸지 않는다고 적혀 있고, 그 이유로 탈락한다.
+물류본부 수정 뒤의 1위는 새 고객의 문제 명제다. 옛 문제 문장 「주문과 배송을 따로 관리해야 함」의 alreadyKnown은 이전 고객에만 해당하면 true가 되어 탈락한다.
+부재 답 이후 1위는 resolvableByQuestion false인 검증 과제다.
+같은 질문 해시는 나가지 않는다.
+선택 이유 문자열에 advance after, CLOSED, target= 가 있으면 실패다.
+
+확인하지 못한 것. decideNextQuestionFromReview의 현재 반환을 이번 턴에 실행하지 않았다. 슬롯 이유 문자열은 이전 재생 보고서의 인용이다.
+
+===== 4. 장부와 복구 계약 =====
+
+유지. sessionStorage는 화면 캐시다. workspace-ai-pm-loop-store.ts의 saveAiPmLoopState와 workspace-ai-pm-messages.ts의 문서 저장이 sessionStorage.setItem을 호출한다. 이번 턴에 그 줄을 읽었다. 탭을 닫은 뒤의 복구는 이 저장만으로 성립하지 않는다. startup_projects 행 타입에는 title, summary, problem, solution, target_customer, onboarding_context, user_id가 있고 장부 컬럼은 없다. 이번 턴에 StartupProjectRow를 읽었다. 마이그레이션 목록은 열지 않았다. onboarding_context에 장부를 넣지 않는다.
+
+모호했던 부분. 이전 설계는 DB 이관을 나중 승인으로 두면서, 세션을 비워도 복구된다는 수용 기준을 같이 적었다. 영속 저장 전에는 그 기준을 충족했다고 말할 수 없다.
+
+제안 계약. DB는 지금 만들지 않는다. 저장이 승인될 때 레코드가 가져야 할 모양만 고정한다.
+소유. startup_projects.user_id와 같은 프로젝트 소유자만 읽고 쓴다. 다른 사용자 복구는 거절한다.
+머리. headVersion은 프로젝트 안에서 1부터 증가하는 정수다. headCommitId는 커밋마다 새로 만든다. parentCommitId는 직전 headCommitId다.
+판단 버전은 SI가 머리를 바꿀 때만 증가한다. 모델 초안 저장은 머리를 증가시키지 않는다.
+근거 참조. 각 버전은 추가·강등·유지된 근거 id를 가진다. 원문 전체는 패킷에 반복하지 않고 근거 저장소의 id로 가리킨다.
+다음 행동. 그 버전의 DecisionRecord id.
+중복 방지. 프로젝트와 idempotencyKey가 같으면 기존 커밋을 반환한다. 둘째 머리를 만들지 않는다.
+충돌. 요청의 parentCommitId가 현재 headCommitId와 다르면 거절한다. 현재 머리는 유지한다. 거절 응답에 현재 머리와 요청이 기대한 부모를 함께 준다. 자동 병합하지 않는다.
+복구 절차. 저장소가 이 레코드를 돌려주면 클라이언트는 headCommitId와 DecisionRecord와 근거 id를 화면에 다시 그린다. 세션의 루프 상태가 더 새 것처럼 보여도 parent가 맞지 않으면 세션이 이긴다.
+
+충족 선언.
+이 기준은 지금 충족되지 않았다. 충족 선언은 영속 저장이 위 규칙을 실행으로 통과한 뒤의 별도 보고에서만 한다. 이번 문서는 그 선언이 아니다.
+
+수용 기준. 저장 구현 후 대조. 지금은 해당 없음.
+같은 idempotencyKey 두 번은 headVersion이 한 번만 증가한다.
+부모를 과거 커밋으로 둔 쓰기는 headCommitId가 변하지 않는다.
+sessionStorage만 지우고 영속 저장이 없으면 복구 테스트를 통과로 적지 않는다.
+복구 직후 다음 행동은 마지막 DecisionRecord의 선택이다.
+
+확인하지 못한 것. 프로젝트 행이 실제로 어느 API로 쓰이는지 이번 턴에 추적하지 않았다. 트랜잭션 격리 수준을 확인하지 않았다. 따라서 동시 쓰기 경쟁의 현재 동작을 안다고 쓰지 않는다. 위 거절 규칙은 현재 동작의 설명이 아니라 앞으로의 계약이다.
+
+===== 5. 외부 모델 계약 =====
+
+유지. 포트는 AIProviderPort다. 이번 턴에 chat, stream, complete 시그니처를 읽었다. 모델은 초안만 낸다. SI가 수용, 강등, 거절한다. 충돌하거나 근거 id가 없으면 머리를 덮지 않는다. 앱과 packages/core에 공급자 SDK를 추가하지 않는다. 브라우저 자동화는 상용 경로에 없다.
+
+모호했던 부분. 8회가 검토 품질을 보장하는 것처럼 읽힐 수 있다. 예산이 끝나면 완료로 처리할 위험이 있다.
+
+제안 계약.
+8은 초기 운영 상한이다. 최적이라는 증거가 없다. 비용 실측으로 고른 값이 아니다. 완료 조건과 분리한다.
+완료는 단계 계약의 verdict가 요구하는 가설 outcome으로만 말한다. 호출 횟수로 완료를 만들지 않는다.
+상한에 닿으면 상태만 budget_held다. 이 상태는 verdict가 아니다. 현재 타입에 없다.
+budget_held에서 머리는 그 사건만으로 바뀌지 않는다. 미해결 가설과 마지막 DecisionRecord는 남는다. reviewComplete는 false다. 화면은 검토 완료라고 쓰지 않는다.
+그 뒤 창업자 답은 모델 없이 SI commit으로 처리할 수 있다. 모델 초안만 멈춘다.
+제한과 장애도 reviewComplete를 true로 두지 않는다. 재시도는 이전 설계의 한 번을 유지한다. 새 페이지로 한도를 피하지 않는다.
+모델이 VALIDATED나 viable을 제안해도 섹션 1과 2를 통과하지 못하면 거절한다. headVersion은 그대로다. 초안은 제안 로그에만 남는다.
+
+수용 기준.
+8회째 호출 뒤에 완료 문구가 없다. 단계와 verdict는 호출 전에 커밋된 값이다.
+9회째 모델 호출은 나가지 않는다. 창업자의 고객 수정은 모델 없이 CONFLICT와 단계 하향을 만들 수 있다.
+모델 초안의 viable은 부재 가설이 insufficient_record인 동안 머리에 들어가지 않는다.
+호출 타임아웃 뒤 headCommitId가 같다.
+
+확인하지 못한 것. TokenManager의 현재 예산 숫자를 이번 턴에 실행하지 않았다. 8이 그 모듈의 기존 값인지는 확인하지 않았다. 8은 이 보완안의 운영 상한 제안이지 코드에 있는 상한이 아니다.
+
+===== 6. 회귀 시나리오 =====
+
+이전 설계의 배송 SaaS 세 예시가 쓰는 사업 입력과 답 문장은 유지한다. 아래는 그 계약이 이번 보완에서 어떻게 판정되는지와, 추가 일곱 경우다. 전부 기대다. 이번 턴에 재현 실행하지 않았다.
+
+기존 1. 고객 확인.
+입력. 이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다.
+기대. 고객 가설 CLAIM. 단계 S0. verdict insufficient_basis. whyPossible은 비어 있다. judgment 문장은 고객 주장을 받았고 문제는 문서 가정이라고 바뀐다.
+다음 행동. 섹션 3의 DecisionRecord가 답을 받기 전에 문제 확인을 고른다.
+이력. ASSUMPTION에서 CLAIM. FACT 이력 없음.
+이어서 문제 확인이 CLAIM이 되면 S1, judgment_deferred, whyPossible과 whyFail이 두 id를 인용한다.
+
+기존 2. 물류본부 수정.
+입력. 이 서비스를 가장 필요로 하는 사람은 대기업 물류본부입니다. 전제는 S1.
+기대. 새 고객 CLAIM. 이전 고객과 CONFLICT. 문제 짝이 깨져 S0. insufficient_basis. 옛 문제 MCQ는 alreadyKnown 탈락으로 화면에 없다.
+다음. 물류본부의 불편이 주문·배송 분리인지 묻는 이해 확인.
+이력. 이전 고객 유형은 삭제되지 않고 CONFLICT로 남는다.
+
+기존 3. 결제 부재.
+입력. 아직 실제 결제·사용 증거는 없습니다. 전제는 S1.
+기대. 결제 가설에 부재 CLAIM. 문제·시장 FACT 없음. 단계 S1. judgment_deferred. whyFail에 부재가 한 줄 추가된다. whyPossible 가설은 유지된다.
+다음. 주체·금액·기록을 가져오는 검증 과제. 지불자 MCQ가 아니다.
+
+추가 1. 기록은 있으나 범위가 좁다.
+입력. 세금계산서 한 줄. 2026-03-02 반찬가게 A가 월 구독 3만 원을 1회 결제. 전제는 S2. 사업모델 기준은 결제 문자 범위와 문제 지표 이동을 둘 다 요구한다고 이미 적혀 있다. 지표 기록은 없다.
+기대. 그 한 줄만 FACT. 사업모델 가설 outcome은 insufficient_record. VALIDATED 없음. 반복 가설과 문제 해결 가설은 그대로다. 단계 S2. verdict judgment_deferred.
+다음. 지표를 측정하는 검증 과제. 「결제했는가」를 다시 묻지 않는다.
+이력. FACT 추가. 가설 outcome은 not_run에서 insufficient_record. 단계 필드 변경 없음.
+이 한 줄로 conditionally_viable가 되면 실패다.
+
+추가 2. 출처가 충돌한다.
+입력. 창업자 부재 CLAIM이 있는 뒤 추가 1의 세금계산서가 들어온다.
+기대. 결제 가설은 CONFLICT. 세금계산서의 문자 범위 FACT는 유지한다. 부재 CLAIM도 지치지 않는다. 사업모델 가설은 passed가 아니다. 단계는 오르지 않는다. verdict는 유보다.
+다음. 어느 출처를 이 가설의 근거로 인정할지 창업자에게 묻는다. 모델이 FACT를 자동 채택해 단계를 올리면 실패다.
+이력. 두 근거 id가 모두 남고 충돌 표시가 붙는다. head의 자동 병합 없음.
+
+추가 3. 답이 판단을 바꾸지 않는다.
+입력. 문제 질문을 기다릴 때 「이미 결제 3건이 있어 고객이 돈을 내고 있습니다.」
+기대. 예측 분기에 없는 답으로 기록한다. 선택 이유는 소급하지 않는다. 유형은 결제 가설 CLAIM. 단계와 verdict는 답 전과 같다. judgment에는 주체·금액·기록이 없어 단계를 움직이지 않았다는 문장이 추가된다.
+다음. 그 셋의 검증 과제.
+이력. 예측 밖. 단계 변경 없음.
+
+추가 4. 검증 과제를 실행하지 않는다.
+입력. S2. 기준의 통과·실패 분기가 이미 적혀 있다. 창업자가 「나중에 하겠다」고 한다.
+기대. outcome은 not_run. 단계 S2. verdict judgment_deferred. 과제 문장이 있다는 이유만으로 가능성이 더 올라가지 않는다. 완료가 아니다.
+다음. 같은 검증 과제가 남는다. 이미 CLAIM인 지불자를 다시 묻지 않는다.
+이력. 새 판단 버전은 「실행하지 않음」만 추가하고 단계 필드는 그대로다.
+
+추가 5. 모델이 근거 없이 VALIDATED와 viable을 제안한다.
+입력. 추가 3의 CLAIM만 있는 머리. 초안은 evidence id 없이 verdict viable, class VALIDATED.
+기대. 거절. headVersion과 headCommitId는 그대로다. 제안 로그에 거절 이유(가설 기준 passed 아님, FACT id 없음)가 남는다.
+다음. 거절 전의 DecisionRecord가 유지된다.
+이력. 머리 변경 없음. 제안 1건 거절.
+
+추가 6. 호출 상한.
+입력. 모델 호출 8회가 기록된 프로젝트. 머리는 S1, judgment_deferred.
+기대. 상태 budget_held. reviewComplete false. 단계와 verdict는 그대로다. 미해결 목록이 남는다. 9회째 호출은 없다. 화면은 검토 완료가 아니다.
+다음. 마지막 검증 과제 또는 이해 확인을 모델 없이 보여 준다. 창업자 답은 SI commit으로 받을 수 있다.
+이력. 상한 사건만 있고 판단 필드 변경은 없다.
+
+추가 7. 복구 충돌.
+입력. 머리 parent가 C3다. 오래된 세션이 parent C2로 커밋을 보낸다.
+기대. 쓰기 거절. 머리는 C3다. 응답에 C3와 C2가 함께 있다. 자동 병합 없음.
+다음. C3의 DecisionRecord.
+이력. C2 기반 버전은 생기지 않는다.
+이 시나리오는 영속 저장 구현 전의 통과 선언이 아니다. 기대 계약이다.
+
+===== 7. 확인하지 못한 사항 =====
+
+이번 턴에 테스트를 실행하지 않았다. 이전 재생의 30분기 결론 고정을 새 실행으로 다시 증명하지 않았다.
+classifyFounderEvidenceClass의 「3건」 FACT 귀결은 함수 본문 순서의 읽기다.
+decideStage와 decideVerdict를 호출하지 않았다.
+갭 엔진의 현재 decisionReason 문자열을 이번 턴에 출력하지 않았다.
+startup_projects에 장부를 넣을 컬럼이 이미 있는지는 행 타입에 없음을 본 범위까지만 말한다. 마이그레이션 파일은 열지 않았다.
+8회 상한의 비용 적합성은 실측하지 않았고 주장하지 않는다.
+SiEvidenceItem, SiValidationAsk, SiStrategicJudgment가 섹션 1의 가설 묶음과 섹션 3의 DecisionRecord와 섹션 2의 validationOutcome을 담지 못한다. 이 필드를 넣지 않고 구현하면 계약은 산문에만 남는다. 타입을 넓히는 일은 이번 금지 범위 밖이며, 구현 승인 때의 선행 항목이다.
+Production 잠금 0b465226은 유지한다. 이 보완안은 그 배포가 아니다.
+
+===== 게이트 =====
+
+방향은 유지한다. 구현은 시작하지 않는다. CPO가 이 계약으로 PR #197의 실패가 설명되는지를 검토한다. 그 검토 전에 제품 코드, DECISIONS.md, 병합, 배포는 열지 않는다.
+
+Next Autonomous Target
+Epic: PR #197 SI 계약 보완. 진행률: 근거·단계·다음 행동·복구·호출 상한의 보완안 제출까지. 구현은 열지 않음. 복구 수용 기준은 미충족. 예상 완료: CPO가 이 계약을 본 뒤의 별도 지시. 다음 보고 08:00.
+AI는 Founder의 성공 확률을 높이기 위한 다음 개선을 계속 진행 중입니다.

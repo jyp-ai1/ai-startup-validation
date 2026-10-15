@@ -1,0 +1,751 @@
+{
+  "R1": {
+    "afterProblem": {
+      "asked": {
+        "gap": "problemJtbd",
+        "question": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+        "labels": [
+          "주문과 배송을 따로 관리해야 함",
+          "기타",
+          "아직 모르겠음"
+        ],
+        "picked": "주문과 배송을 따로 관리해야 함"
+      },
+      "persisted": true,
+      "applied": true,
+      "intent": "business_fact",
+      "askedGap": "problemJtbd",
+      "answer": "지금 가장 크게 해결하려는 불편은 「주문과 배송을 따로 관리해야 함」입니다.",
+      "nextTargetGap": "customerPersona",
+      "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+      "lastDecisionType": "open",
+      "lastConfirmGap": null,
+      "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+      "dims": {
+        "customer": "unknown",
+        "problem": "needs_check",
+        "solution": "unknown",
+        "customerChange": "unknown",
+        "customerChangeEvidence": null
+      },
+      "memoryBuyer": null,
+      "optionLabels": [
+        "주문과 배송을 따로 관리해야 함"
+      ]
+    },
+    "afterCustomer": {
+      "asked": {
+        "gap": "customerPersona",
+        "question": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+        "labels": [
+          "반찬가게",
+          "꽃집",
+          "직접 배송 소상공인",
+          "기타",
+          "아직 모르겠음"
+        ],
+        "picked": "반찬가게"
+      },
+      "persisted": true,
+      "applied": true,
+      "intent": "business_fact",
+      "askedGap": "customerPersona",
+      "answer": "이 서비스를 가장 필요로 하는 사람은 반찬가게입니다.",
+      "nextTargetGap": "problemJtbd",
+      "nextQuestionText": "핵심 불편은(는) 「주문」으로 이해했습니다. 맞나요?",
+      "nextWhyNow": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
+      "lastDecisionType": "confirm",
+      "lastConfirmGap": "problemJtbd",
+      "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
+      "dims": {
+        "customer": "clear",
+        "problem": "needs_check",
+        "solution": "unknown",
+        "customerChange": "unknown",
+        "customerChangeEvidence": null
+      },
+      "memoryBuyer": null,
+      "optionLabels": [
+        "반찬가게",
+        "꽃집",
+        "직접 배송 소상공인"
+      ]
+    }
+  },
+  "R2": {
+    "withEvidence": {
+      "persisted": true,
+      "applied": false,
+      "intent": "business_fact",
+      "askedGap": "validationTestability",
+      "answer": "이미 결제 3건이 있어 고객이 돈을 내고 있습니다.",
+      "nextTargetGap": "customerPersona",
+      "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+      "lastDecisionType": "open",
+      "lastConfirmGap": null,
+      "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+      "dims": {
+        "customer": "unknown",
+        "problem": "unknown",
+        "solution": "unknown",
+        "customerChange": "unknown",
+        "customerChangeEvidence": null
+      },
+      "memoryBuyer": null
+    },
+    "withoutEvidence": {
+      "persisted": true,
+      "applied": false,
+      "intent": "business_fact",
+      "askedGap": "validationTestability",
+      "answer": "아직 실제 결제·사용 증거는 없습니다.",
+      "nextTargetGap": "customerPersona",
+      "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+      "lastDecisionType": "open",
+      "lastConfirmGap": null,
+      "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+      "dims": {
+        "customer": "unknown",
+        "problem": "unknown",
+        "solution": "unknown",
+        "customerChange": "unknown",
+        "customerChangeEvidence": null
+      },
+      "memoryBuyer": null
+    },
+    "sameConclusion": true,
+    "sameCustomerChange": true
+  },
+  "R3": {
+    "afterCustomerNext": "핵심 불편은(는) 「주문」으로 이해했습니다. 맞나요?",
+    "afterCustomerWhy": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
+    "afterCustomerGap": "problemJtbd"
+  },
+  "R4": {
+    "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+    "labels": [
+      "지금은 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어…",
+      "기타",
+      "아직 모르겠음"
+    ]
+  },
+  "guardUnknown": {
+    "asked": {
+      "gap": "payer",
+      "question": "서비스 비용은 누가 지불하나요?",
+      "labels": [
+        "반찬가게가 비용을 지불합니다",
+        "꽃집이 비용을 지불합니다",
+        "직접 배송 소상공인이 비용을 지불합니다",
+        "기타",
+        "아직 모르겠음"
+      ],
+      "picked": "아직 모르겠음"
+    },
+    "persisted": true,
+    "applied": false,
+    "intent": "unknown_signal",
+    "askedGap": "payer",
+    "answer": "아직 모르겠습니다.",
+    "nextTargetGap": "customerPersona",
+    "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+    "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+    "lastDecisionType": "open",
+    "lastConfirmGap": null,
+    "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+    "dims": {
+      "customer": "unknown",
+      "problem": "unknown",
+      "solution": "unknown",
+      "customerChange": "unknown",
+      "customerChangeEvidence": null
+    },
+    "memoryBuyer": null,
+    "optionLabels": [
+      "반찬가게가 비용을 지불합니다",
+      "꽃집이 비용을 지불합니다",
+      "직접 배송 소상공인이 비용을 지불합니다"
+    ],
+    "lastIntent": "unknown_signal"
+  },
+  "guardFriendSale": {
+    "persisted": true,
+    "applied": false,
+    "intent": "business_fact",
+    "askedGap": "validationTestability",
+    "answer": "내가 지인에게 판 것이 1회 있습니다.",
+    "nextTargetGap": "customerPersona",
+    "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+    "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+    "lastDecisionType": "open",
+    "lastConfirmGap": null,
+    "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+    "dims": {
+      "customer": "unknown",
+      "problem": "unknown",
+      "solution": "unknown",
+      "customerChange": "unknown",
+      "customerChangeEvidence": null
+    },
+    "memoryBuyer": null
+  },
+  "guardS4": {
+    "persisted": true,
+    "applied": true,
+    "intent": "correction",
+    "askedGap": "customerPersona",
+    "answer": "사실 아이가 아니라 혼자 사는 20대가 메인이에요",
+    "nextTargetGap": "customerPersona",
+    "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+    "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+    "lastDecisionType": "open",
+    "lastConfirmGap": null,
+    "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+    "dims": {
+      "customer": "unknown",
+      "problem": "unknown",
+      "solution": "unknown",
+      "customerChange": "unknown",
+      "customerChangeEvidence": null
+    },
+    "memoryBuyer": null
+  },
+  "guardS6": {
+    "afterSupply": {
+      "persisted": true,
+      "applied": true,
+      "intent": "business_fact",
+      "askedGap": "validationTestability",
+      "answer": "집이 신원 확인 때문에 수수료를 낸 적은 없습니다.",
+      "nextTargetGap": "customerPersona",
+      "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+      "lastDecisionType": "open",
+      "lastConfirmGap": null,
+      "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+      "dims": {
+        "customer": "unknown",
+        "problem": "needs_check",
+        "solution": "unknown",
+        "customerChange": "unknown",
+        "customerChangeEvidence": null
+      },
+      "memoryBuyer": null
+    },
+    "afterNoPay": {
+      "persisted": true,
+      "applied": false,
+      "intent": "business_fact",
+      "askedGap": "validationTestability",
+      "answer": "집이 신원 확인 때문에 수수료를 낸 적은 없습니다.",
+      "nextTargetGap": "customerPersona",
+      "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+      "lastDecisionType": "open",
+      "lastConfirmGap": null,
+      "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+      "dims": {
+        "customer": "unknown",
+        "problem": "needs_check",
+        "solution": "unknown",
+        "customerChange": "unknown",
+        "customerChangeEvidence": null
+      },
+      "memoryBuyer": null
+    }
+  },
+  "guardOther": {
+    "emptyWaits": true,
+    "filled": {
+      "persisted": false,
+      "applied": false,
+      "intent": null,
+      "askedGap": null,
+      "answer": "본사·가맹본부가 결제합니다",
+      "nextTargetGap": "payer",
+      "nextQuestionText": null,
+      "nextWhyNow": "누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.",
+      "lastDecisionType": null,
+      "lastConfirmGap": null,
+      "conclusion": "아직 사업에 대한 1차 판단을 내릴 정보가 부족합니다.",
+      "dims": {
+        "customer": "unknown",
+        "problem": "unknown",
+        "solution": "unknown",
+        "customerChange": "unknown",
+        "customerChangeEvidence": null
+      },
+      "memoryBuyer": null
+    }
+  },
+  "followEngine": {
+    "S1": [
+      {
+        "asked": {
+          "gap": "problemJtbd",
+          "question": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "labels": [
+            "주문과 배송을 따로 관리해야 함",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "주문과 배송을 따로 관리해야 함"
+        },
+        "persisted": true,
+        "applied": true,
+        "intent": "business_fact",
+        "askedGap": "problemJtbd",
+        "answer": "지금 가장 크게 해결하려는 불편은 「주문과 배송을 따로 관리해야 함」입니다.",
+        "nextTargetGap": "customerPersona",
+        "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+        "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+        "lastDecisionType": "open",
+        "lastConfirmGap": null,
+        "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+        "dims": {
+          "customer": "unknown",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": [
+          "주문과 배송을 따로 관리해야 함"
+        ]
+      },
+      {
+        "asked": {
+          "gap": "customerPersona",
+          "question": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "labels": [
+            "반찬가게",
+            "꽃집",
+            "직접 배송 소상공인",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "반찬가게"
+        },
+        "persisted": true,
+        "applied": true,
+        "intent": "business_fact",
+        "askedGap": "customerPersona",
+        "answer": "이 서비스를 가장 필요로 하는 사람은 반찬가게입니다.",
+        "nextTargetGap": "problemJtbd",
+        "nextQuestionText": "핵심 불편은(는) 「주문」으로 이해했습니다. 맞나요?",
+        "nextWhyNow": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
+        "lastDecisionType": "confirm",
+        "lastConfirmGap": "problemJtbd",
+        "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
+        "dims": {
+          "customer": "clear",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": [
+          "반찬가게",
+          "꽃집",
+          "직접 배송 소상공인"
+        ]
+      },
+      {
+        "asked": {
+          "gap": "problemJtbd",
+          "question": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "labels": [
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "기타"
+        },
+        "persisted": false,
+        "applied": false,
+        "intent": "business_fact",
+        "askedGap": "customerPersona",
+        "answer": "이 서비스를 가장 필요로 하는 사람은 반찬가게입니다.",
+        "nextTargetGap": "problemJtbd",
+        "nextQuestionText": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+        "nextWhyNow": "해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
+        "lastDecisionType": "confirm",
+        "lastConfirmGap": "problemJtbd",
+        "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
+        "dims": {
+          "customer": "clear",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": []
+      }
+    ],
+    "S2": [
+      {
+        "asked": {
+          "gap": "problemJtbd",
+          "question": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "labels": [
+            "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다"
+        },
+        "persisted": true,
+        "applied": true,
+        "intent": "business_fact",
+        "askedGap": "problemJtbd",
+        "answer": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
+        "nextTargetGap": "customerPersona",
+        "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+        "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+        "lastDecisionType": "open",
+        "lastConfirmGap": null,
+        "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+        "dims": {
+          "customer": "unknown",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": [
+          "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다"
+        ]
+      },
+      {
+        "asked": {
+          "gap": "customerPersona",
+          "question": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "labels": [
+            "전통주를 선물",
+            "취미로 찾는 30–40대",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "전통주를 선물"
+        },
+        "persisted": true,
+        "applied": true,
+        "intent": "business_fact",
+        "askedGap": "customerPersona",
+        "answer": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물입니다.",
+        "nextTargetGap": "customerPersona",
+        "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+        "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+        "lastDecisionType": "open",
+        "lastConfirmGap": null,
+        "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+        "dims": {
+          "customer": "unknown",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": [
+          "전통주를 선물",
+          "취미로 찾는 30–40대"
+        ]
+      }
+    ],
+    "S3": [
+      {
+        "asked": {
+          "gap": "problemJtbd",
+          "question": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "labels": [
+            "메일",
+            "엑셀",
+            "ERP에 같은 숫자를 세 번 옮기다 오타가 난다",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "메일"
+        },
+        "persisted": true,
+        "applied": true,
+        "intent": "business_fact",
+        "askedGap": "problemJtbd",
+        "answer": "지금 가장 크게 해결하려는 불편은 「메일」입니다.",
+        "nextTargetGap": "customerPersona",
+        "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+        "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+        "lastDecisionType": "open",
+        "lastConfirmGap": null,
+        "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+        "dims": {
+          "customer": "unknown",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": [
+          "메일",
+          "엑셀",
+          "ERP에 같은 숫자를 세 번 옮기다 오타가 난다"
+        ]
+      },
+      {
+        "asked": {
+          "gap": "customerPersona",
+          "question": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "labels": [
+            "직원 20–80명 제조사 영업관리자",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "직원 20–80명 제조사 영업관리자"
+        },
+        "persisted": true,
+        "applied": true,
+        "intent": "business_fact",
+        "askedGap": "customerPersona",
+        "answer": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
+        "nextTargetGap": "customerPersona",
+        "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+        "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+        "lastDecisionType": "open",
+        "lastConfirmGap": null,
+        "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+        "dims": {
+          "customer": "unknown",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": [
+          "직원 20–80명 제조사 영업관리자"
+        ]
+      }
+    ],
+    "S4": [
+      {
+        "asked": {
+          "gap": "problemJtbd",
+          "question": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "labels": [
+            "장을 볼 시간이 없고 과자 고르기가 피곤하다",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "장을 볼 시간이 없고 과자 고르기가 피곤하다"
+        },
+        "persisted": true,
+        "applied": true,
+        "intent": "business_fact",
+        "askedGap": "problemJtbd",
+        "answer": "지금 가장 크게 해결하려는 불편은 「장을 볼 시간이 없고 과자 고르기가 피곤하다」입니다.",
+        "nextTargetGap": "customerPersona",
+        "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+        "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+        "lastDecisionType": "open",
+        "lastConfirmGap": null,
+        "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+        "dims": {
+          "customer": "unknown",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": [
+          "장을 볼 시간이 없고 과자 고르기가 피곤하다"
+        ]
+      },
+      {
+        "asked": {
+          "gap": "customerPersona",
+          "question": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "labels": [
+            "맞벌이 부모",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "맞벌이 부모"
+        },
+        "persisted": true,
+        "applied": true,
+        "intent": "business_fact",
+        "askedGap": "customerPersona",
+        "answer": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
+        "nextTargetGap": "customerPersona",
+        "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+        "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+        "lastDecisionType": "open",
+        "lastConfirmGap": null,
+        "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+        "dims": {
+          "customer": "unknown",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": [
+          "맞벌이 부모"
+        ]
+      }
+    ],
+    "S5": [
+      {
+        "asked": {
+          "gap": "problemJtbd",
+          "question": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "labels": [
+            "시중 단백질바는 맛없거나 비싸다",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "시중 단백질바는 맛없거나 비싸다"
+        },
+        "persisted": true,
+        "applied": true,
+        "intent": "business_fact",
+        "askedGap": "problemJtbd",
+        "answer": "지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸다」입니다.",
+        "nextTargetGap": "customerPersona",
+        "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+        "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+        "lastDecisionType": "open",
+        "lastConfirmGap": null,
+        "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+        "dims": {
+          "customer": "unknown",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": [
+          "시중 단백질바는 맛없거나 비싸다"
+        ]
+      },
+      {
+        "asked": {
+          "gap": "customerPersona",
+          "question": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "labels": [
+            "운동하는 20–30대",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "운동하는 20–30대"
+        },
+        "persisted": true,
+        "applied": true,
+        "intent": "business_fact",
+        "askedGap": "customerPersona",
+        "answer": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
+        "nextTargetGap": "customerPersona",
+        "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+        "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+        "lastDecisionType": "open",
+        "lastConfirmGap": null,
+        "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+        "dims": {
+          "customer": "unknown",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": [
+          "운동하는 20–30대"
+        ]
+      }
+    ],
+    "S6": [
+      {
+        "asked": {
+          "gap": "problemJtbd",
+          "question": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "labels": [
+            "믿을 사람을 찾기 어렵고",
+            "도우미는 일감이 불안정하다",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "믿을 사람을 찾기 어렵고"
+        },
+        "persisted": true,
+        "applied": true,
+        "intent": "business_fact",
+        "askedGap": "problemJtbd",
+        "answer": "지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵고」입니다.",
+        "nextTargetGap": "customerPersona",
+        "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+        "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+        "lastDecisionType": "open",
+        "lastConfirmGap": null,
+        "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+        "dims": {
+          "customer": "unknown",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": [
+          "믿을 사람을 찾기 어렵고",
+          "도우미는 일감이 불안정하다"
+        ]
+      },
+      {
+        "asked": {
+          "gap": "customerPersona",
+          "question": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+          "labels": [
+            "맞벌이 가정",
+            "도우미",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "picked": "맞벌이 가정"
+        },
+        "persisted": true,
+        "applied": true,
+        "intent": "business_fact",
+        "askedGap": "customerPersona",
+        "answer": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다.",
+        "nextTargetGap": "customerPersona",
+        "nextQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+        "nextWhyNow": "누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+        "lastDecisionType": "open",
+        "lastConfirmGap": null,
+        "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+        "dims": {
+          "customer": "unknown",
+          "problem": "needs_check",
+          "solution": "unknown",
+          "customerChange": "unknown",
+          "customerChangeEvidence": null
+        },
+        "memoryBuyer": null,
+        "optionLabels": [
+          "맞벌이 가정",
+          "도우미"
+        ]
+      }
+    ]
+  }
+}

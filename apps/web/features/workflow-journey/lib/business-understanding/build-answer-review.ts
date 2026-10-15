@@ -21,7 +21,10 @@ import {
 } from './interpret-answer-semantics';
 import {
   extractCorrectedFactValue,
+  isCorrectionUtterance,
+  isCustomerCorrectionWithoutPayerEvidence,
   isCustomerFieldCorrection,
+  parseNotXButYCorrection,
 } from './ai-pm-correction-semantics';
 import { isAskedGapOpenDueToSlotConflict } from './ai-pm-answer-first-routing';
 import { isOnSlotCompetitorAnswer } from './competitor-answer-cues';
@@ -30,7 +33,7 @@ import {
   hasPersonaSegmentCue,
   isRelevanceDominantOnPersonaAsk,
 } from './persona-answer-cues';
-import { isOnSlotPayerAnswer } from './payer-answer-cues';
+import { isOnSlotPayerAnswer, isRolePayerAnswer } from './payer-answer-cues';
 import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
 import {
   resolveNuclearWrongSlotAtSubmit,
@@ -363,6 +366,10 @@ function evidenceForExtractedFact(
   askedGapId: string,
 ): { evidenceClass: ExtractedFact['evidenceClass']; confidence: ExtractedFact['confidence'] } {
   const validationBacked = hasValidationEvidenceCue(userAnswer);
+  // D5: VALIDATED maps to FACT + validation cue, independent of slot.
+  if (validationBacked && semantic.mergeable) {
+    return { evidenceClass: 'FACT', confidence: 'high' };
+  }
   if (isWtpHypothesisOnly(userAnswer) && (hit.key === 'revenue' || hit.key === 'buyer' || hit.key === 'customer')) {
     return { evidenceClass: 'ASSUMPTION', confidence: 'low' };
   }
@@ -409,8 +416,9 @@ function evidenceForExtractedFact(
     (hit.key === 'customer' && askedGapId === 'customerPersona' && isOnSlotPersonaAnswer(userAnswer)) ||
     (hit.key === 'revenue' && REVENUE_CUE_RE.test(userAnswer));
 
+  // D5: founder confirmation is CLAIM → ASSUMPTION. Do not auto-promote to FACT.
   if (onSlot && semantic.mergeable) {
-    return { evidenceClass: 'FACT', confidence: 'high' };
+    return { evidenceClass: 'ASSUMPTION', confidence: 'medium' };
   }
   if (semantic.quality === 'CONTRADICTORY') {
     return { evidenceClass: 'CONTRADICTION', confidence: 'low' };
@@ -419,10 +427,30 @@ function evidenceForExtractedFact(
     return { evidenceClass: 'ASSUMPTION', confidence: 'low' };
   }
   if (semantic.quality === 'VALID') {
-    return { evidenceClass: 'FACT', confidence: 'high' };
+    if (validationBacked) {
+      return { evidenceClass: 'FACT', confidence: 'high' };
+    }
+    return { evidenceClass: 'ASSUMPTION', confidence: 'medium' };
   }
   return { evidenceClass: 'INFERENCE', confidence: 'medium' };
 }
+
+/** Evidence-sensitive gaps stay PARTIAL on CLAIM; FACT/VALIDATED only CLOSE them. */
+const EVIDENCE_SENSITIVE_GAPS = new Set([
+  'validationTestability',
+  'differentiationVsAlternatives',
+  'differentiationHypothesis',
+  'marketChannel',
+  'pricingHint',
+]);
+
+/** Stage A identity + claimed revenue model may CLOSE completeness while evidence stays CLAIM. */
+const IDENTITY_COMPLETENESS_GAPS = new Set([
+  'customerPersona',
+  'problemJtbd',
+  'businessOneLiner',
+  'revenueModel',
+]);
 
 function isOnSlotSufficient(
   askedGapId: string,
@@ -434,7 +462,9 @@ function isOnSlotSufficient(
     if (!semantic.mergeable) return false;
     return (
       isOnSlotPayerAnswer(userAnswer) &&
-      (semantic.factKey === 'buyer' || hasImplicitPayerCue(userAnswer))
+      (semantic.factKey === 'buyer' ||
+        hasImplicitPayerCue(userAnswer) ||
+        isRolePayerAnswer(userAnswer))
     );
   }
   if (askedGapId === 'customerPersona') {
@@ -475,9 +505,25 @@ function deriveGapCompleteness(
   if (isAmbiguousHedge(userAnswer) || semantic.quality === 'AMBIGUOUS') return 'OPEN';
   if (semantic.intent === 'nonsense' || semantic.quality === 'IRRELEVANT') return 'OPEN';
   if (semantic.quality === 'UNKNOWN') return 'OPEN';
-  if (isOnSlotSufficient(askedGapId, userAnswer, semantic)) return 'CLOSED';
+  if (isOnSlotSufficient(askedGapId, userAnswer, semantic)) {
+    if (
+      EVIDENCE_SENSITIVE_GAPS.has(askedGapId) &&
+      !hasValidationEvidenceCue(userAnswer)
+    ) {
+      return 'PARTIAL';
+    }
+    return 'CLOSED';
+  }
   if (semantic.quality === 'PARTIAL' && semantic.mergeable) return 'PARTIAL';
-  if (semantic.quality === 'VALID' && semantic.mergeable) return 'CLOSED';
+  if (semantic.quality === 'VALID' && semantic.mergeable) {
+    if (
+      EVIDENCE_SENSITIVE_GAPS.has(askedGapId) &&
+      !hasValidationEvidenceCue(userAnswer)
+    ) {
+      return 'PARTIAL';
+    }
+    return 'CLOSED';
+  }
   return 'OPEN';
 }
 
@@ -569,16 +615,12 @@ function deriveSecondaryGapCompleteness(
   fact: ExtractedFact,
   askedGapId: string,
 ): GapCompleteness {
+  void askedGapId;
   if (fact.targetGap === 'payer') {
-    if (fact.key === 'buyer' && fact.evidenceClass === 'FACT') return 'CLOSED';
+    // T6: off-slot buyer never closes payer. Asked payer uses deriveGapCompleteness.
     return 'OPEN';
   }
-  const evidenceSensitiveGap =
-    fact.targetGap === 'differentiationVsAlternatives' ||
-    fact.targetGap === 'differentiationHypothesis' ||
-    fact.targetGap === 'marketChannel' ||
-    fact.targetGap === 'pricingHint' ||
-    fact.targetGap === 'validationTestability';
+  const evidenceSensitiveGap = EVIDENCE_SENSITIVE_GAPS.has(fact.targetGap);
   if (evidenceSensitiveGap && fact.evidenceClass !== 'FACT') {
     return fact.evidenceClass === 'ASSUMPTION' ? 'PARTIAL' : 'OPEN';
   }
@@ -591,6 +633,12 @@ function deriveSecondaryGapCompleteness(
     return 'PARTIAL';
   }
   if (fact.evidenceClass === 'FACT') return 'CLOSED';
+  if (
+    (fact.evidenceClass === 'ASSUMPTION' || fact.evidenceClass === 'INFERENCE') &&
+    IDENTITY_COMPLETENESS_GAPS.has(fact.targetGap)
+  ) {
+    return 'CLOSED';
+  }
   if (fact.evidenceClass === 'ASSUMPTION' || fact.evidenceClass === 'INFERENCE') return 'PARTIAL';
   return 'OPEN';
 }
@@ -621,7 +669,25 @@ function buildGapVerdicts(
 ): Record<string, GapVerdict> {
   const verdicts: Record<string, GapVerdict> = {};
 
-  const askedCompleteness = deriveGapCompleteness(semantic, askedGapId, userAnswer);
+  let askedCompleteness = deriveGapCompleteness(semantic, askedGapId, userAnswer);
+  const customerReversedOffSlot =
+    askedGapId !== 'customerPersona' &&
+    (priorClosedGaps?.includes('customerPersona') ?? false) &&
+    (semantic.intent === 'correction' || isCorrectionUtterance(userAnswer)) &&
+    Boolean(parseNotXButYCorrection(userAnswer) || isCustomerFieldCorrection(userAnswer));
+
+  if (customerReversedOffSlot) {
+    verdicts.customerPersona = {
+      gapId: 'customerPersona',
+      completeness: 'CONTRADICTED',
+      rationale: 'Founder corrected a previously closed customer claim from another slot.',
+      factKeys: ['customer'],
+    };
+    if (askedGapId === 'payer' && askedCompleteness === 'CLOSED') {
+      askedCompleteness = 'OPEN';
+    }
+  }
+
   const askedFactKeys =
     semantic.facts.length > 0
       ? semantic.facts.map((f) => f.key)
@@ -639,15 +705,30 @@ function buildGapVerdicts(
   for (const fact of extractedFacts) {
     const gapId = fact.targetGap;
     if (!gapId) continue;
+    if (
+      customerReversedOffSlot &&
+      isCustomerCorrectionWithoutPayerEvidence(userAnswer) &&
+      (fact.key === 'buyer' || gapId === 'payer')
+    ) {
+      continue;
+    }
 
     const completeness = deriveSecondaryGapCompleteness(fact, askedGapId);
     const existing = verdicts[gapId];
 
     if (existing) {
+      if (existing.completeness === 'CONTRADICTED') {
+        continue;
+      }
+      // Asked completeness is owned by deriveGapCompleteness — secondary
+      // identity CLAIM must not overwrite PARTIAL/OPEN/CLOSED.
+      if (gapId === askedGapId) {
+        continue;
+      }
       // Never downgrade asked gap OPEN from ambiguous/irrelevant to PARTIAL via fact evidence
       if (
         gapId === askedGapId &&
-        (existing.completeness === 'OPEN' || existing.completeness === 'CONTRADICTED') &&
+        existing.completeness === 'OPEN' &&
         completeness !== 'CLOSED'
       ) {
         continue;

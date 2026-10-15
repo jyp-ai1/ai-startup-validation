@@ -1,0 +1,139 @@
+PR #197 CPO 통합 검토. 병합 승인이 아니고 Production 배포가 아니다.
+
+이 파일은 구현 SHA에서 다시 실행한 회귀와, 모름·결제 주체 입력의 코드 경로 기록이다. 엔진 전이, DB, provider, 모델, 인증, 호스팅은 바꾸지 않았다. 새 배포와 인증 우회는 하지 않았다. 새 이벤트를 추가하지 않았고, CLAIM을 FACT나 VALIDATED로 올리지 않았다.
+
+기준 HEAD: ffc434dc8e379324f2e0605499c1b97070ffea97
+구현 HEAD: 1d4e747e538a882cf8b6182c62ab6f215ef7a68c
+이 검토를 실행한 로컬 HEAD: 1d4e747e538a882cf8b6182c62ab6f215ef7a68c
+PR #197 headRefOid: 1d4e747e538a882cf8b6182c62ab6f215ef7a68c
+PR 상태: OPEN, draft
+origin/main: 0b465226516e1a4f3eb9ce2087f8bca2c2c091da
+Production 잠금 SHA: 0b465226
+
+지시한 구현 HEAD와 실제 HEAD는 같다. 엔진 파일 차이는 없다.
+명령: git diff --stat ffc434dc8e379324f2e0605499c1b97070ffea97 HEAD -- apps/web/features/strategic-intelligence/lib/si-judgment-contract.ts packages/types/src/domain/strategic-intelligence.ts
+결과: 출력 없음. 두 파일은 기준 HEAD와 같다.
+
+1. 테스트와 빌드
+
+대상 SHA: 1d4e747e538a882cf8b6182c62ab6f215ef7a68c
+이전 보고 2026-10-15 00:30:12 UTC의 43개·11개와 개수는 같다. 아래는 그 기록을 복사한 것이 아니라 이 검토에서 다시 실행한 결과다.
+
+2026-10-15 00:42:43 UTC
+명령: pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts features/strategic-intelligence/lib/__tests__/present-workspace-judgment.test.ts --reporter=verbose
+결과: Test Files 3 passed, Tests 54 passed, Duration 758ms, exit 0.
+구성: si-judgment-contract.test.ts 42개, si-strategy-replay.test.ts 1개(30행 전부), present-workspace-judgment.test.ts 11개. 합계 54. 기존 43개 안에 30행 재생이 들어 있다.
+vitest 3.2.7. AT-14가 같은 실행에서 통과했다. 모델 호출과 OpenAI HTTP는 이 경로에 없다.
+
+2026-10-15 00:42:04 UTC
+명령: CI=1 pnpm --filter web lint
+결과: exit 0. 경고 둘은 기존 파일이다.
+apps/web/lib/ai-pm-accuracy/cpo-2pass-evidence.ts:198 summarizeNext
+apps/web/lib/sidebar-nav.ts:49 _projectId
+
+2026-10-15 00:42:42 UTC 시작
+명령: CI=1 NEXT_TELEMETRY_DISABLED=1 pnpm --filter web build
+결과: exit 0. Next.js 15.5.20. Compiled successfully in 15.2s. 정적 페이지 392. 위와 같은 lint 경고 둘. edge runtime 경고는 페이지 이름을 적지 않았다. 이번 검토가 만든 경고가 아니다.
+
+2. 모름 응답
+
+엔진 직접 호출과 화면 분류는 다르다. AT-10은 한글 「모르겠음」을 분류기에 넣지 않는다. applyFounderAnswer kind unknown 을 호출하고 질문 해시만 비교한다. 선택 id가 달라야 한다는 단언은 없다.
+
+문제 확인 뒤 결제 주체 질문에서 kind unknown 을 한 번 넣은 실행. 2026-10-15 00:42 UTC. 대상 SHA는 위와 같다. 이 실행은 저장소 테스트로 남기지 않았다.
+
+전
+선택 id: q-payer
+가설: h-payer
+prompt: 누가 비용을 지불하는지 확인해 달라.
+결제 주체 evidenceClass: ASSUMPTION
+unknownCounts: 0
+후보: q-payer, q-channel, v-business-model
+판단: 고객 확인과 문제 확인을 반영했다. h-customer는 반찬가게·꽃집 등 직접 배송 소상공인 CLAIM이다. h-problem은 주문과 배송을 따로 관리해야 함 CLAIM이다.
+공개 뷰 다음 행동: 누가 비용을 지불하는지 확인해 달라.
+계획: not_required
+
+후, unknown 1회
+선택 id: q-payer
+가설: h-payer
+prompt: 누가 비용을 지불하는지 확인해 달라. 더 좁혀 근거가 될 기록의 범위를 지정해 달라.
+질문 줄기는 전 prompt 그대로이고, 뒤에 한 문장이 붙는다.
+결제 주체 evidenceClass: ASSUMPTION
+unknownCounts: 1
+후보: q-payer, q-channel, v-business-model
+판단에 「h-payer」은 아직 확인되지 않았다. 가 추가된다. 공개 뷰는 그 id를 「결제 주체」로 바꾼다. CLAIM이나 FACT로 올리지 않는다.
+계획: not_required
+
+같은 선택 id는 기존 계약과 맞다. askedPrompt는 같은 가설과 같은 기본 문장의 해시가 askedQuestionHashes에 있으면 「더 좁혀 근거가 될 기록의 범위를 지정해 달라.」를 붙인다. questionHash는 가설 id와 prompt를 잇는다. 문장이 늘면 해시는 달라진다. AT-10이 검사하는 것은 그 해시다. 후보 id는 가설 id에서 q-payer로 만들고, 모름 1회는 그 가설을 후보에서 빼지 않는다.
+
+이 문장 변화는 중복 질문 방지가 아니다. 같은 질문을 다시 제시한다. 붙는 문장은 기록 범위를 좁히라고 하지만, 어떤 기록인지 지정하지 않는다. 근거는 생기지 않는다. evidenceClass는 ASSUMPTION으로 남는다. u-payer는 닫히지 않는다.
+
+unknown 2회. unknownCounts가 2가 되면 deriveCandidates가 h-payer를 건너뛴다. 실행 결과:
+선택 id: v-record-needed
+가설: h-payer
+후보: q-channel, v-business-model. q-payer는 없다.
+결제 주체 evidenceClass: ASSUMPTION
+prompt: 핵심 불확실성 u-payer을 닫는 후보가 없다. 필요한 증거는 u-payer다.
+공개 뷰 다음 행동: 핵심 불확실성 을 닫는 후보가 없다. 필요한 증거는 다.
+계획: not_required
+
+2회째는 같은 질문을 세 번째로 고르지 않는다. 대신 닫는 후보가 없다고 하고, 필요한 증거를 불확실성 id로 둔다. 계획이 not_required라 evidenceNeeded가 비어 있고, rankDerived가 그 자리에 criticalId를 넣기 때문이다. 공개 뷰가 u-payer를 지우면 문장이 끊긴다. 새 근거가 생긴 것이 아니고, 수집 범위가 문자 기록으로 좁혀진 것도 아니다.
+
+화면 분류기는 한글 모름을 이 경로로 보내지 않는다.
+UNKNOWN_PATTERN = /^(?:모르|모르겠|잘\s*모르|아직\s*모르|unknown)\b/i
+자바스크립트 \b 는 영숫자 경계다. 한글 사이와 한글 끝에서는 경계가 아니다.
+2026-10-15 00:41 UTC node 확인: 모르, 모름, 모르겠음, 모르겠습니다, 잘 모르겠습니다, 아직 모릅니다, 잘 모르겠어요, 모르겠 은 모두 false. unknown 만 true.
+같은 시각, q-payer 결정에 「모르겠습니다」를 classifyFounderText에 넣으면 event는 refused, applied는 false, ledger와 DecisionRecord는 호출 전과 같은 객체다.
+
+워크스페이스는 commitFounderText만 호출한다. 한글 모름은 unknown 1회의 「더 좁혀」 문장에 도달하지 않는다. 입력칸은 거절이어도 비운다. 이유를 보여 주지 않는다.
+submitLedgerAnswer는 applied가 false여도 setLedgerAnswerDraft('')를 실행한다.
+placeholder: 확인, 변경, 모름, 부재, 문자 기록처럼 일어난 일만 적어 주세요.
+
+3. 결제 주체 입력
+
+시나리오는 문제 확인 뒤 선택 id q-payer, prompt 「누가 비용을 지불하는지 확인해 달라.」다. classifyFounderText는 q-customer, q-problem-next, q-problem 만 확인 분기가 있다. q-payer는 그 분기에 없다. 나머지는 contentEvent이거나 거절이다.
+
+contentEvent 순서: 부재와 금액이 같이 있으면 거절. 부재면 absence_claim. 금액이면 literal_record. 결제|돈을 내|지불 이면 payment_claim. 아니면 null.
+그 다음 return content ?? refused().
+
+2026-10-15 00:42 UTC 실행. 호출 전 결제 주체는 ASSUMPTION, 사업 가설은 ASSUMPTION, 단계는 S1.
+
+맞습니다. event refused. applied false. ledger 동일. 판단 불변. 선택 id q-payer.
+확인합니다. 같다.
+모르겠습니다. 같다. 2항의 패턴 때문이다.
+서비스 비용은 사장님 본인이 지불합니다. event payment_claim. applied true. 결제 주체는 ASSUMPTION 유지. 사업 가설은 CLAIM. weak-payment binding 대상은 h-business-model. FACT 없음. 단계는 S1. 다음 선택 id는 q-payer. 판단 문장은 바뀐다.
+사장님이 지불합니다. 같다.
+결제 주체는 사장님입니다. 같다.
+2026-03-02 반찬가게 A, 3만 원, 1회. event literal_record. 결제 주체는 ASSUMPTION. 사업 가설은 FACT. projectAttribution unreviewed. 다음 선택 id는 q-payer. VALIDATED 아님.
+아직 실제 결제 증거는 없습니다. event absence_claim. 결제 주체는 ASSUMPTION. 사업 가설은 CLAIM. 다음 선택 id는 v-business-model.
+
+이전 보고의 「결제 주체 확인은 거절된다」는 확인 문장에는 맞다. 「맞습니다」와 「확인합니다」는 아홉 이벤트에 없고, 주체를 적지 않았으므로 거절이 맞다. ledger와 prompt는 유지된다.
+
+주체를 적은 자연어는 거절되지 않는다. 「지불」이나 「결제」가 있고 금액이 없으면 payment_claim으로 적용된다. 이 연결은 안전하지 않다. 결제 주장 계약의 proposition은 주체·금액·문자 기록이 없는 문장이다. 사장님을 적은 문장에는 주체가 있다. 적용 결과는 결제 주체 가설을 CLAIM으로 만들지 않고, 사업 가설에 weak-payment CLAIM을 붙인다. 판단에는 그 문장과 「주체·금액·기록이 없어 단계를 움직이지 않았다」가 함께 들어간다. 단계를 올리지 않고 FACT나 VALIDATED로 올리지는 않지만, 사용자가 답한 주체를 그 가설에 남기지 않은 채 같은 q-payer를 다시 고른다.
+
+문자 기록은 기존 literal_record로 안전하다. 귀속은 unreviewed, 진위는 보장되지 않는다. 그 기록이 결제 주체 확인은 아니다. 다음 행동은 q-payer로 남는다.
+부재 문장은 기존 absence_claim으로 안전하다. 다음 행동은 v-business-model로 바뀐다.
+
+대안으로 제안만 한다. 이번 검토에서 구현하지 않았다.
+q-payer에서 주체를 적은 문장을 payment_claim으로 보내지 않는다. 거절하고 직전 JudgmentLedger와 DecisionRecord를 유지한다. 입력 초안을 지우지 않는다. 화면에 다음을 보인다. 이 문장은 적용하지 않았다. 결제 주체를 확인한 CLAIM으로 올리지 않는다. 이 질문에서 받을 수 있는 입력은 모름, 결제 증거가 없다는 문장, 주체와 금액이 적힌 문자 기록, 통과와 실패가 둘 다 있는 기준이다.
+한글 모름은 새 이벤트가 아니다. 기존 unknown에 닿지 않는 분류 패턴이다. 그 패턴을 고치기 전에는 거절 이유가 보여야 한다. affirm_payer를 추가하지 않는다. 엔진 전이를 바꾸지 않는다. CLAIM을 FACT나 VALIDATED로 올리지 않는다.
+
+4. Preview
+
+배포 id 7080716553. environment Preview. state success. SHA 1d4e747e538a. created 2026-10-15T00:35:36Z.
+URL: https://ai-startup-validation-374drjtco-jyp-ai1s-projects.vercel.app
+이 SHA의 Preview 배포는 있다.
+2026-10-15T00:41:00Z curl, redirect를 따라가지 않음. HTTP/2 302. location은 https://vercel.com/sso-api 이고 url 매개변수는 위 Preview 주소다.
+브랜치 별칭 https://ai-startup-validation-git-cursor-ai-pm-acd5a4-jyp-ai1s-projects.vercel.app 도 같은 시각 302, 같은 SSO 호스트다.
+로그인하지 않았다. 우회하지 않았다. 새 배포를 만들지 않았다.
+A, B, C, D, E의 화면 문장, 다음 행동, 계획 상태와 ledger·DecisionRecord 대조는 미검증이다.
+이전 로컬 데모는 이 Preview가 아니다. 판단 노드 1, 다음 행동 노드 1, 한 문제 문장의 CLAIM은 로컬 기록이다. A–E를 그 브라우저에서 재현하지 않았다.
+
+5. 미해결 위험과 CPO 판단 항목
+
+모름이 새 근거로 이어지지 않는다. 엔진에 직접 넣으면 1회는 같은 q-payer와 같은 질문 줄기다. 2회는 질문 대신 끊긴 증거 문장이다. 화면의 한글 모름은 그 전에 거절된다.
+결제 주체를 설명하는 문장은 막히거나 다른 가설의 결제 주장으로 들어간다. 확인 단어는 이유 없이 입력이 지워진다. 주체를 적은 문장은 사업 가설 CLAIM이 되고 같은 질문이 남는다.
+고객 변경과 충돌 해소 뒤 등급·귀속이 유지되는지는 기존 엔진 테스트가 통과했다는 뜻이다. Preview 화면에서 확인하지 않았다.
+Preview 문장과 엔진 판단의 일치는 미검증이다.
+
+병합과 Production 배포는 하지 않는다. Production 잠금 SHA 0b465226을 유지한다.
+CPO 판단이 필요한 항목은 다음이다. 한글 모름을 기존 unknown으로 연결하는 분류 수정, 주체를 적은 문장을 payment_claim에서 빼 거절과 안내로 두는 수정, 그 수정 뒤 Preview에서 A–E를 대조하는 검증. 셋 다 이번 검토에서 구현하거나 실행하지 않았다.

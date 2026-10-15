@@ -2,11 +2,13 @@
  * DAY 8-G — Loop panel judgment sync (presentation layer only).
  */
 
+import { parseNotXButYCorrection } from './ai-pm-correction-semantics';
 import { buildCeoJudgmentStateWithTrace } from './ai-pm-judgment-aggregation';
 import { isAiPmJudgmentAggregationV1Active } from './ai-pm-judgment-aggregation-v1';
 import type { CeoJudgmentDimensionId, CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
 import type { JudgmentTurnTrace } from './ai-pm-judgment-trace';
 import type { LivingUnderstandingState } from './living-understanding-state';
+import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
 import {
   evaluateJudgmentStop,
   type JudgmentStopVerdict,
@@ -50,7 +52,7 @@ export function syncJudgmentAfterAnswer(input: {
 
   const prior = input.loop.ceoJudgment ?? null;
 
-  const { state: judgment, traceEntries } = buildCeoJudgmentStateWithTrace({
+  const { state: built, traceEntries } = buildCeoJudgmentStateWithTrace({
     living: input.living,
     turns: input.loop.turns,
     prior,
@@ -58,6 +60,11 @@ export function syncJudgmentAfterAnswer(input: {
     question: input.lastQuestionText,
     answer: input.answer,
   });
+  const judgment = overlayContradictedCustomer(
+    built,
+    input.loop.gapState,
+    input.answer,
+  );
 
   const stop = evaluateJudgmentStop({
     questionCount: judgment.questionCount,
@@ -109,6 +116,51 @@ export function syncJudgmentAfterAnswer(input: {
   const loop = patchAiPmLoopState(patch, input.projectId);
 
   return { loop, judgment, stop, turnTrace };
+}
+
+/** gapState CONTRADICTED must show in Founder-facing judgment, not leftover customer Fact. */
+export function overlayContradictedCustomer(
+  judgment: CeoJudgmentState,
+  gapState: GapKnowledgeState | null | undefined,
+  answer?: string,
+): CeoJudgmentState {
+  if (gapState?.gaps.customerPersona?.completeness !== 'CONTRADICTED') {
+    return judgment;
+  }
+
+  const existing = judgment.dimensions.customer.summary.trim();
+  const alreadyCollision = /충돌:/.test(existing) && /재확인/.test(existing);
+  const parsed = answer?.trim() ? parseNotXButYCorrection(answer) : null;
+  const accepted = parsed?.accepted.trim().replace(/\s+/g, ' ') ?? '';
+  const priorFromCollision = existing.match(/충돌:\s*(.+?)\s*↔/)?.[1]?.trim();
+  const prior = alreadyCollision
+    ? priorFromCollision || '이전 고객'
+    : existing;
+  const summary = alreadyCollision
+    ? existing
+    : accepted
+      ? `충돌: ${prior || '이전 고객'} ↔ ${accepted} — 재확인 필요`
+      : '고객 정의가 이전 답과 충돌합니다 — 재확인 필요';
+
+  return {
+    ...judgment,
+    dimensions: {
+      ...judgment.dimensions,
+      customer: {
+        ...judgment.dimensions.customer,
+        status: 'needs_check',
+        summary,
+        statusReason: 'Founder가 이전 고객 이해와 다른 고객을 말해 충돌로 표시함',
+        knowledgeSource: undefined,
+        evidenceType: undefined,
+        correctionApplied: true,
+      },
+    },
+    recentCorrections: [...new Set([...(judgment.recentCorrections ?? []), 'customer' as const])],
+    lastUpdatedDimensions: [
+      ...new Set([...(judgment.lastUpdatedDimensions ?? []), 'customer' as const]),
+    ],
+  };
 }
 
 export function openJudgmentView(projectId?: string): AiPmLoopState {

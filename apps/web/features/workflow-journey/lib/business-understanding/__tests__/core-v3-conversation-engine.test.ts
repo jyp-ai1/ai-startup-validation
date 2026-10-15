@@ -18,6 +18,7 @@ import {
   getConflictFact,
   getFact,
   parkConflictFact,
+  parkUnresolvedContradiction,
   upsertConfirmedFact,
   clearFactsByKeys,
 } from '../conversation-memory';
@@ -163,6 +164,28 @@ describe('Core v3 conflict + supersede', () => {
     memory = parkConflictFact(memory, 'buyer', '관광객 직접 결제', '사장님이 대납');
     expect(getFact(memory, 'buyer')?.value).toContain('관광객');
     expect(getConflictFact(memory, 'buyer')?.value).toContain('대납');
+  });
+
+  it('parks unresolved customer contradiction without a current Fact', () => {
+    let memory = emptyConversationMemory('v3');
+    memory = upsertConfirmedFact(memory, 'customer', '맞벌이 부모', 'user_turn');
+    memory = parkUnresolvedContradiction(
+      memory,
+      'customer',
+      '맞벌이 부모',
+      '혼자 사는 20대',
+    );
+    expect(getFact(memory, 'customer')).toBeNull();
+    expect(getConflictFact(memory, 'customer')?.value).toContain('20대');
+    expect(getConflictFact(memory, 'customer')?.conflictWith).toContain('맞벌이');
+    expect(
+      memory.facts.some(
+        (fact) =>
+          fact.key === 'customer' &&
+          fact.lifecycle === 'superseded' &&
+          fact.value.includes('맞벌이'),
+      ),
+    ).toBe(true);
   });
 
   it('supersede clears current and keeps audit trail', () => {
