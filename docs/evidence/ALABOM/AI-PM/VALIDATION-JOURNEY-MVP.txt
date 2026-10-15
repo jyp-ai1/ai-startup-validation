@@ -598,3 +598,65 @@ unconfirmed 와 failed 는 다른 상태다. 호출 여부가 불명확하면 �
 - 실제 Gemini HTTP, 유료 GPT, 서버 중단 후 디스크 복구, 모델 품질, 사업 판단 정확도는 검증되지 않았다
 - 95개 테스트와 화면 확인은 원장 규칙과 미실행 화면이다. 분석 품질의 증거가 아니다
 - Production 잠금 SHA 0b465226. 병합과 배포는 하지 않았다
+
+19. 실행 원장 복구 계약
+
+시각: 2026-10-15T05:31:40Z 여정 테스트 13 files, 104 passed, exit 0.
+명령: pnpm --filter web exec vitest run features/business-validation-journey/lib/__tests__
+여정 폴더 eslint 통과. pnpm --filter web build 는 2026-10-15T05:31:47Z 시작, exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+fetch 호출 없음. 키, 환경변수, DB 스키마, 저장소 어댑터, 자동 재시도, 화면 파일은 바꾸지 않았다.
+
+이 절의 테스트는 메모리 로그 시뮬레이션이다. 결과 객체의 storeKind 는 in_memory_simulation, restartedProcess 는 false, durableVerified 는 false 로 고정이다. 프로세스 재시작이나 디스크 복구의 증거가 아니다.
+
+복구 시나리오
+
+| 상황 | 복구 시 상태 | 허용 | 금지 | 보존 |
+| --- | --- | --- | --- | --- |
+| 등록 후 호출 전 중단 | registered. callsOpened 0. networkCalled false | 복구 함수는 슬롯을 열지 않는다. 이후 명시적 슬롯은 별도 기록이다 | 복구 중 자동 호출 | 첫 등록 이벤트 객체 |
+| 슬롯 진입 후 전송 여부가 불명확 | unconfirmed. callsOpened 1. networkCalled false. failureReason null | 사람이 새 실행 ID와 retryApproval 을 넘기기 전까지 대기 | 자동 재호출. callsOpened 를 HTTP 발생으로 읽기 | 슬롯 이벤트 객체. 새 ID는 registered, callsOpened 0 |
+| 전송 기록이 true 로 주입되고 응답이 없음 | unconfirmed. networkCalled true. callsOpened 1 | 진단용으로 전송 기록을 유지 | 실패로 바꾸거나 자동 재호출 | 실행 ID 목록. 두 번째 복구는 항목을 추가하지 않음 |
+| 응답 수신 후 수용 전 | response_received. 주장 본문 유지 | 보관된 그 본문만 수용 | 복구 중 수용. 추가 호출 | 수용 전 여정의 수용 배열은 빈 배열 |
+| 수용 후 같은 응답 | accepted | 거절 알림만 추가 | 두 번째 수용. 집계 증가 | 첫 수용 상태 참조. 집계는 해당 실행 ID 한 번 |
+| 저장 쓰기 거절 | 쓰기 직전 상태 | 거절을 성공으로 보지 않음 | 등록, 슬롯, 응답, 수용, 미확정 전이를 저장된 것으로 보고 | 직전 records 배열 참조 |
+| 두 제공자 순서 | 각자 response_received 또는 accepted | GPT 다음 Gemini, 또는 Gemini만 수용 | 순서가 가설이나 판단 문장을 바꿈 | 두 항목. verifiedFact false |
+| 두 슬롯이 함께 열려 있음 | 둘 다 unconfirmed 이거나, 쓰기가 거절되면 둘 다 in_progress | 한 번의 쓰기로 둘을 같이 남김 | 한쪽만 저장된 것으로 보고 | 거절 시 직전 records |
+| 같은 실행 ID가 로그에 두 번 | 첫 기록. 실패 뒤의 성공 이벤트는 duplicate_found | 첫 실패를 유지 | 나중 성공으로 덮어쓰기. 실패를 unconfirmed 로 변경 | 실패 이벤트 객체. response null |
+
+callsOpened 1 은 슬롯이 열렸다는 뜻이다. networkCalled true 만 전송이 기록됐다는 뜻이다. 이 빌드의 기록 함수는 networkCalled 를 false 로 저장한다. 복구는 둘을 서로 대입하지 않는다.
+
+저장 경계
+
+| 책임 | 메모리 원장 | 시뮬레이션 로그 |
+| --- | --- | --- |
+| 전이 계산 | register, start, fail, unconfirmed, receive, accept | 하지 않음. 계산 결과를 이벤트로 덧붙임 |
+| 기록 | 프로세스 안에서만 유효 | 이벤트 배열. 불법 전이는 접을 때 무시 |
+| 성공 판정 | 함수 반환값 | 쓰기가 받아진 뒤에만 persisted true. 거절 시 직전 로그 |
+
+저장이 필요한 지점: 등록, 슬롯, 명시적 실패, 응답 본문, 수용, 복구로 in_progress 를 unconfirmed 로 남기는 기록. 수용 기록 ID는 같은 쓰기 안에서 다뤄져야 한다. 이 시뮬레이션은 수용 단계 이벤트를 로그에 남기고, 쓰기가 거절되면 여정 상태 참조를 바꾸지 않는다. 데이터베이스 트랜잭션은 없다.
+
+같은 실행 ID의 등록이 이미 있으면 첫 항목을 유지한다. 수용된 항목에 같은 응답을 다시 보내면 수용 집계가 늘지 않는다. 저장소가 거절하면 그 전이를 성공으로 세지 않는다. unconfirmed 는 외부 retryApproval 없이 다시 호출되지 않는다.
+
+지속 저장 제안. 구현하지 않았다. SQL 마이그레이션 파일이 없다.
+
+| 안 | 내용 | 판단 |
+| --- | --- | --- |
+| 덧붙이는 이벤트 로그 | 실행 ID마다 이벤트를 추가하고, 합법 전이만 접는다. 실패 뒤의 성공 이벤트는 로그에 남아도 첫 실패를 바꾸지 않는다 | 제안. 승인 전 |
+| 실행 ID당 한 행 | phase 가 기대값일 때만 갱신 | 대안. 갱신 한 번이 첫 기록을 지울 수 있다 |
+| 브라우저 저장 | 클라이언트에 원장을 둠 | 기각. 서버 중단을 견디지 못한다 |
+| analytics_events 재사용 | 기존 분석 이벤트 테이블에 넣음 | 기각. 원문과 실행 기록이 제품 분석과 섞인다 |
+
+제안 필드. 스키마가 아니다. event_id, execution_id, phase, provider_id, side, calls_opened, network_called, request payload, response payload, failure_reason, unconfirmed_reason, retry_approval, recorded_at, acceptance_id. request 와 response 에는 창업자 원문이 들어갈 수 있으므로 서버에만 둔다. 운영 로그는 executionId, providerId, phase, callsOpened 만 남긴다.
+
+승인 요청 범위. 이번 커밋의 승인이 아니다.
+
+- 저장: 덧붙이는 이벤트 로그의 서버 저장소. 실제 프로세스 재시작 뒤에 첫 이벤트와 unconfirmed 복구를 확인하는 별도 범위
+- 모델: 그 저장이 검증된 뒤의 제한 입력. Gemini 1회, GPT 1회, 출력 토큰 상한 1024. 키는 서버에만 둔다
+- 비용: 금액은 priceStatus unconfirmed. 단가는 요금표 확인 전 비어 있다. 비용 기록은 networkCalled 가 true 로 저장된 뒤에만 남긴다. callsOpened 로 비용을 세지 않는다. 실패와 미확정은 추가 호출을 만들지 않는다
+- 불확실성: in_progress 이고 networkCalled 가 false 여도 전송 후 기록 전에 죽었을 수 있다. 그래서 재호출하지 않는다. networkCalled 가 true 이고 응답이 없어도 unconfirmed 이며 재호출하지 않는다
+- 키와 원문: 저장소 구현 승인 전에 키를 추가하지 않는다. 원문 본문은 로그에 남기지 않는다
+
+미검증
+- 디스크, 데이터베이스, 운영체제 프로세스 재시작, Gemini HTTP, 유료 GPT, 모델 품질, 사업 판단 정확도
+- 104개 테스트는 시뮬레이션 로그의 접기와 전이이다. durableVerified false 를 유지한다
+- 화면은 수정하지 않았다. 라이브 화면은 계속 실행 원장 없음이다
+- Production 잠금 SHA 0b465226. 병합과 배포는 하지 않았다

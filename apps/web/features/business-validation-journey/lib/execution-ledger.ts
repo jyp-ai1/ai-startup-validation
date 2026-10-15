@@ -15,8 +15,10 @@ export type ExecutionLedgerEntry = {
   side: 'gemini' | 'gpt';
   providerId: string;
   phase: LedgerPhase;
+  /** Slot count in the ledger. 1 means a slot was opened, not that an HTTP request was sent. */
   callsOpened: 0 | 1;
-  networkCalled: false;
+  /** Confirmed send. Writers in this build store false. Recovery must not infer it from callsOpened. */
+  networkCalled: boolean;
   autoRetry: false;
   retryApproval: boolean;
   request: AnalysisExecutionRequest;
@@ -29,7 +31,7 @@ export type ExecutionLedgerEntry = {
 
 export type LedgerNotice = {
   executionId: string;
-  kind: 'duplicate_delivery' | 'retry_refused' | 'response_mismatch' | 'phase_refused';
+  kind: 'duplicate_delivery' | 'retry_refused' | 'response_mismatch' | 'phase_refused' | 'duplicate_found';
   reason: string;
   at: string;
 };
