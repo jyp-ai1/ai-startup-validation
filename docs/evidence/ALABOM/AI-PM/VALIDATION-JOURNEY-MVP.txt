@@ -770,3 +770,8 @@ networkCalled false 는 전송이 없었다는 증거가 아니다. 미확정 �
 
 기록: docs/evidence/ALABOM/AI-PM/AI-BROWSER-ROUNDTRIP-GATE.txt
 2026-10-15T06:22:13Z. 통과하지 않음. ChatGPT, Gemini, Claude 의 자동 세션은 robots 또는 이용약관에서 막혀 있다. API 키는 없다. 사업정보를 보내지 않았고 비용은 0이다. 테스트 1, 테스트 2, 왕복은 실행하지 않았다.
+
+24. 공식 API 접근 경로
+
+기록: docs/evidence/ALABOM/AI-PM/OFFICIAL-API-ACCESS-PATH.txt
+2026-10-15T06:32:25Z. 분석은 Gemini Developer API 유료 할당량, 반대 검토는 OpenAI Chat Completions 다. 키 다섯 개가 없어 호출하지 않았다. Gemini 무상 할당량은 제출 내용을 제품 개선에 쓴다. 화면은 모델 질문을 표시하지 않는다. 왕복은 실행할 수 없다.
