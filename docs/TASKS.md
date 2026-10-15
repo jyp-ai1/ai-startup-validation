@@ -22,6 +22,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 7 | openai 제공자 객체를 Gemini와 분리. 키 없으면 호출 차단 | 구현 |
 | 8 | 문제 원문은 가설만 수정·충돌 시 유보. 지불·구매·반복·확장은 미검증 | 테스트 |
 | 9 | AI 교차 검토 계약. 픽스처만. 화면은 not_compared | 테스트 |
+| 10 | 모델 발췌와 확보 원문 대조. 픽스처만. 화면 출처 대조는 대조 불가 | 테스트 |
 | 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
 
 ---

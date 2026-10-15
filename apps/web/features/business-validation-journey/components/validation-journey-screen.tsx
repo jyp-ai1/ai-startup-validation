@@ -6,7 +6,7 @@ import { Button, Input, Textarea } from '@repo/ui';
 
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 
-import { liveCrossReview } from '../lib/cross-review-contract';
+import { liveCitationTrace, sourceCheckLabel } from '../lib/citation-reconciliation';
 import { attachFounderSource, SOURCE_HYPOTHESES, sourceHash } from '../lib/founder-source';
 import { applyAnswer, correctField, startJourney } from '../lib/journey-engine';
 import { contextRoleLabel, executionBadgeLabel } from '../lib/present-execution';
@@ -296,7 +296,8 @@ function UnderstandingView({
 }) {
   const question = journey.nextQuestion;
   const verification = verificationActionFor(journey);
-  const crossReview = liveCrossReview();
+  const citationTrace = liveCitationTrace();
+  const crossReview = citationTrace.review;
   const [sourceText, setSourceText] = useState('');
   const [sourceHypotheses, setSourceHypotheses] = useState<string[]>([]);
   const [sourceNote, setSourceNote] = useState('');
@@ -409,6 +410,13 @@ function UnderstandingView({
         </p>
         <p className="text-sm" data-testid="cross-review-status">
           교차 검토 {crossReview.outcome}. {crossReview.reason}
+        </p>
+        <p className="text-sm" data-testid="citation-check">
+          출처 대조{' '}
+          {citationTrace.citations
+            .map((item) => `${item.side === 'gemini' ? 'Gemini' : 'GPT'} ${sourceCheckLabel(item.sourceCheck)}`)
+            .join(', ')}
+          . {citationTrace.reason}
         </p>
         {journey.redelivery ? (
           <div className="space-y-2 text-sm" data-testid="redelivery-note">
