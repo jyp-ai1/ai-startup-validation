@@ -194,6 +194,7 @@ export type AnalysisProviderSlot = {
   hypothesisIds: string[];
   verifiedFact: false;
   sourceConflict: 'none' | 'preserved' | 'not_established';
+  replayed: boolean;
   reason: string;
 };
 
@@ -209,6 +210,7 @@ export type AnalysisHypothesisEffect = {
 export type AnalysisAcceptanceRecord = {
   id: string;
   receivedAt: string;
+  disposition: 'recorded' | 'duplicate_delivery';
   gemini: AnalysisProviderSlot;
   gpt: AnalysisProviderSlot;
   comparison: CrossReviewOutcome;
@@ -219,6 +221,7 @@ export type AnalysisAcceptanceRecord = {
   previousJudgmentText: string;
   nextJudgmentText: string;
   causeIds: string[];
+  conflictsWithExecutionIds: string[];
   reason: string;
   hypothesisEffects: AnalysisHypothesisEffect[];
   sourceIds: string[];

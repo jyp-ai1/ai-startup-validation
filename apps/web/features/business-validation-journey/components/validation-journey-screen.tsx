@@ -6,7 +6,7 @@ import { Button, Input, Textarea } from '@repo/ui';
 
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 
-import { acceptanceSummary } from '../lib/analysis-acceptance';
+import { acceptanceSummary, liveScreenStatus } from '../lib/analysis-acceptance';
 import { liveCitationTrace, sourceCheckLabel } from '../lib/citation-reconciliation';
 import { attachFounderSource, SOURCE_HYPOTHESES, sourceHash } from '../lib/founder-source';
 import { applyAnswer, correctField, startJourney } from '../lib/journey-engine';
@@ -299,6 +299,7 @@ function UnderstandingView({
   const verification = verificationActionFor(journey);
   const citationTrace = liveCitationTrace();
   const crossReview = citationTrace.review;
+  const execution = liveScreenStatus(journey);
   const [sourceText, setSourceText] = useState('');
   const [sourceHypotheses, setSourceHypotheses] = useState<string[]>([]);
   const [sourceNote, setSourceNote] = useState('');
@@ -421,6 +422,10 @@ function UnderstandingView({
         </p>
         <p className="text-sm" data-testid="analysis-acceptance">
           {acceptanceSummary(journey.analysisAcceptances)}
+        </p>
+        <p className="text-sm" data-testid="execution-state">
+          실행 상태 {execution.researchStatus}, {execution.counterReviewStatus}, {execution.comparison}. 분석 완료로
+          표시하지 않는다.
         </p>
         {journey.redelivery ? (
           <div className="space-y-2 text-sm" data-testid="redelivery-note">
