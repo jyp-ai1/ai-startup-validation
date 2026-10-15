@@ -194,6 +194,16 @@ export function planAnswerEffect(
           affected: ['h-payer'],
         };
       }
+      if (answer.choiceId === 'unknown') {
+        return {
+          nextText: '',
+          judgmentChanged: false,
+          reason:
+            '유료 고객이 있는지는 모른다. 이 답은 유료 고객 존재의 근거가 아니다. 판단 문장은 바꾸지 않는다. 최초 결제 원문이 있으면 유료 고객 판단이 달라진다.',
+          held: false,
+          affected: [],
+        };
+      }
       return {
         nextText: `유료 고객이 있다는 창업자 진술이다. 결제 원장은 확인하지 않았다. ${NOT_VALIDATED}`,
         judgmentChanged: true,

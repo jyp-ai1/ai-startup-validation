@@ -91,6 +91,56 @@ describe('business plan journey', () => {
     expect(payers.state.judgmentStatus).toBe('judgment_deferred');
   });
 
+  it('does not treat an unknown RIDM payer answer as evidence that a payer exists', () => {
+    const initial = started(RIDM_PLAN_FIXTURE);
+    const unknown = answer(initial, 'unknown');
+
+    expect(unknown.state.judgmentText).toBe(initial.judgmentText);
+    expect(unknown.state.judgmentText).not.toContain('유료 고객이 있다');
+    expect(unknown.state.judgmentComparisons?.at(-1)?.judgmentChanged).toBe(false);
+    expect(unknown.state.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
+    expect(unknown.state.judgmentComparisons?.at(-1)?.reason).toContain('근거가 아니다');
+    expect(unknown.state.nextQuestion).toBeNull();
+    expect(unknown.state.hypothesisJudgments.every((item) => item.verifiedFact === false)).toBe(true);
+    expect(unknown.state.judgmentStatus).toBe('judgment_deferred');
+  });
+
+  it('walks a known repurchase rate into the margin question without verifying it', () => {
+    const ledger = answer(started(LMULM_PLAN_FIXTURE), 'happened');
+    const rate = answer(ledger.state, 'have_rate');
+
+    expect(rate.state.judgmentText).toContain('재구매율');
+    expect(rate.state.judgmentText).toContain('확인하지 않았다');
+    expect(rate.state.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
+    expect(rate.state.nextQuestion?.uncertaintyId).toBe('u-lmulm-margin');
+
+    const margin = answer(rate.state, 'margin_35', '상품 마진은 35%다');
+    expect(margin.state.judgmentText).toContain('매출총이익');
+    expect(margin.state.judgmentText).toContain('공헌이익');
+    expect(margin.state.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
+    expect(margin.state.nextQuestion).toBeNull();
+    expect(margin.state.judgmentStatus).toBe('judgment_deferred');
+  });
+
+  it('walks a claimed RIDM payer through liking and cost without verifying payment', () => {
+    const payers = answer(started(RIDM_PLAN_FIXTURE), 'have_payer', '유료 결제 고객이 있다고 본다');
+
+    expect(payers.state.judgmentText).toContain('유료 고객이 있다는 창업자 진술');
+    expect(payers.state.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
+    expect(payers.state.nextQuestion?.uncertaintyId).toBe('u-ridm-liking');
+
+    const liking = answer(payers.state, 'likes');
+    expect(liking.state.judgmentText).toBe(payers.state.judgmentText);
+    expect(liking.state.nextQuestion?.uncertaintyId).toBe('u-ridm-cost');
+
+    const cost = answer(liking.state, 'unknown');
+    expect(cost.state.judgmentText).toBe(payers.state.judgmentText);
+    expect(cost.state.nextQuestion).toBeNull();
+    expect(cost.state.nextAction.text).toContain('결제 원문');
+    expect(cost.state.judgmentComparisons?.every((item) => item.verifiedFact === false)).toBe(true);
+    expect(cost.state.judgmentStatus).toBe('judgment_deferred');
+  });
+
   it('does not transfer the previous customer problem when the customer changes', () => {
     const state = started(LMULM_PLAN_FIXTURE);
     const changed = correctField(state, 'customer', '기업 총무팀', NOW);

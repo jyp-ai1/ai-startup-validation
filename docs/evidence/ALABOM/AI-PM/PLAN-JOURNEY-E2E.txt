@@ -40,7 +40,20 @@ LMULM·RIDM 사업계획서 여정. 2026-10-15T10:30:00Z.
 - 123건은 여정 연결이다. 실제 사업성 정확도나 실제 AI 연동이 아니다.
 - 외부 호출 0. research_not_run. counter_review_not_run.
 
+잔여 결함 분류. 코드 검토와 누락 분기 3건만 실행. 기존 9건은 다시 실행하지 않았다.
+
+1. 인수 차단이었음. 고침. RIDM “아직 모르겠다”가 유료 고객 존재로 기록되던 문제. 함수 planAnswerEffect, 파일 plan-journey.ts. 재현: RIDM 발췌 시작 후 결제 질문에서 unknown. 모르는 답은 유료 고객 존재의 근거가 아니다. 판단 문장은 유지하고 다음 질문은 없다.
+2. 후속 개선. 다음 행동에 공헌이익 자료와 추론 비용이 함께 붙음. 함수 planVerification, 파일 verification-action.ts. 재현: 재구매율을 모르거나 유료 고객이 없어도 action 문자열이 두 과제를 잇는다. 판단 문장과 verifiedFact 는 바꾸지 않는다.
+3. 검증 미실시였음. 누락 분기만 추가. 재구매율을 안다는 답은 마진 질문으로 이어지고, 유료 고객이 있다는 답은 호감과 비용 질문으로 이어진다. 어느 쪽도 verifiedFact 를 true 로 만들지 않는다. plan-journey.test.ts.
+
+불변조건. 코드 확인.
+- 모르는 결제 답은 유료 고객 존재가 아니다. planAnswerEffect 의 unknown 분기.
+- 창업자 주장만으로 verifiedFact 가 true 가 되지 않는다. comparisonBase 와 decisionSnapshot 이 false 고정.
+- 고객 변경은 이전 문제를 새 고객의 검증된 문제로 옮기지 않는다. compareCustomerChange, collectCandidates 의 u-customer-scope.
+- 반대 근거는 기존 답을 지우지 않고 뒤에 붙인다. recordCounterClaim.
+- 검증 자료가 없으면 마무리가 완료가 되지 않는다. blockersToClose 는 closed false.
+
 아직 열림
 - 원본 PDF 업로드와 임의 사업계획서 구조화.
 - 원장, 재구매, 공헌이익, 유료 결제, 유지율, 고객당 비용의 실제 자료.
-- 호스팅 Preview, 병합, Production.
+- 호스팅 Preview, 병합, Production. 다음 행동 문장의 과제 묶음.
