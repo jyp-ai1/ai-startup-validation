@@ -60,7 +60,8 @@ describe('answer redelivery contract', () => {
     expect(relay?.includedAnswerIds).toEqual(['ans-1', 'ans-2']);
     expect(relay?.omittedAnswerIds).toEqual([]);
     expect(corrected.answers).toHaveLength(2);
-    expect(corrected.judgmentText).toBe(scene.judgmentText);
+    expect(corrected.judgmentText).toContain('적용 범위를 다시 연다');
+    expect(corrected.judgmentText).not.toBe(scene.judgmentText);
     expect(
       contextReady(
         included.filter((item) => item.role !== 'problem'),

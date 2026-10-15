@@ -34,6 +34,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 19 | AI 브라우저 왕복 1차 게이트. 약관·robots 에서 세션을 열지 못함. 분석·질문·답변 회수 미실행 | 실패 |
 | 20 | 공식 API 경로. Gemini 유료와 OpenAI Chat Completions. 키 없음. 호출·화면 연결 없음 | 차단 |
 | 21 | AI 연결 대안 A–E. 허용된 붙여넣기 PoC. 실제 모델 왕복 0 | 제안 · `docs/evidence/ALABOM/AI-PM/AI-CONNECTION-ARCHITECTURE.txt` |
+| 22 | 판단 전후 비교. 테스트 문장과 실분석 구분. 시나리오 A–E. 실분석 성공 아님 | 검증 · `docs/evidence/ALABOM/AI-PM/JUDGMENT-DEVELOPMENT.txt` |
 | 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
 
 ---

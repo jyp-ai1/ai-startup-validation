@@ -1,4 +1,5 @@
 import { buildRedelivery } from './answer-redelivery';
+import { compareCustomerChange, compareFounderAnswer } from './judgment-development';
 import { verificationActionFor } from './verification-action';
 import {
   claimLabel,
@@ -18,6 +19,7 @@ import {
   type EvidenceChoice,
   type ExternalNote,
   type FieldRevision,
+  type JudgmentComparison,
   type AnalysisAcceptanceRecord,
   type FounderAnswer,
   type FounderSourceRecord,
@@ -54,6 +56,24 @@ const FIELD_LABEL: Record<CorrectableField, string> = {
   problem: '고객 문제',
   solution: '해결책',
 };
+
+export function withCurrentQuestion(state: JourneyState): JourneyState {
+  const selected = selectNextQuestion(
+    state.intake,
+    new Set(state.answers.map((answer) => answer.uncertaintyId)),
+    state.answers,
+    state.revisions,
+    state.externalNotes ?? [],
+  );
+  return {
+    ...state,
+    nextQuestion: selected.question,
+    repeatBlockedReason: selected.repeatBlockedReason,
+    nextAction: selected.question
+      ? actionForQuestion(selected.question)
+      : holdAction(state.intake, state.answers, state.revisions),
+  };
+}
 
 export function startJourney(
   intake: Intake,
@@ -111,11 +131,14 @@ export function applyAnswer(
       state.hypothesisJudgments ?? [],
       state.analysisAcceptances ?? [],
       state.externalNotes ?? [],
+      state.judgmentText,
+      state.judgmentHoldReason,
+      state.judgmentComparisons ?? [],
     ),
   );
 
   return {
-    state: next,
+    state: compareFounderAnswer(state, next, answer),
     applied: true,
     reason: reasonFor(classification.delta),
   };
@@ -149,17 +172,23 @@ export function correctField(
     material: !duplicate,
   };
   const intake = duplicate ? state.intake : { ...state.intake, [field]: next };
-  const finished = withRedelivery(
+  const finished = compareCustomerChange(
     state,
-    finish(
-      intake,
-      state.source,
-      state.answers,
-      [...state.revisions, revision],
-      state.sourceRecords ?? [],
-      state.hypothesisJudgments ?? [],
-      state.analysisAcceptances ?? [],
-      state.externalNotes ?? [],
+    withRedelivery(
+      state,
+      finish(
+        intake,
+        state.source,
+        state.answers,
+        [...state.revisions, revision],
+        state.sourceRecords ?? [],
+        state.hypothesisJudgments ?? [],
+        state.analysisAcceptances ?? [],
+        state.externalNotes ?? [],
+        state.judgmentText,
+        state.judgmentHoldReason,
+        state.judgmentComparisons ?? [],
+      ),
     ),
   );
 
@@ -227,11 +256,14 @@ function finish(
   hypothesisJudgments: HypothesisJudgment[],
   analysisAcceptances: AnalysisAcceptanceRecord[] = [],
   externalNotes: ExternalNote[] = [],
+  judgmentText: string = JUDGMENT_TEXT,
+  judgmentHoldReason: string = JUDGMENT_HOLD_REASON,
+  judgmentComparisons: JudgmentComparison[] = [],
 ): JourneyState {
   const materialAnswers = answers.filter((answer) => answer.material);
   const materialRevisions = revisions.filter((revision) => revision.material);
   const asked = new Set(answers.map((answer) => answer.uncertaintyId));
-  const selected = selectNextQuestion(intake, asked, answers);
+  const selected = selectNextQuestion(intake, asked, answers, revisions, externalNotes);
 
   return {
     intake,
@@ -249,8 +281,8 @@ function finish(
     counterReviewStatus: 'counter_review_not_run',
     counterReviewNote: COUNTER_REVIEW_NOTE,
     judgmentStatus: 'judgment_deferred',
-    judgmentText: JUDGMENT_TEXT,
-    judgmentHoldReason: JUDGMENT_HOLD_REASON,
+    judgmentText,
+    judgmentHoldReason,
     sessionNote: SESSION_NOTE,
     analysisDelivery: {
       status: 'not_sent',
@@ -262,6 +294,7 @@ function finish(
     analysisAcceptances,
     redelivery: null,
     ...(externalNotes.length > 0 ? { externalNotes } : {}),
+    ...(judgmentComparisons.length > 0 ? { judgmentComparisons } : {}),
   };
 }
 
@@ -397,9 +430,19 @@ function selectNextQuestion(
   intake: Intake,
   asked: Set<string>,
   answers: FounderAnswer[],
+  revisions: FieldRevision[],
+  externalNotes: ExternalNote[],
 ): { question: NextQuestion | null; repeatBlockedReason: string | null } {
+  const scopeRefusal = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-customer-scope');
+  if (scopeRefusal?.choiceId === 'does_not_apply') {
+    return {
+      question: null,
+      repeatBlockedReason:
+        '새 고객에게 기존 문제가 해당하지 않는다는 진술이다. 같은 문제의 장면 질문을 반복하지 않는다.',
+    };
+  }
   const lastPrompt = [...answers].reverse().find((answer) => answer.questionText)?.questionText ?? null;
-  const candidates = collectCandidates(intake, asked, answers);
+  const candidates = collectCandidates(intake, asked, answers, revisions, externalNotes);
   const skipped: string[] = [];
 
   for (const candidate of candidates) {
@@ -429,15 +472,58 @@ function collectCandidates(
   intake: Intake,
   asked: Set<string>,
   answers: FounderAnswer[],
+  revisions: FieldRevision[],
+  externalNotes: ExternalNote[],
 ): NextQuestion[] {
   const candidates: NextQuestion[] = [];
+  const customerRevision = [...revisions].reverse().find((revision) => revision.material && revision.field === 'customer');
+  const scopeAnswer = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-customer-scope');
+  const scopeOpen = Boolean(customerRevision) && (!scopeAnswer || scopeAnswer.receivedAt < (customerRevision?.receivedAt ?? ''));
+  if (scopeOpen && customerRevision) {
+    candidates.push({
+      uncertaintyId: 'u-customer-scope',
+      hypothesisId: 'h-problem',
+      prompt: `「${intake.customer}」에게도 주문과 배송이 나뉘어 누락되는 문제가 있는지, 그 고객의 원문으로 확인할 수 있나?`,
+      whyDifferent: `고객이 「${customerRevision.previous}」에서 「${customerRevision.next}」로 바뀌었다. 이전 고객의 문제 가설을 새 고객에게 옮기지 않는다. 이미 답한 근거 질문을 반복하지 않고, 새 고객에게 가설이 적용되는지만 묻는다.`,
+      allowsFreeText: true,
+      choices: [
+        { id: 'applies', label: '새 고객의 원문이 있다', grade: 'claimed_record' },
+        { id: 'unknown', label: '아직 새 고객에게 확인하지 못했다', grade: 'unknown' },
+        { id: 'does_not_apply', label: '이 문제는 새 고객에게 해당하지 않는다', grade: 'founder_estimate' },
+      ],
+    });
+  }
+
+  const declared = [...externalNotes].reverse().find(
+    (note) => note.evidenceKind === 'order_record' || note.evidenceKind === 'interview_verbatim',
+  );
+  if (!scopeOpen && declared && !asked.has('u-excerpt-origin')) {
+    candidates.push({
+      uncertaintyId: 'u-excerpt-origin',
+      hypothesisId: 'h-problem',
+      prompt: '방금 보관한 발췌는 고객의 원문인가, 분석 문장의 주장인가?',
+      whyDifferent: `실행 ${declared.executionId}의 발췌가 들어왔다. 근거 유무를 다시 묻지 않고, 그 발췌가 판단을 바꿀 원문인지 묻는다.`,
+      allowsFreeText: true,
+      choices: [
+        { id: 'customer_words', label: '고객이 말한 문장이다', grade: 'claimed_record' },
+        { id: 'model_words', label: '분석 문장의 주장이다', grade: 'founder_estimate' },
+        { id: 'unknown', label: '아직 모르겠다', grade: 'unknown' },
+      ],
+    });
+  }
+
+  const evidenceAnswer = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-evidence');
+  const evidenceUnresolved = Boolean(
+    evidenceAnswer &&
+      (evidenceAnswer.choiceId === 'unknown' || evidenceAnswer.grade === 'unknown' || evidenceAnswer.grade === 'no_evidence'),
+  );
 
   if (!intake.evidence && !asked.has('u-evidence')) {
     candidates.push({
       uncertaintyId: 'u-evidence',
       hypothesisId: 'h-problem-evidence',
       prompt: EVIDENCE_QUESTION,
-      whyDifferent: null,
+      whyDifferent: '문제 가설을 유지하려면 실제 발생 근거가 필요하다. 근거가 비어 있으므로 이 질문부터 묻는다.',
       allowsFreeText: true,
       choices: [
         { id: 'paid_customer', label: '실제로 비용을 지불한 고객이 있다', grade: 'claimed_record' },
@@ -453,7 +539,21 @@ function collectCandidates(
     });
   }
 
-  if ((intake.evidence !== '' || asked.has('u-evidence')) && !asked.has('u-episode')) {
+  if (evidenceUnresolved && !asked.has('u-verify-record')) {
+    candidates.push({
+      uncertaintyId: 'u-verify-record',
+      hypothesisId: 'h-problem',
+      prompt: '같은 근거 질문을 반복하지 않는다. 발주 기록이나 인터뷰 원문 한 줄을 가져올 수 있나?',
+      whyDifferent: '모른다는 답은 문제 가설을 해소하지 않았다. 추측을 다시 묻지 않고, 원문을 가져오는 검증 행동으로 넘긴다.',
+      allowsFreeText: true,
+      choices: [
+        { id: 'have_record', label: '발주 기록이나 인터뷰 원문 한 줄을 가져올 수 있다', grade: 'claimed_record' },
+        { id: 'cannot', label: '지금은 원문을 가져올 수 없다', grade: 'no_evidence' },
+      ],
+    });
+  }
+
+  if (!evidenceUnresolved && (intake.evidence !== '' || asked.has('u-evidence')) && !asked.has('u-episode')) {
     candidates.push({
       uncertaintyId: 'u-episode',
       hypothesisId: 'h-problem-evidence',
@@ -477,7 +577,7 @@ function collectCandidates(
       uncertaintyId: 'u-payer',
       hypothesisId: 'h-payer',
       prompt: '누가 비용을 지불하나요?',
-      whyDifferent: null,
+      whyDifferent: '지불자가 비어 있다. 문제 발생 근거와 다른 불확실성이므로 누가 내는지 묻는다.',
       allowsFreeText: true,
       choices: [
         { id: 'owner', label: '사업자 본인', grade: 'founder_estimate' },
@@ -493,7 +593,7 @@ function collectCandidates(
       uncertaintyId: 'u-frequency',
       hypothesisId: 'h-frequency',
       prompt: '이 문제가 고객에게 얼마나 자주 발생하나요?',
-      whyDifferent: null,
+      whyDifferent: '빈도는 아직 없다. 같은 근거 질문을 반복하지 않고 발생 횟수를 묻는다.',
       allowsFreeText: true,
       choices: [
         { id: 'often', label: '반복해서 발생한다고 본다', grade: 'founder_estimate' },
@@ -509,7 +609,7 @@ function collectCandidates(
       uncertaintyId: 'u-demand',
       hypothesisId: 'h-demand',
       prompt: '고객이 이 해결책을 원한다는 근거가 있나요?',
-      whyDifferent: null,
+      whyDifferent: '해결책을 원하는지와 문제가 실제로 있는지는 다른 불확실성이다. 수요 근거가 있는지 묻는다.',
       allowsFreeText: true,
       choices: [
         {

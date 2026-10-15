@@ -52,7 +52,9 @@ describe('judgment loop connection', () => {
     );
     expect(corrected.redelivery?.inputReady).toBe(true);
     expect(corrected.redelivery?.sent).toBe(false);
-    expect(corrected.judgmentText).toBe(beforeText);
+    expect(corrected.judgmentText).toContain('적용 범위를 다시 연다');
+    expect(corrected.judgmentText).not.toBe(beforeText);
+    expect(corrected.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
     expect(trace.liveModelCall).toBe(false);
     expect(trace.providerObjectsSeparated).toBe(true);
     expect(trace.namedOpenAiProviderId).toBe('openai');
@@ -79,7 +81,8 @@ describe('judgment loop connection', () => {
     );
 
     expect(missing).toEqual(['payer']);
-    expect(corrected.judgmentText).toBe(JUDGMENT_TEXT);
+    expect(corrected.judgmentText).toContain('적용 범위를 다시 연다');
+    expect(corrected.judgmentStatus).toBe('judgment_deferred');
   });
 
   it('links a capture to hypotheses without treating the excerpt as a verified fact', () => {

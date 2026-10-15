@@ -141,21 +141,62 @@ export type JourneyState = {
   analysisAcceptances: AnalysisAcceptanceRecord[];
   redelivery: RedeliveryRecord | null;
   externalNotes?: ExternalNote[];
+  judgmentComparisons?: JudgmentComparison[];
 };
+
+export type AnalysisProvenance = 'test_fixture' | 'user_declared';
+
+export type EvidenceKind = 'model_claim' | 'order_record' | 'interview_verbatim' | 'unknown';
+
+export type ModelClaimStatus = 'CLAIM' | 'unassessed';
 
 export type ExternalNote = {
   executionId: string;
   origin: 'user_paste';
   liveModelCall: false;
   providerLabel: string;
+  provenance: AnalysisProvenance;
+  evidenceKind: EvidenceKind;
+  sourceLabel: string;
   text: string;
   citedExcerpt: string | null;
   verifiedFact: false;
-  judgmentChanged: false;
+  realAnalysisSuccess: false;
+  userDeclaredReal: boolean;
+  claimStatus: ModelClaimStatus;
+  judgmentChanged: boolean;
   receivedAt: string;
   questionId: string | null;
   hypothesisIds: string[];
   status: 'reference';
+};
+
+export type JudgmentComparison = {
+  id: string;
+  executionId: string | null;
+  kind: 'external_analysis' | 'founder_answer' | 'customer_change' | 'rejected';
+  provenance: AnalysisProvenance | null;
+  liveVerified: false;
+  realAnalysisSuccess: false;
+  userDeclaredReal: boolean;
+  originalSecured: boolean;
+  sourceLabel: string | null;
+  originalText: string | null;
+  hypothesisIds: string[];
+  receivedAt: string;
+  previousJudgmentText: string;
+  nextJudgmentText: string;
+  judgmentChanged: boolean;
+  verifiedFact: false;
+  validated: false;
+  claimStatus: ModelClaimStatus | null;
+  affectedHypothesisIds: string[];
+  evidenceIds: string[];
+  reason: string;
+  uncertaintyId: string | null;
+  uncertaintyResolved: boolean;
+  nextQuestionId: string | null;
+  questionSelectionReason: string | null;
 };
 
 export type FounderSourceRecord = {

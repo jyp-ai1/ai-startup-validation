@@ -102,7 +102,9 @@ describe('external handoff', () => {
     const next = nextHandoffInput(changed.state);
     expect(next.prompt).toContain('병원 구매팀');
     expect(next.prompt).toContain('이전 문제 가설을 새 고객의 검증된 문제로 옮기지 않는다');
-    expect(changed.state.judgmentText).toBe(JUDGMENT_TEXT);
+    expect(changed.state.judgmentText).toContain('병원 구매팀');
+    expect(changed.state.judgmentText).toContain('검증된 문제가 아니다');
+    expect(changed.state.judgmentComparisons?.at(-1)?.realAnalysisSuccess).toBe(false);
     expect(changed.state.externalNotes?.[0]?.text).toBe(PASTE);
   });
 });

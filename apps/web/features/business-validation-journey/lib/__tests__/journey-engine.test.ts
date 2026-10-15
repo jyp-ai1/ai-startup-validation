@@ -55,7 +55,7 @@ describe('validation journey phase 1-2', () => {
     expect(state.analysisDelivery.status).toBe('not_sent');
     expect(state.source).toBe('test_hypothesis');
     expect(state.nextQuestion?.prompt).toBe(EVIDENCE_QUESTION);
-    expect(state.nextQuestion?.whyDifferent).toBeNull();
+    expect(state.nextQuestion?.whyDifferent).toContain('근거가 비어 있으므로');
     expect(state.understanding.known.map((item) => item.text).join('\n')).toContain(
       TEST_HYPOTHESIS_INTAKE.business,
     );
@@ -131,7 +131,8 @@ describe('validation journey phase 1-2', () => {
     expect(corrected.state.understanding.contradictions.map((item) => item.text).join('\n')).toContain(
       '동네 서점',
     );
-    expect(corrected.state.nextQuestion?.uncertaintyId).toBe('u-episode');
+    expect(corrected.state.nextQuestion?.uncertaintyId).toBe('u-customer-scope');
+    expect(corrected.state.nextQuestion?.whyDifferent).toContain('새 고객에게 옮기지 않는다');
     expect(corrected.state.nextQuestion?.prompt).not.toBe(EVIDENCE_QUESTION);
     expect(corrected.state.judgmentStatus).toBe('judgment_deferred');
   });

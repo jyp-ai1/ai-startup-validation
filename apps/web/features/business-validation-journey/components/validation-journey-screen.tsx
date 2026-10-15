@@ -279,6 +279,9 @@ function HandoffPanel({
   const [preparedAt, setPreparedAt] = useState(() => new Date().toISOString());
   const [paste, setPaste] = useState('');
   const [message, setMessage] = useState('');
+  const [provenance, setProvenance] = useState<'test_fixture' | 'user_declared'>('test_fixture');
+  const [evidenceKind, setEvidenceKind] = useState<'model_claim' | 'order_record' | 'interview_verbatim' | 'unknown'>('model_claim');
+  const [sourceLabel, setSourceLabel] = useState('test_fixture');
   const prepared = prepareAnalysisRequest(journey, preparedAt);
   const next = nextHandoffInput(journey);
 
@@ -287,7 +290,11 @@ function HandoffPanel({
     const result = acceptPastedAnalysis(journey, {
       executionId: prepared.executionId,
       text: paste,
-      providerLabel: 'user_paste',
+      providerLabel: sourceLabel,
+      provenance,
+      evidenceKind,
+      sourceLabel,
+      citedExcerpt: evidenceKind === 'order_record' || evidenceKind === 'interview_verbatim' ? paste : null,
       now: new Date().toISOString(),
     });
     setMessage(result.reason);
@@ -299,7 +306,7 @@ function HandoffPanel({
       screen: '/business-validation',
       status: 'research_not_run',
       question_id: result.state.externalNotes?.at(-1)?.questionId ?? undefined,
-      category: 'reference',
+      category: provenance,
     });
   }
 
@@ -315,6 +322,48 @@ function HandoffPanel({
       </p>
       <Textarea readOnly value={prepared.prompt} data-testid="handoff-prompt" rows={8} />
       <form className="space-y-3" onSubmit={onKeep}>
+        <label className="block text-sm" htmlFor="handoff-provenance">
+          문장 구분
+          <select
+            id="handoff-provenance"
+            className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            data-testid="handoff-provenance"
+            value={provenance}
+            onChange={(event) => setProvenance(event.target.value as 'test_fixture' | 'user_declared')}
+          >
+            <option value="test_fixture">테스트 문장</option>
+            <option value="user_declared">사용자가 가져온 응답이라고 표시</option>
+          </select>
+        </label>
+        <label className="block text-sm" htmlFor="handoff-evidence-kind">
+          근거 종류
+          <select
+            id="handoff-evidence-kind"
+            className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            data-testid="handoff-evidence-kind"
+            value={evidenceKind}
+            onChange={(event) =>
+              setEvidenceKind(event.target.value as 'model_claim' | 'order_record' | 'interview_verbatim' | 'unknown')
+            }
+          >
+            <option value="model_claim">모델 주장</option>
+            <option value="order_record">발주 기록이라고 표시한 발췌</option>
+            <option value="interview_verbatim">인터뷰 원문이라고 표시한 발췌</option>
+            <option value="unknown">출처 성격을 모름</option>
+          </select>
+        </label>
+        <label className="block text-sm" htmlFor="handoff-source">
+          출처 표시
+          <Input
+            id="handoff-source"
+            data-testid="handoff-source"
+            value={sourceLabel}
+            onChange={(event) => setSourceLabel(event.target.value)}
+          />
+        </label>
+        <p className="text-sm text-muted-foreground">
+          사용자가 실제 응답이라고 표시해도 ALABOM이 모델 호출로 확인하지 않으면 실분석 성공으로 세지 않는다.
+        </p>
         <Textarea
           value={paste}
           data-testid="handoff-paste"
@@ -339,7 +388,7 @@ function HandoffPanel({
       <ul className="space-y-2 text-sm" data-testid="handoff-records">
         {(journey.externalNotes ?? []).map((note) => (
           <li key={note.executionId} data-testid={`handoff-record-${note.executionId}`}>
-            {note.executionId} 참고. 사실 아님. {note.text}
+            {note.executionId} {note.provenance === 'user_declared' ? '사용자 표시' : '테스트 문장'}. {note.claimStatus}. 사실 아님. 실분석 성공 아님. {note.text}
           </li>
         ))}
       </ul>
@@ -488,6 +537,24 @@ function UnderstandingView({
         <p className="text-sm leading-relaxed" data-testid="judgment-text">
           {journey.judgmentText}
         </p>
+        <ul className="space-y-3 text-sm" data-testid="judgment-comparisons">
+          {(journey.judgmentComparisons ?? []).map((item) => (
+            <li key={item.id} data-testid={`comparison-${item.id}`}>
+              <p>이전 판단: {item.previousJudgmentText}</p>
+              <p>이후 판단: {item.nextJudgmentText}</p>
+              <p>
+                {item.judgmentChanged ? '판단 문장이 바뀌었다.' : '판단 문장은 바뀌지 않았다.'} {item.reason}
+              </p>
+              <p>
+                가설 {item.affectedHypothesisIds.join(', ') || '없음'} · 근거 {item.evidenceIds.join(', ') || '없음'} · 실행 {item.executionId ?? '없음'}
+              </p>
+              <p>
+                {item.provenance === 'user_declared' ? '사용자가 실제 응답이라고 표시' : item.provenance === 'test_fixture' ? '테스트 문장' : '분석 문장 아님'}
+                . 실분석 성공 {item.realAnalysisSuccess ? '예' : '아니오'}. 검증된 사실 아님.
+              </p>
+            </li>
+          ))}
+        </ul>
         <p className="text-sm text-muted-foreground">{journey.judgmentHoldReason}</p>
         <p className="text-sm" data-testid="research-note">
           {journey.researchNote}

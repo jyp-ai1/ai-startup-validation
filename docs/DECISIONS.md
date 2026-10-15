@@ -1606,6 +1606,49 @@ The no-API constraint rules out a live model call. Reading ChatGPT, Claude, or G
 
 ---
 
+## ADR-055: A pasted analysis can change the deferred judgment only with a recorded reason
+
+**Status:** Proposed  
+**Date:** 2026-10-15  
+**Sprint:** ALABOM validation journey  
+**Authors:** CTO (autonomous)
+
+### Context
+
+A stored paste is not evidence that the business judgment improved. The next check is whether a brought sentence changes the deferred judgment, which hypothesis it touches, and why the next question was chosen. No live model response is available.
+
+### Decision
+
+1. The trace is `docs/evidence/ALABOM/AI-PM/JUDGMENT-DEVELOPMENT.txt`.
+2. Every comparison stores the previous judgment, the next judgment, the affected hypotheses, and the reason. `verifiedFact` and `validated` stay false. `realAnalysisSuccess` stays false because this path does not observe a model.
+3. A test sentence and a user declaration are different labels. A declaration is not a live success.
+4. Missing original text or a missing source leaves the previous journey state in place.
+5. This ADR does not confirm the connection architecture, a Chrome extension, a merge, or a deploy.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Leave the judgment sentence frozen for every paste | Protects the deferred status | Hides whether a new sentence changed the hypothesis |
+| Promote agreement to VALIDATED | Would look like a finished judgment | Breaks the product contract |
+
+### Consequences
+
+**Positive:**
+
+- Scenarios A through E show the judgment before and after, with the execution id when a sentence was stored.
+- A founder answer can be recorded without changing the judgment sentence.
+
+**Negative:**
+
+- The readings use test sentences. They do not measure a live model's judgment quality.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
