@@ -3,6 +3,7 @@
 이 파일은 설계와 기술 타당성 기록이다. 제품 코드를 바꾸지 않았다. 모델 키를 넣지 않았다. 유료 모델 호출, DB 마이그레이션, Production 변경, PR 병합, 배포를 하지 않았다.
 
 앞선 단일 경로 설계: docs/evidence/ALABOM/AI-PM/EXTERNAL-AI-JUDGMENT-DESIGN.txt
+호출 경로와 상태 전이 명세: docs/evidence/ALABOM/AI-PM/EXTERNAL-AI-JUDGMENT-LOOP-SPEC.txt
 Production 잠금 SHA: 0b465226516e1a4f3eb9ce2087f8bca2c2c091da
 이 문서의 기준 트리: 388c2093f4be3f3a57060effaf5d126c963abea8 위의 origin/main
 미병합 규칙 엔진 PR #197 은 그대로 둔다.
