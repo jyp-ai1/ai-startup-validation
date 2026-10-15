@@ -20,6 +20,7 @@ export type JudgmentSnapshot = {
   captureId: string | null;
   sourceUrl: string | null;
   excerpt: string | null;
+  hypothesisIds: string[];
 };
 
 export type TransitionResult = {
@@ -36,6 +37,7 @@ export function applyEvidenceTransition(input: {
   captures: PageCapture[];
   capture?: PageCapture | null;
   proposedText?: string | null;
+  affectedHypothesisIds?: string[];
   failure?: Exclude<ExecutionKind, 'not_run' | 'duplicate_evidence' | 'capture_recorded' | 'round_cap_held'> | null;
   round: number;
 }): TransitionResult {
@@ -122,6 +124,7 @@ export function applyEvidenceTransition(input: {
       captureId: input.capture.id,
       sourceUrl: input.capture.url,
       excerpt: input.capture.excerpt,
+      hypothesisIds: input.affectedHypothesisIds ?? [],
     },
     captures: stored.captures,
     execution: 'capture_recorded',
@@ -140,6 +143,7 @@ export function emptyJudgment(text: string): JudgmentSnapshot {
     captureId: null,
     sourceUrl: null,
     excerpt: null,
+    hypothesisIds: [],
   };
 }
 

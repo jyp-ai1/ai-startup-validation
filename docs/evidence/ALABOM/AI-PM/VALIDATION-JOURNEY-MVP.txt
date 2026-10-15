@@ -168,6 +168,60 @@ provider 이름을 openai 로 두고 model 이 gemini 이거나 liveCall 이 아
 - 실패 사유: 없음
 - 코드 기준: Gemini 연구 호출 자리는 packages/ai 의 https://openrouter.ai/api/v1/chat/completions 와 google/gemini-2.5-flash. GPT 카탈로그는 https://api.openai.com/v1/chat/completions 와 gpt-4o-mini. 연구 provider 의 openai 이름은 그 GPT endpoint 로 가지 않는다.
 
+10. 실제 판단 루프 추적
+
+시각: 2026-10-15T03:13:25Z 여정 테스트 4 files, 33 passed, exit 0.
+시각: 2026-10-15T03:14:55Z 루프 테스트 5 passed, exit 0.
+features/business-validation-journey eslint 통과.
+pnpm --filter web build exit 0. Next.js 15.5.20. 타입 검사 포함. 기존 경고 2건은 이 여정 파일이 아니다.
+네트워크 호출 없음. 키를 넣지 않았다. 페이지 캡처를 열지 않았다.
+
+호출 경로. 식별자는 코드가 만드는 값이다.
+
+1. screen-input. connected_local.
+   ValidationJourneyScreen.onStart / onAnswer / onCorrect
+   → startJourney, applyAnswer, correctField
+   상태: research_not_run, counter_review_not_run, judgment_deferred
+2. context. connected_local.
+   buildRedelivery. 재전달 id relay-{답 수}-{수정 수}. sent false.
+   고객을 대기업 물류본부로 바꾸면 inputReady true. 포함 역할은 고객, 문제, 해결책, 지불자, 수익, 과거 답.
+   지불자 항목을 빼면 빠진 역할은 payer.
+3. gemini-research. not_called.
+   호출 자리는 apps/web/features/agents/research/providers/openrouter-provider.ts
+   endpoint https://openrouter.ai/api/v1/chat/completions
+   model google/gemini-2.5-flash
+   여정 화면은 이 파일을 import 하지 않는다.
+4. gpt-counter-review. blocked_same_provider.
+   getResearchProvider('openai') === getResearchProvider('gemini')
+   반환 id 는 gemini
+   GPT 카탈로그 endpoint https://api.openai.com/v1/chat/completions
+   model gpt-4o-mini
+   이 여정은 그 endpoint 를 호출하지 않는다. counter_review_not_run
+5. compare. not_connected.
+   compareReadings 는 화면이 호출하지 않는다.
+   테스트 입력으로만 일치, 불일치, 근거 부족을 구분한다.
+   세 경우 모두 judgmentChange preserved, verifiedFact false.
+   이름이 openai 이고 모델이 gemini 이면 not_compared.
+6. judgment. not_connected.
+   applyEvidenceTransition 은 화면이 호출하지 않는다.
+   화면 판단 문장은 시작 문장과 같다.
+   테스트에서 cap-1 을 넣으면 causeIds cap-1, hypothesisIds h-customer h-problem, verifiedFact false.
+7. next-step. connected_local.
+   고객 변경 후 검증 행동: 「대기업 물류본부」의 실제 발주나 배송 절차를 한 건 보고 원문 한 줄을 가져온다.
+   필요한 증거: 그 고객의 업무 절차 관찰 원문.
+   로컬 Chrome 에서 배지는 조사 미실행, 반대 검토 미실행, 판단 유보.
+   판단 문장은 고객 수정 전후가 같았다.
+
+시나리오 표. 실패 사유는 없다.
+
+A. 입력: 고객 문장을 대기업 물류본부로 수정. 출력: 이해와 재전달 기록만 바뀜. 판단 문장 유지. 근거 ID 없음.
+B. 출력: 포함 항목에 문제, 해결책, 지불자, 수익, ans-1, ans-2. sent false.
+C. 입력: 포함 목록에서 payer 역할 제거. 출력: 빠진 역할 payer. 화면의 정상 경로는 빼지 않으므로 inputReady true.
+D. 입력: cap-1, https://example.com/logistics, 발췌, 가설 h-customer h-problem. 출력: 테스트 함수만 문장을 바꿈. 화면은 이 전이를 호출하지 않음. verifiedFact false.
+E. 입력: 실행되지 않은 두 읽기, 그리고 Gemini endpoint 에 openai 이름을 단 읽기. 출력: not_compared. 픽스처로 준 서로 다른 문장은 disagreement. 어느 쪽도 화면 판단을 바꾸지 않음. 실제 HTTP 없음.
+F. 입력: 새 캡처 없는 고객 변경. 출력: 판단 문장 동일. 새 캡처가 있는 테스트만 변경 이유와 가설 ID를 남김.
+G. 출력: 화면의 검증 행동은 인터뷰 반복이 아니라 대기업 물류본부의 절차 관찰 원문.
+
 9. 미검증
 
 Phase 3 관련 이력 패킷을 모델에 보내는 경로.

@@ -8,6 +8,7 @@ import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/pro
 
 import { applyAnswer, correctField, startJourney } from '../lib/journey-engine';
 import { contextRoleLabel, executionBadgeLabel } from '../lib/present-execution';
+import { verificationActionFor } from '../lib/verification-action';
 import { loadJourneyDraft, saveJourneyDraft } from '../lib/journey-session';
 import {
   emptyIntake,
@@ -286,6 +287,7 @@ function UnderstandingView({
   onBack: () => void;
 }) {
   const question = journey.nextQuestion;
+  const verification = verificationActionFor(journey);
 
   return (
     <div className="mx-auto max-w-2xl space-y-8 px-6 py-10" data-testid="understanding">
@@ -388,6 +390,12 @@ function UnderstandingView({
             </ul>
           </div>
         ) : null}
+        <p className="text-sm leading-relaxed" data-testid="verification-action">
+          검증 행동: {verification.action}
+        </p>
+        <p className="text-sm text-muted-foreground" data-testid="evidence-needed">
+          필요한 증거: {verification.evidenceNeeded}
+        </p>
         <p className="text-sm" data-testid="next-action">
           다음 행동: {journey.nextAction.text}
         </p>

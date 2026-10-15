@@ -1,4 +1,5 @@
 import { buildRedelivery } from './answer-redelivery';
+import { verificationActionFor } from './verification-action';
 import {
   claimLabel,
   COUNTER_REVIEW_NOTE,
@@ -214,7 +215,9 @@ function finish(
     understanding: buildUnderstanding(intake, materialAnswers, materialRevisions),
     nextQuestion: selected.question,
     repeatBlockedReason: selected.repeatBlockedReason,
-    nextAction: selected.question ? actionForQuestion(selected.question) : holdAction(),
+    nextAction: selected.question
+      ? actionForQuestion(selected.question)
+      : holdAction(intake, answers, revisions),
     researchStatus: 'research_not_run',
     researchNote: researchNote(intake.url),
     counterReviewStatus: 'counter_review_not_run',
@@ -518,12 +521,13 @@ function actionForQuestion(question: NextQuestion): NextAction {
   };
 }
 
-function holdAction(): NextAction {
+function holdAction(intake: Intake, answers: FounderAnswer[], revisions: FieldRevision[]): NextAction {
+  const verification = verificationActionFor({ intake, answers, revisions });
   return {
     kind: 'external_validation',
-    text: '고객 쪽 기록 한 건을 새로 받아 오기 전에는 조사를 다시 열지 않는다.',
-    successCriterion: '새 출처 ID가 있는 사용·결제·인터뷰 원문이 들어온다.',
-    failureCriterion: '창업자 진술만 반복되고 외부 기록이 없다.',
+    text: verification.action,
+    successCriterion: verification.evidenceNeeded,
+    failureCriterion: '같은 질문을 반복하거나, 창업자 진술만으로 판단을 바꾼다.',
   };
 }
 
