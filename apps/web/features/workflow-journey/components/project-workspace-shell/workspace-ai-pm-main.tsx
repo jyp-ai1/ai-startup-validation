@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -108,10 +108,11 @@ import {
 import { type ConversationFactKey } from '../../lib/business-understanding/conversation-memory';
 
 import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
-import { SiAiPmBindSurface } from '@/features/strategic-intelligence/components/si-ai-pm-bind-surface';
-import { SiReviewSurface } from '@/features/strategic-intelligence/components/si-review-surface';
-import { resolveSiJourneyIntegration } from '@/features/strategic-intelligence/lib/resolve-si-journey-integration';
-import { recordSiMatchedAnswerOnLoop } from '../../lib/business-understanding/si-matched-answer-storage';
+import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
+import { commitFounderText } from '@/features/strategic-intelligence/lib/classify-founder-event';
+import { presentWorkspaceJudgment, type WorkspaceJudgmentView } from '@/features/strategic-intelligence/lib/present-workspace-judgment';
+import { createProjectLedger, selectNextAction, type JudgmentLedger } from '@/features/strategic-intelligence/lib/si-judgment-contract';
+import type { DecisionRecord } from '@repo/types/domain/strategic-intelligence';
 
 type WorkspaceAiPmMainProps = {
   domain: WorkspaceDomainEvidence;
@@ -263,42 +264,61 @@ export function WorkspaceAiPmMain({
   const storedDocumentText = loadWorkspaceDocumentText(projectId);
   const documentReadable = isWorkspaceDocumentReadable(storedDocumentText ?? documentContext);
   const siInputText = (storedDocumentText ?? documentContext ?? '').trim();
-  const [siFounderAnswer, setSiFounderAnswer] = useState<string | null>(null);
-  const [siBusinessDocument, setSiBusinessDocument] = useState<string | null>(null);
+  const [ledgerSession, setLedgerSession] = useState<{
+    ledger: JudgmentLedger;
+    decision: DecisionRecord;
+    view: WorkspaceJudgmentView;
+  } | null>(null);
+  const [ledgerAnswerDraft, setLedgerAnswerDraft] = useState('');
+  const ledgerSeededFor = useRef<string | null>(null);
   useEffect(() => {
-    setSiFounderAnswer(null);
-    setSiBusinessDocument(null);
+    ledgerSeededFor.current = null;
+    setLedgerSession(null);
+    setLedgerAnswerDraft('');
   }, [projectId]);
   useEffect(() => {
-    if (!siBusinessDocument && siInputText.length >= 8) {
-      setSiBusinessDocument(siInputText);
-    }
-  }, [siBusinessDocument, siInputText]);
-  const siJourney = useMemo(() => {
-    const businessDocument = siBusinessDocument ?? siInputText;
-    if (!documentAnalyzable || businessDocument.length < 8) return null;
-    return resolveSiJourneyIntegration({
-      title: projectName,
-      businessDocument,
-      founderAnswer: siFounderAnswer,
-      gapLoopDocument: siInputText !== businessDocument ? siInputText : null,
+    if (!projectId || !documentAnalyzable || siInputText.length < 8) return;
+    if (ledgerSeededFor.current === projectId) return;
+    ledgerSeededFor.current = projectId;
+    const customerStatement = (entities?.customer.value ?? '').replace(/\s+/g, ' ').trim();
+    const businessStatement = [entities?.business.value, domain.business, siInputText]
+      .map((value) => value?.replace(/\s+/g, ' ').trim() ?? '')
+      .find((value) => value.length > 0)
+      ?.slice(0, 180) ?? '';
+    const ledger = createProjectLedger({
+      customerStatement,
+      problemStatement: '',
+      businessStatement,
     });
-  }, [documentAnalyzable, projectName, siBusinessDocument, siFounderAnswer, siInputText]);
-  const siBindView = siJourney?.current ?? null;
-  const siJudgment = siBindView?.judgment ?? null;
-  const applySiFounderAnswer = useCallback((answer: string) => {
+    const decision = selectNextAction(ledger);
+    const view = presentWorkspaceJudgment({ ledger, decision, previous: null });
+    if (!view) return;
+    setLedgerSession({ ledger, decision, view });
+  }, [documentAnalyzable, domain.business, entities?.business.value, entities?.customer.value, projectId, siInputText]);
+  useEffect(() => {
+    if (!ledgerSession) return;
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.siJudgmentViewed, {
+      project_id: projectId,
+      screen: 'workspace',
+      status: ledgerSession.view.validationPlanStatus,
+    });
+  }, [ledgerSession?.view.judgmentText, ledgerSession?.view.nextActionText, ledgerSession?.view.validationPlanStatus, projectId]);
+  const submitLedgerAnswer = useCallback((answer: string) => {
     const trimmed = answer.trim();
-    const question = siBindView?.question;
-    if (!trimmed || !question) return;
-    recordSiMatchedAnswerOnLoop({
-      projectId,
-      documentText: siInputText,
-      answer: trimmed,
-      question,
+    if (!trimmed) return;
+    setLedgerSession((current) => {
+      if (!current) return current;
+      const next = commitFounderText(current.ledger, current.decision, trimmed, current.view);
+      if (!next.applied) return current;
+      void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.siAiPmAnswerApplied, {
+        project_id: projectId,
+        screen: 'workspace',
+        status: next.view.validationPlanStatus,
+      });
+      return { ledger: next.ledger, decision: next.decision, view: next.view };
     });
-    setSiFounderAnswer(null);
-    setLoopState(loadAiPmLoopState(projectId));
-  }, [projectId, siBindView?.question, siInputText]);
+    setLedgerAnswerDraft('');
+  }, [projectId]);
 
   const understanding = useMemo(
     () => (documentAnalyzable ? buildBusinessUnderstanding(documentContext) : null),
@@ -775,9 +795,51 @@ export function WorkspaceAiPmMain({
     onReview();
   };
 
+  const ledgerBlock = ledgerSession ? (
+    <section data-testid="si-journey-block" data-si-source="ledger" className="space-y-4 rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.05] to-background px-6 py-6 sm:px-8">
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">S.I. 판단</p>
+      <p data-testid="workspace-judgment-text" className="text-sm leading-relaxed">
+        {ledgerSession.view.judgmentText}
+      </p>
+      <p data-testid="workspace-next-action" className="text-[15px] font-medium leading-relaxed">
+        {ledgerSession.view.nextActionText}
+      </p>
+      {ledgerSession.view.validationPlanStatus === 'proposed' ? (
+        <p data-testid="workspace-validation-plan" className="text-sm leading-relaxed text-muted-foreground">
+          {ledgerSession.view.validationPlanText}
+        </p>
+      ) : null}
+      <form
+        className="space-y-3"
+        onSubmit={(event) => {
+          event.preventDefault();
+          submitLedgerAnswer(ledgerAnswerDraft);
+        }}
+      >
+        <textarea
+          data-testid="workspace-judgment-answer"
+          value={ledgerAnswerDraft}
+          onChange={(event) => setLedgerAnswerDraft(event.target.value)}
+          rows={3}
+          placeholder="확인, 변경, 모름, 부재, 문자 기록처럼 일어난 일만 적어 주세요."
+          className="w-full resize-y rounded-xl border border-border bg-background px-3 py-2 text-sm leading-relaxed outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        />
+        <button
+          type="submit"
+          data-testid="workspace-judgment-submit"
+          disabled={!ledgerAnswerDraft.trim()}
+          className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+        >
+          답 보내기
+        </button>
+      </form>
+    </section>
+  ) : null;
+
   if (phase === 'reviewing' || reviewError) {
     return (
       <div className={cn('mx-auto max-w-[960px] space-y-6 py-2', className)}>
+        {ledgerBlock}
         <WorkspaceAnalysisResultPanel
           presenter={
             analysisPresenter ?? {
@@ -835,18 +897,7 @@ export function WorkspaceAiPmMain({
 
   const flowBody = (
     <div className="space-y-6">
-      {siJudgment && !isPostReview ? (
-        <div data-testid="si-journey-block" data-si-source="business-input">
-          <SiReviewSurface judgment={siJudgment} projectId={projectId} />
-          {siBindView?.question ? (
-            <SiAiPmBindSurface
-              question={siBindView.question}
-              projectId={projectId}
-              onAnswer={applySiFounderAnswer}
-            />
-          ) : null}
-        </div>
-      ) : null}
+      {ledgerBlock}
 
       {demoSamplePlayback && projectId ? (
         <DemoSamplePlaybackBar
@@ -918,13 +969,12 @@ export function WorkspaceAiPmMain({
             onLoopComplete={handleLoopComplete}
             onSessionPause={onSessionPause}
             hideInterpretationConfirm={showUnderstandingCard}
-            siValidationAsk={siBindView?.question ?? null}
-            onSiValidationAnswer={applySiFounderAnswer}
+            onLedgerAnswer={ledgerSession ? submitLedgerAnswer : undefined}
           />
         </div>
       ) : null}
 
-      {showUnderstandingCard && understanding ? (
+      {showUnderstandingCard && understanding && !ledgerSession ? (
         <WorkspaceBusinessUnderstandingCard
           understanding={understanding}
           entities={entities}

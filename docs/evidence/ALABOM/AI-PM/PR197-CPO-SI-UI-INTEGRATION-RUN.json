@@ -1,0 +1,36 @@
+{
+  "scenarioA": {
+    "uncertaintyIds": [
+      "u-empty-problem",
+      "u-conflict-h-customer"
+    ],
+    "resolvableByQuestion": [
+      true,
+      true
+    ],
+    "planStatus": "not_required",
+    "selectedId": "q-problem-next",
+    "prompt": "새 고객과 문제의 짝이 비어 있다. 대기업 물류본부 고객이 겪는 불편은 무엇입니까?"
+  },
+  "scenarioE": {
+    "uncertaintyIds": [
+      "u-record",
+      "u-payer"
+    ],
+    "resolvableByQuestion": [
+      false,
+      true
+    ],
+    "planStatus": "proposed",
+    "selectedId": "v-business-model",
+    "prompt": "부재는 결제 가설의 CLAIM이다. 문제 문장을 다시 확인해도 기록이 생기지 않는다. 주체와 금액이 적힌 문자 기록이 있어야 부재와 구분된다.",
+    "evidenceNeeded": "주체와 금액이 적힌 문자 기록"
+  },
+  "scenarioD": {
+    "beforePrompt": "누가 비용을 지불하는지 확인해 달라.",
+    "afterPrompt": "누가 비용을 지불하는지 확인해 달라. 더 좁혀 근거가 될 기록의 범위를 지정해 달라.",
+    "beforeSelectedId": "q-payer",
+    "afterSelectedId": "q-payer",
+    "hypothesisId": "h-payer"
+  }
+}

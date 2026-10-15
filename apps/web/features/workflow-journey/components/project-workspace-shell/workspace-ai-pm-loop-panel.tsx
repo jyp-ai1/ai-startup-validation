@@ -44,8 +44,6 @@ import {
   saveAnswerDraft,
 } from '../../lib/business-understanding/workspace-answer-draft-store';
 import { resolveNextQuestionDecision } from '../../lib/business-understanding/resolve-next-question-decision';
-import { isBusinessUnderstandingConfirmQuestion } from '../../lib/business-understanding/gap-question-map';
-import { siTurnInsightFromQuestion } from '../../lib/business-understanding/si-turn-insight';
 import { resolveSiMatchedAnswerStorage } from '../../lib/business-understanding/si-matched-answer-storage';
 import type { SiAiPmQuestion } from '@repo/types/domain/strategic-intelligence';
 import { shouldSkipLiveRankOnRemount } from '../../lib/business-understanding/resolve-remount-ask-surface';
@@ -189,6 +187,7 @@ function AiPmQuestionSurface({
   s11Surface,
   displayQuestionText,
   className,
+  hidden = false,
 }: {
   focusedUiActive: boolean;
   focusedSnapshot: AiPmFocusedSnapshot | null;
@@ -198,7 +197,9 @@ function AiPmQuestionSurface({
   s11Surface: ReturnType<typeof presentS11Surface>;
   displayQuestionText: string;
   className?: string;
+  hidden?: boolean;
 }) {
+  if (hidden) return null;
   if (simpleQuestionUiActive && simpleSnapshot) {
     return (
       <WorkspaceAiPmSimpleQuestion
@@ -247,6 +248,7 @@ function ConversationSecondaryBlocks({
   whyNow,
   displayQuestionText,
   hideForFocusedUi,
+  hidden = false,
 }: {
   s11Surface: ReturnType<typeof presentS11Surface>;
   livingState: ReturnType<typeof buildLivingUnderstandingState>;
@@ -255,6 +257,7 @@ function ConversationSecondaryBlocks({
   whyNow: string | null | undefined;
   displayQuestionText: string;
   hideForFocusedUi?: boolean;
+  hidden?: boolean;
 }) {
   const understandingRows = useMemo(
     () => buildConversationUnderstandingRows(livingState),
@@ -262,7 +265,7 @@ function ConversationSecondaryBlocks({
   );
   const v3Active = isV3ReviewPipelineActive();
 
-  if (hideForFocusedUi) {
+  if (hidden || hideForFocusedUi) {
     return null;
   }
 
@@ -309,9 +312,11 @@ type WorkspaceAiPmLoopPanelProps = {
   workspaceSnapshotUpdatedAt?: string | null;
   /** After C1, hide interpretation-style 맞습니다 on the composer. */
   hideInterpretationConfirm?: boolean;
-  /** PR #97 — S.I. validation ask. Does not rewrite decideNextQuestionFromReview. */
+  /** Ignored. The ledger view owns the next-action sentence. */
   siValidationAsk?: SiAiPmQuestion | null;
   onSiValidationAnswer?: (answer: string) => void;
+  /** When set, answers go to the judgment classifier and this panel does not render a second question. */
+  onLedgerAnswer?: (answer: string) => void;
   className?: string;
 };
 
@@ -328,8 +333,8 @@ export function WorkspaceAiPmLoopPanel({
   onSessionPause,
   workspaceSnapshotUpdatedAt = null,
   hideInterpretationConfirm = false,
-  siValidationAsk = null,
   onSiValidationAnswer,
+  onLedgerAnswer,
   className,
 }: WorkspaceAiPmLoopPanelProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmLoop');
@@ -535,7 +540,6 @@ export function WorkspaceAiPmLoopPanel({
       };
     }
 
-    const siInsight = siTurnInsightFromQuestion(siValidationAsk);
     const decision = resolveNextQuestionDecision({
       living: livingState,
       turns: freshTurns,
@@ -544,7 +548,6 @@ export function WorkspaceAiPmLoopPanel({
       projectId,
       gapState: loadAiPmLoopState(projectId).gapState,
       researchPending: Boolean(loadAiPmLoopState(projectId).researchPending),
-      siInsight,
     });
     if (!decision) return null;
 
@@ -575,15 +578,6 @@ export function WorkspaceAiPmLoopPanel({
       }
     }
 
-    if (
-      siValidationAsk &&
-      siInsight?.preferredGapIds.includes(targetGap) &&
-      !isBusinessUnderstandingConfirmQuestion(questionText)
-    ) {
-      questionText = siValidationAsk.questionText;
-      whyNow = siValidationAsk.whyAsking;
-    }
-
     const purity = enforceQuestionPurity({
       questionText,
       targetGap,
@@ -610,7 +604,6 @@ export function WorkspaceAiPmLoopPanel({
     livingState,
     lockedAskSurface,
     questionLockActive,
-    siValidationAsk,
   ]);
   const s11Surface = useMemo(() => {
     const askIssueId = loopState.currentIssueId ?? nextIssue;
@@ -1659,9 +1652,15 @@ export function WorkspaceAiPmLoopPanel({
   ]);
 
   const submitAnswer = useCallback((forcedText?: string) => {
+    const trimmed = (forcedText ?? answerDraft).trim();
+    if (onLedgerAnswer) {
+      if (trimmed.length < 1 || readOnly) return;
+      onLedgerAnswer(trimmed);
+      setAnswerDraft('');
+      return;
+    }
     const storedLoop = loadAiPmLoopState(projectId);
     const issueId = storedLoop.currentIssueId ?? loopState.currentIssueId ?? nextIssue;
-    const trimmed = (forcedText ?? answerDraft).trim();
     if (!issueId || trimmed.length < 2 || readOnly) return;
     if (selectedChoiceId || simpleQuestionSnapshot?.choiceOptions?.length) {
       trackClarityQuestionAnswered({
@@ -1671,7 +1670,7 @@ export function WorkspaceAiPmLoopPanel({
       });
     }
 
-    const siAskText = siValidationAsk?.questionText?.trim();
+    const siAskText = null;
     const liveAskText =
       whyThisQuestionNow?.questionText?.trim() ||
       lastAskSurfaceRef.current.questionText?.trim() ||
@@ -2323,7 +2322,7 @@ export function WorkspaceAiPmLoopPanel({
     syncState,
     understanding,
     whyThisQuestionNow,
-    siValidationAsk,
+    onLedgerAnswer,
     onSiValidationAnswer,
     answerDraft,
     selectedChoiceId,
@@ -2686,12 +2685,14 @@ export function WorkspaceAiPmLoopPanel({
       onSubmit={() => submitAnswer(confirmCorrectionMode ? answerDraft : undefined)}
       readOnly={readOnly}
       placeholder={
-        confirmCorrectionMode
-          ? '수정할 내용을 입력하세요'
-          : simpleQuestionUiActive
-            ? '답변을 입력해 주세요.'
-            : whyThisQuestionNow?.questionText?.trim() ||
-              (activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : '답변을 입력해 주세요.')
+        onLedgerAnswer
+          ? '답변을 입력해 주세요.'
+          : confirmCorrectionMode
+            ? '수정할 내용을 입력하세요'
+            : simpleQuestionUiActive
+              ? '답변을 입력해 주세요.'
+              : whyThisQuestionNow?.questionText?.trim() ||
+                (activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : '답변을 입력해 주세요.')
       }
       questionIndex={questionIndex}
       lastAnswer={confirmCorrectionMode ? null : lastSavedAnswer}
@@ -2709,11 +2710,11 @@ export function WorkspaceAiPmLoopPanel({
         resetAnswerDraft();
       }}
       showConfirmYes={
-        isConfirmQuestion && !confirmCorrectionMode && !contradiction && !hideInterpretationConfirm
+        isConfirmQuestion && !confirmCorrectionMode && !contradiction && !hideInterpretationConfirm && !onLedgerAnswer
       }
       onConfirmYes={handleConfirmYes}
       showConfirmNo={
-        isConfirmQuestion && !confirmCorrectionMode && !contradiction && !hideInterpretationConfirm
+        isConfirmQuestion && !confirmCorrectionMode && !contradiction && !hideInterpretationConfirm && !onLedgerAnswer
       }
       onConfirmNo={handleConfirmNo}
       contradiction={
@@ -2723,7 +2724,7 @@ export function WorkspaceAiPmLoopPanel({
       onAcceptNew={() => resolveContradiction('accept_new')}
       onAcceptBoth={() => resolveContradiction('accept_both')}
       qualityHint={answerQualityHint ? t(`answerQuality.${answerQualityHint}`) : null}
-      choiceOptions={isConfirmQuestion || contradiction ? null : choiceOptions}
+      choiceOptions={onLedgerAnswer || isConfirmQuestion || contradiction ? null : choiceOptions}
       selectedChoiceId={selectedChoiceId}
       onSelectChoice={handleSelectBusinessChoice}
     />
@@ -2766,6 +2767,7 @@ export function WorkspaceAiPmLoopPanel({
   }
 
   if (
+    !onLedgerAnswer &&
     simpleQuestionUiActive &&
     isAiPmBusinessReviewV1Active() &&
     loopState.viewMode === 'review' &&
@@ -2787,6 +2789,7 @@ export function WorkspaceAiPmLoopPanel({
   }
 
   if (
+    !onLedgerAnswer &&
     simpleQuestionUiActive &&
     isAiPmBusinessReviewV1Active() &&
     loopState.viewMode === 'supplement' &&
@@ -2808,6 +2811,7 @@ export function WorkspaceAiPmLoopPanel({
   }
 
   if (
+    !onLedgerAnswer &&
     simpleQuestionUiActive &&
     loopState.viewMode === 'judgment' &&
     loopState.ceoJudgment
@@ -2940,6 +2944,7 @@ export function WorkspaceAiPmLoopPanel({
           onShowInterimJudgment={showInterimJudgment}
           s11Surface={s11Surface}
           displayQuestionText={displayQuestionText}
+          hidden={Boolean(onLedgerAnswer)}
         />
         {whyPanel ? (
           <div
@@ -2981,7 +2986,7 @@ export function WorkspaceAiPmLoopPanel({
             </div>
           </div>
         ) : null}
-        {midJudgmentText ? (
+        {midJudgmentText && !onLedgerAnswer ? (
           <div
             data-testid="mid-judgment-panel"
             className="mt-4 whitespace-pre-wrap rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm leading-relaxed"
@@ -3010,6 +3015,7 @@ export function WorkspaceAiPmLoopPanel({
           whyNow={whyNowText}
           displayQuestionText={displayQuestionText}
           hideForFocusedUi={focusedUiActive || simpleQuestionUiActive}
+          hidden={Boolean(onLedgerAnswer)}
         />
       </section>
     );
@@ -3056,6 +3062,7 @@ export function WorkspaceAiPmLoopPanel({
               onShowInterimJudgment={showInterimJudgment}
               s11Surface={s11Surface}
               displayQuestionText={displayQuestionText}
+              hidden={Boolean(onLedgerAnswer)}
             />
             <ConversationSecondaryBlocks
               s11Surface={s11Surface}
@@ -3065,6 +3072,7 @@ export function WorkspaceAiPmLoopPanel({
               whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
               displayQuestionText={displayQuestionText}
               hideForFocusedUi={focusedUiActive || simpleQuestionUiActive}
+              hidden={Boolean(onLedgerAnswer)}
             />
             <div className="mt-4">{answerComposer}</div>
             <Button
@@ -3091,6 +3099,7 @@ export function WorkspaceAiPmLoopPanel({
                 onShowInterimJudgment={showInterimJudgment}
                 s11Surface={s11Surface}
                 displayQuestionText={displayQuestionText}
+                hidden={Boolean(onLedgerAnswer)}
               />
               {whyPanel ? (
                 <div
@@ -3132,7 +3141,7 @@ export function WorkspaceAiPmLoopPanel({
                   </div>
                 </div>
               ) : null}
-              {midJudgmentText ? (
+              {midJudgmentText && !onLedgerAnswer ? (
                 <div
                   data-testid="mid-judgment-panel"
                   className="mt-4 whitespace-pre-wrap rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm leading-relaxed"
@@ -3163,6 +3172,7 @@ export function WorkspaceAiPmLoopPanel({
                 whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
                 displayQuestionText={displayQuestionText}
                 hideForFocusedUi={focusedUiActive || simpleQuestionUiActive}
+                hidden={Boolean(onLedgerAnswer)}
               />
             </section>
             {loopState.turns.length > 0 ? (
