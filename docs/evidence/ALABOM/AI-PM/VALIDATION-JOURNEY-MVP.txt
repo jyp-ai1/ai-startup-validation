@@ -299,3 +299,40 @@ GPT
 - 키가 없으면 counter_review_not_run, networkCalled false.
 
 이 구분은 원문 문구의 규칙이다. Gemini나 GPT가 읽은 결과가 아니다. 사업성 판단의 정확도가 나아졌다는 증거가 아니다.
+
+13. AI 교차 검토 연동 계약
+
+시각: 2026-10-15T04:22:06Z 여정 테스트 7 files, 54 passed, exit 0.
+여정 폴더 eslint 통과. pnpm --filter web build exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+픽스처만 사용했다. fetch 없음. 키를 넣지 않았다.
+
+결과 계약. 각 분석 패킷은 다음을 가진다.
+- executionId, providerId, modelId, endpoint
+- purpose: research 또는 counter_review
+- answerIds, evidenceIds
+- claim, support, counter, uncertainty
+- hypothesisIds
+- citedExcerpt 는 모델이 말한 발췌다. capturedSourceId 는 확보한 원문 ID다. 둘은 다르다.
+- status: succeeded, failed, not_run
+
+상태 전이
+
+| 입력 | 결과 | 가설 | 사업 판단 |
+| --- | --- | --- | --- |
+| Gemini만 succeeded | not_compared | 유지 | 유지 |
+| GPT만 succeeded | not_compared | 유지 | 유지 |
+| 둘 다 succeeded, 결론 같음, 확보 원문 없음 | agreement. verifiedFact false | 바꾸지 않음. supported면 그대로 | judgment_deferred |
+| 둘 다 succeeded, 결론 다름 | disagreement. 양쪽 claim 보존. 다음 원문을 요청 | 한쪽을 고르지 않음 | 유지 |
+| 한쪽 failed | not_compared. state 객체 유지 | 유지 | 유지. 원문 이력 유지 |
+| 패킷 가설이 h-problem뿐 | affectedHypothesisIds는 h-problem | h-payer는 생기지 않음 | 유지 |
+| 화면의 실제 상태 | not_compared | 호출 없음 | 배지 조사 미실행, 반대 검토 미실행, 판단 유보 |
+
+로컬 화면
+- 교차 검토 문장은 not_compared이고, 실제 분석 결과가 없다고 적힌다.
+- 문제 원문을 붙여 문제 가설이 supported가 되어도 교차 검토 문장과 사업 판단 문장은 그대로다.
+- 미검증 목록에 지불 의사가 남는다.
+
+미해결
+- Gemini HTTP와 키가 있는 GPT 호출은 이 계약에 연결하지 않았다.
+- 모델이 제시한 출처를 확보 원문으로 확인하는 절차는 없다.
+- agreement는 사실 검증이 아니다. 사업성 판단 정확도의 개선이 아니다.
