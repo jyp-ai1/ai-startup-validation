@@ -19,6 +19,7 @@ import {
   type FieldRevision,
   type FounderAnswer,
   type FounderSourceRecord,
+  type HypothesisJudgment,
   type Intake,
   type JourneySource,
   type JourneyState,
@@ -59,7 +60,7 @@ export function startJourney(
   const normalized = normalizeIntake(intake);
   const missing = missingRequired(normalized);
   if (missing.length > 0) return { ok: false, missing };
-  return { ok: true, state: withRedelivery(null, finish(normalized, source, [], [], [])) };
+  return { ok: true, state: withRedelivery(null, finish(normalized, source, [], [], [], [])) };
 }
 
 export function applyAnswer(
@@ -99,7 +100,14 @@ export function applyAnswer(
     : state.intake;
   const next = withRedelivery(
     state,
-    finish(intake, state.source, [...state.answers, answer], state.revisions, state.sourceRecords ?? []),
+    finish(
+      intake,
+      state.source,
+      [...state.answers, answer],
+      state.revisions,
+      state.sourceRecords ?? [],
+      state.hypothesisJudgments ?? [],
+    ),
   );
 
   return {
@@ -139,7 +147,14 @@ export function correctField(
   const intake = duplicate ? state.intake : { ...state.intake, [field]: next };
   const finished = withRedelivery(
     state,
-    finish(intake, state.source, state.answers, [...state.revisions, revision], state.sourceRecords ?? []),
+    finish(
+      intake,
+      state.source,
+      state.answers,
+      [...state.revisions, revision],
+      state.sourceRecords ?? [],
+      state.hypothesisJudgments ?? [],
+    ),
   );
 
   return {
@@ -203,6 +218,7 @@ function finish(
   answers: FounderAnswer[],
   revisions: FieldRevision[],
   sourceRecords: FounderSourceRecord[],
+  hypothesisJudgments: HypothesisJudgment[],
 ): JourneyState {
   const materialAnswers = answers.filter((answer) => answer.material);
   const materialRevisions = revisions.filter((revision) => revision.material);
@@ -234,6 +250,7 @@ function finish(
     },
     captures: [],
     sourceRecords,
+    hypothesisJudgments,
     redelivery: null,
   };
 }

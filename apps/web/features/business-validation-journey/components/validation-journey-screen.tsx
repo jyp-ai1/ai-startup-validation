@@ -434,7 +434,7 @@ function UnderstandingView({
         <form className="space-y-3 border-t border-border pt-3" onSubmit={onAttachSource} data-testid="source-form">
           <h3 className="text-base font-medium">원문 붙이기</h3>
           <p className="text-sm text-muted-foreground">
-            붙여 넣은 문장은 창업자 원문이다. 그 자체로 사업성 판단을 바꾸지 않는다.
+            붙여 넣은 문장은 창업자 원문이다. 닿는 가설만 재평가하고, 사업 전체의 결론은 확정하지 않는다.
           </p>
           <Textarea
             id="source-text"
@@ -470,6 +470,14 @@ function UnderstandingView({
             이 원문을 가설에 연결
           </Button>
         </form>
+        <ul className="space-y-2 text-sm" data-testid="hypothesis-judgments">
+          {(journey.hypothesisJudgments ?? []).map((item) => (
+            <li key={item.hypothesisId} data-testid={`hypothesis-judgment-${item.hypothesisId}`}>
+              {item.hypothesisId} · {item.stance} · 원인 {item.causeId} · {item.after} · 미검증{' '}
+              {item.notEstablished.join(', ')}
+            </li>
+          ))}
+        </ul>
         <ul className="space-y-2 text-sm" data-testid="source-records">
           {(journey.sourceRecords ?? []).map((record) => (
             <li key={record.id}>
@@ -480,10 +488,12 @@ function UnderstandingView({
               <p>
                 가설 {record.hypothesisIds.join(', ')} · {record.claimLabel}
               </p>
-              <p>
-                이전 판단: {record.previousJudgmentText}
-              </p>
-              <p>이후 판단: {record.nextJudgmentText}</p>
+              <p data-testid={`source-effect-${record.id}`}>효과 {record.effect ?? 'unchanged'}</p>
+              <p>사업 판단 이전: {record.previousJudgmentText}</p>
+              <p>사업 판단 이후: {record.nextJudgmentText}</p>
+              <p>가설 판단 이전: {record.hypothesisBefore}</p>
+              <p>가설 판단 이후: {record.hypothesisAfter}</p>
+              <p>미검증: {(record.notEstablished ?? []).join(', ')}</p>
               <p>{record.reason}</p>
             </li>
           ))}

@@ -137,6 +137,7 @@ export type JourneyState = {
   };
   captures: [];
   sourceRecords: FounderSourceRecord[];
+  hypothesisJudgments: HypothesisJudgment[];
   redelivery: RedeliveryRecord | null;
 };
 
@@ -158,6 +159,25 @@ export type FounderSourceRecord = {
   accepted: false;
   duplicate: boolean;
   reason: string;
+  effect: 'unchanged' | 'revised' | 'held';
+  hypothesisBefore: string;
+  hypothesisAfter: string;
+  stance: HypothesisStance;
+  notEstablished: string[];
+};
+
+export type HypothesisStance = 'unreviewed' | 'supported' | 'contradicted' | 'held';
+
+export type HypothesisJudgment = {
+  hypothesisId: string;
+  before: string;
+  after: string;
+  stance: HypothesisStance;
+  causeId: string | null;
+  sourceId: string | null;
+  reason: string;
+  verifiedFact: false;
+  notEstablished: string[];
 };
 
 export type ContextRole =

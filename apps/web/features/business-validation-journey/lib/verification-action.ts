@@ -1,4 +1,4 @@
-import type { FounderAnswer, Intake, JourneyState } from './journey-types';
+import type { FounderAnswer, HypothesisJudgment, Intake, JourneyState } from './journey-types';
 
 export type VerificationAction = {
   id: string;
@@ -8,8 +8,19 @@ export type VerificationAction = {
 };
 
 export function verificationActionFor(
-  state: Pick<JourneyState, 'intake' | 'answers' | 'revisions'>,
+  state: Pick<JourneyState, 'intake' | 'answers' | 'revisions'> & {
+    hypothesisJudgments?: HypothesisJudgment[];
+  },
 ): VerificationAction {
+  const held = (state.hypothesisJudgments ?? []).find((item) => item.stance === 'held');
+  if (held) {
+    return {
+      id: `verify-conflict-${held.hypothesisId}`,
+      evidenceNeeded: '충돌을 가릴 업무 절차 관찰 원문. 창업자 요약은 제외한다.',
+      action: '문제 가설을 지지하는 원문과 반박하는 원문이 충돌한다. 발주 담당자의 실제 업무 절차를 한 건 더 보고, 어느 쪽 문장과 맞는지 원문 한 줄을 가져온다.',
+      affectedHypothesisIds: [held.hypothesisId],
+    };
+  }
   const customerChange = [...state.revisions].reverse().find((revision) => revision.material && revision.field === 'customer');
   const payment = hasPaymentClaim(state.intake, state.answers);
   const interview = hasInterviewClaim(state.intake, state.answers);

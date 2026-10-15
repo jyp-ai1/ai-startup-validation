@@ -20,6 +20,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 5 | 판단 루프 추적. openai 이름은 Gemini 객체. 유보 시 검증 행동 | 기록 |
 | 6 | 창업자 원문을 화면 판단 전이에 연결. 유보 유지 | 구현 |
 | 7 | openai 제공자 객체를 Gemini와 분리. 키 없으면 호출 차단 | 구현 |
+| 8 | 문제 원문은 가설만 수정·충돌 시 유보. 지불·구매·반복·확장은 미검증 | 테스트 |
 | 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
 
 ---
