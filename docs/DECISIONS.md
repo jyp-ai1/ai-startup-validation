@@ -1519,6 +1519,49 @@ CPO approved a server execution ledger and real process-restart checks. Producti
 
 ---
 
+## ADR-053: Limited model call waits on a trace contract
+
+**Status:** Proposed  
+**Date:** 2026-10-15  
+**Sprint:** ALABOM validation journey  
+**Authors:** CTO (autonomous)
+
+### Context
+
+Local SQLite restart checks do not show that a model improved a business judgment. The published privacy text has no erasure window. A live Gemini or GPT call is not approved.
+
+### Decision
+
+1. The next review artifact is `docs/evidence/ALABOM/AI-PM/LIMITED-MODEL-CALL-CONTRACT.md`.
+2. A later call must trace execution, hypothesis, stored source, and model excerpt separately. Agreement does not set `verifiedFact`.
+3. Caps stay at one Gemini slot, one GPT slot, 1024 output tokens, and 30 seconds. Those caps are not a live client yet. Automatic retry stays off.
+4. No erasure period is promised. The older 30-day sentence is an unadopted proposal.
+5. This ADR does not approve a model call, a route, a UI binding, or a deploy.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Write the contract before any call | CPO can approve a bounded call later | No new evidence about judgment quality |
+| Call the models now | Would produce real text | Outside the approved scope |
+
+### Consequences
+
+**Positive:**
+
+- Fixture results stay labeled as fixture results.
+- Privacy copy cannot be read as a 30-day deletion promise.
+
+**Negative:**
+
+- The product screen still has no ledger and no model analysis.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

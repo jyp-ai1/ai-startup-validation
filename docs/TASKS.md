@@ -30,6 +30,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 15 | 원장 복구 계약. 메모리 시뮬레이션. 디스크·재시작·모델 호출은 미검증 | 테스트 |
 | 16 | 서버 원장 저장 승인안. 원자성·멱등·보존 제안. 재시작 시험은 계획만 | 제안 |
 | 17 | 로컬 SQLite 원장. 프로세스 재시작 7건. 프로덕션 DB·모델 호출 없음 | 검증 |
+| 18 | 제한 호출 계약. 전이·근거·비용·개인정보·체크리스트. 호출·키·화면 연결 없음 | 설계 |
 | 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
 
 ---
