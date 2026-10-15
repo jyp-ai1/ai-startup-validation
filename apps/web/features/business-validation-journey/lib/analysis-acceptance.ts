@@ -177,6 +177,7 @@ function slotFor(
     verifiedFact: false,
     sourceConflict: conflictFor(packet, sourceCheck, claimBearing, state),
     replayed: false,
+    inputSnapshot: packet?.inputSnapshot ?? null,
     reason: check?.reason ?? '분석 결과가 없다. 실패와 구분한다. 출처 확인으로 세지 않는다.',
   };
 }

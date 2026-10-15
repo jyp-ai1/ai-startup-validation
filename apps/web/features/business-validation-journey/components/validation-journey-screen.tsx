@@ -7,6 +7,7 @@ import { Button, Input, Textarea } from '@repo/ui';
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 
 import { acceptanceSummary, liveScreenStatus } from '../lib/analysis-acceptance';
+import { screenStateContract } from '../lib/execution-contract';
 import { liveCitationTrace, sourceCheckLabel } from '../lib/citation-reconciliation';
 import { attachFounderSource, SOURCE_HYPOTHESES, sourceHash } from '../lib/founder-source';
 import { applyAnswer, correctField, startJourney } from '../lib/journey-engine';
@@ -300,6 +301,7 @@ function UnderstandingView({
   const citationTrace = liveCitationTrace();
   const crossReview = citationTrace.review;
   const execution = liveScreenStatus(journey);
+  const stateContract = screenStateContract(journey);
   const [sourceText, setSourceText] = useState('');
   const [sourceHypotheses, setSourceHypotheses] = useState<string[]>([]);
   const [sourceNote, setSourceNote] = useState('');
@@ -427,6 +429,17 @@ function UnderstandingView({
           실행 상태 {execution.researchStatus}, {execution.counterReviewStatus}, {execution.comparison}. 분석 완료로
           표시하지 않는다.
         </p>
+        <ul className="space-y-1 text-sm" data-testid="state-contract">
+          <li data-testid="state-research">조사 실행 {stateContract.research}</li>
+          <li data-testid="state-counter">반대 검토 {stateContract.counterReview}</li>
+          <li data-testid="state-acceptance">
+            분석 수용 {stateContract.acceptance === 'acceptance_absent' ? '기록 없음' : stateContract.acceptance}
+          </li>
+          <li data-testid="state-citation">
+            인용 검증 대조 불가. 비교 {stateContract.comparison}. 비교할 실제 분석 결과가 없다.
+          </li>
+          <li data-testid="state-judgment">사업 판단 {stateContract.judgment}. supported는 사업성 검증이 아니다.</li>
+        </ul>
         {journey.redelivery ? (
           <div className="space-y-2 text-sm" data-testid="redelivery-note">
             <p>{journey.redelivery.reason}</p>

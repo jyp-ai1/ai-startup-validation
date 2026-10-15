@@ -167,7 +167,15 @@ export type FounderSourceRecord = {
   notEstablished: string[];
 };
 
-export type AnalysisStatus = 'succeeded' | 'failed' | 'not_run';
+export type AnalysisStatus = 'succeeded' | 'failed' | 'not_run' | 'result_missing';
+
+export type ExecutionInputSnapshot = {
+  snapshotId: string;
+  answerIds: string[];
+  evidenceIds: string[];
+  hypothesisIds: string[];
+  causeIds: string[];
+};
 
 export type SourceCheckStatus = 'matched' | 'mismatched' | 'uncheckable';
 
@@ -195,6 +203,7 @@ export type AnalysisProviderSlot = {
   verifiedFact: false;
   sourceConflict: 'none' | 'preserved' | 'not_established';
   replayed: boolean;
+  inputSnapshot: ExecutionInputSnapshot | null;
   reason: string;
 };
 

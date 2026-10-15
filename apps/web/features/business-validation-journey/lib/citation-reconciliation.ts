@@ -94,6 +94,15 @@ function checkSide(
   if (!packet) {
     return citation(side, packet, 'uncheckable', 'unassessed', '분석 결과가 없다. 실패와 구분한다. 출처 확인으로 세지 않는다.');
   }
+  if (packet.status === 'result_missing') {
+    return citation(
+      side,
+      packet,
+      'uncheckable',
+      'unassessed',
+      '실행은 끝났으나 결과 본문이 없다. 실패, 미실행과 구분한다. 검증된 사실로 올리지 않는다.',
+    );
+  }
   if (packet.status === 'failed') {
     return citation(
       side,

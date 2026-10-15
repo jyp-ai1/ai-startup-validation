@@ -15,7 +15,15 @@ export const CROSS_REVIEW_MODELS = {
   },
 };
 
-export type AnalysisStatus = 'succeeded' | 'failed' | 'not_run';
+export type AnalysisStatus = 'succeeded' | 'failed' | 'not_run' | 'result_missing';
+
+export type ExecutionInputSnapshot = {
+  snapshotId: string;
+  answerIds: string[];
+  evidenceIds: string[];
+  hypothesisIds: string[];
+  causeIds: string[];
+};
 
 export type AnalysisPacket = {
   executionId: string;
@@ -33,6 +41,7 @@ export type AnalysisPacket = {
   hypothesisIds: string[];
   citedExcerpt: string | null;
   capturedSourceId: string | null;
+  inputSnapshot?: ExecutionInputSnapshot | null;
 };
 
 export type CrossReviewOutcome = 'agreement' | 'disagreement' | 'insufficient_evidence' | 'not_compared';

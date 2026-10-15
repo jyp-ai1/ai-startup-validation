@@ -25,6 +25,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 10 | 모델 발췌와 확보 원문 대조. 픽스처만. 화면 출처 대조는 대조 불가 | 테스트 |
 | 11 | 분석 수용 기록. 원문·가설·판단 사유를 한 기록에 연결. 화면은 기록 없음 | 테스트 |
 | 12 | 수용 기록 재전달은 새 분석으로 세지 않음. 원문 전이와 분리. 화면은 미실행 | 테스트 |
+| 13 | 모델 연결 전 실행 계약. 실패·재시도·결과 누락 구분. 화면 다섯 상태 | 테스트 |
 | 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
 
 ---
