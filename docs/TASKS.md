@@ -6,7 +6,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## ALABOM 사업성 검증 여정 — Phase 1·2
 
-**CPO Gate:** OPEN · 유료 호출·DB·브라우저 자동화·병합·Production 금지 · Production 잠금 `0b465226`  
+**CPO Gate:** OPEN · API 호출·확장 자동화·DB·병합·Production 금지 · Production 잠금 `0b465226`  
 **Branch:** `cursor/external-ai-judgment-design-4b88`  
 **PR:** #198  
 **Evidence:** `docs/evidence/ALABOM/AI-PM/VALIDATION-JOURNEY-MVP.txt`
@@ -33,6 +33,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 18 | 제한 호출 계약. 전이·근거·비용·개인정보·체크리스트. 호출·키·화면 연결 없음 | 설계 |
 | 19 | AI 브라우저 왕복 1차 게이트. 약관·robots 에서 세션을 열지 못함. 분석·질문·답변 회수 미실행 | 실패 |
 | 20 | 공식 API 경로. Gemini 유료와 OpenAI Chat Completions. 키 없음. 호출·화면 연결 없음 | 차단 |
+| 21 | AI 연결 대안 A–E. 허용된 붙여넣기 PoC. 실제 모델 왕복 0 | 제안 · `docs/evidence/ALABOM/AI-PM/AI-CONNECTION-ARCHITECTURE.txt` |
 | 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
 
 ---

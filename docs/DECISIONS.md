@@ -1562,6 +1562,50 @@ Local SQLite restart checks do not show that a model improved a business judgmen
 
 ---
 
+## ADR-054: External AI text stays a user paste until a path is confirmed
+
+**Status:** Proposed  
+**Date:** 2026-10-15  
+**Sprint:** ALABOM validation journey  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The no-API constraint rules out a live model call. Reading ChatGPT, Claude, or Gemini web pages is not an allowed automation. Chrome's built-in Prompt API was absent in this environment, and no local model runtime was installed. The product still needs a place to hold an outside sentence without treating it as a verified fact.
+
+### Decision
+
+1. The comparison and local proof are `docs/evidence/ALABOM/AI-PM/AI-CONNECTION-ARCHITECTURE.txt`.
+2. ALABOM keeps the judgment. A pasted sentence is a reference: `verifiedFact` is false, `liveModelCall` is false, and a failed or duplicate paste does not replace the prior judgment.
+3. Do not add a content script, host permission, API key, or model HTTP client for this path.
+4. Browser-builtin and local models stay unverified. They are not selected.
+5. This ADR does not confirm the architecture, merge, or production deploy.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Extension reads the AI page | Fewer manual steps if it worked | Terms and robots block it. No live proof. UI breakage is ongoing cost |
+| Chrome Prompt API or a local model | No separate model API fee | Not available in this environment. Korean Prompt API support is not in the published language list. Quality unmeasured |
+| User pastes the result | No model call, no page scraping, execution id stays with the note | User labor is not zero. No real model text has returned. Judgment text stays deferred |
+
+### Consequences
+
+**Positive:**
+
+- The screen can hold a reference and the next prompt can include a founder's later answer.
+- Empty collection does not overwrite the deferred judgment.
+
+**Negative:**
+
+- A real AI round trip is still not demonstrated. The paste tested here was typed locally.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

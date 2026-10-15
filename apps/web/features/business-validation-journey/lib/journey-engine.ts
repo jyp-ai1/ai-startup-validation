@@ -16,6 +16,7 @@ import {
   type CorrectableField,
   type DeltaKind,
   type EvidenceChoice,
+  type ExternalNote,
   type FieldRevision,
   type AnalysisAcceptanceRecord,
   type FounderAnswer,
@@ -109,6 +110,7 @@ export function applyAnswer(
       state.sourceRecords ?? [],
       state.hypothesisJudgments ?? [],
       state.analysisAcceptances ?? [],
+      state.externalNotes ?? [],
     ),
   );
 
@@ -157,6 +159,7 @@ export function correctField(
       state.sourceRecords ?? [],
       state.hypothesisJudgments ?? [],
       state.analysisAcceptances ?? [],
+      state.externalNotes ?? [],
     ),
   );
 
@@ -223,6 +226,7 @@ function finish(
   sourceRecords: FounderSourceRecord[],
   hypothesisJudgments: HypothesisJudgment[],
   analysisAcceptances: AnalysisAcceptanceRecord[] = [],
+  externalNotes: ExternalNote[] = [],
 ): JourneyState {
   const materialAnswers = answers.filter((answer) => answer.material);
   const materialRevisions = revisions.filter((revision) => revision.material);
@@ -257,6 +261,7 @@ function finish(
     hypothesisJudgments,
     analysisAcceptances,
     redelivery: null,
+    ...(externalNotes.length > 0 ? { externalNotes } : {}),
   };
 }
 

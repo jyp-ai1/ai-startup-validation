@@ -10,6 +10,7 @@ import { acceptanceSummary, liveScreenStatus } from '../lib/analysis-acceptance'
 import { screenStateContract } from '../lib/execution-contract';
 import { LEDGER_SCREEN_EMPTY } from '../lib/execution-ledger';
 import { liveCitationTrace, sourceCheckLabel } from '../lib/citation-reconciliation';
+import { acceptPastedAnalysis, nextHandoffInput, prepareAnalysisRequest } from '../lib/external-handoff';
 import { attachFounderSource, SOURCE_HYPOTHESES, sourceHash } from '../lib/founder-source';
 import { applyAnswer, correctField, startJourney } from '../lib/journey-engine';
 import { contextRoleLabel, executionBadgeLabel } from '../lib/present-execution';
@@ -265,6 +266,87 @@ export function ValidationJourneyScreen() {
         </div>
       </form>
     </div>
+  );
+}
+
+function HandoffPanel({
+  journey,
+  onJourneyChange,
+}: {
+  journey: JourneyState;
+  onJourneyChange: (state: JourneyState) => void;
+}) {
+  const [preparedAt, setPreparedAt] = useState(() => new Date().toISOString());
+  const [paste, setPaste] = useState('');
+  const [message, setMessage] = useState('');
+  const prepared = prepareAnalysisRequest(journey, preparedAt);
+  const next = nextHandoffInput(journey);
+
+  function onKeep(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const result = acceptPastedAnalysis(journey, {
+      executionId: prepared.executionId,
+      text: paste,
+      providerLabel: 'user_paste',
+      now: new Date().toISOString(),
+    });
+    setMessage(result.reason);
+    if (!result.accepted) return;
+    onJourneyChange(result.state);
+    setPaste('');
+    setPreparedAt(new Date().toISOString());
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.validationJourneyHandoffKept, {
+      screen: '/business-validation',
+      status: 'research_not_run',
+      question_id: result.state.externalNotes?.at(-1)?.questionId ?? undefined,
+      category: 'reference',
+    });
+  }
+
+  return (
+    <section className="space-y-3 rounded-xl border border-border p-4" data-testid="handoff-panel">
+      <h2 className="text-sm font-medium">사용자가 직접 옮기는 분석 요청</h2>
+      <p className="text-sm text-muted-foreground">
+        ALABOM은 이 문장을 모델 API나 AI 웹 화면에 보내지 않는다. 사용자가 자기 브라우저에서 실행하고, 결과 문장을 붙여 넣는다.
+        붙여넣은 문장은 참고이며 검증된 사실이 아니다.
+      </p>
+      <p className="text-sm" data-testid="handoff-execution-id">
+        실행 ID {prepared.executionId}
+      </p>
+      <Textarea readOnly value={prepared.prompt} data-testid="handoff-prompt" rows={8} />
+      <form className="space-y-3" onSubmit={onKeep}>
+        <Textarea
+          value={paste}
+          data-testid="handoff-paste"
+          rows={4}
+          placeholder="AI 화면에서 직접 복사한 문장"
+          onChange={(event) => setPaste(event.target.value)}
+        />
+        <div className="flex flex-wrap gap-3">
+          <Button type="submit" variant="outline" data-testid="submit-handoff">
+            참고 자료로 보관
+          </Button>
+          <Button type="button" variant="ghost" data-testid="refresh-handoff" onClick={() => setPreparedAt(new Date().toISOString())}>
+            요청 다시 준비
+          </Button>
+        </div>
+        {message ? (
+          <p className="text-sm" data-testid="handoff-message" role="status">
+            {message}
+          </p>
+        ) : null}
+      </form>
+      <ul className="space-y-2 text-sm" data-testid="handoff-records">
+        {(journey.externalNotes ?? []).map((note) => (
+          <li key={note.executionId} data-testid={`handoff-record-${note.executionId}`}>
+            {note.executionId} 참고. 사실 아님. {note.text}
+          </li>
+        ))}
+      </ul>
+      <p className="text-sm text-muted-foreground" data-testid="handoff-next">
+        {next.prompt}
+      </p>
+    </section>
   );
 }
 
@@ -543,6 +625,8 @@ function UnderstandingView({
       </section>
 
       {question ? (
+        <>
+        <HandoffPanel journey={journey} onJourneyChange={onJourneyChange} />
         <form className="space-y-4" onSubmit={onAnswer} data-testid="question-form">
           <h2 className="text-lg font-medium">다음으로 가장 중요한 질문</h2>
           <p className="text-base leading-relaxed" data-testid="question-prompt">
@@ -591,6 +675,7 @@ function UnderstandingView({
             이 답변으로 이해 갱신
           </Button>
         </form>
+        </>
       ) : (
         <p className="text-sm" data-testid="question-hold">
           더 물을 질문이 없다. 판단은 유보로 남아 있다.

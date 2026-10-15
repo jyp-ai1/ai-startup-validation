@@ -140,6 +140,22 @@ export type JourneyState = {
   hypothesisJudgments: HypothesisJudgment[];
   analysisAcceptances: AnalysisAcceptanceRecord[];
   redelivery: RedeliveryRecord | null;
+  externalNotes?: ExternalNote[];
+};
+
+export type ExternalNote = {
+  executionId: string;
+  origin: 'user_paste';
+  liveModelCall: false;
+  providerLabel: string;
+  text: string;
+  citedExcerpt: string | null;
+  verifiedFact: false;
+  judgmentChanged: false;
+  receivedAt: string;
+  questionId: string | null;
+  hypothesisIds: string[];
+  status: 'reference';
 };
 
 export type FounderSourceRecord = {
