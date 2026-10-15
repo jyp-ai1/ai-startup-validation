@@ -37,6 +37,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 22 | 판단 전후 비교. 테스트 문장과 실분석 구분. 시나리오 A–E. 실분석 성공 아님 | 검증 · `docs/evidence/ALABOM/AI-PM/JUDGMENT-DEVELOPMENT.txt` |
 | 23 | 실제 분석 수용 준비. 원문·출처 공백과 사용자 표시·시스템 확인 분리. 실제 결과 없음 | 미검증 · `docs/evidence/ALABOM/AI-PM/REAL-ANALYSIS-INTAKE.txt` |
 | 24 | 실제 원문 없음. 기능 확장 없이 최소 검증 경로만 기록 | 미검증 · `docs/evidence/ALABOM/AI-PM/REAL-ANALYSIS-MINIMUM-PATH.txt` |
+| 25 | LMULM·RIDM 사업계획서만 읽음. 재구매·공헌이익·유료 고객은 문서 없음. 제품 코드 변경 없음 | 잠정 · `docs/evidence/ALABOM/AI-PM/LMULM-RIDM-DOCUMENT-JUDGMENT.txt` |
 | 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
 
 ---
