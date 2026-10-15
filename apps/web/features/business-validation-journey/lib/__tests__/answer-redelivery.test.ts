@@ -4,6 +4,7 @@ import {
   addCapture,
   classifyCounterReview,
   classifyResearch,
+  contextReady,
   proposeJudgmentChange,
 } from '../answer-redelivery';
 import { applyAnswer, correctField, startJourney } from '../journey-engine';
@@ -35,21 +36,35 @@ describe('answer redelivery contract', () => {
     expect(state.analysisDelivery.status).toBe('not_sent');
   });
 
-  it('selects the related answers and records what was left out', () => {
+  it('includes problem, solution, payer, and prior answers when the customer changes', () => {
     const evidence = answer(started(), 'interview', '꽃집 한 곳이 말했다');
     const scene = answer(evidence, 'no_scene');
-    const corrected = correctField(scene, 'customer', '동네 서점', NOW).state;
+    const corrected = correctField(scene, 'customer', '대기업 물류본부', NOW).state;
     const relay = corrected.redelivery;
+    const included = relay?.items.filter((item) => item.disposition === 'included') ?? [];
 
+    expect(relay?.changeClass).toBe('core_hypothesis_change');
     expect(relay?.reinvestigation).toBe('required');
-    expect(relay?.hypothesisIds).toEqual(['h-customer']);
-    expect(relay?.includedAnswerIds).toEqual([]);
-    expect(relay?.omittedAnswerIds).toEqual(['ans-1', 'ans-2']);
-    expect(relay?.changedSincePrevious).toEqual(['rev-1']);
-    expect(relay?.unknownIds).toContain('u-payer');
-    expect(relay?.changeConditions).toContain('새 캡처 ID가 있을 것');
-    expect(corrected.answers).toHaveLength(2);
+    expect(relay?.inputReady).toBe(true);
     expect(relay?.sent).toBe(false);
+    expect(included.map((item) => item.role)).toEqual(
+      expect.arrayContaining(['customer', 'problem', 'solution', 'payer', 'revenue', 'answer']),
+    );
+    expect(included.find((item) => item.id === 'intake:problem')?.text).toContain('주문 접수');
+    expect(included.find((item) => item.id === 'intake:solution')?.text).toContain('구독형');
+    expect(included.find((item) => item.id === 'intake:payer')?.text).toBe('사업자 본인');
+    expect(included.find((item) => item.id === 'rev-1')?.text).toContain('대기업 물류본부');
+    expect(included.find((item) => item.id === 'rev-1')?.text).toContain('음식점');
+    expect(relay?.includedAnswerIds).toEqual(['ans-1', 'ans-2']);
+    expect(relay?.omittedAnswerIds).toEqual([]);
+    expect(corrected.answers).toHaveLength(2);
+    expect(corrected.judgmentText).toBe(scene.judgmentText);
+    expect(
+      contextReady(
+        included.filter((item) => item.role !== 'problem'),
+        ['customer', 'problem', 'solution', 'payer', 'revenue'],
+      ).ready,
+    ).toBe(false);
   });
 
   it('skips a repeated statement and keeps the deferred judgment', () => {

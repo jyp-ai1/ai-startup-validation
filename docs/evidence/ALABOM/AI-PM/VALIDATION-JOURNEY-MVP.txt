@@ -109,7 +109,66 @@ provider 이름을 openai 로 두고 model 이 gemini 이거나 liveCall 이 아
 
 로컬 Chrome 에서 첫 입력 노트는 "조사를 열지 않는다", "포함 0건, 생략 0건", "모델에는 보내지 않았다" 였다. 가설 선택과 주관식 이후 노트는 "포함 1건, 생략 0건" 이었고 배지는 조사 미실행, 반대 검토 미실행으로 남았다.
 
-7. 미검증
+8. 재전달 맥락과 판단 전이 검증
+
+시각: 2026-10-15T02:59:45Z 단위 테스트 3 files, 28 passed, exit 0.
+시각: 2026-10-15T03:00:29Z 역할 문장을 한글로 바꾼 뒤 재전달·전이 14 passed, exit 0.
+네트워크 호출 없음. 페이지 캡처를 열지 않았다. 키를 넣지 않았다.
+
+화면 상태와 배지
+- state.researchStatus research_not_run → 배지 조사 미실행
+- state.counterReviewStatus counter_review_not_run → 배지 반대 검토 미실행
+- state.judgmentStatus judgment_deferred → 배지 판단 유보
+로컬 Chrome 에서 고객을 대기업 물류본부로 바꾼 뒤 포함 목록에 문제, 해결책, 지불자, 수익, 과거 답변이 보였다. 판단 배지는 판단 유보로 남았다.
+
+판정 전이 함수 applyEvidenceTransition 은 테스트에서만 호출한다. 화면은 캡처를 만들지 않으므로 그 함수의 provisional 결과를 표시하지 않는다.
+
+테스트 표. 실패 사유는 기대와 어긋난 경우에만 적는다. 아래는 모두 기대와 같았고 실패 사유는 없다.
+
+1. 고객을 대기업 물류본부로 변경
+- 입력: 테스트 가설, 인터뷰 답 ans-1, 장면 답 ans-2, 고객 문장을 대기업 물류본부로 수정
+- 기대: changeClass core_hypothesis_change, inputReady true, sent false, 포함에 고객·문제·해결책·지불자·수익과 ans-1·ans-2, 판단 문장 유지. 문제 역할을 빼면 inputReady false
+- 실제: 기대와 같음
+- 실패 사유: 없음
+
+2. 새 캡처가 판단 문장을 바꿈
+- 입력: 빈 캡처 목록, cap-1 https://example.com/logistics, 발췌 한 문장, 제안 문장, round 1
+- 기대: accepted true, causeIds cap-1, sourceUrl 과 excerpt 연결, verifiedFact false, status judgment_provisional
+- 실제: 기대와 같음
+- 실패 사유: 없음
+
+3. 같은 페이지 해시
+- 입력: hash-a 캡처 뒤 같은 hash-a 를 id 만 바꿔 다시 넣음
+- 기대: execution duplicate_evidence, 판단 문장 유지, 캡처 1건
+- 실제: 기대와 같음
+- 실패 사유: 없음
+
+4. 브라우저·모델·빈 응답·키 없음
+- 입력: 직전 판단과 캡처 1건이 있는 상태에서 각 실패 종류
+- 기대: 판단 객체와 캡처 배열이 그대로, execution 이 그 실패 종류, accepted false
+- 실제: 네 종류 모두 기대와 같음
+- 실패 사유: 없음
+
+5. 원인 ID 없음, 검증된 사실 문장
+- 입력: capture id 빈 문자열과 제안 문장. 다른 입력은 검증된 사실이다 라는 제안
+- 기대: 둘 다 accepted false, 직전 판단 문장 유지, verifiedFact false
+- 실제: 기대와 같음
+- 실패 사유: 없음
+
+6. 반복 상한
+- 입력: round 4, 새 해시 캡처와 제안 문장
+- 기대: execution round_cap_held, 판단 유보 유지, 성공이나 실패로 적지 않음
+- 실제: 기대와 같음
+- 실패 사유: 없음
+
+7. 독립 GPT 경로
+- 입력: getResearchProvider('gemini') 와 getResearchProvider('openai')
+- 기대: 같은 객체, id gemini. OpenRouter 경로에 openai 이름과 gemini 모델을 넣어도 counter_review_not_run. 키 없이 gpt-4o-mini 를 적어도 counter_review_not_run
+- 실제: 기대와 같음. fetch 없음
+- 실패 사유: 없음
+- 코드 기준: Gemini 연구 호출 자리는 packages/ai 의 https://openrouter.ai/api/v1/chat/completions 와 google/gemini-2.5-flash. GPT 카탈로그는 https://api.openai.com/v1/chat/completions 와 gpt-4o-mini. 연구 provider 의 openai 이름은 그 GPT endpoint 로 가지 않는다.
+
+9. 미검증
 
 Phase 3 관련 이력 패킷을 모델에 보내는 경로.
 Phase 4 독립 GPT HTTP. 키를 넣지 않았다. counter_review_not_run 만 있다.

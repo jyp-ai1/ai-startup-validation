@@ -1,11 +1,18 @@
-import type { JourneyState, RedeliveryRecord } from './journey-types';
+import { contextRoleLabel } from './present-execution';
+import {
+  payerLabel,
+  revenueLabel,
+  type ContextItem,
+  type ContextRole,
+  type JourneyState,
+  type RedeliveryRecord,
+} from './journey-types';
 
-const CHANGE_CONDITIONS = [
-  '새 캡처 ID가 있을 것',
-  '관찰된 고객 행동이 있을 것',
-];
+const CHANGE_CONDITIONS = ['새 캡처 ID가 있을 것', '관찰된 고객 행동이 있을 것'];
 
 const PRESERVE_REASON = '새 캡처 ID가 없다. 직전 판단 유보를 유지한다.';
+
+const CORE_FIELDS = ['customer', 'problem', 'solution', 'payer', 'revenue'] as const;
 
 export type PageCapture = {
   id: string;
@@ -23,38 +30,43 @@ export type ModelCallFixture = {
   captureId?: string | null;
 };
 
-export function buildRedelivery(
-  previous: JourneyState | null,
-  next: JourneyState,
-): RedeliveryRecord {
+export function buildRedelivery(previous: JourneyState | null, next: JourneyState): RedeliveryRecord {
   const newAnswers = next.answers.slice(previous?.answers.length ?? 0);
   const newRevisions = next.revisions.slice(previous?.revisions.length ?? 0);
   const material =
     newAnswers.some((answer) => answer.material) || newRevisions.some((revision) => revision.material);
-  const hypothesisIds = [
-    ...new Set([
-      ...newAnswers.map((answer) => answer.hypothesisId),
-      ...newRevisions.map((revision) => revision.hypothesisId),
-    ]),
-  ];
-  const included = material
-    ? next.answers.filter((answer) => hypothesisIds.includes(answer.hypothesisId))
-    : [];
-  const includedIds = new Set(included.map((answer) => answer.id));
+  const changeClass = classifyChange(previous, material, newAnswers[0]?.delta, newRevisions[0]?.delta);
   const changedSincePrevious = [
     ...newAnswers.map((answer) => answer.id),
     ...newRevisions.map((revision) => revision.id),
   ];
+  const items = material ? contextItems(next, newRevisions, changeClass) : omittedOriginals(next);
+  const required = requiredRoles(next);
+  const readiness = contextReady(
+    items,
+    changeClass === 'core_hypothesis_change' || changeClass === 'new_claim' || changeClass === 'wording_edit'
+      ? required
+      : [],
+  );
+  const inputReady = material && readiness.ready;
+  const includedAnswers = items.filter((item) => item.disposition === 'included' && item.role === 'answer');
+  const omittedAnswers = items.filter((item) => item.disposition === 'omitted' && item.role === 'answer');
 
   return {
     id: `relay-${next.answers.length}-${next.revisions.length}`,
     reinvestigation: material ? 'required' : 'skipped',
+    changeClass,
     sent: false,
-    reason: reasonFor(previous, material, newAnswers[0]?.delta, newRevisions[0]?.delta),
+    inputReady,
+    inputGap: inputReady ? null : readiness.gap,
+    reason: reasonFor(changeClass, inputReady, readiness.gap),
     summary: next.understanding.inferred[0]?.text ?? '',
-    includedAnswerIds: included.map((answer) => answer.id),
-    omittedAnswerIds: next.answers.filter((answer) => !includedIds.has(answer.id)).map((answer) => answer.id),
-    hypothesisIds,
+    items,
+    includedAnswerIds: includedAnswers.map((item) => item.id),
+    omittedAnswerIds: omittedAnswers.map((item) => item.id),
+    hypothesisIds: [
+      ...new Set(items.filter((item) => item.disposition === 'included').map((item) => item.hypothesisId)),
+    ],
     unknownIds: next.understanding.unknown.map((item) => item.id),
     contradictionIds: next.understanding.contradictions.map((item) => item.id),
     evidenceIds: [],
@@ -64,6 +76,21 @@ export function buildRedelivery(
     counterReviewStatus: 'counter_review_not_run',
     judgmentChange: 'preserved',
     preserveReason: PRESERVE_REASON,
+  };
+}
+
+export function contextReady(
+  items: ContextItem[],
+  requiredRoles: ContextRole[],
+): { ready: boolean; gap: string | null } {
+  const included = new Set(
+    items.filter((item) => item.disposition === 'included').map((item) => item.role),
+  );
+  const missing = requiredRoles.filter((role) => !included.has(role));
+  if (missing.length === 0) return { ready: requiredRoles.length > 0, gap: null };
+  return {
+    ready: false,
+    gap: `관련 맥락이 부족하다. 빠진 역할: ${missing.join(', ')}. 모델 입력을 만들지 않는다.`,
   };
 }
 
@@ -91,10 +118,13 @@ export function proposeJudgmentChange(input: {
   causeIds: string[];
 }): { accepted: boolean; text: string; reason: string } {
   if (input.nextText === input.previousText) {
+    return { accepted: true, text: input.previousText, reason: '판단 문장이 그대로다.' };
+  }
+  if (/검증된 사실이다|VALIDATED/.test(input.nextText)) {
     return {
-      accepted: true,
+      accepted: false,
       text: input.previousText,
-      reason: '판단 문장이 그대로다.',
+      reason: '창업자 진술이나 모델 문장을 검증된 사실로 올리지 않는다.',
     };
   }
   if (input.causeIds.length === 0) {
@@ -130,20 +160,110 @@ export function classifyCounterReview(
   return 'counter_review_completed';
 }
 
-function reasonFor(
+function contextItems(
+  state: JourneyState,
+  revisions: JourneyState['revisions'],
+  changeClass: RedeliveryRecord['changeClass'],
+): ContextItem[] {
+  const items: ContextItem[] = [];
+  for (const field of CORE_FIELDS) {
+    const text = fieldText(state, field);
+    if (!text) continue;
+    items.push({
+      id: `intake:${field}`,
+      hypothesisId: hypothesisFor(field),
+      role: field,
+      text,
+      disposition: 'included',
+      reason: coreReason(field, changeClass),
+    });
+  }
+  for (const revision of revisions) {
+    items.push({
+      id: revision.id,
+      hypothesisId: revision.hypothesisId,
+      role: revision.field === 'business' ? 'business' : revision.field,
+      text: `이전: 「${revision.previous}」 이후: 「${revision.next}」`,
+      disposition: 'included',
+      reason: '바뀐 문장과 직전 문장을 함께 둔다.',
+    });
+  }
+  for (const answer of state.answers) {
+    items.push({
+      id: answer.id,
+      hypothesisId: answer.hypothesisId,
+      role: 'answer',
+      text: `${answer.questionText} ${answer.choiceLabel} ${answer.freeText}`.trim(),
+      disposition: answer.material ? 'included' : 'omitted',
+      reason: answer.material
+        ? '이 답은 고객·문제·해결책·지불자 가설을 다시 볼 때 함께 둔다.'
+        : '같은 진술의 반복이라 모델 입력에서 뺀다. 원본 이력에는 남아 있다.',
+    });
+  }
+  return items;
+}
+
+function omittedOriginals(state: JourneyState): ContextItem[] {
+  return state.answers.map((answer) => ({
+    id: answer.id,
+    hypothesisId: answer.hypothesisId,
+    role: 'answer' as const,
+    text: answer.choiceLabel,
+    disposition: 'omitted' as const,
+    reason: '재조사를 열지 않아 모델 입력에서 뺀다. 원본 이력에는 남아 있다.',
+  }));
+}
+
+function requiredRoles(state: JourneyState): ContextRole[] {
+  return CORE_FIELDS.filter((field) => Boolean(fieldText(state, field)));
+}
+
+function fieldText(state: JourneyState, field: (typeof CORE_FIELDS)[number]): string {
+  if (field === 'payer') return payerLabel(state.intake.payer);
+  if (field === 'revenue') return revenueLabel(state.intake.revenue);
+  return state.intake[field].trim();
+}
+
+function hypothesisFor(field: (typeof CORE_FIELDS)[number]): string {
+  if (field === 'revenue') return 'h-revenue';
+  return `h-${field}`;
+}
+
+function coreReason(field: (typeof CORE_FIELDS)[number], changeClass: RedeliveryRecord['changeClass']): string {
+  if (changeClass === 'core_hypothesis_change') {
+    return `${contextRoleLabel(field)} 가설은 핵심 변경과 함께 다시 평가한다.`;
+  }
+  return `${contextRoleLabel(field)} 가설을 새 답의 맥락으로 함께 둔다.`;
+}
+
+function classifyChange(
   previous: JourneyState | null,
   material: boolean,
   answerDelta: string | undefined,
   revisionDelta: string | undefined,
-): string {
-  if (!previous) {
-    return '첫 입력은 이해에만 반영한다. 외부 근거가 없어 조사를 열지 않는다.';
-  }
-  if (!material || answerDelta === 'duplicate' || revisionDelta === 'duplicate') {
-    return '같은 내용이라 재조사를 생략한다.';
-  }
+): RedeliveryRecord['changeClass'] {
+  if (!previous || !material || answerDelta === 'duplicate' || revisionDelta === 'duplicate') return 'none';
   if (answerDelta === 'hypothesis_change' || revisionDelta === 'hypothesis_change') {
-    return '핵심 가설이 바뀌었다. 관련 이력과 변경분만 재전달 대상으로 추렸다.';
+    return 'core_hypothesis_change';
   }
-  return '새 답변을 관련 이력과 함께 재전달 대상으로 추렸다.';
+  if (answerDelta === 'detail_added') return 'wording_edit';
+  return 'new_claim';
+}
+
+function reasonFor(
+  changeClass: RedeliveryRecord['changeClass'],
+  inputReady: boolean,
+  gap: string | null,
+): string {
+  if (changeClass === 'none') {
+    return '첫 입력이거나 같은 내용이라 재조사를 생략한다.';
+  }
+  if (!inputReady) return gap ?? '관련 맥락이 부족해 모델 입력을 만들지 않는다.';
+  if (changeClass === 'core_hypothesis_change') {
+    return '핵심 가설이 바뀌었다. 고객·문제·해결책·지불자·수익과 관련 답을 함께 골랐다.';
+  }
+  if (changeClass === 'wording_edit') {
+    return '표현이 늘었다. 그 답과 사업 가설을 함께 골랐다. 가설 자체는 바꾸지 않았다.';
+  }
+  return '새 답변과 사업 가설을 함께 골랐다.';
 }

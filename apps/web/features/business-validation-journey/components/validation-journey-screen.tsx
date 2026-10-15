@@ -7,6 +7,7 @@ import { Button, Input, Textarea } from '@repo/ui';
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 
 import { applyAnswer, correctField, startJourney } from '../lib/journey-engine';
+import { contextRoleLabel, executionBadgeLabel } from '../lib/present-execution';
 import { loadJourneyDraft, saveJourneyDraft } from '../lib/journey-session';
 import {
   emptyIntake,
@@ -292,9 +293,15 @@ function UnderstandingView({
         <p className="text-sm text-muted-foreground">현재 AI가 이해한 사업</p>
         <h1 className="text-3xl font-semibold tracking-tight">잠정 이해</h1>
         <div className="flex flex-wrap gap-2 text-sm">
-          <StatusBadge testId="badge-research">조사 미실행</StatusBadge>
-          <StatusBadge testId="badge-counter-review">반대 검토 미실행</StatusBadge>
-          <StatusBadge testId="badge-judgment">판단 유보</StatusBadge>
+          <StatusBadge testId="badge-research">
+            {executionBadgeLabel('research', journey.researchStatus)}
+          </StatusBadge>
+          <StatusBadge testId="badge-counter-review">
+            {executionBadgeLabel('counterReview', journey.counterReviewStatus)}
+          </StatusBadge>
+          <StatusBadge testId="badge-judgment">
+            {executionBadgeLabel('judgment', journey.judgmentStatus)}
+          </StatusBadge>
         </div>
         {journey.source === 'test_hypothesis' ? (
           <p className="text-sm" data-testid="hypothesis-badge">
@@ -362,10 +369,24 @@ function UnderstandingView({
           {journey.counterReviewNote}
         </p>
         {journey.redelivery ? (
-          <p className="text-sm" data-testid="redelivery-note">
-            {journey.redelivery.reason} 포함 {journey.redelivery.includedAnswerIds.length}건, 생략{' '}
-            {journey.redelivery.omittedAnswerIds.length}건. 모델에는 보내지 않았다.
-          </p>
+          <div className="space-y-2 text-sm" data-testid="redelivery-note">
+            <p>{journey.redelivery.reason}</p>
+            <p>
+              {journey.redelivery.inputReady
+                ? '관련 맥락은 갖췄다.'
+                : '관련 맥락이 부족하거나 재조사를 열지 않아 모델 입력을 만들지 않는다.'}{' '}
+              모델에는 보내지 않았다.
+            </p>
+            <ul data-testid="redelivery-items">
+              {(journey.redelivery.items ?? [])
+                .filter((item) => item.disposition === 'included')
+                .map((item) => (
+                  <li key={item.id}>
+                    {contextRoleLabel(item.role)}: {item.reason}
+                  </li>
+                ))}
+            </ul>
+          </div>
         ) : null}
         <p className="text-sm" data-testid="next-action">
           다음 행동: {journey.nextAction.text}

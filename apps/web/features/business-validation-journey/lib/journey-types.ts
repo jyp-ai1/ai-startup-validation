@@ -139,12 +139,36 @@ export type JourneyState = {
   redelivery: RedeliveryRecord | null;
 };
 
+export type ContextRole =
+  | 'customer'
+  | 'problem'
+  | 'solution'
+  | 'payer'
+  | 'revenue'
+  | 'business'
+  | 'answer';
+
+export type ContextItem = {
+  id: string;
+  hypothesisId: string;
+  role: ContextRole;
+  text: string;
+  disposition: 'included' | 'omitted';
+  reason: string;
+};
+
+export type ChangeClass = 'none' | 'wording_edit' | 'core_hypothesis_change' | 'new_claim';
+
 export type RedeliveryRecord = {
   id: string;
   reinvestigation: 'skipped' | 'required';
+  changeClass: ChangeClass;
   sent: false;
+  inputReady: boolean;
+  inputGap: string | null;
   reason: string;
   summary: string;
+  items: ContextItem[];
   includedAnswerIds: string[];
   omittedAnswerIds: string[];
   hypothesisIds: string[];
