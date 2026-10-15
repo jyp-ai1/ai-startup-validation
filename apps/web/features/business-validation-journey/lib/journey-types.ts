@@ -138,6 +138,7 @@ export type JourneyState = {
   captures: [];
   sourceRecords: FounderSourceRecord[];
   hypothesisJudgments: HypothesisJudgment[];
+  analysisAcceptances: AnalysisAcceptanceRecord[];
   redelivery: RedeliveryRecord | null;
 };
 
@@ -164,6 +165,63 @@ export type FounderSourceRecord = {
   hypothesisAfter: string;
   stance: HypothesisStance;
   notEstablished: string[];
+};
+
+export type AnalysisStatus = 'succeeded' | 'failed' | 'not_run';
+
+export type SourceCheckStatus = 'matched' | 'mismatched' | 'uncheckable';
+
+export type ClaimBearingStatus = 'grounded' | 'ungrounded' | 'unassessed';
+
+export type CrossReviewOutcome = 'agreement' | 'disagreement' | 'insufficient_evidence' | 'not_compared';
+
+export type AnalysisProviderSlot = {
+  side: 'gemini' | 'gpt';
+  executionId: string;
+  providerId: string | null;
+  modelId: string | null;
+  endpoint: string | null;
+  purpose: 'research' | 'counter_review' | null;
+  analysisStatus: AnalysisStatus | 'absent';
+  claim: string | null;
+  support: string | null;
+  counter: string | null;
+  uncertainty: string | null;
+  citedExcerpt: string | null;
+  capturedSourceId: string | null;
+  sourceCheck: SourceCheckStatus;
+  claimBearing: ClaimBearingStatus;
+  hypothesisIds: string[];
+  verifiedFact: false;
+  sourceConflict: 'none' | 'preserved' | 'not_established';
+  reason: string;
+};
+
+export type AnalysisHypothesisEffect = {
+  hypothesisId: string;
+  beforeStance: HypothesisStance | 'absent';
+  afterStance: HypothesisStance | 'absent';
+  changed: false;
+  causeId: string | null;
+  reason: string;
+};
+
+export type AnalysisAcceptanceRecord = {
+  id: string;
+  receivedAt: string;
+  gemini: AnalysisProviderSlot;
+  gpt: AnalysisProviderSlot;
+  comparison: CrossReviewOutcome;
+  verifiedFact: false;
+  businessJudgment: 'preserved';
+  judgmentChanged: false;
+  judgmentStatus: 'judgment_deferred';
+  previousJudgmentText: string;
+  nextJudgmentText: string;
+  causeIds: string[];
+  reason: string;
+  hypothesisEffects: AnalysisHypothesisEffect[];
+  sourceIds: string[];
 };
 
 export type HypothesisStance = 'unreviewed' | 'supported' | 'contradicted' | 'held';

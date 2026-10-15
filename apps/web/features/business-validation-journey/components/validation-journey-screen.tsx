@@ -6,6 +6,7 @@ import { Button, Input, Textarea } from '@repo/ui';
 
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 
+import { acceptanceSummary } from '../lib/analysis-acceptance';
 import { liveCitationTrace, sourceCheckLabel } from '../lib/citation-reconciliation';
 import { attachFounderSource, SOURCE_HYPOTHESES, sourceHash } from '../lib/founder-source';
 import { applyAnswer, correctField, startJourney } from '../lib/journey-engine';
@@ -417,6 +418,9 @@ function UnderstandingView({
             .map((item) => `${item.side === 'gemini' ? 'Gemini' : 'GPT'} ${sourceCheckLabel(item.sourceCheck)}`)
             .join(', ')}
           . {citationTrace.reason}
+        </p>
+        <p className="text-sm" data-testid="analysis-acceptance">
+          {acceptanceSummary(journey.analysisAcceptances)}
         </p>
         {journey.redelivery ? (
           <div className="space-y-2 text-sm" data-testid="redelivery-note">

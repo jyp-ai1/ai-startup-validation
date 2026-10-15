@@ -17,6 +17,7 @@ import {
   type DeltaKind,
   type EvidenceChoice,
   type FieldRevision,
+  type AnalysisAcceptanceRecord,
   type FounderAnswer,
   type FounderSourceRecord,
   type HypothesisJudgment,
@@ -60,7 +61,7 @@ export function startJourney(
   const normalized = normalizeIntake(intake);
   const missing = missingRequired(normalized);
   if (missing.length > 0) return { ok: false, missing };
-  return { ok: true, state: withRedelivery(null, finish(normalized, source, [], [], [], [])) };
+  return { ok: true, state: withRedelivery(null, finish(normalized, source, [], [], [], [], [])) };
 }
 
 export function applyAnswer(
@@ -107,6 +108,7 @@ export function applyAnswer(
       state.revisions,
       state.sourceRecords ?? [],
       state.hypothesisJudgments ?? [],
+      state.analysisAcceptances ?? [],
     ),
   );
 
@@ -154,6 +156,7 @@ export function correctField(
       [...state.revisions, revision],
       state.sourceRecords ?? [],
       state.hypothesisJudgments ?? [],
+      state.analysisAcceptances ?? [],
     ),
   );
 
@@ -219,6 +222,7 @@ function finish(
   revisions: FieldRevision[],
   sourceRecords: FounderSourceRecord[],
   hypothesisJudgments: HypothesisJudgment[],
+  analysisAcceptances: AnalysisAcceptanceRecord[] = [],
 ): JourneyState {
   const materialAnswers = answers.filter((answer) => answer.material);
   const materialRevisions = revisions.filter((revision) => revision.material);
@@ -251,6 +255,7 @@ function finish(
     captures: [],
     sourceRecords,
     hypothesisJudgments,
+    analysisAcceptances,
     redelivery: null,
   };
 }

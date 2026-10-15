@@ -91,8 +91,26 @@ function checkSide(
   packet: AnalysisPacket | null,
   sources: StoredSource[],
 ): CitationCheck {
-  if (!packet || packet.status !== 'succeeded') {
-    return citation(side, packet, 'uncheckable', 'unassessed', '분석 결과가 없다. 발췌가 있어도 출처 확인으로 세지 않는다.');
+  if (!packet) {
+    return citation(side, packet, 'uncheckable', 'unassessed', '분석 결과가 없다. 실패와 구분한다. 출처 확인으로 세지 않는다.');
+  }
+  if (packet.status === 'failed') {
+    return citation(
+      side,
+      packet,
+      'uncheckable',
+      'unassessed',
+      '분석이 실패했다. 결과가 없는 상태와 구분한다. 발췌가 있어도 출처 확인으로 세지 않는다.',
+    );
+  }
+  if (packet.status !== 'succeeded') {
+    return citation(
+      side,
+      packet,
+      'uncheckable',
+      'unassessed',
+      '분석을 실행하지 않았다. 실패와 구분한다. 발췌가 있어도 출처 확인으로 세지 않는다.',
+    );
   }
   if (!packet.capturedSourceId) {
     return citation(side, packet, 'uncheckable', 'unassessed', '원문 ID가 없다. 발췌만으로는 출처를 확인하지 않는다.');
@@ -193,7 +211,11 @@ function citation(
 }
 
 function traceReason(citations: CitationCheck[]): string {
-  if (citations.some((item) => item.analysisStatus !== 'succeeded')) {
+  const statuses = citations.map((item) => item.analysisStatus);
+  if (statuses.every((status) => status === 'absent' || status === 'not_run')) {
+    return '분석 결과가 없다. 모델 발췌와 확보 원문을 대조 완료로 보지 않는다.';
+  }
+  if (statuses.some((status) => status !== 'succeeded')) {
     return '분석이 실행되지 않았거나 실패했다. 모델 발췌와 확보 원문을 대조 완료로 보지 않는다.';
   }
   if (citations.every((item) => item.sourceCheck === 'matched')) {
