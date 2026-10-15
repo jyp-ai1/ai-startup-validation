@@ -77,6 +77,9 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   siJudgmentViewed: 'si_judgment_viewed',
   siAiPmQuestionAsked: 'si_ai_pm_question_asked',
   siAiPmAnswerApplied: 'si_ai_pm_answer_applied',
+  validationJourneyStarted: 'validation_journey_started',
+  validationJourneyAnswered: 'validation_journey_answered',
+  validationJourneyHandoffKept: 'validation_journey_handoff_kept',
 } as const;
 
 export type ProductAnalyticsEvent =

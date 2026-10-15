@@ -4,6 +4,46 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## ALABOM 사업성 검증 여정 — Phase 1·2
+
+**CPO Gate:** OPEN · API 호출·확장 자동화·DB·병합·Production 금지 · Production 잠금 `0b465226`  
+**Branch:** `cursor/external-ai-judgment-design-4b88`  
+**PR:** #198  
+**Evidence:** `docs/evidence/ALABOM/AI-PM/VALIDATION-JOURNEY-MVP.txt`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 8필드 입력 · 이해 · 객관식/주관식 한 질문 | 구현 |
+| 2 | 조사 미실행 · 반대 검토 미실행 · 판단 유보 | 구현 |
+| 3 | 고객 변경 시 문제·해결책·지불자·수익을 함께 선별 | 테스트 |
+| 4 | 캡처 원인 연결·실패·해시·상한은 순수 함수 테스트. 화면 캡처와 GPT 실호출 | 보류 |
+| 5 | 판단 루프 추적. openai 이름은 Gemini 객체. 유보 시 검증 행동 | 기록 |
+| 6 | 창업자 원문을 화면 판단 전이에 연결. 유보 유지 | 구현 |
+| 7 | openai 제공자 객체를 Gemini와 분리. 키 없으면 호출 차단 | 구현 |
+| 8 | 문제 원문은 가설만 수정·충돌 시 유보. 지불·구매·반복·확장은 미검증 | 테스트 |
+| 9 | AI 교차 검토 계약. 픽스처만. 화면은 not_compared | 테스트 |
+| 10 | 모델 발췌와 확보 원문 대조. 픽스처만. 화면 출처 대조는 대조 불가 | 테스트 |
+| 11 | 분석 수용 기록. 원문·가설·판단 사유를 한 기록에 연결. 화면은 기록 없음 | 테스트 |
+| 12 | 수용 기록 재전달은 새 분석으로 세지 않음. 원문 전이와 분리. 화면은 미실행 | 테스트 |
+| 13 | 모델 연결 전 실행 계약. 실패·재시도·결과 누락 구분. 화면 다섯 상태 | 테스트 |
+| 14 | 실행 원장. 미확정은 실패와 구분. 자동 재호출 없음. 요금은 미확정. 화면은 원장 없음 | 테스트 |
+| 15 | 원장 복구 계약. 메모리 시뮬레이션. 디스크·재시작·모델 호출은 미검증 | 테스트 |
+| 16 | 서버 원장 저장 승인안. 원자성·멱등·보존 제안. 재시작 시험은 계획만 | 제안 |
+| 17 | 로컬 SQLite 원장. 프로세스 재시작 7건. 프로덕션 DB·모델 호출 없음 | 검증 |
+| 18 | 제한 호출 계약. 전이·근거·비용·개인정보·체크리스트. 호출·키·화면 연결 없음 | 설계 |
+| 19 | AI 브라우저 왕복 1차 게이트. 약관·robots 에서 세션을 열지 못함. 분석·질문·답변 회수 미실행 | 실패 |
+| 20 | 공식 API 경로. Gemini 유료와 OpenAI Chat Completions. 키 없음. 호출·화면 연결 없음 | 차단 |
+| 21 | AI 연결 대안 A–E. 허용된 붙여넣기 PoC. 실제 모델 왕복 0 | 제안 · `docs/evidence/ALABOM/AI-PM/AI-CONNECTION-ARCHITECTURE.txt` |
+| 22 | 판단 전후 비교. 테스트 문장과 실분석 구분. 시나리오 A–E. 실분석 성공 아님 | 검증 · `docs/evidence/ALABOM/AI-PM/JUDGMENT-DEVELOPMENT.txt` |
+| 23 | 실제 분석 수용 준비. 원문·출처 공백과 사용자 표시·시스템 확인 분리. 실제 결과 없음 | 미검증 · `docs/evidence/ALABOM/AI-PM/REAL-ANALYSIS-INTAKE.txt` |
+| 24 | 실제 원문 없음. 기능 확장 없이 최소 검증 경로만 기록 | 미검증 · `docs/evidence/ALABOM/AI-PM/REAL-ANALYSIS-MINIMUM-PATH.txt` |
+| 25 | LMULM·RIDM 문서 잠정 판단을 CPO 가 채택. 재구매·리셀·공헌이익, 유료 결제·유지·고객당 비용이 오기 전에는 같은 검토와 코드 변경을 반복하지 않음 | 채택 · `docs/evidence/ALABOM/AI-PM/LMULM-RIDM-DOCUMENT-JUDGMENT.txt` |
+| 26 | 두 사업계획서 발췌로 입력·판단·질문·재평가·검증 행동·마무리 거절을 한 여정으로 연결. 픽스처는 실제 검증이 아님 | 로컬만 · `docs/evidence/ALABOM/AI-PM/PLAN-JOURNEY-E2E.txt` |
+| 27 | a2c8943e Preview 는 배포됐으나 Vercel 로그인으로 막힘. LMULM·RIDM 호스팅 여정은 미실행 | 미검증 · `docs/evidence/ALABOM/AI-PM/PREVIEW-ACCEPTANCE.txt` |
+| 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  

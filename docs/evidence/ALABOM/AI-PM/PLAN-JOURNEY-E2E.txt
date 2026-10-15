@@ -1,0 +1,59 @@
+LMULM·RIDM 사업계획서 여정. 2026-10-15T10:30:00Z.
+
+제품 코드 cb2016c4 위에 사업계획서 입력부터 유보 판단까지의 연결을 넣었다. 판단 상태값은 judgment_deferred 그대로다. verifiedFact, validated, systemVerified, realAnalysisSuccess 는 거짓이다. 모델 API 와 AI 웹은 호출하지 않았다. 병합과 Production 배포는 하지 않았다. Production 잠금 SHA 0b465226.
+
+이 기록은 시나리오 연결 결과다. 실제 매출 원장이나 유료 고객이 확인됐다는 뜻이 아니다. 테스트 픽스처와 창업자 진술을 사업 증거로 세지 않는다.
+
+입력
+- 원본 PDF 바이트를 파싱하지 않는다. 화면은 사업계획서 발췌 텍스트를 받는다.
+- LMULM, RIDM 키워드가 있는 발췌만 구조화한다. 둘 다 아니거나 출처가 비면 시작하지 않는다.
+- 화면의 발췌 버튼은 테스트 픽스처다. 배지에 테스트 픽스처라고 남는다.
+
+시나리오. 단위 테스트 plan-journey.test.ts 와 로컬 브라우저 http://localhost:3000/ko/business-validation.
+
+| 테스트 | 기대 | 결과 |
+| --- | --- | --- |
+| LMULM-01 | 과거 거래 주장과 리셀 가설을 구분 | past_transaction 과 resale_hypothesis 를 따로 저장. 판단 문장에 둘 다 있음. 원장 검증 아님 |
+| LMULM-02 | 창업자 확인은 주장, 원장은 미확인 | 실제 발생 확인 뒤 문장이 바뀌고 원장 검증은 미확인. verifiedFact 거짓 |
+| LMULM-03 | 재구매를 모르면 코호트 검증으로 | 8fc9a467 로 갱신. 재구매율을 모르면 다음 질문이 없다. 판단 문장은 유지. 다음 행동은 주문 원장의 재구매 코호트. 로컬 화면 lmulm-unknown-repurchase |
+| LMULM-04 | 마진 35%와 공헌이익을 구분 | 8fc9a467 대표 시나리오에서는 실행하지 않음. 재구매율을 안다고 할 때만 마진 질문이 남음 |
+| RIDM-01 | Pre-revenue 와 미래 가정을 구분 | pre_revenue 와 forecast 를 따로 저장 |
+| RIDM-02 | 유료 고객 없음은 전환율을 실적으로 두지 않음 | 8fc9a467 로 갱신. 유료 고객이 없으면 다음 질문이 없다. 판단은 전환율이 실적이 아니라고 바뀜. 다음 행동은 결제 원문. 로컬 화면 ridm-no-payers |
+| RIDM-03 | 호감을 결제로 올리지 않음 | 8fc9a467 대표 시나리오에서는 실행하지 않음. 유료 고객이 있다고 할 때만 호감 질문이 남음 |
+| RIDM-04 | 비용을 모르면 측정 계획 | 8fc9a467 대표 시나리오에서는 실행하지 않음. 결제 원문 행동에 비용 측정 문장이 함께 붙어 있음 |
+| 공통-01 | 고객 변경 시 문제를 옮기지 않음 | 병원 진료과 질문. 주문·배송 문장 없음. 적용 범위를 다시 연다 |
+| 공통-02 | 모순 근거를 둘 다 보존 | 발생했다와 발생하지 않았다를 남김. 가설 held. 검증된 사실 아님 |
+| 공통-03 | 같은 답의 재기록으로 판단을 다시 바꾸지 않음 | 같은 선택과 문장은 기록을 추가하지 않음. 화면의 다시 넣기도 문장을 유지 |
+| 공통-04 | 검증 없이 마무리를 완료로 두지 않음 | closed 거짓. 미해결 목록을 보여 줌 |
+
+브라우저. 8fc9a467 로컬 화면. 같은 테스트를 다시 실행하지 않았다.
+- LMULM 정상: 과거 거래와 리셀을 나눈 뒤, 실제 발생 확인은 주장으로 바꾸고 재구매 질문으로 넘김.
+- LMULM 불확실: 재구매율을 모르면 판단 문장 유지, 추가 질문 없음, 재구매 코호트. 화면 lmulm-unknown-repurchase.
+- RIDM: Pre-revenue 와 미래 가정을 나눈 뒤, 유료 고객 없음은 전환율을 실적이 아니라고 바꾸고 결제 원문으로 넘김. 화면 ridm-no-payers.
+- 범위: LMULM 고객을 기업 총무팀으로 바꾸면 이전 재판매 문제를 옮기지 않음. 화면 lmulm-customer-scope.
+- 호스팅 Preview 는 이 로컬 화면이 아니다. 차단 기록은 PREVIEW-ACCEPTANCE.txt.
+- 같은 문장 중복 거절은 plan-journey.test.ts 에 남아 있다. 8fc9a467 에서 다시 실행하지 않았다.
+
+테스트
+- 8fc9a467 리뷰에서는 plan-journey.test.ts 를 다시 실행하지 않았다. 재구매 모름과 유료 고객 없음은 다음 질문이 없다는 기대로 바뀌어 있다.
+- 그 이전 실행은 여정 라이브러리 18파일 123건, exit 0. 그중 사업계획서 여정 9건.
+- 123건은 여정 연결이다. 실제 사업성 정확도나 실제 AI 연동이 아니다.
+- 외부 호출 0. research_not_run. counter_review_not_run.
+
+잔여 결함 분류. 코드 검토와 누락 분기 3건만 실행. 기존 9건은 다시 실행하지 않았다.
+
+1. 인수 차단이었음. 고침. RIDM “아직 모르겠다”가 유료 고객 존재로 기록되던 문제. 함수 planAnswerEffect, 파일 plan-journey.ts. 재현: RIDM 발췌 시작 후 결제 질문에서 unknown. 모르는 답은 유료 고객 존재의 근거가 아니다. 판단 문장은 유지하고 다음 질문은 없다.
+2. 후속 개선. 다음 행동에 공헌이익 자료와 추론 비용이 함께 붙음. 함수 planVerification, 파일 verification-action.ts. 재현: 재구매율을 모르거나 유료 고객이 없어도 action 문자열이 두 과제를 잇는다. 판단 문장과 verifiedFact 는 바꾸지 않는다.
+3. 검증 미실시였음. 누락 분기만 추가. 재구매율을 안다는 답은 마진 질문으로 이어지고, 유료 고객이 있다는 답은 호감과 비용 질문으로 이어진다. 어느 쪽도 verifiedFact 를 true 로 만들지 않는다. plan-journey.test.ts.
+
+불변조건. 코드 확인.
+- 모르는 결제 답은 유료 고객 존재가 아니다. planAnswerEffect 의 unknown 분기.
+- 창업자 주장만으로 verifiedFact 가 true 가 되지 않는다. comparisonBase 와 decisionSnapshot 이 false 고정.
+- 고객 변경은 이전 문제를 새 고객의 검증된 문제로 옮기지 않는다. compareCustomerChange, collectCandidates 의 u-customer-scope.
+- 반대 근거는 기존 답을 지우지 않고 뒤에 붙인다. recordCounterClaim.
+- 검증 자료가 없으면 마무리가 완료가 되지 않는다. blockersToClose 는 closed false.
+
+아직 열림
+- 원본 PDF 업로드와 임의 사업계획서 구조화.
+- 원장, 재구매, 공헌이익, 유료 결제, 유지율, 고객당 비용의 실제 자료.
+- 호스팅 Preview, 병합, Production. 다음 행동 문장의 과제 묶음.

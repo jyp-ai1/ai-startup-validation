@@ -1474,6 +1474,224 @@ PR #92–#97 built judgment, evidence update, AI PM bind, journey integration, a
 
 ---
 
+## ADR-052: Execution ledger file is local SQLite, not the production database
+
+**Status:** Accepted  
+**Date:** 2026-10-15  
+**Sprint:** ALABOM validation journey  
+**Authors:** CTO (autonomous)
+
+### Context
+
+CPO approved a server execution ledger and real process-restart checks. Production schema and deploy stay locked at `0b465226`. The published privacy text does not define an erasure window.
+
+### Decision
+
+1. The ledger adapter is a local SQLite file opened with Node's `node:sqlite`. It is not a Supabase or Prisma migration and it is not mounted on an HTTP route.
+2. An acceptance commit is one transaction: the `accepted` event and the seal. A killed process or a thrown error before `COMMIT` leaves neither row.
+3. `event_id` is unique. Replaying it does not add a row. An illegal later phase for the same execution id stays in the file and is ignored by the fold.
+4. Recovery of `in_progress` appends `unconfirmed` and does not open another execution. `networkCalled=false` is not treated as proof that no request was sent.
+5. The 30-day erasure proposal stays unconfirmed until a published privacy policy states a window. This adapter does not delete on a timer.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Local SQLite file | Transactions, unique keys, survives process death, no production schema change | Not the production database. Node marks `node:sqlite` experimental on v22.14.0 |
+| Production Supabase migration | Shared server database | Touches the locked production schema and needs a deploy |
+| Conditional row update | One row per execution | A bad update can replace the first failure |
+
+### Consequences
+
+**Positive:**
+
+- Restart checks can kill a process and read the same file from a new process.
+- Acceptance cannot be counted from a phase row or a seal alone.
+
+**Negative:**
+
+- The live journey screen still has no ledger. Connecting this file to a request path is a later change.
+- Filesystem mode `0600` is the access control. There is no separate authz service.
+
+**Neutral:**
+
+- Model calls, API keys, and automatic retries stay out of this adapter.
+
+---
+
+## ADR-053: Limited model call waits on a trace contract
+
+**Status:** Proposed  
+**Date:** 2026-10-15  
+**Sprint:** ALABOM validation journey  
+**Authors:** CTO (autonomous)
+
+### Context
+
+Local SQLite restart checks do not show that a model improved a business judgment. The published privacy text has no erasure window. A live Gemini or GPT call is not approved.
+
+### Decision
+
+1. The next review artifact is `docs/evidence/ALABOM/AI-PM/LIMITED-MODEL-CALL-CONTRACT.md`.
+2. A later call must trace execution, hypothesis, stored source, and model excerpt separately. Agreement does not set `verifiedFact`.
+3. Caps stay at one Gemini slot, one GPT slot, 1024 output tokens, and 30 seconds. Those caps are not a live client yet. Automatic retry stays off.
+4. No erasure period is promised. The older 30-day sentence is an unadopted proposal.
+5. This ADR does not approve a model call, a route, a UI binding, or a deploy.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Write the contract before any call | CPO can approve a bounded call later | No new evidence about judgment quality |
+| Call the models now | Would produce real text | Outside the approved scope |
+
+### Consequences
+
+**Positive:**
+
+- Fixture results stay labeled as fixture results.
+- Privacy copy cannot be read as a 30-day deletion promise.
+
+**Negative:**
+
+- The product screen still has no ledger and no model analysis.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
+## ADR-054: External AI text stays a user paste until a path is confirmed
+
+**Status:** Proposed  
+**Date:** 2026-10-15  
+**Sprint:** ALABOM validation journey  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The no-API constraint rules out a live model call. Reading ChatGPT, Claude, or Gemini web pages is not an allowed automation. Chrome's built-in Prompt API was absent in this environment, and no local model runtime was installed. The product still needs a place to hold an outside sentence without treating it as a verified fact.
+
+### Decision
+
+1. The comparison and local proof are `docs/evidence/ALABOM/AI-PM/AI-CONNECTION-ARCHITECTURE.txt`.
+2. ALABOM keeps the judgment. A pasted sentence is a reference: `verifiedFact` is false, `liveModelCall` is false, and a failed or duplicate paste does not replace the prior judgment.
+3. Do not add a content script, host permission, API key, or model HTTP client for this path.
+4. Browser-builtin and local models stay unverified. They are not selected.
+5. This ADR does not confirm the architecture, merge, or production deploy.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Extension reads the AI page | Fewer manual steps if it worked | Terms and robots block it. No live proof. UI breakage is ongoing cost |
+| Chrome Prompt API or a local model | No separate model API fee | Not available in this environment. Korean Prompt API support is not in the published language list. Quality unmeasured |
+| User pastes the result | No model call, no page scraping, execution id stays with the note | User labor is not zero. No real model text has returned. Judgment text stays deferred |
+
+### Consequences
+
+**Positive:**
+
+- The screen can hold a reference and the next prompt can include a founder's later answer.
+- Empty collection does not overwrite the deferred judgment.
+
+**Negative:**
+
+- A real AI round trip is still not demonstrated. The paste tested here was typed locally.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
+## ADR-055: A pasted analysis can change the deferred judgment only with a recorded reason
+
+**Status:** Proposed  
+**Date:** 2026-10-15  
+**Sprint:** ALABOM validation journey  
+**Authors:** CTO (autonomous)
+
+### Context
+
+A stored paste is not evidence that the business judgment improved. The next check is whether a brought sentence changes the deferred judgment, which hypothesis it touches, and why the next question was chosen. No live model response is available.
+
+### Decision
+
+1. The trace is `docs/evidence/ALABOM/AI-PM/JUDGMENT-DEVELOPMENT.txt`.
+2. Every comparison stores the previous judgment, the next judgment, the affected hypotheses, and the reason. `verifiedFact` and `validated` stay false. `realAnalysisSuccess` stays false because this path does not observe a model.
+3. A test sentence and a user declaration are different labels. A declaration is not a live success.
+4. Missing original text or a missing source leaves the previous journey state in place.
+5. This ADR does not confirm the connection architecture, a Chrome extension, a merge, or a deploy.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Leave the judgment sentence frozen for every paste | Protects the deferred status | Hides whether a new sentence changed the hypothesis |
+| Promote agreement to VALIDATED | Would look like a finished judgment | Breaks the product contract |
+
+### Consequences
+
+**Positive:**
+
+- Scenarios A through E show the judgment before and after, with the execution id when a sentence was stored.
+- A founder answer can be recorded without changing the judgment sentence.
+
+**Negative:**
+
+- The readings use test sentences. They do not measure a live model's judgment quality.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
+## ADR-056: A user declaration is not a system-verified analysis
+
+**Status:** Proposed  
+**Date:** 2026-10-15  
+**Sprint:** ALABOM validation journey  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The judgment trace can store a pasted sentence. No founder has brought a sentence from their own AI session. A changed judgment sentence can be mistaken for an improvement.
+
+### Decision
+
+1. The intake check is `docs/evidence/ALABOM/AI-PM/REAL-ANALYSIS-INTAKE.txt`.
+2. `userDeclaredReal` records only the user's label. `systemVerified` stays false. `realAnalysisSuccess` stays false until a model response is observed, which this path does not do.
+3. A missing original, execution id, or source is listed and the previous journey state stays in place.
+4. `improvementAssessed` and `linkJustified` stay false. A different sentence is not an improved judgment.
+5. This ADR does not confirm the architecture, a merge, or a deploy. No real external analysis was obtained.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Treat a user declaration as a live success | The field would look complete | The system did not see the model |
+| Add more test sentences | More green tests | Does not measure judgment quality |
+
+### Consequences
+
+**Positive:**
+
+- The screen and the stored note use the same labels for a test sentence and a user declaration.
+- Empty intake does not replace the deferred judgment.
+
+**Negative:**
+
+- Model quality and judgment accuracy remain unverified.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

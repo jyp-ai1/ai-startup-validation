@@ -1,14 +1,16 @@
 import type { ResearchProvider, ResearchProviderId } from '../services/research-agent-types';
 import { MockResearchProvider } from './mock-provider';
+import { OpenAICounterReviewProvider } from './openai-counter-review-provider';
 import { OpenRouterResearchProvider } from './openrouter-provider';
 
 const mock = new MockResearchProvider();
 const openrouter = new OpenRouterResearchProvider();
+const openai = new OpenAICounterReviewProvider();
 
 const providers: Record<ResearchProviderId, ResearchProvider> = {
   mock,
   gemini: openrouter,
-  openai: openrouter,
+  openai,
   claude: mock,
   perplexity: mock,
   mcp_search: mock,
