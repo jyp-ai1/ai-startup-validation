@@ -8,6 +8,7 @@ import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/pro
 
 import { acceptanceSummary, liveScreenStatus } from '../lib/analysis-acceptance';
 import { screenStateContract } from '../lib/execution-contract';
+import { LEDGER_SCREEN_EMPTY } from '../lib/execution-ledger';
 import { liveCitationTrace, sourceCheckLabel } from '../lib/citation-reconciliation';
 import { attachFounderSource, SOURCE_HYPOTHESES, sourceHash } from '../lib/founder-source';
 import { applyAnswer, correctField, startJourney } from '../lib/journey-engine';
@@ -439,6 +440,7 @@ function UnderstandingView({
             인용 검증 대조 불가. 비교 {stateContract.comparison}. 비교할 실제 분석 결과가 없다.
           </li>
           <li data-testid="state-judgment">사업 판단 {stateContract.judgment}. supported는 사업성 검증이 아니다.</li>
+          <li data-testid="state-ledger">{LEDGER_SCREEN_EMPTY}</li>
         </ul>
         {journey.redelivery ? (
           <div className="space-y-2 text-sm" data-testid="redelivery-note">

@@ -26,6 +26,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 11 | 분석 수용 기록. 원문·가설·판단 사유를 한 기록에 연결. 화면은 기록 없음 | 테스트 |
 | 12 | 수용 기록 재전달은 새 분석으로 세지 않음. 원문 전이와 분리. 화면은 미실행 | 테스트 |
 | 13 | 모델 연결 전 실행 계약. 실패·재시도·결과 누락 구분. 화면 다섯 상태 | 테스트 |
+| 14 | 실행 원장. 미확정은 실패와 구분. 자동 재호출 없음. 요금은 미확정. 화면은 원장 없음 | 테스트 |
 | 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
 
 ---
