@@ -41,14 +41,24 @@ export function recordExternalAnalysis(
   const evidenceKind = input.evidenceKind ?? 'model_claim';
   const notes = state.externalNotes ?? [];
 
-  if (input.failed || !text || !executionId) {
-    return reject(state, input.now, executionId || null, provenance, sourceLabel, text, '원문이 없다. 실제 분석 성공으로 기록하지 않고 이전 판단을 유지한다.');
-  }
-  if (!sourceLabel) {
-    return reject(state, input.now, executionId, provenance, null, text, '출처를 확인할 수 없다. 실제 분석 성공으로 기록하지 않고 이전 판단을 유지한다.');
+  const missing: string[] = [];
+  if (input.failed || !text) missing.push('원문');
+  if (!executionId) missing.push('실행 ID');
+  if (!sourceLabel) missing.push('출처');
+  if (missing.length > 0) {
+    return reject(
+      state,
+      input.now,
+      executionId || null,
+      provenance,
+      sourceLabel || null,
+      text,
+      `빠진 항목: ${missing.join(', ')}. 실제 분석 성공으로 기록하지 않고 이전 판단을 유지한다.`,
+      missing,
+    );
   }
   if (notes.some((note) => note.executionId === executionId)) {
-    return reject(state, input.now, executionId, provenance, sourceLabel, text, '같은 실행 ID의 문장은 다시 보관하지 않는다. 이전 판단과 원문을 유지한다.');
+    return reject(state, input.now, executionId, provenance, sourceLabel, text, '같은 실행 ID의 문장은 다시 보관하지 않는다. 이전 판단과 원문을 유지한다.', []);
   }
 
   const reading = readClaim(text);
@@ -100,6 +110,7 @@ export function recordExternalAnalysis(
     citedExcerpt: excerpt,
     verifiedFact: false,
     realAnalysisSuccess: false,
+    systemVerified: false,
     userDeclaredReal,
     claimStatus,
     judgmentChanged,
@@ -221,6 +232,7 @@ function reject(
   sourceLabel: string | null,
   text: string,
   reason: string,
+  missing: string[],
 ): { state: JourneyState; accepted: boolean; reason: string; comparison: JudgmentComparison } {
   return {
     state,
@@ -248,6 +260,7 @@ function reject(
       uncertaintyResolved: false,
       nextQuestionId: state.nextQuestion?.uncertaintyId ?? null,
       questionSelectionReason: state.nextQuestion?.whyDifferent ?? null,
+      missing,
     }),
   };
 }
@@ -257,7 +270,7 @@ function developedJudgment(executionId: string, reading: ClaimReading, conflict:
     return `실행 ${executionId}의 문장은 창업자가 남긴 근거와 충돌한다. 두 문장을 모두 남긴다. 어느 쪽도 검증된 사실이 아니다. 문제 가설은 유보한다.`;
   }
   const direction = reading === 'supports_problem' ? '문제 가설과 같은 방향' : '문제 가설과 어긋나는 방향';
-  return `실행 ${executionId}의 ${evidenceKind} 발췌는 ${direction}의 주장이다. 대상 가설은 h-problem이다. CLAIM이며 ${NOT_VALIDATED}`;
+  return `실행 ${executionId}의 ${evidenceKind} 발췌는 ${direction}의 주장이다. 대상 가설은 h-problem이다. CLAIM이며 ${NOT_VALIDATED} 문장이 바뀐 것만으로 판단이 개선된 것은 아니다.`;
 }
 
 function reasonForReading(
@@ -269,8 +282,8 @@ function reasonForReading(
 ): string {
   if (conflict) return `실행 ${executionId}가 기존 근거와 충돌한다. 가설은 held이고 검증된 사실로 올리지 않는다.`;
   if (reading === 'unrelated') return '이 문장은 문제 가설, 지불자 가설, 다음 검증을 바꾸지 않는다. 미평가로 남긴다.';
-  if (!independent) return `출처가 ${evidenceKind}이다. CLAIM으로 남기고 가설 태도와 판단 문장은 바꾸지 않는다.`;
-  return `실행 ${executionId}의 발췌가 h-problem 서술을 바꾼다. CLAIM이며 검증된 사실은 아니다.`;
+  if (!independent) return `출처가 ${evidenceKind}이다. CLAIM으로 남기고 가설 태도와 판단 문장은 바꾸지 않는다. 근거와 가설의 연결은 검토하지 않았다.`;
+  return `실행 ${executionId}의 발췌가 h-problem 서술을 바꾼다. CLAIM이며 검증된 사실은 아니다. 연결이 정당하다고 평가하지 않았다.`;
 }
 
 function isConflict(state: JourneyState, reading: ClaimReading): boolean {
@@ -327,12 +340,20 @@ function mergeProblem(
   return next;
 }
 
-function comparisonBase(input: Omit<JudgmentComparison, 'liveVerified' | 'realAnalysisSuccess' | 'verifiedFact' | 'validated'>): JudgmentComparison {
+function comparisonBase(
+  input: Omit<JudgmentComparison, 'liveVerified' | 'realAnalysisSuccess' | 'verifiedFact' | 'validated' | 'systemVerified' | 'improvementAssessed' | 'linkJustified' | 'missing'> & {
+    missing?: string[];
+  },
+): JudgmentComparison {
   return {
     ...input,
+    missing: input.missing ?? [],
     liveVerified: false,
     realAnalysisSuccess: false,
     verifiedFact: false,
     validated: false,
+    systemVerified: false,
+    improvementAssessed: false,
+    linkJustified: false,
   };
 }

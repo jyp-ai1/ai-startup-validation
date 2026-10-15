@@ -1649,6 +1649,49 @@ A stored paste is not evidence that the business judgment improved. The next che
 
 ---
 
+## ADR-056: A user declaration is not a system-verified analysis
+
+**Status:** Proposed  
+**Date:** 2026-10-15  
+**Sprint:** ALABOM validation journey  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The judgment trace can store a pasted sentence. No founder has brought a sentence from their own AI session. A changed judgment sentence can be mistaken for an improvement.
+
+### Decision
+
+1. The intake check is `docs/evidence/ALABOM/AI-PM/REAL-ANALYSIS-INTAKE.txt`.
+2. `userDeclaredReal` records only the user's label. `systemVerified` stays false. `realAnalysisSuccess` stays false until a model response is observed, which this path does not do.
+3. A missing original, execution id, or source is listed and the previous journey state stays in place.
+4. `improvementAssessed` and `linkJustified` stay false. A different sentence is not an improved judgment.
+5. This ADR does not confirm the architecture, a merge, or a deploy. No real external analysis was obtained.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Treat a user declaration as a live success | The field would look complete | The system did not see the model |
+| Add more test sentences | More green tests | Does not measure judgment quality |
+
+### Consequences
+
+**Positive:**
+
+- The screen and the stored note use the same labels for a test sentence and a user declaration.
+- Empty intake does not replace the deferred judgment.
+
+**Negative:**
+
+- Model quality and judgment accuracy remain unverified.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

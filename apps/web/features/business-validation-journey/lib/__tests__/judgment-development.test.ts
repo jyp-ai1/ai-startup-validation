@@ -48,8 +48,50 @@ describe('judgment development scenarios', () => {
       claimStatus: 'CLAIM',
     });
     expect(declared.comparison.liveVerified).toBe(false);
+    expect(declared.comparison.systemVerified).toBe(false);
+    expect(declared.comparison.improvementAssessed).toBe(false);
+    expect(declared.comparison.linkJustified).toBe(false);
+    expect(declared.state.externalNotes?.[0]?.systemVerified).toBe(false);
     expect(declared.comparison.validated).toBe(false);
     expect(JSON.stringify(declared.state)).not.toContain('VALIDATED');
+  });
+
+  it('keeps the prior judgment when the original and the source are both missing, and does not replace a duplicate', () => {
+    const initial = started();
+    const both = recordExternalAnalysis(initial, {
+      executionId: '',
+      text: ' ',
+      provenance: 'user_declared',
+      sourceLabel: ' ',
+      now: NOW,
+    });
+    expect(both.accepted).toBe(false);
+    expect(both.state).toBe(initial);
+    expect(both.comparison.missing).toEqual(['원문', '실행 ID', '출처']);
+    expect(both.comparison.userDeclaredReal).toBe(false);
+    expect(both.comparison.systemVerified).toBe(false);
+    expect(both.comparison.realAnalysisSuccess).toBe(false);
+    expect(both.comparison.nextJudgmentText).toBe(initial.judgmentText);
+
+    const kept = recordExternalAnalysis(initial, {
+      executionId: 'dup-1',
+      text: '주문과 배송이 나뉘어 누락이 발생한다.',
+      provenance: 'test_fixture',
+      sourceLabel: 'test_fixture',
+      now: NOW,
+    });
+    const again = recordExternalAnalysis(kept.state, {
+      executionId: 'dup-1',
+      text: '다른 문장으로 덮어쓴다',
+      provenance: 'user_declared',
+      sourceLabel: 'user_declared_chatgpt',
+      now: LATER,
+    });
+    expect(again.accepted).toBe(false);
+    expect(again.state).toBe(kept.state);
+    expect(again.state.externalNotes).toHaveLength(1);
+    expect(again.state.externalNotes?.[0]?.text).toContain('누락이 발생한다');
+    expect(again.state.judgmentText).toBe(kept.state.judgmentText);
   });
 
   it('runs the logistics scenarios without counting a test sentence as real analysis', () => {
@@ -66,6 +108,7 @@ describe('judgment development scenarios', () => {
     expect(missingText.accepted).toBe(false);
     expect(missingText.state).toBe(initial);
     expect(missingText.comparison.realAnalysisSuccess).toBe(false);
+    expect(missingText.comparison.missing).toEqual(['원문']);
     expect(missingText.comparison.originalSecured).toBe(false);
     expect(missingText.comparison.nextJudgmentText).toBe(before);
 
@@ -79,7 +122,8 @@ describe('judgment development scenarios', () => {
     expect(missingSource.accepted).toBe(false);
     expect(missingSource.state).toBe(initial);
     expect(missingSource.comparison.userDeclaredReal).toBe(false);
-    expect(missingSource.comparison.reason).toContain('출처를 확인할 수 없다');
+    expect(missingSource.comparison.missing).toEqual(['출처']);
+    expect(missingSource.comparison.reason).toContain('빠진 항목: 출처');
 
     const scenarioA = acceptPastedAnalysis(initial, {
       executionId: 'scenario-a',

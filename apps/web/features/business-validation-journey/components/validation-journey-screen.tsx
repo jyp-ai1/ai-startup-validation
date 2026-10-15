@@ -282,6 +282,7 @@ function HandoffPanel({
   const [provenance, setProvenance] = useState<'test_fixture' | 'user_declared'>('test_fixture');
   const [evidenceKind, setEvidenceKind] = useState<'model_claim' | 'order_record' | 'interview_verbatim' | 'unknown'>('model_claim');
   const [sourceLabel, setSourceLabel] = useState('test_fixture');
+  const [missing, setMissing] = useState<string[]>([]);
   const prepared = prepareAnalysisRequest(journey, preparedAt);
   const next = nextHandoffInput(journey);
 
@@ -298,6 +299,7 @@ function HandoffPanel({
       now: new Date().toISOString(),
     });
     setMessage(result.reason);
+    setMissing(result.missing);
     if (!result.accepted) return;
     onJourneyChange(result.state);
     setPaste('');
@@ -379,6 +381,11 @@ function HandoffPanel({
             요청 다시 준비
           </Button>
         </div>
+        {missing.length > 0 ? (
+          <p className="text-sm text-destructive" data-testid="handoff-missing" role="alert">
+            빠진 항목: {missing.join(', ')}. 이전 판단을 유지한다.
+          </p>
+        ) : null}
         {message ? (
           <p className="text-sm" data-testid="handoff-message" role="status">
             {message}
@@ -388,7 +395,7 @@ function HandoffPanel({
       <ul className="space-y-2 text-sm" data-testid="handoff-records">
         {(journey.externalNotes ?? []).map((note) => (
           <li key={note.executionId} data-testid={`handoff-record-${note.executionId}`}>
-            {note.executionId} {note.provenance === 'user_declared' ? '사용자 표시' : '테스트 문장'}. {note.claimStatus}. 사실 아님. 실분석 성공 아님. {note.text}
+            {note.executionId} {note.provenance === 'user_declared' ? '사용자 표시: 실제 응답이라고 함' : '테스트 문장'}. 시스템 확인: {note.systemVerified ? '함' : '하지 않음'}. {note.claimStatus}. 사실 아님. 실분석 성공 아님. {note.text}
           </li>
         ))}
       </ul>
@@ -549,8 +556,12 @@ function UnderstandingView({
                 가설 {item.affectedHypothesisIds.join(', ') || '없음'} · 근거 {item.evidenceIds.join(', ') || '없음'} · 실행 {item.executionId ?? '없음'}
               </p>
               <p>
-                {item.provenance === 'user_declared' ? '사용자가 실제 응답이라고 표시' : item.provenance === 'test_fixture' ? '테스트 문장' : '분석 문장 아님'}
-                . 실분석 성공 {item.realAnalysisSuccess ? '예' : '아니오'}. 검증된 사실 아님.
+                {item.provenance === 'user_declared' ? '사용자 표시: 실제 응답이라고 함' : item.provenance === 'test_fixture' ? '테스트 문장' : '분석 문장 아님'}
+                . 시스템 확인: {item.systemVerified ? '함' : '하지 않음'}. 실분석 성공 {item.realAnalysisSuccess ? '예' : '아니오'}. 검증된 사실 아님.
+              </p>
+              <p>
+                개선 평가: {item.improvementAssessed ? '함' : '하지 않음'}. 근거와 가설의 연결 검토: {item.linkJustified ? '정당함' : '하지 않음'}.
+                {(item.missing ?? []).length > 0 ? ` 빠진 항목: ${(item.missing ?? []).join(', ')}.` : ''}
               </p>
             </li>
           ))}

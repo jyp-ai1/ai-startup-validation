@@ -31,9 +31,11 @@ export function acceptPastedAnalysis(
     now: string;
     failed?: boolean;
   },
-): { state: JourneyState; accepted: boolean; reason: string } {
+): { state: JourneyState; accepted: boolean; reason: string; missing: string[] } {
   const result = recordExternalAnalysis(state, input);
-  if (!result.accepted) return { state: result.state, accepted: false, reason: result.reason };
+  if (!result.accepted) {
+    return { state: result.state, accepted: false, reason: result.reason, missing: result.comparison.missing };
+  }
   const refreshed = withCurrentQuestion(result.state);
   const comparisons = refreshed.judgmentComparisons ?? [];
   const last = comparisons.at(-1);
@@ -52,6 +54,7 @@ export function acceptPastedAnalysis(
     state: { ...refreshed, judgmentComparisons: nextComparisons },
     accepted: true,
     reason: result.reason,
+    missing: [],
   };
 }
 

@@ -162,6 +162,7 @@ export type ExternalNote = {
   citedExcerpt: string | null;
   verifiedFact: false;
   realAnalysisSuccess: false;
+  systemVerified: false;
   userDeclaredReal: boolean;
   claimStatus: ModelClaimStatus;
   judgmentChanged: boolean;
@@ -178,6 +179,10 @@ export type JudgmentComparison = {
   provenance: AnalysisProvenance | null;
   liveVerified: false;
   realAnalysisSuccess: false;
+  systemVerified: false;
+  improvementAssessed: false;
+  linkJustified: false;
+  missing: string[];
   userDeclaredReal: boolean;
   originalSecured: boolean;
   sourceLabel: string | null;
