@@ -116,9 +116,19 @@ export function structureBusinessPlan(input: {
   };
 }
 
-export function planQuestions(planCase: PlanCase | null | undefined, asked: Set<string>): NextQuestion[] {
+export function planQuestions(
+  planCase: PlanCase | null | undefined,
+  asked: Set<string>,
+  answers: { uncertaintyId: string; choiceId: string }[] = [],
+): NextQuestion[] {
   if (!planCase || planCase.profile === 'unrecognized') return [];
-  if (planCase.profile === 'lmulm') return lmulmQuestions(asked);
+  if (planCase.profile === 'lmulm') {
+    const repurchase = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-lmulm-repurchase');
+    if (repurchase?.choiceId === 'unknown') return [];
+    return lmulmQuestions(asked);
+  }
+  const payers = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-ridm-payers');
+  if (payers && (payers.choiceId === 'none' || payers.choiceId === 'unknown')) return [];
   return ridmQuestions(asked);
 }
 
@@ -149,13 +159,14 @@ export function planAnswerEffect(
       };
     case 'u-lmulm-repurchase':
       if (answer.choiceId === 'unknown') {
-        return {
-          nextText: '',
-          judgmentChanged: false,
-          reason: '재구매율은 모른다. 같은 질문을 반복하지 않고 주문 데이터로 재구매 코호트를 만드는 검증으로 넘긴다.',
-          held: false,
-          affected: [],
-        };
+      return {
+        nextText: '',
+        judgmentChanged: false,
+        reason:
+          '재구매율은 반복 매출 판단의 핵심 불확실성이다. 이 답으로 판단 문장은 바꾸지 않는다. 같은 고객의 재주문이 적힌 주문 원장이 있으면 반복 매출 판단이 달라진다. 다음 행동은 그 원장으로 재구매 코호트를 만드는 것이다.',
+        held: false,
+        affected: [],
+      };
       }
       return {
         nextText: `재구매율을 알고 있다는 창업자 진술이다. 주문 코호트로 확인하지 않았다. ${NOT_VALIDATED}`,
@@ -177,7 +188,8 @@ export function planAnswerEffect(
         return {
           nextText: `유료 고객은 아직 없다는 창업자 진술이다. 구독 전환율 가정은 실적이 아니다. 최초 유료 고객 검증으로 넘긴다. ${NOT_VALIDATED}`,
           judgmentChanged: true,
-          reason: '유료 고객이 없다는 진술을 기록한다. 전환율 가정을 실적으로 취급하지 않는다.',
+          reason:
+            '유료 고객이 없다는 답으로 전환율 목표는 실적이 되지 않는다. 다음 행동은 최초 결제 의향과 실제 지불을 확인하는 것이다. 전환율 가정을 다시 설명하지 않는다.',
           held: false,
           affected: ['h-payer'],
         };

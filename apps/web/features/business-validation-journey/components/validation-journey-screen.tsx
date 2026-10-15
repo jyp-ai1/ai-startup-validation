@@ -659,6 +659,24 @@ function UnderstandingView({
         <p className="text-sm leading-relaxed" data-testid="judgment-text">
           {journey.judgmentText}
         </p>
+        {(journey.judgmentComparisons ?? []).at(-1) ? (
+          <div className="space-y-2 rounded-lg bg-muted/40 p-3 text-sm" data-testid="answer-effect">
+            <p data-testid="answer-effect-changed">
+              {(journey.judgmentComparisons ?? []).at(-1)?.judgmentChanged
+                ? '이번 답으로 판단 문장이 바뀌었다.'
+                : '이번 답으로 판단 문장은 바뀌지 않았다.'}
+            </p>
+            <p data-testid="answer-effect-reason">{(journey.judgmentComparisons ?? []).at(-1)?.reason}</p>
+            <p data-testid="answer-effect-before">
+              이전 판단: {(journey.judgmentComparisons ?? []).at(-1)?.previousJudgmentText}
+            </p>
+            <p data-testid="answer-effect-after">
+              이후 판단: {(journey.judgmentComparisons ?? []).at(-1)?.nextJudgmentText}
+            </p>
+            <p data-testid="answer-effect-evidence">판단을 바꾸는 자료: {verification.evidenceNeeded}</p>
+            <p data-testid="answer-effect-next">다음 행동: {verification.action}</p>
+          </div>
+        ) : null}
         {decision ? (
           <div className="space-y-2 text-sm" data-testid="decision-panel">
             <p data-testid="plan-badge">{decision.fixtureLabel}</p>

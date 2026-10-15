@@ -626,7 +626,7 @@ function collectCandidates(
   }
 
   if (planCase && planCase.profile !== 'unrecognized') {
-    candidates.push(...planQuestions(planCase, asked));
+    candidates.push(...planQuestions(planCase, asked, answers));
     return candidates;
   }
 

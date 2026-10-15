@@ -59,19 +59,13 @@ describe('business plan journey', () => {
 
     const repurchase = answer(ledger.state, 'unknown');
     expect(repurchase.state.judgmentText).toBe(ledger.state.judgmentText);
-    expect(repurchase.state.judgmentComparisons?.at(-1)?.reason).toContain('재구매 코호트');
-    expect(repurchase.state.nextQuestion?.uncertaintyId).toBe('u-lmulm-margin');
-    expect(repurchase.state.nextQuestion?.prompt).not.toContain('재구매율을 알고');
-
-    const margin = answer(repurchase.state, 'margin_35', '상품 마진은 35%다');
-    expect(margin.state.judgmentText).toContain('매출총이익');
-    expect(margin.state.judgmentText).toContain('공헌이익');
-    expect(margin.state.nextQuestion).toBeNull();
-    expect(margin.state.nextAction.kind).toBe('external_validation');
-    expect(margin.state.nextAction.text).toContain('공헌이익');
-    expect(margin.state.nextAction.text).toContain('재구매 코호트');
-    expect(margin.state.answers).toHaveLength(3);
-    expect(margin.state.judgmentStatus).toBe('judgment_deferred');
+    expect(repurchase.state.judgmentComparisons?.at(-1)?.judgmentChanged).toBe(false);
+    expect(repurchase.state.judgmentComparisons?.at(-1)?.reason).toContain('주문 원장');
+    expect(repurchase.state.judgmentComparisons?.at(-1)?.reason).toContain('바꾸지 않는다');
+    expect(repurchase.state.nextQuestion).toBeNull();
+    expect(repurchase.state.nextAction.kind).toBe('external_validation');
+    expect(repurchase.state.nextAction.text).toContain('재구매 코호트');
+    expect(repurchase.state.judgmentStatus).toBe('judgment_deferred');
   });
 
   it('RIDM-01 separates pre-revenue from the revenue forecast', () => {
@@ -91,23 +85,10 @@ describe('business plan journey', () => {
     const payers = answer(initial, 'none', '유료 고객은 아직 없다');
 
     expect(payers.state.judgmentText).toContain('전환율 가정은 실적이 아니다');
-    expect(payers.state.nextQuestion?.uncertaintyId).toBe('u-ridm-liking');
-    expect(payers.state.nextQuestion?.prompt).not.toContain('전환율');
-
-    const beforeLiking = payers.state.judgmentText;
-    const liking = answer(payers.state, 'likes', '고객이 AI 캐릭터를 좋아한다고 했다');
-    expect(liking.state.judgmentText).toBe(beforeLiking);
-    expect(liking.state.judgmentComparisons?.at(-1)?.reason).toContain('호감');
-    expect(liking.state.judgmentComparisons?.at(-1)?.judgmentChanged).toBe(false);
-    expect(liking.state.nextQuestion?.uncertaintyId).toBe('u-ridm-cost');
-
-    const cost = answer(liking.state, 'unknown', '고객당 추론 비용을 모른다');
-    expect(cost.state.judgmentText).toBe(beforeLiking);
-    expect(cost.state.judgmentComparisons?.at(-1)?.reason).toContain('사용량');
-    expect(cost.state.nextQuestion).toBeNull();
-    expect(cost.state.nextAction.text).toContain('결제 원문');
-    expect(cost.state.nextAction.text).toContain('인프라');
-    expect(cost.state.answers).toHaveLength(3);
+    expect(payers.state.judgmentComparisons?.at(-1)?.reason).toContain('실제 지불');
+    expect(payers.state.nextQuestion).toBeNull();
+    expect(payers.state.nextAction.text).toContain('결제 원문');
+    expect(payers.state.judgmentStatus).toBe('judgment_deferred');
   });
 
   it('does not transfer the previous customer problem when the customer changes', () => {
@@ -157,7 +138,7 @@ describe('business plan journey', () => {
 
   it('refuses to close while verification results are absent', () => {
     const initial = started(RIDM_PLAN_FIXTURE);
-    const done = answer(answer(answer(initial, 'none').state, 'likes').state, 'unknown').state;
+    const done = answer(initial, 'none').state;
     const blocked = blockersToClose(done);
     const fixture = withFixtureResult(done, '전환율 3% 테스트 문장', NOW);
 
