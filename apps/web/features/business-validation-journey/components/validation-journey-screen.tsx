@@ -14,6 +14,7 @@ import { acceptPastedAnalysis, nextHandoffInput, prepareAnalysisRequest } from '
 import { attachFounderSource, SOURCE_HYPOTHESES, sourceHash } from '../lib/founder-source';
 import { applyAnswer, correctField, recordCounterClaim, replayStoredAnswer, startFromBusinessPlan, startJourney } from '../lib/journey-engine';
 import { blockersToClose, decisionSnapshot, LMULM_PLAN_FIXTURE, RIDM_PLAN_FIXTURE, withFixtureResult } from '../lib/plan-journey';
+import { PlanRefinementPanel } from './plan-refinement-panel';
 import { contextRoleLabel, executionBadgeLabel } from '../lib/present-execution';
 import { verificationActionFor } from '../lib/verification-action';
 import { loadJourneyDraft, saveJourneyDraft } from '../lib/journey-session';
@@ -653,6 +654,8 @@ function UnderstandingView({
           ))}
         </ul>
       </section>
+
+      <PlanRefinementPanel journey={journey} onJourneyChange={onJourneyChange} />
 
       <section className="space-y-3 rounded-xl border border-border p-4" data-testid="judgment-panel">
         <h2 className="text-lg font-medium">사업성 판단</h2>
