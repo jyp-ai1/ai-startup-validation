@@ -89,6 +89,8 @@ Chrome 으로 입력, 테스트 가설, 이해 확인, 객관식과 주관식, �
 
 이 실행은 제품의 브라우저 자동화가 아니다. 로컬 화면 확인이다. Gemini·GPT 요청은 만들지 않았다.
 
+소비자 ChatGPT·Gemini 웹을 자동으로 여는 경로는 그 뒤 robots.txt 로 닫았다. 기록: docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt
+
 6. 미검증
 
 Phase 3 관련 이력 패킷을 모델에 보내는 경로.
