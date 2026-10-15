@@ -38,4 +38,6 @@ Preview 에서 실행하지 못한 항목. LMULM 과 RIDM 모두.
 - 실제 외부 AI 조사는 여전히 미실행이다.
 - 실제 매출, 결제, 유지율 자료는 없다. 없는 자료를 검증 완료로 표시하지 않는다.
 
+8fc9a467 확인. 승인된 Preview 경로 없음. 차단 원인: Vercel Deployment Protection SSO, HTTP 302, vercel.com/sso-api. 필요 권한: 프로젝트 멤버 세션 또는 발급된 protection bypass secret. 이 환경에 둘 다 없다. 우회하지 않았다.
+
 인수 판단은 열림. 병합과 Production 배포는 하지 않았다.
