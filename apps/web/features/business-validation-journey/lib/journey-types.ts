@@ -64,6 +64,56 @@ export type NextQuestion = {
   whyDifferent: string | null;
   choices: Choice[];
   allowsFreeText: true;
+  purpose?: string;
+  answerBranches?: string;
+  unchangedWhen?: string;
+};
+
+export type PlanProfile = 'lmulm' | 'ridm' | 'unrecognized';
+
+export type PlanClaimRole =
+  | 'business'
+  | 'customer'
+  | 'problem'
+  | 'solution'
+  | 'buyer'
+  | 'revenue'
+  | 'past_transaction'
+  | 'resale_hypothesis'
+  | 'pre_revenue'
+  | 'forecast';
+
+export type PlanClaim = {
+  id: string;
+  role: PlanClaimRole;
+  text: string;
+  sourceLabel: string;
+  claimStatus: 'CLAIM';
+  ledgerChecked: false;
+  provenance: AnalysisProvenance;
+};
+
+export type PlanFixtureResult = {
+  id: string;
+  note: string;
+  provenance: 'test_fixture';
+  verifiedFact: false;
+  systemVerified: false;
+  label: '테스트 픽스처 · 실제 검증 완료 아님';
+};
+
+export type PlanCase = {
+  profile: PlanProfile;
+  provenance: AnalysisProvenance;
+  sourceLabel: string;
+  claims: PlanClaim[];
+  support: string[];
+  counter: string[];
+  unknowns: string[];
+  decisiveGap: string;
+  exitCondition: string;
+  openingJudgment: string;
+  fixtureResults: PlanFixtureResult[];
 };
 
 export type FounderAnswer = {
@@ -142,6 +192,7 @@ export type JourneyState = {
   redelivery: RedeliveryRecord | null;
   externalNotes?: ExternalNote[];
   judgmentComparisons?: JudgmentComparison[];
+  planCase?: PlanCase;
 };
 
 export type AnalysisProvenance = 'test_fixture' | 'user_declared';

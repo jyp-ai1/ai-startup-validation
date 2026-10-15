@@ -1,4 +1,5 @@
 import { NOT_ESTABLISHED, UNREVIEWED_HYPOTHESIS } from './founder-source';
+import { planAnswerEffect } from './plan-journey';
 import type {
   AnalysisProvenance,
   EvidenceKind,
@@ -140,14 +141,22 @@ export function recordExternalAnalysis(
 }
 
 export function compareFounderAnswer(before: JourneyState, after: JourneyState, answer: FounderAnswer): JourneyState {
-  const resolved = uncertaintyResolved(answer);
+  const planEffect = planAnswerEffect(answer);
+  const resolved = planEffect ? false : uncertaintyResolved(answer);
   let nextText = after.judgmentText;
   let judgmentChanged = false;
   let reason = resolved
     ? `${answer.uncertaintyId}에 대한 답은 기록했다. 창업자 진술이라 사업 판단 문장을 바꾸지 않는다. ${NOT_VALIDATED}`
     : `${answer.uncertaintyId}에 대한 답은 기존 불확실성을 해소하지 않는다. 같은 질문을 반복하지 않고 판단 문장은 유지한다.`;
   let stance: HypothesisJudgment['stance'] | null = null;
-  if (answer.uncertaintyId === 'u-customer-scope' && answer.choiceId === 'does_not_apply') {
+  let affected: string[] = [];
+  if (planEffect) {
+    judgmentChanged = planEffect.judgmentChanged;
+    nextText = planEffect.judgmentChanged ? planEffect.nextText : after.judgmentText;
+    reason = planEffect.reason;
+    stance = planEffect.held ? 'held' : null;
+    affected = planEffect.affected;
+  } else if (answer.uncertaintyId === 'u-customer-scope' && answer.choiceId === 'does_not_apply') {
     judgmentChanged = true;
     nextText = `「${after.intake.customer}」에게 기존 문제 가설이 해당하지 않는다는 창업자 진술이다. 그 진술을 검증된 사실로 올리지 않는다. ${NOT_VALIDATED}`;
     reason = nextText;
@@ -168,7 +177,7 @@ export function compareFounderAnswer(before: JourneyState, after: JourneyState, 
     nextJudgmentText: nextText,
     judgmentChanged,
     claimStatus: 'CLAIM',
-    affectedHypothesisIds: judgmentChanged ? ['h-problem'] : [],
+    affectedHypothesisIds: affected.length > 0 ? affected : judgmentChanged ? ['h-problem'] : [],
     evidenceIds: [answer.id],
     reason,
     uncertaintyId: answer.uncertaintyId,

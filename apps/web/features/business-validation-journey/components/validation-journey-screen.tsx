@@ -12,7 +12,8 @@ import { LEDGER_SCREEN_EMPTY } from '../lib/execution-ledger';
 import { liveCitationTrace, sourceCheckLabel } from '../lib/citation-reconciliation';
 import { acceptPastedAnalysis, nextHandoffInput, prepareAnalysisRequest } from '../lib/external-handoff';
 import { attachFounderSource, SOURCE_HYPOTHESES, sourceHash } from '../lib/founder-source';
-import { applyAnswer, correctField, startJourney } from '../lib/journey-engine';
+import { applyAnswer, correctField, recordCounterClaim, replayStoredAnswer, startFromBusinessPlan, startJourney } from '../lib/journey-engine';
+import { blockersToClose, decisionSnapshot, LMULM_PLAN_FIXTURE, RIDM_PLAN_FIXTURE, withFixtureResult } from '../lib/plan-journey';
 import { contextRoleLabel, executionBadgeLabel } from '../lib/present-execution';
 import { verificationActionFor } from '../lib/verification-action';
 import { loadJourneyDraft, saveJourneyDraft } from '../lib/journey-session';
@@ -24,6 +25,7 @@ import {
   PROVISIONAL_NOTE,
   REVENUE_OPTIONS,
   TEST_HYPOTHESIS_INTAKE,
+  type AnalysisProvenance,
   type EvidenceChoice,
   type Intake,
   type JourneySource,
@@ -50,6 +52,10 @@ export function ValidationJourneyScreen() {
   const [answerMessage, setAnswerMessage] = useState('');
   const [customerDraft, setCustomerDraft] = useState('');
   const [correctionMessage, setCorrectionMessage] = useState('');
+  const [planText, setPlanText] = useState('');
+  const [planSource, setPlanSource] = useState('사업계획서 발췌');
+  const [planProvenance, setPlanProvenance] = useState<AnalysisProvenance>('test_fixture');
+  const [planError, setPlanError] = useState('');
 
   useEffect(() => {
     const saved = loadJourneyDraft();
@@ -69,6 +75,39 @@ export function ValidationJourneyScreen() {
     setIntake(TEST_HYPOTHESIS_INTAKE);
     setSource('test_hypothesis');
     setMissing([]);
+  }
+
+  function beginPlan(text: string, provenance: AnalysisProvenance) {
+    const result = startFromBusinessPlan({
+      text,
+      sourceLabel: planSource,
+      provenance,
+    });
+    if (!result.ok) {
+      setPlanError('LMULM 또는 RIDM 사업계획서 문장과 출처가 있어야 구조화한다.');
+      return;
+    }
+    setPlanError('');
+    setIntake(result.state.intake);
+    setSource(result.state.source);
+    setJourney(result.state);
+    setChoiceId('');
+    setFreeText('');
+    setAnswerMessage('');
+    setCorrectionMessage('');
+    setCustomerDraft(result.state.intake.customer);
+    setView('understanding');
+    saveJourneyDraft(result.state);
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.validationJourneyStarted, {
+      screen: '/business-validation',
+      status: 'research_not_run',
+      category: result.state.planCase?.profile,
+    });
+  }
+
+  function onStartPlan(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    beginPlan(planText, planProvenance);
   }
 
   function onStart(event: React.FormEvent<HTMLFormElement>) {
@@ -169,6 +208,78 @@ export function ValidationJourneyScreen() {
       <p className="mt-4 text-sm leading-relaxed text-muted-foreground" data-testid="prototype-note">
         {PROTOTYPE_NOTE}
       </p>
+
+      <form className="mt-8 space-y-4 rounded-xl border border-border p-4" onSubmit={onStartPlan} data-testid="plan-intake">
+        <h2 className="text-lg font-medium">사업계획서로 시작</h2>
+        <p className="text-sm text-muted-foreground">
+          문서 문장과 창업자 답변, 테스트 픽스처를 구분한다. 테스트 문장은 실제 매출이나 유료 고객이 아니다.
+        </p>
+        <label htmlFor="plan-text" className="text-sm font-medium">
+          사업계획서 발췌
+        </label>
+        <Textarea
+          id="plan-text"
+          data-testid="plan-text"
+          value={planText}
+          onChange={(event) => setPlanText(event.target.value)}
+        />
+        <label htmlFor="plan-source" className="text-sm font-medium">
+          출처
+        </label>
+        <Input
+          id="plan-source"
+          data-testid="plan-source"
+          value={planSource}
+          onChange={(event) => setPlanSource(event.target.value)}
+        />
+        <label htmlFor="plan-provenance" className="text-sm font-medium">
+          문장 구분
+        </label>
+        <select
+          id="plan-provenance"
+          data-testid="plan-provenance"
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+          value={planProvenance}
+          onChange={(event) => setPlanProvenance(event.target.value as AnalysisProvenance)}
+        >
+          <option value="test_fixture">테스트 픽스처</option>
+          <option value="user_declared">사용자가 가져온 문서라고 표시</option>
+        </select>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            data-testid="load-lmulm"
+            onClick={() => {
+              setPlanText(LMULM_PLAN_FIXTURE);
+              setPlanProvenance('test_fixture');
+              setPlanSource('초기창업패키지 사업계획서 발췌');
+            }}
+          >
+            LMULM 테스트 발췌
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            data-testid="load-ridm"
+            onClick={() => {
+              setPlanText(RIDM_PLAN_FIXTURE);
+              setPlanProvenance('test_fixture');
+              setPlanSource('RIDM AI 투자자 사업계획서 발췌');
+            }}
+          >
+            RIDM 테스트 발췌
+          </Button>
+          <Button type="submit" data-testid="start-plan">
+            이 문서로 판단 시작
+          </Button>
+        </div>
+        {planError ? (
+          <p className="text-sm" data-testid="plan-error" role="status">
+            {planError}
+          </p>
+        ) : null}
+      </form>
 
       <form className="mt-8 space-y-6" onSubmit={onStart} data-testid="journey-intake">
         <TextField
@@ -445,6 +556,10 @@ function UnderstandingView({
   const [sourceHypotheses, setSourceHypotheses] = useState<string[]>([]);
   const [sourceNote, setSourceNote] = useState('');
   const [sourceMissing, setSourceMissing] = useState<string[]>([]);
+  const [counterText, setCounterText] = useState('');
+  const [counterNote, setCounterNote] = useState('');
+  const [closeNote, setCloseNote] = useState('');
+  const decision = decisionSnapshot(journey);
 
   function onToggleHypothesis(id: string) {
     setSourceHypotheses((current) =>
@@ -544,6 +659,64 @@ function UnderstandingView({
         <p className="text-sm leading-relaxed" data-testid="judgment-text">
           {journey.judgmentText}
         </p>
+        {decision ? (
+          <div className="space-y-2 text-sm" data-testid="decision-panel">
+            <p data-testid="plan-badge">{decision.fixtureLabel}</p>
+            <p data-testid="decision-stage">현재 단계: {decision.stage}</p>
+            <p data-testid="decision-support">핵심 근거: {decision.support.join(' ')}</p>
+            <p data-testid="decision-counter">반대·공백: {decision.counter.join(' ')}</p>
+            <p data-testid="decision-unresolved">결정적 미확인: {decision.unresolved.join(', ')}</p>
+            <p data-testid="decision-next">다음 검증: {decision.nextAction}</p>
+            <p data-testid="decision-exit">종료 조건: {decision.exitCondition}</p>
+            <ul data-testid="plan-claims">
+              {journey.planCase?.claims.map((item) => (
+                <li key={item.id}>
+                  {item.role}: {item.text} 출처 {item.sourceLabel}. {item.claimStatus}. 원장 검증 {item.ledgerChecked ? '됨' : '아님'}.
+                </li>
+              ))}
+            </ul>
+            <ul data-testid="fixture-results">
+              {decision.fixtureResults.map((item) => (
+                <li key={item.id}>
+                  {item.label}. {item.note}
+                </li>
+              ))}
+            </ul>
+            {closeNote ? (
+              <p data-testid="close-blockers" role="status">
+                {closeNote}
+              </p>
+            ) : null}
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                data-testid="close-attempt"
+                onClick={() => {
+                  const blocked = blockersToClose(journey);
+                  setCloseNote(`${blocked.reason} ${blocked.unresolved.join(', ')}`);
+                  void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.missingDataClicked, {
+                    screen: '/business-validation',
+                    status: 'research_not_run',
+                    question_id: 'close_attempt',
+                  });
+                }}
+              >
+                검증 없이 판단 마치기
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                data-testid="attach-fixture"
+                onClick={() => {
+                  onJourneyChange(withFixtureResult(journey, '재구매율 18%라고 적은 테스트 문장', new Date().toISOString()));
+                }}
+              >
+                테스트 픽스처 결과 연결
+              </Button>
+            </div>
+          </div>
+        ) : null}
         <ul className="space-y-3 text-sm" data-testid="judgment-comparisons">
           {(journey.judgmentComparisons ?? []).map((item) => (
             <li key={item.id} data-testid={`comparison-${item.id}`}>
@@ -715,6 +888,21 @@ function UnderstandingView({
               {question.whyDifferent}
             </p>
           ) : null}
+          {question.purpose ? (
+            <p className="text-sm" data-testid="question-purpose">
+              질문 목적: {question.purpose}
+            </p>
+          ) : null}
+          {question.answerBranches ? (
+            <p className="text-sm" data-testid="question-branches">
+              답에 따른 분기: {question.answerBranches}
+            </p>
+          ) : null}
+          {question.unchangedWhen ? (
+            <p className="text-sm" data-testid="question-unchanged">
+              판단이 바뀌지 않는 조건: {question.unchangedWhen}
+            </p>
+          ) : null}
           <fieldset className="space-y-2">
             <legend className="sr-only">{question.prompt}</legend>
             {question.choices.map((choice) => (
@@ -759,6 +947,52 @@ function UnderstandingView({
           더 물을 질문이 없다. 판단은 유보로 남아 있다.
         </p>
       )}
+
+      <form
+        className="space-y-3 border-t border-border pt-6"
+        data-testid="counter-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          const result = recordCounterClaim(journey, counterText, new Date().toISOString());
+          setCounterNote(result.reason);
+          if (result.applied) {
+            onJourneyChange(result.state);
+            setCounterText('');
+          }
+        }}
+      >
+        <h2 className="text-lg font-medium">기존 주장과 모순되는 근거</h2>
+        <Textarea
+          id="counter-text"
+          data-testid="counter-text"
+          value={counterText}
+          onChange={(event) => setCounterText(event.target.value)}
+        />
+        {counterNote ? (
+          <p className="text-sm" data-testid="counter-note" role="status">
+            {counterNote}
+          </p>
+        ) : null}
+        <Button type="submit" variant="outline" data-testid="submit-counter">
+          반대 근거 남기기
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          data-testid="replay-last-answer"
+          onClick={() => {
+            const last = journey.answers.at(-1);
+            if (!last) {
+              setCounterNote('다시 넣을 답변이 없다.');
+              return;
+            }
+            const result = replayStoredAnswer(journey, last.id);
+            setCounterNote(result.reason);
+          }}
+        >
+          같은 답변 다시 넣기
+        </Button>
+      </form>
 
       <form className="space-y-3 border-t border-border pt-6" onSubmit={onCorrect}>
         <h2 className="text-lg font-medium">목표 고객 진술 수정</h2>

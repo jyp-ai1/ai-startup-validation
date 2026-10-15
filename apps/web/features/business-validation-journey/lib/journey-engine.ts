@@ -1,5 +1,6 @@
 import { buildRedelivery } from './answer-redelivery';
 import { compareCustomerChange, compareFounderAnswer } from './judgment-development';
+import { planQuestions, structureBusinessPlan } from './plan-journey';
 import { verificationActionFor } from './verification-action';
 import {
   claimLabel,
@@ -29,8 +30,10 @@ import {
   type JourneyState,
   type NextAction,
   type NextQuestion,
+  type PlanCase,
   type RequiredField,
   type Understanding,
+  type AnalysisProvenance,
 } from './journey-types';
 
 export type StartResult =
@@ -64,6 +67,7 @@ export function withCurrentQuestion(state: JourneyState): JourneyState {
     state.answers,
     state.revisions,
     state.externalNotes ?? [],
+    state.planCase,
   );
   return {
     ...state,
@@ -71,7 +75,40 @@ export function withCurrentQuestion(state: JourneyState): JourneyState {
     repeatBlockedReason: selected.repeatBlockedReason,
     nextAction: selected.question
       ? actionForQuestion(selected.question)
-      : holdAction(state.intake, state.answers, state.revisions),
+      : holdAction(state.intake, state.answers, state.revisions, state.planCase),
+  };
+}
+
+export function startFromBusinessPlan(input: {
+  text: string;
+  sourceLabel: string;
+  provenance: AnalysisProvenance;
+  source?: JourneySource;
+}): StartResult {
+  const structured = structureBusinessPlan(input);
+  if (!structured.intake || !structured.planCase) {
+    return { ok: false, missing: ['business', 'customer', 'problem'] };
+  }
+  const source = input.source ?? (input.provenance === 'test_fixture' ? 'test_hypothesis' : 'founder_input');
+  return {
+    ok: true,
+    state: withRedelivery(
+      null,
+      finish(
+        structured.intake,
+        source,
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        structured.planCase.openingJudgment,
+        structured.planCase.decisiveGap,
+        [],
+        structured.planCase,
+      ),
+    ),
   };
 }
 
@@ -116,6 +153,13 @@ export function applyAnswer(
     choice.grade,
     state.intake,
   );
+  if (classification.delta === 'duplicate') {
+    return {
+      state,
+      applied: false,
+      reason: '같은 답변이다. 기록을 추가하지 않았고 판단 문장을 바꾸지 않았다.',
+    };
+  }
   const answer = makeAnswer(state, question, choice, freeText, input.now, classification);
   const intake = classification.material
     ? intakeAfterAnswer(state.intake, question.uncertaintyId, choice.id)
@@ -134,6 +178,7 @@ export function applyAnswer(
       state.judgmentText,
       state.judgmentHoldReason,
       state.judgmentComparisons ?? [],
+      state.planCase,
     ),
   );
 
@@ -141,6 +186,64 @@ export function applyAnswer(
     state: compareFounderAnswer(state, next, answer),
     applied: true,
     reason: reasonFor(classification.delta),
+  };
+}
+
+export function recordCounterClaim(state: JourneyState, text: string, now: string): ApplyResult {
+  const freeText = text.trim();
+  if (!freeText) return { state, applied: false, reason: '빈 근거는 받지 않는다.' };
+  const duplicate = state.answers.some(
+    (answer) => answer.uncertaintyId === 'u-counter-evidence' && answer.freeText === freeText,
+  );
+  if (duplicate) {
+    return { state, applied: false, reason: '같은 근거는 다시 보관하지 않는다. 판단 문장은 유지한다.' };
+  }
+  const answer: FounderAnswer = {
+    id: `ans-${state.answers.length + 1}`,
+    uncertaintyId: 'u-counter-evidence',
+    hypothesisId: 'h-problem',
+    questionText: '기존 주장과 모순되는 근거',
+    choiceId: 'counter',
+    choiceLabel: '반대 근거',
+    freeText,
+    grade: 'founder_estimate',
+    claimLabel: claimLabel('founder_estimate'),
+    receivedAt: now,
+    previousValue: state.judgmentText,
+    delta: 'conflict_opened',
+    material: true,
+  };
+  const next = withRedelivery(
+    state,
+    finish(
+      state.intake,
+      state.source,
+      [...state.answers, answer],
+      state.revisions,
+      state.sourceRecords ?? [],
+      state.hypothesisJudgments ?? [],
+      state.analysisAcceptances ?? [],
+      state.externalNotes ?? [],
+      state.judgmentText,
+      state.judgmentHoldReason,
+      state.judgmentComparisons ?? [],
+      state.planCase ?? null,
+    ),
+  );
+  return {
+    state: compareFounderAnswer(state, next, answer),
+    applied: true,
+    reason: '반대 근거를 기존 주장 옆에 남긴다. 어느 쪽도 검증된 사실로 올리지 않았다.',
+  };
+}
+
+export function replayStoredAnswer(state: JourneyState, answerId: string): ApplyResult {
+  const found = state.answers.find((answer) => answer.id === answerId);
+  if (!found) return { state, applied: false, reason: '없는 답변이다. 판단을 바꾸지 않는다.' };
+  return {
+    state,
+    applied: false,
+    reason: '같은 답변이다. 기록을 추가하지 않았고 판단 문장을 바꾸지 않았다.',
   };
 }
 
@@ -188,6 +291,7 @@ export function correctField(
         state.judgmentText,
         state.judgmentHoldReason,
         state.judgmentComparisons ?? [],
+        state.planCase,
       ),
     ),
   );
@@ -259,11 +363,12 @@ function finish(
   judgmentText: string = JUDGMENT_TEXT,
   judgmentHoldReason: string = JUDGMENT_HOLD_REASON,
   judgmentComparisons: JudgmentComparison[] = [],
+  planCase: PlanCase | null = null,
 ): JourneyState {
   const materialAnswers = answers.filter((answer) => answer.material);
   const materialRevisions = revisions.filter((revision) => revision.material);
   const asked = new Set(answers.map((answer) => answer.uncertaintyId));
-  const selected = selectNextQuestion(intake, asked, answers, revisions, externalNotes);
+  const selected = selectNextQuestion(intake, asked, answers, revisions, externalNotes, planCase);
 
   return {
     intake,
@@ -275,7 +380,7 @@ function finish(
     repeatBlockedReason: selected.repeatBlockedReason,
     nextAction: selected.question
       ? actionForQuestion(selected.question)
-      : holdAction(intake, answers, revisions),
+      : holdAction(intake, answers, revisions, planCase),
     researchStatus: 'research_not_run',
     researchNote: researchNote(intake.url),
     counterReviewStatus: 'counter_review_not_run',
@@ -295,6 +400,7 @@ function finish(
     redelivery: null,
     ...(externalNotes.length > 0 ? { externalNotes } : {}),
     ...(judgmentComparisons.length > 0 ? { judgmentComparisons } : {}),
+    ...(planCase ? { planCase } : {}),
   };
 }
 
@@ -432,9 +538,10 @@ function selectNextQuestion(
   answers: FounderAnswer[],
   revisions: FieldRevision[],
   externalNotes: ExternalNote[],
+  planCase: PlanCase | null = null,
 ): { question: NextQuestion | null; repeatBlockedReason: string | null } {
   const scopeRefusal = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-customer-scope');
-  if (scopeRefusal?.choiceId === 'does_not_apply') {
+  if (scopeRefusal?.choiceId === 'does_not_apply' && !planCase) {
     return {
       question: null,
       repeatBlockedReason:
@@ -442,7 +549,7 @@ function selectNextQuestion(
     };
   }
   const lastPrompt = [...answers].reverse().find((answer) => answer.questionText)?.questionText ?? null;
-  const candidates = collectCandidates(intake, asked, answers, revisions, externalNotes);
+  const candidates = collectCandidates(intake, asked, answers, revisions, externalNotes, planCase);
   const skipped: string[] = [];
 
   for (const candidate of candidates) {
@@ -474,6 +581,7 @@ function collectCandidates(
   answers: FounderAnswer[],
   revisions: FieldRevision[],
   externalNotes: ExternalNote[],
+  planCase: PlanCase | null,
 ): NextQuestion[] {
   const candidates: NextQuestion[] = [];
   const customerRevision = [...revisions].reverse().find((revision) => revision.material && revision.field === 'customer');
@@ -483,8 +591,13 @@ function collectCandidates(
     candidates.push({
       uncertaintyId: 'u-customer-scope',
       hypothesisId: 'h-problem',
-      prompt: `「${intake.customer}」에게도 주문과 배송이 나뉘어 누락되는 문제가 있는지, 그 고객의 원문으로 확인할 수 있나?`,
+      prompt: planCase
+        ? `「${intake.customer}」에게도 기존에 적은 문제가 같은지, 그 고객의 원문으로 확인할 수 있나?`
+        : `「${intake.customer}」에게도 주문과 배송이 나뉘어 누락되는 문제가 있는지, 그 고객의 원문으로 확인할 수 있나?`,
       whyDifferent: `고객이 「${customerRevision.previous}」에서 「${customerRevision.next}」로 바뀌었다. 이전 고객의 문제 가설을 새 고객에게 옮기지 않는다. 이미 답한 근거 질문을 반복하지 않고, 새 고객에게 가설이 적용되는지만 묻는다.`,
+      purpose: '새 고객의 문제를 이전 고객의 문제와 분리한다.',
+      answerBranches: '해당하지 않으면 문제 가설의 적용 범위를 다시 연다. 원문이 있어도 검증된 사실로 올리지 않는다.',
+      unchangedWhen: '새 고객의 원문이 없으면 이전 문제를 그 고객의 검증된 문제로 바꾸지 않는다.',
       allowsFreeText: true,
       choices: [
         { id: 'applies', label: '새 고객의 원문이 있다', grade: 'claimed_record' },
@@ -510,6 +623,11 @@ function collectCandidates(
         { id: 'unknown', label: '아직 모르겠다', grade: 'unknown' },
       ],
     });
+  }
+
+  if (planCase && planCase.profile !== 'unrecognized') {
+    candidates.push(...planQuestions(planCase, asked));
+    return candidates;
   }
 
   const evidenceAnswer = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-evidence');
@@ -651,8 +769,13 @@ function actionForQuestion(question: NextQuestion): NextAction {
   };
 }
 
-function holdAction(intake: Intake, answers: FounderAnswer[], revisions: FieldRevision[]): NextAction {
-  const verification = verificationActionFor({ intake, answers, revisions });
+function holdAction(
+  intake: Intake,
+  answers: FounderAnswer[],
+  revisions: FieldRevision[],
+  planCase: PlanCase | null = null,
+): NextAction {
+  const verification = verificationActionFor({ intake, answers, revisions, planCase: planCase ?? undefined });
   return {
     kind: 'external_validation',
     text: verification.action,
