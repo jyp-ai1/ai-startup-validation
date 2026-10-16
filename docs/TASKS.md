@@ -9,7 +9,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 **CPO Gate:** 동결 · 규칙 엔진 추가 수정 중지 · 병합·Production 금지 · Production 잠금 `0b465226`  
 **Branch:** `cursor/business-refinement-loop-4b88`  
 **PR:** #199  
-**Evidence:** `docs/evidence/ALABOM/AI-PM/DETECTION-GAP-2026-10-16.md`
+**Evidence:** `docs/evidence/ALABOM/AI-PM/NEXT-GATE-VALIDATION-PLAN-2026-10-16.md`
 
 | # | Item | Status |
 |---|------|--------|
@@ -26,6 +26,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 11 | 통신 경로와 판단 실패 다섯 건을 구분. 관문 닫힘. 코드 변경 없음 | `docs/evidence/ALABOM/AI-PM/AI-COMM-AND-ACCURACY-REVIEW.md` |
 | 12 | 실패 다섯 건의 입력·기대·실제 연결. Fact 무시는 검증 성공이 아님. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/FAILURE-TRACE-2026-10-16.md` |
 | 13 | 기존 도구는 실패 1·2번을 자동 탐지하지 못함. 검사기 미구현. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/DETECTION-GAP-2026-10-16.md` |
+| 14 | 탐지 공백의 검증 명세. 검사기 미구현. 1단계 통과 아님 | `docs/evidence/ALABOM/AI-PM/NEXT-GATE-VALIDATION-PLAN-2026-10-16.md` |
 
 ---
 
