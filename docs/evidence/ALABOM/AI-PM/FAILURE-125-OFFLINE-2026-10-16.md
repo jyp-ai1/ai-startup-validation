@@ -62,4 +62,4 @@
 
 ## 6. 동결
 
-작업 전 HEAD `d1791d98`. `6f71ea3a` 이후 `apps/`·`packages/` diff는 비어 있다. Production `0b465226`은 조상이다. PR #199는 초안이다.
+작업 전 HEAD `d1791d98`. 이 기록 커밋 `9a9f97b0`. 그 커밋 포함 `6f71ea3a` 이후 `apps/`·`packages/` diff는 비어 있다. Production `0b465226`은 조상이다. PR #199는 초안이다.
