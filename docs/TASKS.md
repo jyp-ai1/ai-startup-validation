@@ -9,7 +9,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 **CPO Gate:** 동결 · 규칙 엔진 추가 수정 중지 · 병합·Production 금지 · Production 잠금 `0b465226`  
 **Branch:** `cursor/business-refinement-loop-4b88`  
 **PR:** #199  
-**Evidence:** `docs/evidence/ALABOM/AI-PM/ANON-OPS-LIMIT-2026-10-16.md`
+**Evidence:** `docs/evidence/ALABOM/AI-PM/AI-COMM-AND-ACCURACY-REVIEW.md`
 
 | # | Item | Status |
 |---|------|--------|
@@ -23,6 +23,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 8 | 성공 경로 출처와 익명 시간 초과 경계. 관문은 닫힘 | `docs/evidence/ALABOM/AI-PM/SUCCESS-PATH-TRACE-2026-10-16.md` |
 | 9 | 30초 간격 8회. 200은 7회, 상태 없는 시간 초과 1회. 관문은 닫힘 | `docs/evidence/ALABOM/AI-PM/INTERVAL-STABILITY-2026-10-16.md` |
 | 10 | 운영 기준 미달. 익명 경로는 실험용. 추가 핑 없음 | `docs/evidence/ALABOM/AI-PM/ANON-OPS-LIMIT-2026-10-16.md` |
+| 11 | 통신 경로와 판단 실패 다섯 건을 구분. 관문 닫힘. 코드 변경 없음 | `docs/evidence/ALABOM/AI-PM/AI-COMM-AND-ACCURACY-REVIEW.md` |
 
 ---
 
