@@ -1,0 +1,217 @@
+{
+  "model_called": false,
+  "product_code_changed": false,
+  "rows": [
+    {
+      "name": "lmulm-7b-ids",
+      "format_pass": false,
+      "business_quality_pass": false,
+      "missing_fields": [
+        "사실",
+        "가설",
+        "미검증",
+        "답변1",
+        "답변2",
+        "다음질문",
+        "판단"
+      ],
+      "duplicate_fields": [],
+      "unknown_fields": [],
+      "illegal_values": [],
+      "nonexistent_ids": [],
+      "unparsed_lines": [
+        "미검증",
+        "미검증",
+        "미검증",
+        "미검증",
+        "미검증",
+        "미검증",
+        "보류"
+      ],
+      "copied_answers": [],
+      "mentioned_questions": [],
+      "closed_question_mentions": [],
+      "closed_question_selected": false,
+      "parsed_once": {},
+      "rubric_ok": [],
+      "rubric_fail": [],
+      "judgment_token": null,
+      "policy_accepted": false,
+      "recorded_state": "판단불가",
+      "cjk": false,
+      "mentions_seventy": false,
+      "go_token_in_judgment_field": false
+    },
+    {
+      "name": "ridm-7b-ids",
+      "format_pass": false,
+      "business_quality_pass": false,
+      "missing_fields": [
+        "사실",
+        "가설",
+        "미검증",
+        "답변1",
+        "답변2",
+        "다음질문",
+        "판단"
+      ],
+      "duplicate_fields": [],
+      "unknown_fields": [
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "B5",
+        "B6"
+      ],
+      "illegal_values": [],
+      "nonexistent_ids": [
+        "B3",
+        "B4",
+        "B5",
+        "B6"
+      ],
+      "unparsed_lines": [],
+      "copied_answers": [],
+      "mentioned_questions": [],
+      "closed_question_mentions": [],
+      "closed_question_selected": false,
+      "parsed_once": {},
+      "rubric_ok": [],
+      "rubric_fail": [],
+      "judgment_token": null,
+      "policy_accepted": false,
+      "recorded_state": "판단불가",
+      "cjk": false,
+      "mentions_seventy": false,
+      "go_token_in_judgment_field": false
+    },
+    {
+      "name": "lmulm-3b-ids",
+      "format_pass": false,
+      "business_quality_pass": false,
+      "missing_fields": [
+        "사실",
+        "가설",
+        "미검증"
+      ],
+      "duplicate_fields": [],
+      "unknown_fields": [],
+      "illegal_values": [
+        {
+          "field": "답변2",
+          "value": "Hold"
+        }
+      ],
+      "nonexistent_ids": [],
+      "unparsed_lines": [],
+      "copied_answers": [],
+      "mentioned_questions": [
+        "QL2"
+      ],
+      "closed_question_mentions": [],
+      "closed_question_selected": false,
+      "parsed_once": {
+        "답변1": "없음",
+        "다음질문": "QL2",
+        "판단": "Go"
+      },
+      "rubric_ok": [
+        "답변1=없음",
+        "다음질문=QL2"
+      ],
+      "rubric_fail": [
+        "판단=Go"
+      ],
+      "judgment_token": "Go",
+      "policy_accepted": false,
+      "recorded_state": "판단불가",
+      "cjk": false,
+      "mentions_seventy": false,
+      "go_token_in_judgment_field": true
+    },
+    {
+      "name": "ridm-3b-ids",
+      "format_pass": false,
+      "business_quality_pass": false,
+      "missing_fields": [
+        "사실",
+        "가설",
+        "미검증"
+      ],
+      "duplicate_fields": [
+        "답변1",
+        "답변2"
+      ],
+      "unknown_fields": [],
+      "illegal_values": [
+        {
+          "field": "답변1",
+          "value": "현재 돈을 지불한 고객은 아직 없다."
+        },
+        {
+          "field": "답변2",
+          "value": "월 9,900원을 낼 이유를 고객에게 확인하지 못했다."
+        },
+        {
+          "field": "다음질문",
+          "value": "QR2: 월 9,900원을 낼 이유를 확인한 고객 기록이 있는가?"
+        },
+        {
+          "field": "판단",
+          "value": "Hold 또는 Go 또는 Stop 또는 판단불가"
+        },
+        {
+          "field": "답변1",
+          "value": "없음 또는 판단불가"
+        },
+        {
+          "field": "답변2",
+          "value": "없음 또는 판단불가"
+        }
+      ],
+      "nonexistent_ids": [],
+      "unparsed_lines": [],
+      "copied_answers": [
+        "답변1",
+        "답변2"
+      ],
+      "mentioned_questions": [
+        "QR2"
+      ],
+      "closed_question_mentions": [
+        "QR2"
+      ],
+      "closed_question_selected": false,
+      "parsed_once": {},
+      "rubric_ok": [],
+      "rubric_fail": [],
+      "judgment_token": null,
+      "policy_accepted": false,
+      "recorded_state": "판단불가",
+      "cjk": false,
+      "mentions_seventy": false,
+      "go_token_in_judgment_field": false
+    }
+  ],
+  "checks": {
+    "format_all_fail": true,
+    "nonexistent_b3_to_b6": true,
+    "illegal_answer2_hold": true,
+    "ridm_3b_values_illegal": true,
+    "missing_on_all_four": true,
+    "duplicate_on_ridm_3b": true,
+    "closed_qr2_on_ridm_3b": true,
+    "ql2_not_closed": true,
+    "go_not_accepted": true,
+    "no_output_recorded_as_hold": true,
+    "l7_unparsed": true
+  },
+  "checks_pass": true,
+  "semantic_limit": [
+    "Go is rejected because this fixture's policy permits only Hold or 판단불가, not because the checker read the business plan.",
+    "A legal source ID in the wrong role did not appear in the four saved outputs, so that rubric branch was not exercised.",
+    "Correct tokens on the wrong field names are not repaired into a pass.",
+    "Format failure is not a business-quality pass."
+  ]
+}
