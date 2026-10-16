@@ -6,16 +6,16 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## 순수 규칙 엔진 — AC16·AC5와 S1–S6
 
-**CPO Gate:** OPEN · 모델 호출·병합·Production 금지 · Production 잠금 `0b465226`  
+**CPO Gate:** 동결 · 규칙 엔진 추가 수정 중지 · 병합·Production 금지 · Production 잠금 `0b465226`  
 **Branch:** `cursor/business-refinement-loop-4b88`  
 **PR:** #199  
-**Evidence:** `docs/evidence/ALABOM/AI-PM/RULE-ENGINE-AC16-AC5.txt`
+**Evidence:** `docs/evidence/ALABOM/AI-PM/RULE-ENGINE-FREEZE.txt`
 
 | # | Item | Status |
 |---|------|--------|
-| 1 | V3 질문 결정이 같은 공백 한도를 무시해 problemJtbd 에 남는 충돌 | 기록 · 한도 적용 |
-| 2 | S3–S6 예상 문장은 ASSUMPTION. Fact 상태 없음. 선택·수정·불확실·반증의 다음 질문 | 로컬 검사 |
-| 3 | 규칙 엔진만으로 수동 GPT 판단 수준에 도달하는가 | 도달하지 않음 · ADR-057 |
+| 1 | V3 질문 결정이 같은 공백 한도를 무시해 problemJtbd 에 남는 충돌 | `134667d9`에서 멈춤 |
+| 2 | S3–S6 예상 문장은 ASSUMPTION. Fact 상태 없음. 선택·수정·불확실·반증의 다음 질문 | `134667d9`에서 멈춤 |
+| 3 | 규칙 엔진만으로 수동 GPT 판단 수준에 도달하는가 | 도달하지 않음 · 추가 수정 없음 |
 
 ---
 
