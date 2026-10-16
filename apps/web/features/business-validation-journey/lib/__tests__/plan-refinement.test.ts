@@ -26,7 +26,7 @@ function answer(state: JourneyState, choiceId: string, freeText = '') {
 describe('plan refinement loop', () => {
   it('rewrites the LMULM plan when repeat purchase stays an assumption', () => {
     const initial = refinePlan(started(LMULM_PLAN_FIXTURE));
-    const afterUnknown = answer(answer(started(LMULM_PLAN_FIXTURE), 'document_only'), 'unknown');
+    const afterUnknown = answer(answer(started(LMULM_PLAN_FIXTURE), 'unknown'), 'none');
     const pass1 = refinePlan(afterUnknown);
     const pass2 = refinePlan(
       recordDesignAnswer(afterUnknown, {

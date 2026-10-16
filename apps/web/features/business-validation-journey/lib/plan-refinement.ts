@@ -77,9 +77,14 @@ export function recordDesignAnswer(
 function lmulmDraft(state: JourneyState): BusinessDraft {
   const designs = designNotes(state);
   const repurchase = latest(state, 'u-lmulm-repurchase');
+  const track = latest(state, 'u-lmulm-repurchase-track');
+  const mix = latest(state, 'u-lmulm-mix');
   const alertFirst = designs.some((answer) => /알림|일정/.test(answer.freeText));
   const repeatUnproven =
     repurchase?.choiceId === 'unknown' ||
+    track?.choiceId === 'none' ||
+    track?.choiceId === 'unknown' ||
+    track?.choiceId === 'unchecked' ||
     designs.some((answer) => /가정|반복|재구매|모른다/.test(answer.freeText));
   const base = {
     liveModelCall: false as const,
@@ -121,6 +126,35 @@ function lmulmDraft(state: JourneyState): BusinessDraft {
       inferences: ['반복 구매가 가정이면 수수료 매출을 현재 모델에 넣지 않는 편이 일관된다.'],
       assumptions: ['수집가가 일정 알림에 반응한다는 것은 아직 가정이다.'],
       nextStep: '질문 대신 실행: 알림을 받을 수집가 기준과 첫 상품 하나를 적는다. 재구매율 질문은 반복하지 않는다.',
+    };
+  }
+
+  if (mix?.choiceId === 'parent' || mix?.choiceId === 'b2b') {
+    return {
+      ...base,
+      pass: 1,
+      businessModel: '모회사·납품 매출과 한정판 플랫폼 매출을 한 모델로 두지 않는다. 리셀 수수료는 예정으로 남긴다.',
+      customer: '한정판 문구 수집가. 모회사 채널 고객을 같은 플랫폼 고객으로 세지 않는다.',
+      problem: '수집가의 일정 문제와, 관계사 납품으로 발생한 매출은 다른 문장이다.',
+      differentiation: '모회사 인프라 활용은 문서상 전략이다. 그 인프라 없는 판매는 아직 확인되지 않았다.',
+      price: '자체 커머스 마진 30~40%와 모회사 수수료는 문서의 모델 설명이다. 2,000만 원의 채널 비중은 원장으로 확인하지 않았다.',
+      profitability: '관계사 매출과 플랫폼 매출의 공헌이익을 따로 계산하지 않았다.',
+      execution: '주문 원장에서 모회사·납품과 일반 소비자 매출을 나눈다. 모회사 밖 고객 기록이 없으면 독립 채널 실험 하나를 설계한다.',
+      judgment: '매출 구성은 창업자 진술로 남는다. 모회사 회원 2,000만 명을 회사 매출로 쓰지 않는다. 검증된 사실이 아니다. 사업성 판단은 유보한다.',
+      changed: [
+        '플랫폼 매출과 모회사·납품 매출을 나눴다.',
+        '2,000만 회원수를 회사 매출에서 뺐다.',
+        '다음 행동을 채널별 원장 분리로 바꿨다.',
+      ],
+      unchanged: [
+        '2023년 매출 2,000만 원은 원장으로 확인되지 않은 문서 주장이다.',
+        '리셀 거래는 예정이다.',
+        '사업성 판단은 유보다.',
+      ],
+      founderStatements: statementLines(state, mix, designs),
+      inferences: ['관계사 매출이 커도 플랫폼의 반복 구매가 성립한 것은 아니다.'],
+      assumptions: ['모회사 지원 없이 같은 매출이 유지된다는 것은 가정이다.'],
+      nextStep: '질문 대신 실행: 원장에서 모회사·납품과 일반 소비자 매출을 나눈다. 고객이 누구인지는 다시 묻지 않는다.',
     };
   }
 

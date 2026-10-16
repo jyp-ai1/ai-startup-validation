@@ -76,16 +76,20 @@ export function verificationActionFor(
 function planVerification(planCase: PlanCase | undefined, answers: FounderAnswer[]): VerificationAction | null {
   if (!planCase || planCase.profile === 'unrecognized') return null;
   if (planCase.profile === 'lmulm') {
-    const repurchase = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-lmulm-repurchase');
-    const margin = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-lmulm-margin');
-    const repurchaseUnknown = !repurchase || repurchase.choiceId === 'unknown';
+    const mix = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-lmulm-mix');
+    const track = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-lmulm-repurchase-track');
+    const independence = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-lmulm-independence');
+    const outside = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-lmulm-outside');
     const lines = [
-      repurchaseUnknown
-        ? '주문 원장에서 같은 고객의 재구매 코호트를 만든다. 재구매율 질문은 반복하지 않는다.'
-        : '말한 재구매율을 주문 코호트와 대조한다.',
-      margin
-        ? '상품 마진과 별도로 배송, 결제, 반품, 운영비를 뺀 공헌이익을 계산한다.'
-        : '상품별 공헌이익을 계산할 비용 자료를 모은다.',
+      mix?.choiceId === 'parent' || mix?.choiceId === 'b2b'
+        ? '주문 원장에서 모회사·납품 매출과 일반 소비자 매출을 나눈다. 2,000만 회원은 모회사 회원수다.'
+        : '주문 원장에서 매출 2,000만 원의 채널 비중을 나눈다. 비중을 추정으로 채우지 않는다.',
+      !track || track.choiceId === 'none' || track.choiceId === 'unknown' || track.choiceId === 'unchecked'
+        ? '재구매율을 추정하지 않는다. 같은 고객의 재주문을 셀 기간과 기준을 정한다.'
+        : '재구매를 추적할 수 있다는 진술을 주문 코호트와 대조한다.',
+      independence?.choiceId === 'dependent' || independence?.choiceId === 'required' || outside
+        ? '모회사 채널 밖 고객 확보 기록을 찾는다. 없으면 독립 채널 실험 하나를 설계한다.'
+        : '상품별 배송, 결제, 반품, 운영비를 뺀 공헌이익을 계산한다.',
     ];
     return {
       id: 'verify-lmulm-cohort',

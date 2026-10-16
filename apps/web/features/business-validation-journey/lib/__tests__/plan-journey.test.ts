@@ -8,6 +8,7 @@ import {
   RIDM_PLAN_FIXTURE,
   withFixtureResult,
 } from '../plan-journey';
+import { renderVerificationDocument } from '../verification-document';
 import type { JourneyState } from '../journey-types';
 
 const NOW = '2026-10-15T10:30:00.000Z';
@@ -42,30 +43,40 @@ describe('business plan journey', () => {
     expect(state.planCase?.claims.every((item) => item.ledgerChecked === false)).toBe(true);
     expect(state.planCase?.claims.every((item) => item.claimStatus === 'CLAIM')).toBe(true);
     expect(decisionSnapshot(state)?.fixtureLabel).toContain('테스트 픽스처');
-    expect(state.nextQuestion?.uncertaintyId).toBe('u-lmulm-ledger');
-    expect(state.nextQuestion?.purpose).toContain('원장');
+    expect(state.nextQuestion?.uncertaintyId).toBe('u-lmulm-mix');
+    expect(state.nextQuestion?.purpose).toContain('플랫폼 매출');
+    expect(state.nextQuestion?.prompt).not.toContain('고객이 누구');
     expect(JSON.stringify(state)).not.toContain('VALIDATED');
   });
 
-  it('walks LMULM ledger, unknown repurchase, and margin into a verification action', () => {
+  it('walks an unknown LMULM mix into repurchase tracking without inventing a rate', () => {
     const initial = started(LMULM_PLAN_FIXTURE);
-    const ledger = answer(initial, 'happened', '2023년 매출 2,000만 원은 실제 발생했다');
+    const mix = answer(initial, 'unknown');
 
-    expect(ledger.state.judgmentText).toContain('주장');
-    expect(ledger.state.judgmentText).toContain('원장 검증은 미확인');
-    expect(ledger.state.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
-    expect(ledger.state.judgmentComparisons?.at(-1)?.judgmentChanged).toBe(true);
-    expect(ledger.state.nextQuestion?.uncertaintyId).toBe('u-lmulm-repurchase');
+    expect(mix.state.judgmentText).toBe(initial.judgmentText);
+    expect(mix.state.judgmentComparisons?.at(-1)?.judgmentChanged).toBe(false);
+    expect(mix.state.judgmentComparisons?.at(-1)?.reason).toContain('추정으로 채우지 않는다');
+    expect(mix.state.nextQuestion?.uncertaintyId).toBe('u-lmulm-repurchase-track');
 
-    const repurchase = answer(ledger.state, 'unknown');
-    expect(repurchase.state.judgmentText).toBe(ledger.state.judgmentText);
-    expect(repurchase.state.judgmentComparisons?.at(-1)?.judgmentChanged).toBe(false);
-    expect(repurchase.state.judgmentComparisons?.at(-1)?.reason).toContain('주문 원장');
-    expect(repurchase.state.judgmentComparisons?.at(-1)?.reason).toContain('바꾸지 않는다');
-    expect(repurchase.state.nextQuestion).toBeNull();
-    expect(repurchase.state.nextAction.kind).toBe('external_validation');
-    expect(repurchase.state.nextAction.text).toContain('재구매 코호트');
-    expect(repurchase.state.judgmentStatus).toBe('judgment_deferred');
+    const track = answer(mix.state, 'none');
+    expect(track.state.judgmentText).toBe(mix.state.judgmentText);
+    expect(track.state.judgmentComparisons?.at(-1)?.judgmentChanged).toBe(false);
+    expect(track.state.judgmentComparisons?.at(-1)?.reason).toContain('재구매율을 추정하지 않는다');
+    expect(track.state.nextQuestion).toBeNull();
+    expect(track.state.nextAction.text).toContain('재구매율');
+    expect(track.state.judgmentStatus).toBe('judgment_deferred');
+  });
+
+  it('asks a different second question for parent-company revenue than for direct sales', () => {
+    const parent = answer(started(LMULM_PLAN_FIXTURE), 'parent');
+    const direct = answer(started(LMULM_PLAN_FIXTURE), 'b2c');
+
+    expect(parent.state.nextQuestion?.uncertaintyId).toBe('u-lmulm-independence');
+    expect(direct.state.nextQuestion?.uncertaintyId).toBe('u-lmulm-repurchase-track');
+    expect(parent.state.judgmentText).toContain('모회사·계열사 판매');
+    expect(parent.state.judgmentText).not.toBe(direct.state.judgmentText);
+    expect(parent.state.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
+    expect(direct.state.judgmentStatus).toBe('judgment_deferred');
   });
 
   it('RIDM-01 separates pre-revenue from the revenue forecast', () => {
@@ -86,9 +97,15 @@ describe('business plan journey', () => {
 
     expect(payers.state.judgmentText).toContain('전환율 가정은 실적이 아니다');
     expect(payers.state.judgmentComparisons?.at(-1)?.reason).toContain('실제 지불');
-    expect(payers.state.nextQuestion).toBeNull();
-    expect(payers.state.nextAction.text).toContain('결제 원문');
-    expect(payers.state.judgmentStatus).toBe('judgment_deferred');
+    expect(payers.state.nextQuestion?.uncertaintyId).toBe('u-ridm-wtp');
+    expect(payers.state.nextQuestion?.prompt).toContain('9,900');
+
+    const wtp = answer(payers.state, 'not_yet');
+    expect(wtp.state.judgmentText).toContain('9,900');
+    expect(wtp.state.judgmentText).toContain('가정');
+    expect(wtp.state.nextQuestion).toBeNull();
+    expect(wtp.state.nextAction.text).toContain('결제 원문');
+    expect(wtp.state.judgmentStatus).toBe('judgment_deferred');
   });
 
   it('does not treat an unknown RIDM payer answer as evidence that a payer exists', () => {
@@ -100,23 +117,22 @@ describe('business plan journey', () => {
     expect(unknown.state.judgmentComparisons?.at(-1)?.judgmentChanged).toBe(false);
     expect(unknown.state.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
     expect(unknown.state.judgmentComparisons?.at(-1)?.reason).toContain('근거가 아니다');
-    expect(unknown.state.nextQuestion).toBeNull();
+    expect(unknown.state.nextQuestion?.uncertaintyId).toBe('u-ridm-wtp');
     expect(unknown.state.hypothesisJudgments.every((item) => item.verifiedFact === false)).toBe(true);
     expect(unknown.state.judgmentStatus).toBe('judgment_deferred');
   });
 
-  it('walks a known repurchase rate into the margin question without verifying it', () => {
-    const ledger = answer(started(LMULM_PLAN_FIXTURE), 'happened');
-    const rate = answer(ledger.state, 'have_rate');
+  it('walks a claimed repurchase trail into contribution margin without inventing a number', () => {
+    const direct = answer(started(LMULM_PLAN_FIXTURE), 'b2c');
+    const track = answer(direct.state, 'have');
 
-    expect(rate.state.judgmentText).toContain('재구매율');
-    expect(rate.state.judgmentText).toContain('확인하지 않았다');
-    expect(rate.state.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
-    expect(rate.state.nextQuestion?.uncertaintyId).toBe('u-lmulm-margin');
+    expect(track.state.judgmentText).toContain('재구매율 숫자는 확인하지 않았다');
+    expect(track.state.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
+    expect(track.state.nextQuestion?.uncertaintyId).toBe('u-lmulm-margin');
 
-    const margin = answer(rate.state, 'margin_35', '상품 마진은 35%다');
-    expect(margin.state.judgmentText).toContain('매출총이익');
+    const margin = answer(track.state, 'can', '비용 항목까지 계산할 수 있다');
     expect(margin.state.judgmentText).toContain('공헌이익');
+    expect(margin.state.judgmentText).not.toContain('35%');
     expect(margin.state.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
     expect(margin.state.nextQuestion).toBeNull();
     expect(margin.state.judgmentStatus).toBe('judgment_deferred');
@@ -127,18 +143,15 @@ describe('business plan journey', () => {
 
     expect(payers.state.judgmentText).toContain('유료 고객이 있다는 창업자 진술');
     expect(payers.state.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
-    expect(payers.state.nextQuestion?.uncertaintyId).toBe('u-ridm-liking');
+    expect(payers.state.nextQuestion?.uncertaintyId).toBe('u-ridm-conversion');
 
-    const liking = answer(payers.state, 'likes');
-    expect(liking.state.judgmentText).toBe(payers.state.judgmentText);
-    expect(liking.state.nextQuestion?.uncertaintyId).toBe('u-ridm-cost');
-
-    const cost = answer(liking.state, 'unknown');
-    expect(cost.state.judgmentText).toBe(payers.state.judgmentText);
-    expect(cost.state.nextQuestion).toBeNull();
-    expect(cost.state.nextAction.text).toContain('결제 원문');
-    expect(cost.state.judgmentComparisons?.every((item) => item.verifiedFact === false)).toBe(true);
-    expect(cost.state.judgmentStatus).toBe('judgment_deferred');
+    const conversion = answer(payers.state, 'not_measured');
+    expect(conversion.state.judgmentText).toContain('3%');
+    expect(conversion.state.judgmentText).toContain('실측으로 바뀌지 않는다');
+    expect(conversion.state.nextQuestion).toBeNull();
+    expect(conversion.state.nextAction.text).toContain('결제 원문');
+    expect(conversion.state.judgmentComparisons?.every((item) => item.verifiedFact === false)).toBe(true);
+    expect(conversion.state.judgmentStatus).toBe('judgment_deferred');
   });
 
   it('does not transfer the previous customer problem when the customer changes', () => {
@@ -154,12 +167,12 @@ describe('business plan journey', () => {
   });
 
   it('keeps both sides when a later note contradicts the sales claim', () => {
-    const state = answer(started(LMULM_PLAN_FIXTURE), 'happened', '2023년 매출 2,000만 원은 실제 발생했다').state;
+    const state = answer(started(LMULM_PLAN_FIXTURE), 'b2c', '일반 소비자 직접 판매가 가장 크다').state;
     const conflict = recordCounterClaim(state, '그 매출은 발생하지 않았다', NOW);
 
     expect(conflict.applied).toBe(true);
     expect(conflict.state.answers.map((item) => item.freeText)).toEqual([
-      '2023년 매출 2,000만 원은 실제 발생했다',
+      '일반 소비자 직접 판매가 가장 크다',
       '그 매출은 발생하지 않았다',
     ]);
     expect(conflict.state.judgmentText).toContain('둘 다');
@@ -169,10 +182,10 @@ describe('business plan journey', () => {
   });
 
   it('does not store or restamp a judgment when the same answer is submitted again', () => {
-    const once = answer(started(LMULM_PLAN_FIXTURE), 'happened');
+    const once = answer(started(LMULM_PLAN_FIXTURE), 'unknown');
     const forged = { ...once.state, nextQuestion: started(LMULM_PLAN_FIXTURE).nextQuestion };
     const twice = applyAnswer(forged, {
-      choiceId: 'happened',
+      choiceId: 'unknown',
       freeText: '',
       now: NOW,
     });
@@ -202,7 +215,7 @@ describe('business plan journey', () => {
   });
 
   it('keeps the answer and judgment history through a session round trip', () => {
-    const state = answer(started(LMULM_PLAN_FIXTURE, 'user_declared'), 'document_only').state;
+    const state = answer(started(LMULM_PLAN_FIXTURE, 'user_declared'), 'unknown').state;
     const restored = JSON.parse(JSON.stringify(state)) as JourneyState;
 
     expect(restored.answers).toHaveLength(1);
@@ -211,5 +224,41 @@ describe('business plan journey', () => {
     expect(restored.judgmentStatus).toBe('judgment_deferred');
     expect(restored.judgmentText).toContain('과거 거래');
     expect(decisionSnapshot(restored)?.fixtureLabel).toContain('원장 검증 아님');
+  });
+
+  it('writes a Hold document that keeps the source claims and drops ungrounded scores', () => {
+    const parent = answer(started(LMULM_PLAN_FIXTURE), 'parent');
+    const dependent = answer(parent.state, 'required');
+    const document = renderVerificationDocument(dependent.state);
+
+    expect(document).toContain('최종 판단: Hold');
+    expect(document).toContain('시뮬레이션');
+    expect(document).toContain('매출 2,000만 원');
+    expect(document).toContain('모회사·계열사 판매');
+    expect(document).toContain('사실상 모회사 지원이 필수다');
+    expect(document).toContain('검증된 증거');
+    expect(document).toContain('없음');
+    expect(document).toContain('liveModelCall false');
+    expect(document).not.toContain('73점');
+    expect(document).not.toContain('62%');
+    expect(document).not.toMatch(/사업성 높음/);
+    expect(dependent.state.nextQuestion?.uncertaintyId).toBe('u-lmulm-outside');
+  });
+
+  it('keeps RIDM forecast targets out of achieved revenue when the price is unchecked', () => {
+    const none = answer(started(RIDM_PLAN_FIXTURE), 'none');
+    const wtp = answer(none.state, 'one_url');
+    const focus = answer(wtp.state, 'saas');
+    const document = renderVerificationDocument(focus.state);
+
+    expect(wtp.state.nextQuestion?.uncertaintyId).toBe('u-ridm-focus');
+    expect(wtp.state.nextQuestion?.prompt).toContain('하나');
+    expect(focus.state.nextQuestion).toBeNull();
+    expect(focus.state.judgmentText).toContain('가설');
+    expect(focus.state.judgmentText).not.toContain('Go');
+    expect(document).toContain('Pre-revenue');
+    expect(document).toContain('Hold');
+    expect(document).toContain('B2C 구독');
+    expect(document).not.toContain('MAU 5만 달성');
   });
 });

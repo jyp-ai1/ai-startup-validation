@@ -14,6 +14,7 @@ import { acceptPastedAnalysis, nextHandoffInput, prepareAnalysisRequest } from '
 import { attachFounderSource, SOURCE_HYPOTHESES, sourceHash } from '../lib/founder-source';
 import { applyAnswer, correctField, recordCounterClaim, replayStoredAnswer, startFromBusinessPlan, startJourney } from '../lib/journey-engine';
 import { blockersToClose, decisionSnapshot, LMULM_PLAN_FIXTURE, RIDM_PLAN_FIXTURE, withFixtureResult } from '../lib/plan-journey';
+import { renderVerificationDocument } from '../lib/verification-document';
 import { PlanRefinementPanel } from './plan-refinement-panel';
 import { contextRoleLabel, executionBadgeLabel } from '../lib/present-execution';
 import { verificationActionFor } from '../lib/verification-action';
@@ -560,7 +561,34 @@ function UnderstandingView({
   const [counterText, setCounterText] = useState('');
   const [counterNote, setCounterNote] = useState('');
   const [closeNote, setCloseNote] = useState('');
+  const [downloadError, setDownloadError] = useState('');
   const decision = decisionSnapshot(journey);
+  const verificationDocument = renderVerificationDocument(journey);
+
+  function onDownloadVerification() {
+    try {
+      const blob = new Blob([verificationDocument], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `alabom-${journey.planCase?.profile ?? 'plan'}-verification.txt`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+      setDownloadError('');
+      void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.artifactGenerated, {
+        screen: '/business-validation',
+        status: 'research_not_run',
+        category: journey.planCase?.profile,
+      });
+      void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.holdPathViewed, {
+        screen: '/business-validation',
+        status: 'research_not_run',
+        category: journey.planCase?.profile,
+      });
+    } catch {
+      setDownloadError('다운로드에 실패했다. 아래 검증 메모를 복사한 뒤 다시 눌러 달라.');
+    }
+  }
 
   function onToggleHypothesis(id: string) {
     setSourceHypotheses((current) =>
@@ -684,6 +712,12 @@ function UnderstandingView({
           <div className="space-y-2 text-sm" data-testid="decision-panel">
             <p data-testid="plan-badge">{decision.fixtureLabel}</p>
             <p data-testid="decision-stage">현재 단계: {decision.stage}</p>
+            <p data-testid="hold-label">
+              최종 판단: Hold. 테스트 답변은 시뮬레이션이며 매출이나 유료 고객의 증거가 아니다. Go와 Stop은 내리지 않는다.
+            </p>
+            <p data-testid="flow-boundary">
+              질문 분기는 규칙이다. GPT API를 호출하지 않았다. 붙여 넣은 GPT 1차 답변의 점수와 가정 시나리오 결론은 쓰지 않는다.
+            </p>
             <p data-testid="decision-support">핵심 근거: {decision.support.join(' ')}</p>
             <p data-testid="decision-counter">반대·공백: {decision.counter.join(' ')}</p>
             <p data-testid="decision-unresolved">결정적 미확인: {decision.unresolved.join(', ')}</p>
@@ -725,6 +759,9 @@ function UnderstandingView({
               >
                 검증 없이 판단 마치기
               </Button>
+              <Button type="button" data-testid="download-verification" onClick={onDownloadVerification}>
+                현재 검증 결과를 반영한 사업계획서 다운로드
+              </Button>
               <Button
                 type="button"
                 variant="outline"
@@ -736,6 +773,17 @@ function UnderstandingView({
                 테스트 픽스처 결과 연결
               </Button>
             </div>
+            {downloadError ? (
+              <p className="text-sm text-destructive" data-testid="download-error" role="alert">
+                {downloadError}
+              </p>
+            ) : null}
+            <details>
+              <summary className="cursor-pointer text-sm">검증 메모 보기</summary>
+              <pre className="mt-2 whitespace-pre-wrap text-sm" data-testid="verification-document">
+                {verificationDocument}
+              </pre>
+            </details>
           </div>
         ) : null}
         <ul className="space-y-3 text-sm" data-testid="judgment-comparisons">
@@ -965,7 +1013,7 @@ function UnderstandingView({
         </>
       ) : (
         <p className="text-sm" data-testid="question-hold">
-          더 물을 질문이 없다. 판단은 유보로 남아 있다.
+          더 물을 질문이 없다. 최종 판단은 Hold다. 남은 불확실성을 추정으로 채우지 않는다. 테스트 답변은 시뮬레이션이다.
         </p>
       )}
 
