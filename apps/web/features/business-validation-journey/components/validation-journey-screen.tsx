@@ -17,7 +17,7 @@ import { blockersToClose, decisionSnapshot, LMULM_PLAN_FIXTURE, RIDM_PLAN_FIXTUR
 import { renderVerificationDocument } from '../lib/verification-document';
 import { PlanRefinementPanel } from './plan-refinement-panel';
 import { contextRoleLabel, executionBadgeLabel } from '../lib/present-execution';
-import { verificationActionFor } from '../lib/verification-action';
+import { presentSingleDiagnosticAction } from '../lib/present-single-action';
 import { loadJourneyDraft, saveJourneyDraft } from '../lib/journey-session';
 import {
   emptyIntake,
@@ -549,7 +549,7 @@ function UnderstandingView({
   onBack: () => void;
 }) {
   const question = journey.nextQuestion;
-  const verification = verificationActionFor(journey);
+  const singleAction = presentSingleDiagnosticAction(journey);
   const citationTrace = liveCitationTrace();
   const crossReview = citationTrace.review;
   const execution = liveScreenStatus(journey);
@@ -704,8 +704,8 @@ function UnderstandingView({
             <p data-testid="answer-effect-after">
               이후 판단: {(journey.judgmentComparisons ?? []).at(-1)?.nextJudgmentText}
             </p>
-            <p data-testid="answer-effect-evidence">판단을 바꾸는 자료: {verification.evidenceNeeded}</p>
-            <p data-testid="answer-effect-next">다음 행동: {verification.action}</p>
+            <p data-testid="answer-effect-evidence">성공 기준: {singleAction.successCriterion}</p>
+            <p data-testid="answer-effect-next">다음 행동: {singleAction.action}</p>
           </div>
         ) : null}
         {decision ? (
@@ -721,7 +721,8 @@ function UnderstandingView({
             <p data-testid="decision-support">핵심 근거: {decision.support.join(' ')}</p>
             <p data-testid="decision-counter">반대·공백: {decision.counter.join(' ')}</p>
             <p data-testid="decision-unresolved">결정적 미확인: {decision.unresolved.join(', ')}</p>
-            <p data-testid="decision-next">다음 검증: {decision.nextAction}</p>
+            <p data-testid="decision-next">다음 검증: {singleAction.action}</p>
+            <p data-testid="decision-success">성공 기준: {singleAction.successCriterion}</p>
             <p data-testid="decision-exit">종료 조건: {decision.exitCondition}</p>
             <ul data-testid="plan-claims">
               {journey.planCase?.claims.map((item) => (
@@ -865,10 +866,10 @@ function UnderstandingView({
           </div>
         ) : null}
         <p className="text-sm leading-relaxed" data-testid="verification-action">
-          검증 행동: {verification.action}
+          검증 행동: {singleAction.action}
         </p>
         <p className="text-sm text-muted-foreground" data-testid="evidence-needed">
-          필요한 증거: {verification.evidenceNeeded}
+          성공 기준: {singleAction.successCriterion}
         </p>
         <form className="space-y-3 border-t border-border pt-3" onSubmit={onAttachSource} data-testid="source-form">
           <h3 className="text-base font-medium">원문 붙이기</h3>
@@ -938,9 +939,11 @@ function UnderstandingView({
           ))}
         </ul>
         <p className="text-sm" data-testid="next-action">
-          다음 행동: {journey.nextAction.text}
+          다음 행동: {singleAction.action}
         </p>
-        <p className="text-sm text-muted-foreground">성공 기준: {journey.nextAction.successCriterion}</p>
+        <p className="text-sm text-muted-foreground" data-testid="success-criterion">
+          성공 기준: {singleAction.successCriterion}
+        </p>
         <p className="text-sm text-muted-foreground">실패 기준: {journey.nextAction.failureCriterion}</p>
       </section>
 

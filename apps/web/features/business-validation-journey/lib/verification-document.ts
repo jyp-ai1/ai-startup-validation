@@ -1,12 +1,12 @@
 import type { JourneyState } from './journey-types';
-import { verificationActionFor } from './verification-action';
+import { presentSingleDiagnosticAction } from './present-single-action';
 
 export function renderVerificationDocument(state: JourneyState): string {
   const plan = state.planCase;
   if (!plan || plan.profile === 'unrecognized') {
     return '사업계획서 세션이 없다. 다운로드할 검증 결과가 없다.';
   }
-  const verification = verificationActionFor(state);
+  const singleAction = presentSingleDiagnosticAction(state);
   const simulation = plan.provenance === 'test_fixture';
   const answers = state.answers.map((answer) => {
     const stance = answer.grade === 'unknown' ? '미확인' : '가설·진술';
@@ -53,8 +53,8 @@ export function renderVerificationDocument(state: JourneyState): string {
     plan.exitCondition,
     '',
     '다음 행동',
-    verification.action,
-    `필요한 자료: ${verification.evidenceNeeded}`,
+    singleAction.action,
+    `성공 기준: ${singleAction.successCriterion}`,
     '',
     '원문에서 지우지 않은 주장',
     ...plan.claims.map((claim) => `- ${claim.role}: ${claim.text}`),

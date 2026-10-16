@@ -16,7 +16,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 1 | V3 질문 결정이 같은 공백 한도를 무시해 problemJtbd 에 남는 충돌 | `134667d9`에서 멈춤 |
 | 2 | S3–S6 예상 문장은 ASSUMPTION. Fact 상태 없음. 선택·수정·불확실·반증의 다음 질문 | `134667d9`에서 멈춤 |
 | 3 | 규칙 엔진만으로 수동 GPT 판단 수준에 도달하는가 | 도달하지 않음 · 추가 수정 없음 |
-| 4 | 진단 UX 방향. 행동 하나. 신호등·점수·체크리스트 아님 | 방향만 · `docs/evidence/ALABOM/AI-PM/DIAGNOSTIC-UX-DIRECTION.txt` |
+| 4 | 진단 UX 방향. 행동 하나. 신호등·점수·체크리스트 아님 | 화면은 엔진 문단의 첫 블록만 · `docs/evidence/ALABOM/AI-PM/SINGLE-ACTION-SCREEN.txt` |
 
 ---
 
