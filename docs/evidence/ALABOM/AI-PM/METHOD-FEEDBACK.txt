@@ -1,0 +1,40 @@
+METHOD FEEDBACK — 2026-10-16T07:22Z
+1, 3, 4를 사용했다. 2번은 구현 경로가 아니다. CEO가 수동 GPT에서 본 답변 수준이 맞춰야 할 기준이다. 그 수준의 사업성 판단은 이번 턴에 하지 않았다. 사업계획서 원문은 보내지 않았다. 제품 코드, 병합, Production은 바꾸지 않았다. 비용은 0원이다. 대화 화면은 열지 않았다.
+
+1. 웹 화면 자동화 대신 쓴 구조
+소비자 웹 UI는 이번에도 열지 않았다. 그 문장으로 끝내지 않고, 같은 확장 운반 원리에서 이용 조건에 맞는 다른 구조를 실행했다.
+구조. POST https://text.pollinations.ai/openai. Content-Type 만. Authorization 없음. 요청 코드 experiments/external-ai-roundtrip/extension/background.js 와 같은 JSON이다. 이번 실행 런처는 urllib이다. Chrome 확장 프로세스는 다시 띄우지 않았다.
+요청. Reply with the exact marker and nothing else: METHOD1-OK
+시각. 2026-10-16T07:22:45Z. 8.613초. HTTP 200.
+응답. content METHOD1-OK. model gpt-oss-20b. user_tier anonymous. id pllns_e40dd4b787d63719d032a92dc89cb63c. finish_reason stop.
+원문. experiments/method-feedback/method1.json
+분류. 외부 모델의 테스트 응답. GPT, Gemini, Claude의 완료 응답이 아니다. 사업성 판단 수준에 대한 비교는 아니다.
+비용. 0원. 402 없음.
+
+유저 웹 AI. GPT, Gemini, Claude.
+이 브라우저의 쿠키 호스트는 .vercel.com, vercel.com, Preview 호스트뿐이다. chatgpt.com, gemini.google.com, claude.ai 쿠키는 없다. 저장된 로그인 원점도 이전에 0건이었다.
+그래서 유저 세션에 질의를 넣지 못했고 응답 원문도 없다. 그 세 화면은 열지 않았다. 이 부재를 그 서비스가 답을 못 한다는 결론으로 적지 않는다.
+
+3. Chrome 내장 모델
+실행. 2026-10-16T07:22:28.072Z. 공식 Chrome 154.0.8037.92. 주소는 http://127.0.0.1:8773/ 뿐이다. 새 프로필.
+측정. LanguageModel 은 function. window.ai 는 undefined. deviceMemory 16. hardwareConcurrency 4.
+availability. 기본 unavailable 23ms. 영어 unavailable 14ms. 한국어 unavailable 3ms.
+prompt. 호출하지 않음. available 이 아니라 create 도 호출하지 않음.
+원문. experiments/method-feedback/method3.json
+응답 문장. 없음. 검토할 모델 답은 없다.
+
+4. 로컬 모델
+새 로드는 하지 않았다. 호출 직전 가용 메모리는 약 2.3Gi 이고 qwen2.5:3b 파일은 1.9GB다. /api/ps 는 비어 있었다. 7b 는 올리지 않았다.
+검토용으로 이미 받은 응답. experiments/comm-structure-repeat/local.json
+1. 2026-10-16T06:31:26Z. HTTP 200. 7.27초. content "Pong LOCAL-PING-1"
+2. 2026-10-16T06:31:34Z. HTTP 200. 0.695초. content 에 LOCAL-PING-2
+3. 2026-10-16T06:31:34Z. HTTP 200. 0.68초. content 에 LOCAL-PING-3
+모델 qwen2.5:3b. 인증 없음. 비용 라벨 local_runtime_no_api_invoice.
+분류. 로컬 모델의 테스트 응답. 외부 AI가 아니고, 수동 GPT의 사업성 판단 수준이 아니다.
+
+검토에 올릴 수 있는 답.
+1의 이번 답. METHOD1-OK. 외부 익명 모델.
+3의 이번 답. 없음. 모델이 unavailable.
+4의 저장된 답. 핑 세 개. 로컬 모델.
+유저 웹 AI의 이번 답. 없음. 세션이 이 환경에 없다.
+2번의 수동 GPT 문장 수준에는 이 답들이 닿지 않았다. 그 비교는 사업 자료를 넣은 뒤에만 가능하다. 이번 턴에는 넣지 않았다.
