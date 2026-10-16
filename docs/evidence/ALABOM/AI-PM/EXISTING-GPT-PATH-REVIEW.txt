@@ -1,0 +1,50 @@
+EXISTING GPT PATH REVIEW — 2026-10-16T05:45:41Z
+기존 저장소에서 GPT 대화 전달 방식을 추적한 기록이다. 제품 코드, 규칙 분기, 모델 연결, 병합, Production은 바꾸지 않았다. 확인되지 않은 항목은 미확인이다. 추측으로 채우지 않았다.
+
+조사 범위
+- experiments/external-ai-roundtrip/
+- experiments/gpt-roundtrip/
+- experiments/id-selection-validator/
+- docs/evidence/ALABOM/AI-PM/
+- 브랜치 cursor/business-refinement-loop-4b88, PR #199
+- 실행 스크립트와 확장 프로그램은 위 experiments 디렉터리에 있는 파일뿐이다.
+
+1. 이전에 GPT 대화를 전달했다고 본 근거
+저장소가 GPT 응답을 프로그램으로 회수했다는 기록은 없다.
+사람이 붙인 1차 답변을 질문 기준선으로 가리키는 문장은 docs/evidence/ALABOM/AI-PM/GPT-FLOW-EXECUTION.txt 첫 문단이다. 그 문장은 공식 API를 호출하지 않았고 ChatGPT 웹을 열지 않았다고 적는다. liveModelCall 은 false 다.
+그 1차 답변의 전문은 이 저장소 파일에서 찾지 못했다. 화면 문서는 그 답변의 점수와 가정 결론을 넣지 않는다고 적는다. apps/web/features/business-validation-journey/lib/verification-document.ts.
+붙여넣기 함수 acceptPastedAnalysis 는 apps/web/features/business-validation-journey/lib/external-handoff.ts 에 있다. HANDOFF_BOUNDARY.liveModelCall 은 false 다. 이번 조사에서 그 함수에 회수된 GPT 원문을 넣지 않았다. 테스트가 넣는 문자열은 모델 회수 원문이 아니다.
+GPT-REANALYSIS-STATUS.txt 는 재분석을 미실행으로 적는다. 공식 API를 그 기록 시점에는 호출하지 않았다.
+
+2. 실제로 사용한 프로그램과 실행 경로
+확인된 실행은 두 갈래다.
+경로 A. 공식 Chat Completions 무인증 1회. 2026-10-16T05:30:38Z. POST https://api.openai.com/v1/chat/completions. 원문 experiments/gpt-roundtrip/api-unauth.json. 기록 docs/evidence/ALABOM/AI-PM/GPT-DIRECT-POC.txt. HTTP 401. x-request-id req_28fcf4c53fe34b129733afd7a199dbdc. 응답은 API 키가 없다는 invalid_request_error 다. 마커 GPT-POC-TEST-001 은 본문에 없다.
+경로 B. Chrome 확장의 외부 텍스트 호출. 2026-10-16T05:19:09.939Z. 확장 experiments/external-ai-roundtrip/extension. 실행 node experiments/external-ai-roundtrip/run-poc.mjs. 서비스 워커가 POST https://text.pollinations.ai/openai 로 보냈다. 원문 experiments/external-ai-roundtrip/last-run.json. HTTP 200. 응답 모델 필드는 gpt-oss-20b 다. id pllns_5233625b21c6ceb7097bb02767559865. content 는 pong poc-1792127949939 다. 이 원문은 OpenAI GPT 완료 응답이 아니다.
+제품 호출 자리는 apps/web/features/agents/research/providers/openai-counter-review-provider.ts 다. gateCounterReview 는 networkCalled false 를 반환하고, 키가 있어도 call_not_opened 로 호출을 열지 않는다. 엔드포인트 문자열은 https://api.openai.com/v1/chat/completions, 모델 문자열은 gpt-4o-mini 다. 이 함수의 실행 로그로 남은 GPT 완료 원문은 없다.
+로컬 Ollama qwen2.5 응답은 docs/evidence/ALABOM/AI-PM/LOCAL-MODEL-E2E.txt 와 method-compare 에 있다. 그 모델은 외부 GPT가 아니다.
+설치된 Chrome 확장 중 결제 구성요소 외에 AI 대화 확장은 이전 조사에 없었다. 이번 PoC 확장은 새 프로필의 Chrome for Testing 149에서만 올렸고, host_permissions 는 https://text.pollinations.ai/* 뿐이다. background.js 의 FORBIDDEN_HOSTS 는 chatgpt.com, gemini.google.com, claude.ai, copilot.microsoft.com 이다.
+
+3. 입력 전달과 응답 회수
+경로 A. 입력 문장은 Reply with the exact marker: GPT-POC-TEST-001. Authorization 헤더는 없었다. 회수된 것은 401 오류 본문이다. 모델 완료 문장은 없다.
+경로 B. 입력은 Connection test 와 마커 poc-1792127949939 다. Authorization 헤더는 없었다. 회수된 content 는 pong 과 그 마커다. 모델 필드는 gpt-oss-20b 다.
+사람 붙여넣기. 전달 프로그램, 화면, 계정은 저장소의 실행 로그에 없다. 미확인. 회수 파일을 이 조사에서 찾지 못했다.
+
+4. 인증과 사용자 세션
+2026-10-16 재확인. 환경 변수 이름에 OPENAI, ANTHROPIC, GEMINI, GOOGLE_AI, GOOGLE_API, OPENROUTER, AZURE_OPENAI, CLAUDE_API 가 들어가는 항목은 없다. 값은 출력하지 않았다.
+Chrome 쿠키 호스트는 .vercel.com, vercel.com, Preview 호스트 ai-startup-validation-git-cursor-ai-pm-acd5a4-jyp-ai1s-projects.vercel.app 뿐이다. chatgpt.com, gemini.google.com, claude.ai 쿠키는 없다. 쿠키 값은 저장하지 않았다.
+경로 A와 경로 B는 사용자 세션을 보내지 않았다.
+사람이 붙여 넣은 1차 답변이 어느 로그인 세션에서 나왔는지는 미확인이다.
+
+5. 요청·응답 원문
+있다. 경로 A의 401 본문. experiments/gpt-roundtrip/api-unauth.json.
+있다. 경로 B의 gpt-oss-20b 본문. experiments/external-ai-roundtrip/last-run.json.
+없다. OpenAI GPT가 작성한 완료 원문.
+없다. CEO 붙여넣기 1차 답변의 전문 파일.
+없다. chatgpt.com 대화 화면의 요청·응답. 그 화면은 열지 않았다.
+
+6. 같은 절차의 재현
+경로 A. 같은 무인증 POST의 결과는 이미 401이다. 인증 조건이 그대로이므로 2026-10-16T05:45:41Z 조사에서는 그 POST를 다시 보내지 않았다. 새 마커 ALABOM-ROUNDTRIP-001 은 OpenAI에 전달하지 않았다. 기록 experiments/multi-ai-roundtrip/gpt-not-repeated.json.
+경로 B. run-poc.mjs 로 다시 실행할 수 있다. 다시 실행하면 마커 시각이 바뀐다. 그 결과는 GPT 완료가 아니다. 이번 조사에서 반복 실행하지 않았다.
+GPT 완료를 회수하는 절차. 저장소에 없다. 재현 대상이 없다.
+
+이번 추적의 판정. 과거 기록에서 재사용할 수 있는 GPT 연결 성공 절차는 확인되지 않았다.

@@ -1,0 +1,41 @@
+{
+  "name": "gemini-unauth",
+  "started": "2026-10-16T05:45:41Z",
+  "elapsed_sec": 0.102,
+  "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+  "authorization_sent": false,
+  "api_key_sent": false,
+  "request_headers_sent": [
+    "Content-Type"
+  ],
+  "request_body": {
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "Reply with the exact marker: ALABOM-ROUNDTRIP-001"
+          }
+        ]
+      }
+    ]
+  },
+  "http": 403,
+  "error": null,
+  "response_headers": {
+    "Vary": "Origin,Accept-Encoding",
+    "Content-Type": "application/json; charset=UTF-8",
+    "Date": "Fri, 16 Oct 2026 05:45:41 GMT",
+    "Server": "scaffolding on HTTPServer2",
+    "X-XSS-Protection": "0",
+    "X-Frame-Options": "SAMEORIGIN",
+    "X-Content-Type-Options": "nosniff",
+    "Server-Timing": "gfet4t7; dur=50",
+    "Alt-Svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+    "Accept-Ranges": "none",
+    "Connection": "close",
+    "Transfer-Encoding": "chunked"
+  },
+  "body": "{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API.\",\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
+  "marker_in_body": false,
+  "cost_krw": 0
+}
