@@ -48,3 +48,9 @@ plan-journey, plan-refinement, judgment-scope 테스트 25개 통과.
 - GPT 응답이 Hold를 유지하는지: 미실행. 규칙 화면의 Hold는 유지됐다.
 
 병합과 Production 배포는 하지 않았다.
+
+재확인 2026-10-16. 제품 코드, 테스트, 모델 연결, 병합, Production 은 바꾸지 않았다. 실패한 경로를 다시 실행하지 않았다.
+- 승인된 ChatGPT 웹 세션: 없음. Chrome 쿠키 호스트는 vercel.com 과 Preview 호스트뿐이다. chatgpt.com 쿠키는 없다.
+- 승인된 무상 GPT 경로: 없음. 키와 .env 는 여전히 없다.
+- 재분석 원문: 없음. 1차 답변은 재분석으로 올리지 않았다.
+차단 조건: 누적 답변을 넣은 새 GPT 응답이 생기려면, 비용이 승인된 공식 API 이거나 사람이 붙인 재분석 원문이어야 한다. 그 전에는 비교와 모델 연결을 열지 않는다.
