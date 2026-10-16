@@ -50,7 +50,7 @@
 
 ## 6. 동결
 
-작업 전 HEAD `95a43b3e`. `6f71ea3a` 이후 `apps/`·`packages/` diff는 비어 있다. Production `0b465226`은 조상이다. PR #199는 초안이다. 이 문서 커밋 뒤의 diff가 비어 있지 않으면 동결 유지로 적지 않는다.
+작업 전 HEAD `95a43b3e`. 이 문서 커밋 `c1675537`. 그 커밋 포함 `6f71ea3a` 이후 `apps/`·`packages/` diff는 비어 있다. Production `0b465226`은 조상이다. PR #199는 초안이다.
 
 ## 7. 다음 실험
 
