@@ -1,0 +1,188 @@
+{
+  "at": "2026-10-16T11:23:47.281Z",
+  "prompt1": "Connectivity test only. Include the exact code PINE-42 in one short sentence.",
+  "prompt2": "What exact code appeared in your previous reply? Reply with only that code.",
+  "results": [
+    {
+      "id": "gpt",
+      "url": "https://chatgpt.com/",
+      "browser": "google-chrome-154",
+      "startedAt": "2026-10-16T11:21:50.644Z",
+      "steps": [
+        {
+          "name": "opened",
+          "at": "2026-10-16T11:21:56.814Z",
+          "elapsedMs": 4379,
+          "href": "https://chatgpt.com/"
+        },
+        {
+          "name": "input-check",
+          "at": "2026-10-16T11:21:56.929Z",
+          "inputReady": true,
+          "block": null,
+          "href": "https://chatgpt.com/"
+        },
+        {
+          "name": "prompt-1-sent",
+          "at": "2026-10-16T11:21:58.407Z",
+          "prompt": "Connectivity test only. Include the exact code PINE-42 in one short sentence."
+        },
+        {
+          "name": "response-1",
+          "at": "2026-10-16T11:23:28.921Z",
+          "elapsedMs": 91921,
+          "ok": false,
+          "reason": "timeout"
+        }
+      ],
+      "verdict": "first-response-missing",
+      "opened": {
+        "href": "https://chatgpt.com/",
+        "title": "ChatGPT: Chat, Work, Create & Code with AI",
+        "text": "New chat\nImages\nPlugins\nDeep research\nSee plans and pricing\nHelp\nSettings\nGet responses tailored to you\n\nLog in to get answers based on saved chats, plus create images and upload files.\n\nLog in\nChatGPT\nLog in\nSign up for free\nWhere should we begin?\nChat with ChatGPT\n\nChatGPT is AI. By using it, you agree to our Terms & Privacy Policy. Chats may be reviewed and used to improve our AI models. Learn more",
+        "inputs": [
+          {
+            "tag": "TEXTAREA",
+            "type": null,
+            "id": "mobile-composer-prompt",
+            "aria": "Chat with ChatGPT",
+            "placeholder": "Ask ChatGPT"
+          }
+        ],
+        "buttons": [
+          "ChatGPT logo",
+          "Close sidebar",
+          "New chat",
+          "Images",
+          "Plugins",
+          "Deep research",
+          "See plans and pricing",
+          "Help",
+          "Settings",
+          "Log in",
+          "ChatGPT",
+          "Log in",
+          "Sign up for free",
+          "Add files and more",
+          "Start dictation",
+          "Send message",
+          "Terms",
+          "Privacy Policy",
+          "Learn more"
+        ]
+      },
+      "inputReady": true,
+      "response1": {
+        "ok": false,
+        "reason": "timeout",
+        "text": "",
+        "elapsedMs": 91921,
+        "href": "https://chatgpt.com/uc/6ad208d1-3c88-83ea-91e9-86f222f6700b"
+      },
+      "stop": "timeout",
+      "finishedAt": "2026-10-16T11:23:28.921Z"
+    },
+    {
+      "id": "gemini",
+      "url": "https://gemini.google.com/app",
+      "browser": "google-chrome-154",
+      "startedAt": "2026-10-16T11:23:29.011Z",
+      "steps": [
+        {
+          "name": "opened",
+          "at": "2026-10-16T11:23:33.615Z",
+          "elapsedMs": 4326,
+          "href": "https://gemini.google.com/app"
+        },
+        {
+          "name": "input-check",
+          "at": "2026-10-16T11:23:33.823Z",
+          "inputReady": true,
+          "block": null,
+          "href": "https://gemini.google.com/app"
+        },
+        {
+          "name": "prompt-1-sent",
+          "at": "2026-10-16T11:23:35.162Z",
+          "prompt": "Connectivity test only. Include the exact code PINE-42 in one short sentence."
+        },
+        {
+          "name": "response-1",
+          "at": "2026-10-16T11:23:42.762Z",
+          "elapsedMs": 8879,
+          "ok": true,
+          "reason": "assistant-text"
+        },
+        {
+          "name": "prompt-2-sent",
+          "at": "2026-10-16T11:23:44.146Z",
+          "prompt": "What exact code appeared in your previous reply? Reply with only that code.",
+          "href": "https://gemini.google.com/app/2fce74d0c8b33601"
+        },
+        {
+          "name": "response-2",
+          "at": "2026-10-16T11:23:47.211Z",
+          "elapsedMs": 4383,
+          "ok": true,
+          "reflectsFirst": true,
+          "href": "https://gemini.google.com/app/2fce74d0c8b33601"
+        }
+      ],
+      "verdict": "roundtrip-ok",
+      "opened": {
+        "href": "https://gemini.google.com/app",
+        "title": "Google Gemini",
+        "text": "Gemini\nNew chat\nImages\nSign in to save activity\nSign in\nConversation with Gemini\nLook what you can do with Gemini 4\nLet's go\n\nFlash-Lite\n\nGoogle Terms\nOpens in a new window\n and the Google Privacy Policy\nOpens in a new window\n apply. Gemini is AI and can make mistakes.\n\nAbout Gemini\nGet Gemini App\nSubscriptions\nFor Business\nSign in",
+        "inputs": [
+          {
+            "tag": "DIV",
+            "type": null,
+            "id": "",
+            "aria": "Enter a prompt for Gemini",
+            "placeholder": "Type @ for connectors, skills and more"
+          }
+        ],
+        "buttons": [
+          "Gemini",
+          "Close sidebar",
+          "New chat",
+          "Images",
+          "Sign in",
+          "Sign in",
+          "Settings",
+          "Let's go",
+          "Scroll to bottom",
+          "Upload & tools",
+          "Flash-Lite",
+          "Dictate (^⇧D)",
+          "Google Terms Opens in a new window",
+          "Google Privacy Policy Opens in a new window",
+          "About Gemini",
+          "Get Gemini App",
+          "Subscriptions",
+          "For Business",
+          "Sign in"
+        ]
+      },
+      "inputReady": true,
+      "response1": {
+        "ok": true,
+        "reason": "assistant-text",
+        "text": "Connectivity test passed: PINE-42.",
+        "elapsedMs": 8879,
+        "href": "https://gemini.google.com/app/2fce74d0c8b33601"
+      },
+      "response2": {
+        "ok": true,
+        "reason": "assistant-text",
+        "text": "Gemini said\n\nConnectivity test passed: PINE-42.",
+        "elapsedMs": 4383,
+        "href": "https://gemini.google.com/app/2fce74d0c8b33601"
+      },
+      "sameUrlFamily": true,
+      "hrefAfter": "https://gemini.google.com/app/2fce74d0c8b33601",
+      "reflectsFirst": true,
+      "finishedAt": "2026-10-16T11:23:47.211Z"
+    }
+  ]
+}

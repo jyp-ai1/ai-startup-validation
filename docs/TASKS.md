@@ -28,7 +28,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 13 | 기존 도구는 실패 1·2번을 자동 탐지하지 못함. 검사기 미구현. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/DETECTION-GAP-2026-10-16.md` |
 | 14 | 탐지 공백의 검증 명세. 검사기 미구현. 1단계 통과 아님 | `docs/evidence/ALABOM/AI-PM/NEXT-GATE-VALIDATION-PLAN-2026-10-16.md` |
 | 15 | 다음 실행 범위. 1·2번은 기존 도구로 불가. 5번 mergeable 미확인. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/NEXT-SCOPE-CRITERIA-2026-10-16.md` |
-| 16 | 로그인 브라우저 왕복. 세션 없음. 1–7단계 미실행. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/BROWSER-REPEAT-ROUNDTRIP-POC-2026-10-16.md` |
+| 16 | 비로그인 GPT·Gemini 왕복. 두 번째 실행에서 같은 대화의 두 응답 연결. 관문과 실패 1·2·5는 유지 | `docs/evidence/ALABOM/AI-PM/BROWSER-REPEAT-ROUNDTRIP-POC-2026-10-16.md` |
 
 ---
 
