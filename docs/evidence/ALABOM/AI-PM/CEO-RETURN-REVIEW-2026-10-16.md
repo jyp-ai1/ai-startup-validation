@@ -84,7 +84,7 @@ ID 검증기 `python3 validator.py`는 EXIT 0, `checks_pass` true다. 대상은 
 
 ## 7. 동결
 
-작업 전 HEAD `62e6a3b5`. `6f71ea3a` 이후 `apps/`·`packages/` diff는 비어 있다. 엔진과 테스트 게이트는 바꾸지 않았다. Production `0b465226`은 조상이다. 배포와 병합은 없다. 비용은 0원이다.
+작업 전 HEAD `62e6a3b5`. 패키지 커밋 `256f510e`. 그 커밋 포함 `6f71ea3a` 이후 `apps/`·`packages/` diff는 비어 있다. 엔진과 테스트 게이트는 바꾸지 않았다. Production `0b465226`은 조상이다. 배포와 병합은 없다. 비용은 0원이다.
 
 ## 8. 남은 일과 관문
 

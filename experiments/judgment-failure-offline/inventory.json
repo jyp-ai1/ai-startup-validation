@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-16T12:21:50.993Z",
+  "at": "2026-10-16T12:22:01.820Z",
   "rows": [
     {
       "id": "prompt",
@@ -166,8 +166,8 @@
       "rel": "docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md",
       "role": "this-sprint-review",
       "exists": true,
-      "bytes": 9744,
-      "sha256": "166ab787aedaab8b21b6618fe0aa9ef821da145fb03c40c836ee41a08b1be9b5"
+      "bytes": 9791,
+      "sha256": "da631f0b80124a9ef372ef3e0d074e6944aa13b99db388024d6b63aa8acafaa5"
     }
   ],
   "missingRaw": [
