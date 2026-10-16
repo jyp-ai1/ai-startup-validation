@@ -1,0 +1,38 @@
+{
+  "name": "path4-local",
+  "started": "2026-10-16T07:32:20Z",
+  "elapsed_sec": 21.685,
+  "http": 200,
+  "error": null,
+  "endpoint": "http://127.0.0.1:11434/api/chat",
+  "authorization_sent": false,
+  "body": "{\"model\":\"qwen2.5:3b\",\"created_at\":\"2026-10-16T07:32:42.275901776Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"Claim\\\": \\\"모회사와 계열사의 판매가 문서의 매출 2,000만 원에서 가장 큰 비중을 차지하고 있으며, 모회사와 계열사의 지원이 없어도 현재의 매출 구조를 유지할 수 없다.\\\",\\n  \\\"Fact\\\": true,\\n  \\\"Missing_Evidence\\\": \\\"모회사와 계열사의 구체적인 매출 데이터, 모회사와 계열사의 판매 비중, 모회사와 계열사의 지원이 없어도 매출 구조를 유지할 수 있는 증거\\\",\\n  \\\"Next_Action\\\": \\\"모회사와 계열사의 구체적인 매출 데이터를 수집하고, 모회사와 계열사의 판매 비중과 지원이 없어도 매출 구조를 유지할 수 있는 증거를 확보하여 문서의 매출 구조에 대한 신뢰성을 높여야 한다.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":21667358345,\"load_duration\":5313611986,\"prompt_eval_count\":413,\"prompt_eval_cached_count\":0,\"prompt_eval_duration\":2056886000,\"eval_count\":203,\"eval_duration\":14288692000}",
+  "model": "qwen2.5:3b",
+  "done_reason": "stop",
+  "eval_count": 203,
+  "prompt_eval_count": 413,
+  "eval_duration_ns": 14288692000,
+  "content": "{\n  \"Claim\": \"모회사와 계열사의 판매가 문서의 매출 2,000만 원에서 가장 큰 비중을 차지하고 있으며, 모회사와 계열사의 지원이 없어도 현재의 매출 구조를 유지할 수 없다.\",\n  \"Fact\": true,\n  \"Missing_Evidence\": \"모회사와 계열사의 구체적인 매출 데이터, 모회사와 계열사의 판매 비중, 모회사와 계열사의 지원이 없어도 매출 구조를 유지할 수 있는 증거\",\n  \"Next_Action\": \"모회사와 계열사의 구체적인 매출 데이터를 수집하고, 모회사와 계열사의 판매 비중과 지원이 없어도 매출 구조를 유지할 수 있는 증거를 확보하여 문서의 매출 구조에 대한 신뢰성을 높여야 한다.\"\n}",
+  "tokens_per_sec": 14.21,
+  "output_parse": {
+    "raw_json_ok": true,
+    "extracted_json_ok": true,
+    "schema_ok": true,
+    "parse_error": null,
+    "object": {
+      "Claim": "모회사와 계열사의 판매가 문서의 매출 2,000만 원에서 가장 큰 비중을 차지하고 있으며, 모회사와 계열사의 지원이 없어도 현재의 매출 구조를 유지할 수 없다.",
+      "Fact": true,
+      "Missing_Evidence": "모회사와 계열사의 구체적인 매출 데이터, 모회사와 계열사의 판매 비중, 모회사와 계열사의 지원이 없어도 매출 구조를 유지할 수 있는 증거",
+      "Next_Action": "모회사와 계열사의 구체적인 매출 데이터를 수집하고, 모회사와 계열사의 판매 비중과 지원이 없어도 매출 구조를 유지할 수 있는 증거를 확보하여 문서의 매출 구조에 대한 신뢰성을 높여야 한다."
+    }
+  },
+  "trap_hits": {
+    "70%": false,
+    "고급 필기구": false,
+    "시장 점유율": false,
+    "9,900": false,
+    "Pre-revenue": false,
+    "VALIDATED": false,
+    "재구매": false
+  }
+}

@@ -1,0 +1,56 @@
+BUSINESS JUDGMENT POC — 2026-10-16T07:32Z
+비용 0원. 유료 키 없음. 제품 코드, 병합, Production은 바꾸지 않았다. 모델 출력은 제품 상태에 넣지 않았다. 표본은 LMULM 한 세트다.
+
+고정 입력. experiments/business-judgment-poc/prompt.txt
+S1부터 S6은 grade-key의 LMULM 문장이다. S6의 "대 상으로" 공백은 그 파일 그대로다.
+A1. 문서의 매출 2,000만 원에서 가장 큰 비중은 모회사·계열사 판매다.
+A2. 모회사·계열사 지원이 없어도 현재 매출 구조를 유지할 수 없다. 사실상 모회사 지원이 필수다.
+A1과 A2는 화면 답으로 고정된 창업자 진술이다. 원장 증거가 아니다. S3부터 S6의 예상과 계획은 받은 매출이 아니다.
+
+공통 출력 키. Claim, Fact, Missing_Evidence, Next_Action. Fact는 boolean. 원장이나 결제 증거가 있을 때만 true.
+
+1번. 익명 엔드포인트
+POST https://text.pollinations.ai/openai. Authorization 없음. 요청 모델 칸 openai.
+2026-10-16T07:32:42Z. HTTP 200. 10.876초. 응답 모델 gpt-oss-20b. user_tier anonymous. id pllns_ad8b0ebe46b1c7533e046a2c0e703f36.
+usage. prompt_tokens 648. completion_tokens 458. total_tokens 1106.
+초당 토큰 42.11은 completion_tokens를 벽시계 10.876초로 나눈 값이다. 응답 본문의 reasoning이 completion에 포함된다. 보이는 content만의 생성 속도가 아니다.
+content 원문 파싱. raw JSON 성공. 스키마 성공. Fact는 false.
+Claim. A1 문장을 그대로 옮겼다.
+Missing_Evidence. 각 고객군별 매출 비중 데이터.
+Next_Action. 매출 구조를 소스별로 분류한 보고서 요청.
+없는 표현. 70%, 고급 필기구, 시장 점유율, 9,900, Pre-revenue, VALIDATED, 재구매. 모두 없음.
+A2와 S3의 예상 연매출은 출력에 없다. 10억을 받은 매출로 쓰지는 않았다.
+원문. experiments/business-judgment-poc/path1.json
+
+4번. 로컬 qwen2.5:3b
+POST http://127.0.0.1:11434/api/chat. 인증 없음. temperature 0. seed 7. num_ctx 4096. num_predict 360.
+2026-10-16T07:32:20Z. HTTP 200. 21.685초. done_reason stop.
+prompt_eval_count 413. eval_count 203. eval_duration 14.289초. 생성 초당 14.21토큰. 이 값은 출력 토큰만의 속도다.
+raw JSON 성공. 스키마 성공. Fact는 true.
+Claim. A1의 비중 주장과 A2의 유지 불가를 한 문장으로 합쳤다.
+Missing_Evidence. 모회사·계열사 매출 데이터와, 지원이 없어도 매출 구조를 유지할 수 있는 증거.
+Next_Action. 그 데이터와, 지원 없이 유지할 수 있는 증거를 확보하라는 문장.
+없는 표현 일곱 개는 모두 없다.
+원문. experiments/business-judgment-poc/path4.json
+
+비교. 표본 각 1회.
+경로 | 벽시계 | 출력 파싱 | Fact | 입력 밖 금지 표현
+1번 | 10.876초 | 1/1 | false | 0
+4번 | 21.685초 | 1/1 | true | 0
+파싱 실패는 0이다. 이 비율을 다른 사례로 넓히지 않는다.
+초당 토큰은 계산 기준이 다르다. 1번은 벽시계에 reasoning 토큰이 들어가 있고, 4번은 생성 구간만이다.
+
+품질.
+1번 Fact false는 지시와 맞다. 창업자 진술을 입증된 사실로 올리지 않았다. Claim은 A1만 복사했다. A2의 모회사 의존과 S3의 예상 10억을 구분하지 않았다. Next_Action은 비중 자료 요청이다. 규칙 화면의 다음 질문인 모회사 채널 밖 고객 기록은 아니다.
+4번 Fact true는 지시와 어긋난다. 입력에 원장이나 결제 증거가 없는데 창업자 진술을 사실로 올렸다. Claim은 A1과 A2를 함께 담았다. Missing_Evidence와 Next_Action은 지원 없이도 유지할 수 있는 증거를 찾으라고 한다. Claim이 말한 유지 불가와 방향이 반대다.
+둘 다 금지한 상품명과 점유율은 만들지 않았다. 둘 다 수동 GPT에서 본 사업성 판단 수준이 아니다. 한 세트의 결과로 경로를 제품 엔진으로 고르지 않는다.
+이 한 세트에서 사실 승격은 1번이 지시대로 false였고 4번은 true였다. 상태 판단은 어느 모델 출력에도 맡기지 않는다.
+
+규칙 엔진.
+모델 JSON은 acceptPastedAnalysis에 넣지 않았다.
+recordExternalAnalysis는 외부 노트에 verifiedFact false, realAnalysisSuccess false, systemVerified false, liveModelCall false, status reference를 고정한다. apps/web/features/business-validation-journey/lib/judgment-development.ts 102행부터 121행.
+comparisonBase는 verifiedFact, validated, systemVerified, realAnalysisSuccess, liveVerified를 false로 고정한다. 같은 파일 352행부터 367행.
+Fact나 Next_Action 키를 읽어 VALIDATED로 바꾸는 분기는 그 함수에 없다. 이번 출력의 Fact true도 제품 상태로 들어가지 않았다.
+HANDOFF_BOUNDARY.liveModelCall은 false다.
+
+비용. 0원. 402 없음. 키를 만들지 않았다. 병합과 Production 배포는 하지 않았다.
