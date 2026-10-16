@@ -67,6 +67,59 @@ describe('business plan journey', () => {
     expect(track.state.judgmentStatus).toBe('judgment_deferred');
   });
 
+  it('keeps S3-S6 as assumptions and does not repeat the LMULM mix question', () => {
+    const text = `${LMULM_PLAN_FIXTURE}
+모회사와 상품 공급 계약 체결 (예상 연매출 10억)
+모회사 오프라인 매장 PB 상품 납품 (예상 연매출 1억)
+그룹사 VIP 선물 대량 납품 계약 체결 (예상 매출 4억)
+사내벤처 모기업 온라인 쇼핑몰(회원수 2,000만 명)을 활용하여 보장된 시장을 대 상으로 초기 고객을 확보할 계획임`;
+    const initial = started(text);
+    const assumptions = initial.planCase?.claims.filter((item) => item.claimStatus === 'ASSUMPTION') ?? [];
+
+    expect(assumptions).toHaveLength(4);
+    expect(assumptions.map((item) => item.id)).toEqual(['c-s3', 'c-s4', 'c-s5', 'c-s6']);
+    expect(assumptions.every((item) => item.role === 'forecast' && item.ledgerChecked === false)).toBe(true);
+    const sales = initial.planCase?.claims.find((item) => item.id === 'c-sales');
+    expect(sales?.claimStatus).toBe('CLAIM');
+    expect(sales?.ledgerChecked).toBe(false);
+    expect(text).toContain('구매전환율 3.8~5.7%');
+    expect(
+      initial.planCase?.claims.every(
+        (item) => item.claimStatus === 'CLAIM' || item.claimStatus === 'ASSUMPTION',
+      ),
+    ).toBe(true);
+    expect(initial.planCase?.claims.every((item) => item.ledgerChecked === false)).toBe(true);
+    expect(initial.judgmentText).not.toContain('VALIDATED');
+    expect(initial.nextQuestion?.uncertaintyId).toBe('u-lmulm-mix');
+
+    const uncertain = answer(started(text), 'unknown');
+    expect(uncertain.state.nextQuestion?.uncertaintyId).toBe('u-lmulm-repurchase-track');
+    expect(uncertain.state.judgmentComparisons?.at(-1)?.verifiedFact).toBe(false);
+
+    const parent = answer(initial, 'parent');
+    const dependent = answer(parent.state, 'required');
+    const outside = answer(dependent.state, 'none');
+    const asked = outside.state.answers.map((item) => item.uncertaintyId);
+
+    expect(parent.state.nextQuestion?.uncertaintyId).toBe('u-lmulm-independence');
+    expect(dependent.state.nextQuestion?.uncertaintyId).toBe('u-lmulm-outside');
+    expect(outside.state.nextQuestion).toBeNull();
+    expect(new Set(asked).size).toBe(asked.length);
+    expect(outside.state.hypothesisJudgments.every((item) => item.verifiedFact === false)).toBe(true);
+    expect(outside.state.judgmentStatus).toBe('judgment_deferred');
+
+    const conflict = recordCounterClaim(outside.state, '예상 10억은 받은 매출이 아니다', NOW);
+    expect(conflict.state.nextQuestion?.uncertaintyId ?? null).not.toBe('u-lmulm-mix');
+    expect(conflict.state.planCase?.claims.filter((item) => item.claimStatus === 'ASSUMPTION')).toHaveLength(4);
+    expect(conflict.state.hypothesisJudgments.every((item) => item.verifiedFact === false)).toBe(true);
+
+    const revised = correctField(initial, 'customer', '기업 총무팀', NOW);
+    expect(revised.applied).toBe(true);
+    expect(revised.state.nextQuestion?.uncertaintyId).toBe('u-customer-scope');
+    expect(revised.state.planCase?.claims.filter((item) => item.claimStatus === 'ASSUMPTION')).toHaveLength(4);
+    expect(revised.state.judgmentStatus).toBe('judgment_deferred');
+  });
+
   it('asks a different second question for parent-company revenue than for direct sales', () => {
     const parent = answer(started(LMULM_PLAN_FIXTURE), 'parent');
     const direct = answer(started(LMULM_PLAN_FIXTURE), 'b2c');

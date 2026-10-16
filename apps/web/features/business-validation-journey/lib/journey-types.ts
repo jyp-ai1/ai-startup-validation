@@ -88,7 +88,7 @@ export type PlanClaim = {
   role: PlanClaimRole;
   text: string;
   sourceLabel: string;
-  claimStatus: 'CLAIM';
+  claimStatus: 'CLAIM' | 'ASSUMPTION';
   ledgerChecked: false;
   provenance: AnalysisProvenance;
 };

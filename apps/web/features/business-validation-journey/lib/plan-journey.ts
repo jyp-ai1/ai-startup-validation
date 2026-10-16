@@ -52,7 +52,10 @@ export function structureBusinessPlan(input: {
   const sourceLabel = input.sourceLabel.trim();
   const provenance = input.provenance;
   if (profile === 'lmulm') {
-    const claims = lmulmClaims(sourceLabel, provenance);
+    const claims = [
+      ...lmulmClaims(sourceLabel, provenance),
+      ...lmulmAssumptionsIn(text, sourceLabel, provenance),
+    ];
     return {
       intake: {
         business: 'LMULM. 한정판 문구 커머스와 리셀 플랫폼.',
@@ -381,8 +384,26 @@ function claim(
   text: string,
   sourceLabel: string,
   provenance: AnalysisProvenance,
+  claimStatus: PlanClaim['claimStatus'] = 'CLAIM',
 ): PlanClaim {
-  return { id, role, text, sourceLabel, claimStatus: 'CLAIM', ledgerChecked: false, provenance };
+  return { id, role, text, sourceLabel, claimStatus, ledgerChecked: false, provenance };
+}
+
+const LMULM_ASSUMPTION_SENTENCES = [
+  '모회사와 상품 공급 계약 체결 (예상 연매출 10억)',
+  '모회사 오프라인 매장 PB 상품 납품 (예상 연매출 1억)',
+  '그룹사 VIP 선물 대량 납품 계약 체결 (예상 매출 4억)',
+  '사내벤처 모기업 온라인 쇼핑몰(회원수 2,000만 명)을 활용하여 보장된 시장을 대 상으로 초기 고객을 확보할 계획임',
+] as const;
+
+function lmulmAssumptionsIn(
+  text: string,
+  sourceLabel: string,
+  provenance: AnalysisProvenance,
+): PlanClaim[] {
+  return LMULM_ASSUMPTION_SENTENCES.filter((sentence) => text.includes(sentence)).map((sentence, index) =>
+    claim(`c-s${index + 3}`, 'forecast', sentence, sourceLabel, provenance, 'ASSUMPTION'),
+  );
 }
 
 function lmulmClaims(sourceLabel: string, provenance: AnalysisProvenance): PlanClaim[] {

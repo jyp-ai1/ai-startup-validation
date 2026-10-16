@@ -1692,6 +1692,50 @@ The judgment trace can store a pasted sentence. No founder has brought a sentenc
 
 ---
 
+## ADR-057: Forecast sentences stay assumptions, and a repeated open gap yields
+
+**Status:** Proposed  
+**Date:** 2026-10-16  
+**Sprint:** ALABOM validation journey  
+**Authors:** CTO (autonomous)
+
+### Context
+
+External models were not adopted as the judgment engine. The remaining question is whether the TypeScript rule engine can move Claim, Assumption, and the next question without a model. V3 question selection did not apply the existing cap of two unclosed asks on the same gap. A partial gap such as `problemJtbd` could stay selected. Forecast sentences in a plan could be read as received revenue.
+
+### Decision
+
+1. The trace is `docs/evidence/ALABOM/AI-PM/RULE-ENGINE-AC16-AC5.txt`. The captured run is `experiments/rule-engine-ac/trace.json`.
+2. `decideNextQuestionFromReview` yields after `MAX_SAME_GAP_ASKS_BEFORE_YIELD` unclosed asks on a probe or clarify. The stored gap completeness stays partial. A first ask still probes the same gap. A closed payer stays excluded.
+3. `PlanClaim.claimStatus` is `CLAIM` or `ASSUMPTION`. There is no Fact status. `ledgerChecked` stays false. Four exact LMULM forecast sentences become assumptions only when they appear in the source text.
+4. Founder choices, an edited customer, an unknown mix, and a counter-claim change or end the next question. They do not promote a claim to a verified fact.
+5. This ADR does not adopt a model, a score, a merge, or a Production deploy. `liveModelCall` stays false. Production SHA `0b465226` stays the lock.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Leave the V3 decider without the ask cap | First partial probe stays simple | The same open gap can be selected again |
+| Add a Fact status for document numbers | Looks closer to a finished ledger | A sentence in a plan is not a checked transaction |
+
+### Consequences
+
+**Positive:**
+
+- Two unclosed asks on `problemJtbd`, with payer already closed, select `businessOneLiner`.
+- S3–S6 stay assumptions. The parent-company answer path does not repeat the mix question.
+
+**Negative:**
+
+- The conversion-rate sentence is not its own state node. The engine does not write a business judgment at the level of a manual GPT reading.
+- Three older tests already failed on the previous decider. This ADR does not mark that suite as passing.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
