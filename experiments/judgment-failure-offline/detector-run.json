@@ -1,0 +1,200 @@
+{
+  "at": "2026-10-16T12:20:51.553Z",
+  "selfPassIsNotProductPass": true,
+  "productFailuresRemainOpen": [
+    "failure1",
+    "failure2",
+    "failure5"
+  ],
+  "inputHasEvidence": false,
+  "inputLines": [
+    {
+      "line": "S1: PMF 결과 (2023년 8월 ~ 2023년 12월) - 매출: 2000만원",
+      "class": "claim"
+    },
+    {
+      "line": "S2: 구매전환율: 3.8~5.7%",
+      "class": "claim"
+    },
+    {
+      "line": "S3: 모회사와 상품 공급 계약 체결 (예상 연매출 10억)",
+      "class": "assumption"
+    },
+    {
+      "line": "S4: 모회사 오프라인 매장 PB 상품 납품 (예상 연매출 1억)",
+      "class": "assumption"
+    },
+    {
+      "line": "S5: 그룹사 VIP 선물 대량 납품 계약 체결 (예상 매출 4억)",
+      "class": "assumption"
+    },
+    {
+      "line": "S6: 사내벤처 모기업 온라인 쇼핑몰(회원수 2,000만 명)을 활용하여 보장된 시장을 대 상으로 초기 고객을 확보할 계획임",
+      "class": "assumption"
+    },
+    {
+      "line": "A1: 문서의 매출 2,000만 원에서 가장 큰 비중은 모회사·계열사 판매다.",
+      "class": "claim"
+    },
+    {
+      "line": "A2: 모회사·계열사 지원이 없어도 현재 매출 구조를 유지할 수 없다. 사실상 모회사 지원이 필수다.",
+      "class": "claim"
+    }
+  ],
+  "productRefCount": 0,
+  "cases": [
+    {
+      "id": "path1-stored",
+      "kind": "stored-failure",
+      "file": "experiments/business-judgment-poc/path1.json",
+      "note": null,
+      "missingTokens": [
+        "A2",
+        "예상 연매출",
+        "10억"
+      ],
+      "storedFact": false,
+      "modelFact": false,
+      "modelParse": "parsed",
+      "modelFactMatchesStored": true,
+      "expected": {
+        "tokenOmission": true,
+        "factPromotion": false
+      },
+      "actual": {
+        "tokenOmission": true,
+        "factPromotion": false
+      },
+      "agrees": true
+    },
+    {
+      "id": "path4-stored",
+      "kind": "stored-failure",
+      "file": "experiments/business-judgment-poc/path4.json",
+      "note": null,
+      "missingTokens": [
+        "A2",
+        "예상 연매출",
+        "10억"
+      ],
+      "storedFact": true,
+      "modelFact": true,
+      "modelParse": "parsed",
+      "modelFactMatchesStored": true,
+      "expected": {
+        "tokenOmission": true,
+        "factPromotion": true
+      },
+      "actual": {
+        "tokenOmission": true,
+        "factPromotion": true
+      },
+      "agrees": true
+    },
+    {
+      "id": "control-clean",
+      "kind": "synthetic-control",
+      "file": null,
+      "note": null,
+      "missingTokens": [],
+      "storedFact": false,
+      "modelFact": null,
+      "modelParse": null,
+      "modelFactMatchesStored": null,
+      "expected": {
+        "tokenOmission": false,
+        "factPromotion": false
+      },
+      "actual": {
+        "tokenOmission": false,
+        "factPromotion": false
+      },
+      "agrees": true
+    },
+    {
+      "id": "control-promotion-only",
+      "kind": "synthetic-failure",
+      "file": null,
+      "note": null,
+      "missingTokens": [],
+      "storedFact": true,
+      "modelFact": null,
+      "modelParse": null,
+      "modelFactMatchesStored": null,
+      "expected": {
+        "tokenOmission": false,
+        "factPromotion": true
+      },
+      "actual": {
+        "tokenOmission": false,
+        "factPromotion": true
+      },
+      "agrees": true
+    },
+    {
+      "id": "denial-tokens",
+      "kind": "synthetic-semantic-limit",
+      "file": null,
+      "note": "토큰은 있으나 문장은 부정이다. 토큰 검사는 누락으로 보지 않는다.",
+      "missingTokens": [],
+      "storedFact": false,
+      "modelFact": null,
+      "modelParse": null,
+      "modelFactMatchesStored": null,
+      "expected": {
+        "tokenOmission": false,
+        "factPromotion": false
+      },
+      "actual": {
+        "tokenOmission": false,
+        "factPromotion": false
+      },
+      "agrees": true
+    }
+  ],
+  "qualityCases": [
+    {
+      "id": "failure5-this-call",
+      "kind": "function-call",
+      "expectedQuality": "PARTIAL",
+      "expectedMergeable": false,
+      "scope": "this-call",
+      "actualQuality": "VALID",
+      "actualMergeable": true,
+      "qualityMismatch": true,
+      "mergeableMismatch": true,
+      "agrees": true
+    },
+    {
+      "id": "control-partial",
+      "kind": "synthetic-control",
+      "quality": "PARTIAL",
+      "mergeable": false,
+      "expectedQuality": "PARTIAL",
+      "expectedMergeable": false,
+      "actualQuality": "PARTIAL",
+      "actualMergeable": false,
+      "qualityMismatch": false,
+      "mergeableMismatch": false,
+      "agrees": true
+    },
+    {
+      "id": "original-1039-log",
+      "kind": "missing-raw-log",
+      "expectedQuality": "PARTIAL",
+      "scope": "original-log",
+      "actualQuality": null,
+      "actualMergeable": null,
+      "qualityMismatch": null,
+      "mergeableMismatch": null,
+      "agrees": null,
+      "status": "unverified-no-raw-log"
+    }
+  ],
+  "auditAgrees": true,
+  "limits": [
+    "denial-tokens는 토큰이 있어도 부정이면 누락이다. 이 검사는 그 부정을 보지 못한다.",
+    "path4의 Fact true 탐지는 입력 구간에 증거 표지가 없다는 형식 규칙이다. 사업적 참은 정하지 않는다.",
+    "10:39 원본 로그 파일은 저장소에 없다. 그 mergeable은 미확인이다."
+  ]
+}

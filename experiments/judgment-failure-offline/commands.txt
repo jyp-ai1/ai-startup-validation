@@ -1,0 +1,31 @@
+2026-10-16 오프라인 명령. 모델 호출 없음. apps/ packages 수정 없음.
+
+1. node experiments/judgment-failure-offline/inventory.mjs
+   인벤토리 JSON을 만든다. 10:39 원본 로그 파일은 없다.
+
+2. node /workspace/node_modules/.pnpm/vite-node@3.2.4_@types+node@20.19.43_jiti@2.7.0_lightningcss@1.32.0/node_modules/vite-node/dist/cli.mjs --config /workspace/apps/web/vitest.config.ts /workspace/experiments/judgment-failure-offline/observe.ts
+   cwd apps/web. EXIT 0.
+   failure1Omission true, failure1FactPromoted false, failure2FactTrue true,
+   recordedVerifiedFact false, failure5Quality VALID, failure5Mergeable true.
+   제품 참조 0.
+
+3. node experiments/judgment-failure-offline/detector.mjs
+   EXIT 0. auditAgrees true. productRefCount 0.
+   path1 tokenOmission true, factPromotion false. 모델 Fact와 저장 Fact 모두 false.
+   path4 tokenOmission true, factPromotion true. 모델 Fact와 저장 Fact 모두 true.
+   control-clean 두 깃발 false. control-promotion-only는 승격만 true.
+   denial-tokens는 토큰 검사를 통과한다. 의미상 누락은 보지 못한다.
+   original-1039-log는 unverified-no-raw-log.
+
+4. cd apps/web && pnpm exec vitest run features/business-validation-journey/lib/__tests__/judgment-development.test.ts --reporter=basic
+   2026-10-16T12:20:31Z. EXIT 0. Test Files 1 passed. Tests 3 passed.
+   이 파일은 path1.json과 path4.json을 열지 않는다.
+
+5. cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/core-final-stabilization.test.ts -t "validationTestability weak answer is PARTIAL and not mergeable" --reporter=verbose
+   2026-10-16T12:20:52Z. EXIT 1. Tests 1 failed, 77 skipped.
+   Expected PARTIAL. Received VALID. 996행 mergeable 단정은 실행되지 않음.
+   발췌 vitest-failure5.txt.
+
+6. cd experiments/id-selection-validator && python3 validator.py
+   EXIT 0. checks_pass true. validator.py에 path1, path4 문자열 없음.
+   네 ID 픽스처의 형식 실패 탐지다. 실패 1·2·5의 해결이 아니다.

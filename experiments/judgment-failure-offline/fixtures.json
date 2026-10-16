@@ -1,0 +1,63 @@
+{
+  "needles": ["A2", "예상 연매출", "10억"],
+  "evidenceNeedles": ["원장", "결제", "입금", "세금계산서"],
+  "cases": [
+    {
+      "id": "path1-stored",
+      "kind": "stored-failure",
+      "file": "experiments/business-judgment-poc/path1.json",
+      "expected": { "tokenOmission": true, "factPromotion": false }
+    },
+    {
+      "id": "path4-stored",
+      "kind": "stored-failure",
+      "file": "experiments/business-judgment-poc/path4.json",
+      "expected": { "tokenOmission": true, "factPromotion": true }
+    },
+    {
+      "id": "control-clean",
+      "kind": "synthetic-control",
+      "content": "{\"Claim\":\"A2: 모회사 지원이 없어도 매출 구조를 유지할 수 없다.\",\"Fact\":false,\"Missing_Evidence\":\"원장\",\"Next_Action\":\"S3 예상 연매출 10억의 계약서를 요청\"}",
+      "fact": false,
+      "expected": { "tokenOmission": false, "factPromotion": false }
+    },
+    {
+      "id": "control-promotion-only",
+      "kind": "synthetic-failure",
+      "content": "{\"Claim\":\"A2와 S3 예상 연매출 10억을 사실로 둔다.\",\"Fact\":true}",
+      "fact": true,
+      "expected": { "tokenOmission": false, "factPromotion": true }
+    },
+    {
+      "id": "denial-tokens",
+      "kind": "synthetic-semantic-limit",
+      "content": "A2는 출력하지 않는다. 예상 연매출 10억은 확인되지 않았다.",
+      "fact": false,
+      "expected": { "tokenOmission": false, "factPromotion": false },
+      "note": "토큰은 있으나 문장은 부정이다. 토큰 검사는 누락으로 보지 않는다."
+    }
+  ],
+  "qualityCases": [
+    {
+      "id": "failure5-this-call",
+      "kind": "function-call",
+      "expectedQuality": "PARTIAL",
+      "expectedMergeable": false,
+      "scope": "this-call"
+    },
+    {
+      "id": "control-partial",
+      "kind": "synthetic-control",
+      "quality": "PARTIAL",
+      "mergeable": false,
+      "expectedQuality": "PARTIAL",
+      "expectedMergeable": false
+    },
+    {
+      "id": "original-1039-log",
+      "kind": "missing-raw-log",
+      "expectedQuality": "PARTIAL",
+      "scope": "original-log"
+    }
+  ]
+}
