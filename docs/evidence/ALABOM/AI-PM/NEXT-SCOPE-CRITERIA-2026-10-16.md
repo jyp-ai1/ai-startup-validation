@@ -36,4 +36,4 @@ ID 선택 검증기 `experiments/id-selection-validator/validator.py` 206–209�
 
 ## 4. 동결
 
-작업 전 HEAD `08c4f234`. `6f71ea3a` 이후 `apps/`·`packages/` diff는 비어 있다. Production `0b465226`은 조상이다. PR #199는 초안이다. 이 문서를 더한 뒤의 비교는 커밋 다음에 같은 diff로 확인한다. 비어 있지 않으면 동결 유지로 적지 않는다.
+작업 전 HEAD `08c4f234`. `6f71ea3a` 이후 `apps/`·`packages/` diff는 비어 있다. Production `0b465226`은 조상이다. PR #199는 초안이다. 작업 후. 커밋 `c401a6e6`. `git diff --stat 6f71ea3a..HEAD -- apps packages` 출력은 비어 있다. 비용 발생 호출은 없다. 병합과 Production 배포는 없다.
