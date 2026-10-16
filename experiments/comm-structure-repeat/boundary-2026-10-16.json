@@ -1,0 +1,116 @@
+[
+  {
+    "name": "BOUNDARY-A",
+    "started": "2026-10-16T09:40:04.319292Z",
+    "gap_after_previous_sec": null,
+    "endpoint": "https://text.pollinations.ai/openai",
+    "authorization_sent": false,
+    "client_timeout_sec": 45,
+    "runner": "python-urllib",
+    "request": {
+      "model": "openai",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Connection test. Reply with the single word pong and then this marker: BOUNDARY-A"
+        }
+      ],
+      "stream": false
+    },
+    "elapsed_sec": 8.125,
+    "http": 200,
+    "error": null,
+    "response_headers": {
+      "Date": "Fri, 16 Oct 2026 09:40:12 GMT",
+      "Content-Type": "application/json; charset=utf-8",
+      "Server": "cloudflare",
+      "CF-RAY": "a4b61997dea1495f-PDX",
+      "x-model-used": "gpt-oss-20b",
+      "x-usage-prompt-text-tokens": "326",
+      "x-usage-completion-text-tokens": "61"
+    },
+    "body": "{\"id\":\"pllns_51851812f69b183e9c27896093cd6b18\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong\\nBOUNDARY-A\",\"reasoning\":\"We need to reply with 'pong' and then the marker: BOUNDARY-A. No extra words. Just \\\"pong\\\" then some newline? Probably one word then the marker. Let's do:\\n\\npong\\nBOUNDARY-A.\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792143609,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":326,\"completion_tokens\":61,\"total_tokens\":387},\"user_tier\":\"anonymous\"}",
+    "content": "pong\nBOUNDARY-A",
+    "model_field": "gpt-oss-20b",
+    "user_tier": "anonymous",
+    "id": "pllns_51851812f69b183e9c27896093cd6b18",
+    "marker_in_content": true,
+    "ended": "2026-10-16T09:40:12.444432Z"
+  },
+  {
+    "name": "BOUNDARY-B",
+    "started": "2026-10-16T09:40:12.444592Z",
+    "gap_after_previous_sec": 0.0,
+    "endpoint": "https://text.pollinations.ai/openai",
+    "authorization_sent": false,
+    "client_timeout_sec": 45,
+    "runner": "python-urllib",
+    "request": {
+      "model": "openai",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Connection test. Reply with the single word pong and then this marker: BOUNDARY-B"
+        }
+      ],
+      "stream": false
+    },
+    "elapsed_sec": 10.09,
+    "http": 200,
+    "error": null,
+    "response_headers": {
+      "Date": "Fri, 16 Oct 2026 09:40:22 GMT",
+      "Content-Type": "application/json; charset=utf-8",
+      "Server": "cloudflare",
+      "CF-RAY": "a4b619ca7a916289-PDX",
+      "x-model-used": "gpt-oss-20b",
+      "x-usage-prompt-text-tokens": "326",
+      "x-usage-completion-text-tokens": "79"
+    },
+    "body": "{\"id\":\"pllns_4dfa6d2d3af3ca3de24fe5d275b234e4\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong BOUNDARY-B\",\"reasoning\":\"User: \\\"Connection test. Reply with the single word pong and then this marker: BOUNDARY-B\\\". They want an exact response: \\\"pong\\\" \\\"BOUNDARY-B\\\". Must we include newline? They want single word pong and then marker. So output: pong BOUNDARY-B. Let's just output that.\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792143619,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":326,\"completion_tokens\":79,\"total_tokens\":405},\"user_tier\":\"anonymous\"}",
+    "content": "pong BOUNDARY-B",
+    "model_field": "gpt-oss-20b",
+    "user_tier": "anonymous",
+    "id": "pllns_4dfa6d2d3af3ca3de24fe5d275b234e4",
+    "marker_in_content": true,
+    "ended": "2026-10-16T09:40:22.534178Z"
+  },
+  {
+    "name": "BOUNDARY-C",
+    "started": "2026-10-16T09:40:22.534278Z",
+    "gap_after_previous_sec": 0.0,
+    "endpoint": "https://text.pollinations.ai/openai",
+    "authorization_sent": false,
+    "client_timeout_sec": 45,
+    "runner": "python-urllib",
+    "request": {
+      "model": "openai",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Connection test. Reply with the single word pong and then this marker: BOUNDARY-C"
+        }
+      ],
+      "stream": false
+    },
+    "elapsed_sec": 8.876,
+    "http": 200,
+    "error": null,
+    "response_headers": {
+      "Date": "Fri, 16 Oct 2026 09:40:31 GMT",
+      "Content-Type": "application/json; charset=utf-8",
+      "Server": "cloudflare",
+      "CF-RAY": "a4b61a095fa06c17-PDX",
+      "x-model-used": "gpt-oss-20b",
+      "x-usage-prompt-text-tokens": "326",
+      "x-usage-completion-text-tokens": "39"
+    },
+    "body": "{\"id\":\"pllns_8bc15e2c72ecbf28988f2f485e07b368\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong BOUNDARY-C\",\"reasoning\":\"Ok, user wants me to output \\\"pong\\\" then the marker: \\\"BOUNDARY-C\\\". Just respond with that.\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792143628,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":326,\"completion_tokens\":39,\"total_tokens\":365},\"user_tier\":\"anonymous\"}",
+    "content": "pong BOUNDARY-C",
+    "model_field": "gpt-oss-20b",
+    "user_tier": "anonymous",
+    "id": "pllns_8bc15e2c72ecbf28988f2f485e07b368",
+    "marker_in_content": true,
+    "ended": "2026-10-16T09:40:31.409926Z"
+  }
+]
