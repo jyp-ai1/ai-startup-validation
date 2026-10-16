@@ -1,0 +1,110 @@
+PATH COMPARISON — 2026-10-16
+Same inputs: docs/evidence/ALABOM/SI/samples/lmulm-2024-초기창업패키지-사업계획서.pdf and ridm-투자자-사업계획서-260317.pdf, pypdf text extract.
+Same CEO test answers as hypotheses, not revenue. Judgment target stays 판단 유보.
+qwen2.5:3b was not called again. Baseline remains LOCAL-MODEL-E2E.txt and QUALITY-GATE.txt.
+No paid API. No merge. No production deploy. Failed text was not written into ALABOM.
+
+A. Playwright + external AI website: 미실시.
+Playwright 1.61.1 is installed. No saved login state for an AI site. chatgpt.com and gemini.google.com automation stays closed by CONSUMER-WEB-ROBOTS-BOUNDARY.txt. Those sites were not opened.
+
+B. Chrome extension + user approval: 미실시.
+The only installed extension is the Chrome Web Store payments component, id nmmhkkegccagdldgiimedpiccmgmieda. There is no user-approved AI tab. No AI-site bypass was built.
+
+C. Chrome built-in Prompt API: 실행 실패. 분석 미실시.
+Chrome 154.0.8037.92. navigator.deviceMemory 16, hardwareConcurrency 4, no NVIDIA GPU. Free disk 241G.
+LanguageModel.availability without options: downloadable, 2093ms. English: downloadable. Korean: unavailable, 0ms.
+After a click, LanguageModel.create() returned NotSupportedError: Unable to create a text session because the service is not running.
+No business plan text was sent. No model response was received.
+
+D. qwen2.5:7b local: 실행 왕복은 됨. 품질은 두 사업 모두 실패. ALABOM 전달 미실시.
+POST http://127.0.0.1:11434/api/chat. cost local_runtime_no_api_invoice. num_ctx 16384.
+LMULM prompt_eval 9496 and 9838. RIDM prompt_eval 5920 and 6490. Full extracts fit.
+LMULM image pages were still not in the text. That input gap is unchanged.
+고급 필기구 is not in the LMULM extract. 시장 점유율 is not in the RIDM extract.
+사인본 is in the LMULM extract. Pre-revenue is in the RIDM extract.
+
+E. Manual handoff: 미실시. No person pasted a plan into an external AI in this run. Not counted as an automatic connection.
+
+Scores use 통과, 실패, 미실시. A long answer is not a pass.
+
+item | LMULM 7B | RIDM 7B
+원문 이해 | 실패. 2030대와 40대를 203040세대로 붙였고, 리셀 수수료가 예정이라는 문장을 현재 수익으로 다루지 못했다. 이미지 쪽은 입력에 없다. | 실패. Pre-revenue와 융자는 읽었다. 미확인 칸은 "확인할 수 없는 정보"라는 빈 문장이다.
+근거 정확성 | 실패. 직전 분석에 없는 "고급 필기구"를 예로 만들었다. | 실패. 다음 질문이 문서에 없는 시장 점유율 목표를 묻는다.
+질문 품질 | 실패. 장르 선정 질문이고, 재구매나 예정 수수료를 묻지 않는다. | 실패. 경쟁 우위와 시장 점유율을 묻는 일반 질문이다.
+답변 반영 | 실패. 재구매율, 출시 알림, 수수료 보류가 재분석에 없다. | 실패. 유료 고객이 없다는 점은 반영했다. 가격을 확정하지 않는다는 가설은 없고, "판단 유보를 유지하라"는 지시문을 제목으로 붙였다.
+최종 판단 | 실패. 최초 응답에는 판단 유보가 있다. 재분석은 그 판단을 답변에 맞게 고치지 못했다. | 실패. 최초 응답은 유보 전에 "사업성을 인정받을 수 있을 것으로 보인다"를 붙인다.
+ALABOM 연결 | 미실시 | 미실시
+
+Selection: no path. A reusable CPO path was not found.
+
+========================================================================
+{"name": "lmulm-initial", "started": "2026-10-16T00:33:05.807230+00:00", "model": "qwen2.5:7b", "endpoint": "http://127.0.0.1:11434/api/chat", "cost": "local_runtime_no_api_invoice", "http": 200, "elapsed_sec": 271.8, "eval_count": 352, "prompt_eval_count": 9496, "done_reason": "stop", "prompt_chars": 12891}
+"## 사업 모델
+이 사업은 한정판 문구를 전문적으로 취급하고 리셀 거래를 할 수 있는 플랫폼을 제공하며, 다양한 수익 모델을 통해 운영될 예정이다."
+
+"## 고객 문제
+203040세대 소비자들은 문구 한정판을 수집하고 리셀 거래하는 데 어려움을 겪고 있으며, 이는 플랫폼의 필요성으로 이어진다."
+
+"## 수익 모델
+사업은 판매 수수료와 경매 수수료를 통해 수익을 창출할 계획이며, 다양한 비즈니스 모델을 통해 연매출을 확대할 예정이다."
+
+"## 문서에 적힌 현재 실적
+2023년 8월부터 12월까지의 PMF 결과에 따르면, 2000만원의 매출을 달성하였으며, 40대 여성과 남성의 구매율이 높게 나타났다."
+
+"## 미확인
+사업의 성공 가능성에 대한 구체적인 데이터나 분석이 부족하여 판단을 유보한다."
+
+"## 사업성 판단
+사업의 기술적 실현 가능성은 높으나, 글로벌 시장 진출 전략과 장기적인 성장 전략에 대한 구체적인 계획이 부족하여 판단을 유보한다."
+
+"?"
+어떤 장르의 문구 한정판을 우선적으로 선정하여 리셀 거래 플랫폼에 공급할 계획인가요?
+
+========================================================================
+{"name": "lmulm-reanalysis", "started": "2026-10-16T00:37:38.355416+00:00", "model": "qwen2.5:7b", "endpoint": "http://127.0.0.1:11434/api/chat", "cost": "local_runtime_no_api_invoice", "http": 200, "elapsed_sec": 239.4, "eval_count": 241, "prompt_eval_count": 9838, "done_reason": "stop", "prompt_chars": 13404}
+### 답변:
+
+#### 주장:
+사업의 성공 가능성에 대한 구체적인 데이터나 분석이 부족하여 판단을 유보한다. 특히, 초기 단계에서 어떤 장르의 문구 한정판을 우선적으로 선정하여 리셀 거래 플랫폼에 공급할 계획인지를 명확히 하지 않았다.
+
+#### 답변:
+초기 단계에서는 프리미엄 문구 카테고리 중에서 소장 가치가 높고, 이미 높은 인기를 얻고 있는 제품들을 우선적으로 선정하여 리셀 거래 플랫폼에 공급할 계획입니다. 예를 들어, 고급 필기구, 한정판 문구 다이어리, 유명 작가의 사인본 등이 포함될 수 있습니다. 그러나 이에 대한 구체적인 데이터나 분석이 부족하여 판단을 유보합니다.
+
+### 검증 행동:
+- **장르별 문구 한정판의 시장 규모와 성장 추세**를 조사하여 선정할 장르를 정확히 판단할 수 있도록 합니다.
+
+========================================================================
+{"name": "ridm-initial", "started": "2026-10-16T00:41:38.434681+00:00", "model": "qwen2.5:7b", "endpoint": "http://127.0.0.1:11434/api/chat", "cost": "local_runtime_no_api_invoice", "http": 200, "elapsed_sec": 225.2, "eval_count": 578, "prompt_eval_count": 5920, "done_reason": "stop", "prompt_chars": 9678}
+"## 사업 모델"
+RIDM AI는 누구나 자신만의 AI 에이전트를 만들고, 독립 서비스로 배포하며, 구독, 후원, 광고, B2B를 통해 수익화할 수 있는 AI 사업 플랫폼입니다.
+
+"## 고객 문제"
+AI 시장은 빠르게 성장하고 있지만, AI 서비스를 직접 만들고 운영하는 플랫폼은 아직 초기 단계이다. 범용 챗봇 중심 구조로 사용자는 AI를 소비할 뿐 소유할 수 없다. 높은 기술 장벽과 서비스 운영 인프라 부족, 수익화 구조 미비 등이 문제로 제기된다.
+
+"## 수익 모델"
+RIDM AI는 7개의 독립적 수익 축을 보유한 복합 수익 구조 플랫폼이다. 구독형 SaaS 플랫폼, 캐릭터 구독 수수료, 후원 & 팬덤, 3D 크리에이터 마켓, 광고 수익, B2B 구축, 프리미엄 기능 모듈 등 다양한 수익 모델을 통해 AI를 사업화할 수 있다.
+
+"## 문서에 적힌 현재 실적"
+2025년 4월 청년창업으로 1억 융자를 확보했으며, 현재 Pre-revenue 단계에 있으며 핵심 기능 개발 완료 후 유료화 전환 예정이다. 감정 리듬 엔진 v1.0 개발 완료, 벡터 DB(Qdrant) 기반 캐릭터 기억 구조, 캐릭터 전용 독립 URL, 구독/후원 결제 모듈 연동 완료, 감정 리듬 AI 국내 특허 출원 완료, PCT 국제 특허 출원 진행 중이다.
+
+"## 미확인"
+미확인 항목은 현재 문서에서 확인할 수 없는 정보입니다.
+
+"## 사업성 판단"
+RIDM AI는 AI 시장의 성장 가능성을 인정받았으며, 자체 개발한 기술과 다양한 수익 모델을 통해 사업성을 인정받을 수 있을 것으로 보인다. 그러나 구체적인 시장 점유율, 경쟁사 분석, 구체적인 수익 예측 등에 대한 근거가 부족하여 판단을 유보한다.
+
+"## 다음 질문"
+RIDM AI의 주요 경쟁 우위 요소는 무엇이며, 이를 통해 어떤 시장 점유율을 목표로 하는지?
+
+========================================================================
+{"name": "ridm-reanalysis", "started": "2026-10-16T00:45:24.218652+00:00", "model": "qwen2.5:7b", "endpoint": "http://127.0.0.1:11434/api/chat", "cost": "local_runtime_no_api_invoice", "http": 200, "elapsed_sec": 153.0, "eval_count": 227, "prompt_eval_count": 6490, "done_reason": "stop", "prompt_chars": 10567}
+### 문서 주장
+RIDM AI는 AI 캐릭터 URL 하나의 지불 의사를 검증하고, 이를 통해 구독 수익을 창출할 계획이다. 그러나 현재 유료 고객이 없으며, 이는 시장에서의 수용성을 검증하지 못하고 있다.
+
+### 답변 때문에 빼는 수익 가설
+RIDM AI가 캐릭터 URL의 구독 수익을 통해 수익을 창출할 수 있지만, 초기 단계에서는 유료 고객이 없어 해당 수익이 발생하지 않을 가능성이 높다. 따라서, 이 가설은 시장에서의 수용성을 아직 검증하지 못하고 있다.
+
+### 판단 유보를 유지하라
+
+### 다음 검증 행동
+RIDM AI가 캐릭터 URL의 구독 수익을 통해 수익을 창출할 수 있는지 확인하기 위해, 최소한 한 명의 유료 고객을 확보하고 해당 고객의 구독 동기를 조사하는 실험을 수행해야 한다.
