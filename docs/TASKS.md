@@ -9,7 +9,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 **CPO Gate:** 동결 · 규칙 엔진 추가 수정 중지 · 병합·Production 금지 · Production 잠금 `0b465226`  
 **Branch:** `cursor/business-refinement-loop-4b88`  
 **PR:** #199  
-**Evidence:** `docs/evidence/ALABOM/AI-PM/SUCCESS-PATH-TRACE-2026-10-16.md`
+**Evidence:** `docs/evidence/ALABOM/AI-PM/INTERVAL-STABILITY-2026-10-16.md`
 
 | # | Item | Status |
 |---|------|--------|
@@ -21,6 +21,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 6 | CPO 부재 3시간 보고. 코드 변경 없음 | `docs/evidence/ALABOM/AI-PM/CPO-ABSENCE-BRIEF-2026-10-16.md` |
 | 7 | 1단계 통신 인수. Gemini·GPT 재현 성공은 없음. 2·3단계 미착수 | `docs/evidence/ALABOM/AI-PM/STAGE1-COMM-HANDOFF-2026-10-16.md` |
 | 8 | 성공 경로 출처와 익명 시간 초과 경계. 관문은 닫힘 | `docs/evidence/ALABOM/AI-PM/SUCCESS-PATH-TRACE-2026-10-16.md` |
+| 9 | 30초 간격 8회. 200은 7회, 상태 없는 시간 초과 1회. 관문은 닫힘 | `docs/evidence/ALABOM/AI-PM/INTERVAL-STABILITY-2026-10-16.md` |
 
 ---
 

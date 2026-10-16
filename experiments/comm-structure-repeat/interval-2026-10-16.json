@@ -1,0 +1,419 @@
+{
+  "protocol": {
+    "purpose": "spaced stability, error class, free-slot compliance, model identity",
+    "endpoint": "https://text.pollinations.ai/openai",
+    "n": 8,
+    "gap_after_end_sec": 30,
+    "client_timeout_sec": 45,
+    "authorization_sent": false,
+    "business_text": false,
+    "stop_on_http": [
+      401,
+      402,
+      403
+    ],
+    "retry": "none automatic; one new-marker call only after a no-status timeout or HTTP 5xx, and only after another 30s wait",
+    "success": "HTTP 200 and marker present in content",
+    "gate": "this run does not open stage 1"
+  },
+  "summary": {
+    "saved_records": 9,
+    "interval_attempts": 8,
+    "interval_http_200": 7,
+    "interval_no_status_timeout": 1,
+    "interval_http_error": 0,
+    "interval_200_latency_sec": {
+      "min": 7.742,
+      "median": 8.597,
+      "max": 10.284
+    },
+    "retry_name": "RETRY-1",
+    "retry_http": 200,
+    "retry_id": "pllns_e565b914cb92a7ec0820530674d5516b",
+    "payment_header_any": false,
+    "authorization_sent_any": false
+  },
+  "records": [
+    {
+      "name": "INTERVAL-1",
+      "started": "2026-10-16T09:45:25.551851Z",
+      "gap_after_previous_end_sec": null,
+      "endpoint": "https://text.pollinations.ai/openai",
+      "authorization_sent": false,
+      "client_timeout_sec": 45,
+      "runner": "python-urllib",
+      "request": {
+        "model": "openai",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Connection test. Reply with the single word pong and then this marker: INTERVAL-1"
+          }
+        ],
+        "stream": false
+      },
+      "elapsed_sec": 8.597,
+      "http": 200,
+      "error": null,
+      "error_class": null,
+      "body": "{\"id\":\"pllns_63d0d6af0ea4c3685feb4cbdfa43a86a\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong INTERVAL-1\",\"reasoning\":\"User says: \\\"Connection test. Reply with the single word pong and then this marker: INTERVAL-1\\\"\\n\\nWe must reply exactly \\\"pong INTERVAL-1\\\" or maybe \\\"pong\\\\nINTERVAL-1\\\". They want a single word part \\\"pong\\\" and then this marker. Likely \\\"pong INTERVAL-1\\\". Ensure to respond exactly.\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792143931,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":326,\"completion_tokens\":87,\"total_tokens\":413},\"user_tier\":\"anonymous\"}",
+      "response_headers": {
+        "Date": "Fri, 16 Oct 2026 09:45:34 GMT",
+        "Server": "cloudflare",
+        "CF-RAY": "a4b6216f2bd5c153-PDX",
+        "x-model-used": "gpt-oss-20b",
+        "x-usage-prompt-text-tokens": "326",
+        "x-usage-completion-text-tokens": "87"
+      },
+      "content": "pong INTERVAL-1",
+      "model_field": "gpt-oss-20b",
+      "user_tier": "anonymous",
+      "id": "pllns_63d0d6af0ea4c3685feb4cbdfa43a86a",
+      "usage": {
+        "prompt_tokens": 326,
+        "completion_tokens": 87,
+        "total_tokens": 413
+      },
+      "marker_in_content": true,
+      "paid_header": false,
+      "ended": "2026-10-16T09:45:34.149247Z"
+    },
+    {
+      "name": "INTERVAL-2",
+      "started": "2026-10-16T09:46:04.149453Z",
+      "gap_after_previous_end_sec": 30.0,
+      "endpoint": "https://text.pollinations.ai/openai",
+      "authorization_sent": false,
+      "client_timeout_sec": 45,
+      "runner": "python-urllib",
+      "request": {
+        "model": "openai",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Connection test. Reply with the single word pong and then this marker: INTERVAL-2"
+          }
+        ],
+        "stream": false
+      },
+      "elapsed_sec": 10.284,
+      "http": 200,
+      "error": null,
+      "error_class": null,
+      "body": "{\"id\":\"pllns_c3df61d9c86f97106cff8faec04666de\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong INTERVAL-2\",\"reasoning\":\"User: \\\"Connection test. Reply with the single word pong and then this marker: INTERVAL-2\\\"\\n\\nWe just reply \\\"pong INTERVAL-2\\\" presumably. Ensure no other words. We'll output exactly \\\"pong INTERVAL-2\\\" with no punctuation? Probably exactly \\\"pong INTERVAL-2\\\".\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792143971,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":326,\"completion_tokens\":77,\"total_tokens\":403},\"user_tier\":\"anonymous\"}",
+      "response_headers": {
+        "Date": "Fri, 16 Oct 2026 09:46:14 GMT",
+        "Server": "cloudflare",
+        "CF-RAY": "a4b622607f6eef63-PDX",
+        "x-model-used": "gpt-oss-20b",
+        "x-usage-prompt-text-tokens": "326",
+        "x-usage-completion-text-tokens": "77"
+      },
+      "content": "pong INTERVAL-2",
+      "model_field": "gpt-oss-20b",
+      "user_tier": "anonymous",
+      "id": "pllns_c3df61d9c86f97106cff8faec04666de",
+      "usage": {
+        "prompt_tokens": 326,
+        "completion_tokens": 77,
+        "total_tokens": 403
+      },
+      "marker_in_content": true,
+      "paid_header": false,
+      "ended": "2026-10-16T09:46:14.433333Z"
+    },
+    {
+      "name": "INTERVAL-3",
+      "started": "2026-10-16T09:46:44.433554Z",
+      "gap_after_previous_end_sec": 30.0,
+      "endpoint": "https://text.pollinations.ai/openai",
+      "authorization_sent": false,
+      "client_timeout_sec": 45,
+      "runner": "python-urllib",
+      "request": {
+        "model": "openai",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Connection test. Reply with the single word pong and then this marker: INTERVAL-3"
+          }
+        ],
+        "stream": false
+      },
+      "elapsed_sec": 8.152,
+      "http": 200,
+      "error": null,
+      "error_class": null,
+      "body": "{\"id\":\"pllns_b4c1c1c79e127769a19412429f18b217\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong INTERVAL-3\",\"reasoning\":\"User: \\\"Connection test. Reply with the single word pong and then this marker: INTERVAL-3\\\"\\n\\nThey want just \\\"pong INTERVAL-3\\\". Let's do that.\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792144010,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":326,\"completion_tokens\":51,\"total_tokens\":377},\"user_tier\":\"anonymous\"}",
+      "response_headers": {
+        "Date": "Fri, 16 Oct 2026 09:46:52 GMT",
+        "Server": "cloudflare",
+        "CF-RAY": "a4b6235c3c8a3016-PDX",
+        "x-model-used": "gpt-oss-20b",
+        "x-usage-prompt-text-tokens": "326",
+        "x-usage-completion-text-tokens": "51"
+      },
+      "content": "pong INTERVAL-3",
+      "model_field": "gpt-oss-20b",
+      "user_tier": "anonymous",
+      "id": "pllns_b4c1c1c79e127769a19412429f18b217",
+      "usage": {
+        "prompt_tokens": 326,
+        "completion_tokens": 51,
+        "total_tokens": 377
+      },
+      "marker_in_content": true,
+      "paid_header": false,
+      "ended": "2026-10-16T09:46:52.585401Z"
+    },
+    {
+      "name": "INTERVAL-4",
+      "started": "2026-10-16T09:47:22.585588Z",
+      "gap_after_previous_end_sec": 30.0,
+      "endpoint": "https://text.pollinations.ai/openai",
+      "authorization_sent": false,
+      "client_timeout_sec": 45,
+      "runner": "python-urllib",
+      "request": {
+        "model": "openai",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Connection test. Reply with the single word pong and then this marker: INTERVAL-4"
+          }
+        ],
+        "stream": false
+      },
+      "elapsed_sec": 7.742,
+      "http": 200,
+      "error": null,
+      "error_class": null,
+      "body": "{\"id\":\"pllns_6c2dc8380b45ea8584362eef16b3413e\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong INTERVAL-4\",\"reasoning\":\"User wants \\\"pong\\\" and then the marker. Just reply \\\"pong INTERVAL-4\\\".\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792144047,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":326,\"completion_tokens\":34,\"total_tokens\":360},\"user_tier\":\"anonymous\"}",
+      "response_headers": {
+        "Date": "Fri, 16 Oct 2026 09:47:30 GMT",
+        "Server": "cloudflare",
+        "CF-RAY": "a4b6244aace1ff0e-PDX",
+        "x-model-used": "gpt-oss-20b",
+        "x-usage-prompt-text-tokens": "326",
+        "x-usage-completion-text-tokens": "34"
+      },
+      "content": "pong INTERVAL-4",
+      "model_field": "gpt-oss-20b",
+      "user_tier": "anonymous",
+      "id": "pllns_6c2dc8380b45ea8584362eef16b3413e",
+      "usage": {
+        "prompt_tokens": 326,
+        "completion_tokens": 34,
+        "total_tokens": 360
+      },
+      "marker_in_content": true,
+      "paid_header": false,
+      "ended": "2026-10-16T09:47:30.328141Z"
+    },
+    {
+      "name": "INTERVAL-5",
+      "started": "2026-10-16T09:48:00.328344Z",
+      "gap_after_previous_end_sec": 30.0,
+      "endpoint": "https://text.pollinations.ai/openai",
+      "authorization_sent": false,
+      "client_timeout_sec": 45,
+      "runner": "python-urllib",
+      "request": {
+        "model": "openai",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Connection test. Reply with the single word pong and then this marker: INTERVAL-5"
+          }
+        ],
+        "stream": false
+      },
+      "elapsed_sec": 8.941,
+      "http": 200,
+      "error": null,
+      "error_class": null,
+      "body": "{\"id\":\"pllns_8db75f4493a3369e64c1b36c74b3ec14\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong INTERVAL-5\",\"reasoning\":\"We must reply with only \\\"pong\\\" and marker \\\"INTERVAL-5\\\" after. No extra text. It's a single word \\\"pong\\\" then marker. The requirement: \\\"Reply with the single word pong and then this marker: INTERVAL-5\\\"\\n\\nProbably on same line or separate? They say \\\"single word pong and then this marker\\\". So maybe \\\"pong INTERVAL-5\\\" or \\\"pong\\\\nINTERVAL-5\\\"? They want the single word pong and then the marker. Let's interpret: reply with \\\"pong\\\" then the marker. So:\\n\\npong INTERVAL-5\\n\\nWe must not add any other text.\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792144084,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":326,\"completion_tokens\":142,\"total_tokens\":468},\"user_tier\":\"anonymous\"}",
+      "response_headers": {
+        "Date": "Fri, 16 Oct 2026 09:48:09 GMT",
+        "Server": "cloudflare",
+        "CF-RAY": "a4b625369be16e09-PDX",
+        "x-model-used": "gpt-oss-20b",
+        "x-usage-prompt-text-tokens": "326",
+        "x-usage-completion-text-tokens": "142"
+      },
+      "content": "pong INTERVAL-5",
+      "model_field": "gpt-oss-20b",
+      "user_tier": "anonymous",
+      "id": "pllns_8db75f4493a3369e64c1b36c74b3ec14",
+      "usage": {
+        "prompt_tokens": 326,
+        "completion_tokens": 142,
+        "total_tokens": 468
+      },
+      "marker_in_content": true,
+      "paid_header": false,
+      "ended": "2026-10-16T09:48:09.269230Z"
+    },
+    {
+      "name": "INTERVAL-6",
+      "started": "2026-10-16T09:48:39.269414Z",
+      "gap_after_previous_end_sec": 30.0,
+      "endpoint": "https://text.pollinations.ai/openai",
+      "authorization_sent": false,
+      "client_timeout_sec": 45,
+      "runner": "python-urllib",
+      "request": {
+        "model": "openai",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Connection test. Reply with the single word pong and then this marker: INTERVAL-6"
+          }
+        ],
+        "stream": false
+      },
+      "elapsed_sec": 9.364,
+      "http": 200,
+      "error": null,
+      "error_class": null,
+      "body": "{\"id\":\"pllns_344dcdf00113cf3f1bb018d126d0e864\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pongINTERVAL-6\",\"reasoning\":\"The user wants: \\\"pong\\\" and then marker \\\"INTERVAL-6\\\". They want that as single word? They say \\\"Reply with the single word pong and then this marker: INTERVAL-6\\\". So the reply should be \\\"pongINTERVAL-6\\\" or \\\"pong\\\\nINTERVAL-6\\\"? Probably \\\"pong INTERVAL-6\\\" or \\\"pong\\\\nINTERVAL-6\\\"? They say single word pong and then marker: INTERVAL-6. Could be \\\"pongINTERVAL-6\\\" (without space). I'll assume they want \\\"pongINTERVAL-6\\\". Using exactly that.\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792144124,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":326,\"completion_tokens\":137,\"total_tokens\":463},\"user_tier\":\"anonymous\"}",
+      "response_headers": {
+        "Date": "Fri, 16 Oct 2026 09:48:48 GMT",
+        "Server": "cloudflare",
+        "CF-RAY": "a4b62629de73c12a-PDX",
+        "x-model-used": "gpt-oss-20b",
+        "x-usage-prompt-text-tokens": "326",
+        "x-usage-completion-text-tokens": "137"
+      },
+      "content": "pongINTERVAL-6",
+      "model_field": "gpt-oss-20b",
+      "user_tier": "anonymous",
+      "id": "pllns_344dcdf00113cf3f1bb018d126d0e864",
+      "usage": {
+        "prompt_tokens": 326,
+        "completion_tokens": 137,
+        "total_tokens": 463
+      },
+      "marker_in_content": true,
+      "paid_header": false,
+      "ended": "2026-10-16T09:48:48.633542Z"
+    },
+    {
+      "name": "INTERVAL-7",
+      "started": "2026-10-16T09:49:18.633740Z",
+      "gap_after_previous_end_sec": 30.0,
+      "endpoint": "https://text.pollinations.ai/openai",
+      "authorization_sent": false,
+      "client_timeout_sec": 45,
+      "runner": "python-urllib",
+      "request": {
+        "model": "openai",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Connection test. Reply with the single word pong and then this marker: INTERVAL-7"
+          }
+        ],
+        "stream": false
+      },
+      "elapsed_sec": 8.002,
+      "http": 200,
+      "error": null,
+      "error_class": null,
+      "body": "{\"id\":\"pllns_334ebb1bcacaa2ec8814831c582fd0d7\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong INTERVAL-7\",\"reasoning\":\"User: Connection test. Reply with single word pong and then marker INTERVAL-7. So output should be: 'pong INTERVAL-7' likely with a space? They want \\\"pong\\\" then marker. Probably \\\"pong INTERVAL-7\\\" or \\\"pongINTERVAL-7\\\"? They wrote: \\\"Reply with the single word pong and then this marker: INTERVAL-7\\\". That indicates separate? Typically they want \\\"pong INTERVAL-7\\\" with a space. I'll do that.\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792144162,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":326,\"completion_tokens\":116,\"total_tokens\":442},\"user_tier\":\"anonymous\"}",
+      "response_headers": {
+        "Date": "Fri, 16 Oct 2026 09:49:26 GMT",
+        "Server": "cloudflare",
+        "CF-RAY": "a4b6271ffebdefb0-PDX",
+        "x-model-used": "gpt-oss-20b",
+        "x-usage-prompt-text-tokens": "326",
+        "x-usage-completion-text-tokens": "116"
+      },
+      "content": "pong INTERVAL-7",
+      "model_field": "gpt-oss-20b",
+      "user_tier": "anonymous",
+      "id": "pllns_334ebb1bcacaa2ec8814831c582fd0d7",
+      "usage": {
+        "prompt_tokens": 326,
+        "completion_tokens": 116,
+        "total_tokens": 442
+      },
+      "marker_in_content": true,
+      "paid_header": false,
+      "ended": "2026-10-16T09:49:26.636013Z"
+    },
+    {
+      "name": "INTERVAL-8",
+      "started": "2026-10-16T09:49:56.636209Z",
+      "gap_after_previous_end_sec": 30.0,
+      "endpoint": "https://text.pollinations.ai/openai",
+      "authorization_sent": false,
+      "client_timeout_sec": 45,
+      "runner": "python-urllib",
+      "request": {
+        "model": "openai",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Connection test. Reply with the single word pong and then this marker: INTERVAL-8"
+          }
+        ],
+        "stream": false
+      },
+      "elapsed_sec": 45.113,
+      "http": null,
+      "error": "TimeoutError: The read operation timed out",
+      "error_class": "no_status_timeout",
+      "body": "",
+      "response_headers": {},
+      "content": null,
+      "marker_in_content": false,
+      "paid_header": false,
+      "ended": "2026-10-16T09:53:44.525993Z"
+    },
+    {
+      "name": "RETRY-1",
+      "started": "2026-10-16T09:54:14.530383Z",
+      "gap_after_previous_end_sec": 30.002,
+      "endpoint": "https://text.pollinations.ai/openai",
+      "authorization_sent": false,
+      "client_timeout_sec": 45,
+      "runner": "python-urllib",
+      "request": {
+        "model": "openai",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Connection test. Reply with the single word pong and then this marker: RETRY-1"
+          }
+        ],
+        "stream": false
+      },
+      "elapsed_sec": 7.164,
+      "http": 200,
+      "error": null,
+      "error_class": null,
+      "body": "{\"id\":\"pllns_e565b914cb92a7ec0820530674d5516b\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong RETRY-1\",\"reasoning\":\"Prompt wants \\\"pong\\\" and then the marker \\\"RETRY-1\\\". So output should be:\\n\\npong RETRY-1\\n\\nBut we need to consider formatting maybe newline? Just a single word pong and then the marker. So I'll write \\\"pong RETRY-1\\\" on one line.\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792144458,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":326,\"completion_tokens\":74,\"total_tokens\":400},\"user_tier\":\"anonymous\"}",
+      "response_headers": {
+        "Date": "Fri, 16 Oct 2026 09:54:21 GMT",
+        "Server": "cloudflare",
+        "CF-RAY": "a4b62e5958f69976-PDX",
+        "x-model-used": "gpt-oss-20b",
+        "x-usage-prompt-text-tokens": "326",
+        "x-usage-completion-text-tokens": "74"
+      },
+      "content": "pong RETRY-1",
+      "model_field": "gpt-oss-20b",
+      "user_tier": "anonymous",
+      "id": "pllns_e565b914cb92a7ec0820530674d5516b",
+      "usage": {
+        "prompt_tokens": 326,
+        "completion_tokens": 74,
+        "total_tokens": 400
+      },
+      "marker_in_content": true,
+      "paid_header": false,
+      "ended": "2026-10-16T09:54:21.696219Z"
+    }
+  ]
+}
