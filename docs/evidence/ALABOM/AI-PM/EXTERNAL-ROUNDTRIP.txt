@@ -1,0 +1,19 @@
+EXTERNAL ROUNDTRIP — 2026-10-16
+무료 외부 AI 왕복 PoC다. 제품 코드, 규칙 분기, 모델 연결, 병합, Production은 바꾸지 않았다. 사업계획서는 이 호출에 넣지 않았다. 유료 호출과 API 키는 쓰지 않았다. 소비자 대화 화면은 열지 않았다.
+
+소비자 웹 UI. 중단. chatgpt.com, gemini.google.com, claude.ai, copilot.microsoft.com 은 확장 프로그램이 열지 않았다. 근거는 CONSUMER-WEB-ROBOTS-BOUNDARY.txt 다. 그 경로의 응답 원문은 없다.
+
+실행된 경로. Chrome 확장 프로그램의 서비스 워커가 문서화된 무료 익명 텍스트 엔드포인트로 테스트 문장을 보냈다.
+확장. experiments/external-ai-roundtrip/extension
+실행. node experiments/external-ai-roundtrip/run-poc.mjs
+브라우저. Playwright가 받은 Chrome for Testing 149.0.7827.55. 설치된 Google Chrome 154는 --load-extension 으로 이 확장을 올리지 못했다.
+서비스 워커. chrome-extension://fphgemcdhkjkplcikhnhgpcnndpcjfkj/background.js
+원문 파일. experiments/external-ai-roundtrip/last-run.json
+
+시각. 2026-10-16T05:19:09.939Z. 6526ms. HTTP 200. user_tier anonymous. model gpt-oss-20b. paidRefused false. Authorization 헤더는 없었다.
+입력. Connection test. Reply with the single word pong and then this marker: poc-1792127949939
+응답 content. pong poc-1792127949939
+끝 이유. finish_reason stop. id pllns_5233625b21c6ceb7097bb02767559865.
+
+판정. 확장 프로그램이 테스트 입력을 만들었고, 외부 텍스트 서비스가 그 마커가 들어 있는 응답을 돌려줬고, 요청과 응답 원문이 파일에 남았다. 같은 스크립트로 다시 실행할 수 있다. 다시 실행하면 마커 시각이 바뀐다.
+이 결과는 소비자 웹 UI 자동화의 성공이 아니다. 사업성 재분석 품질 통과도 아니다. ALABOM 통합은 시작하지 않았다.
