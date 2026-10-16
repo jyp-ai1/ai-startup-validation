@@ -1,0 +1,46 @@
+AI COMM STRUCTURE — 2026-10-16T06:32Z
+이전 대화와 저장소에서 모델 응답이 실제로 돌아온 통신 구조만 복원했다. 사업 자료는 넣지 않았다. 제품 코드, 병합, Production은 바꾸지 않았다. 무인증 공식 API 401·403은 반복하지 않았다. 비용은 0원이다.
+
+이전 에이전트 대화
+ALABOM2 bc-4e4afb06-edea-4f70-8f23-84ee372f6423. 모델 응답 0건. OpenRouter와 앱 HTTP 200은 모델 호출이 아니다.
+ALABOM3 bc-976e45a4-88c8-443f-9bb2-5c09b860e648. 모델 응답 0건. packages/ai 의 OpenAI·OpenRouter 클라이언트 소스만 있다. 실행된 응답 본문은 없다.
+이 대화 ALABOM4 의 증거 파일에만 모델 본문이 있다.
+
+구조 1. 로컬 Ollama. 로컬 모델.
+서비스. 이 머신의 ollama serve. 바이너리 /usr/local/bin/ollama.
+경로. POST http://127.0.0.1:11434/api/chat.
+인증. 없음. 사용자 세션 없음. 비용 라벨 local_runtime_no_api_invoice.
+요청 형태. model qwen2.5:3b. messages 한 개. stream false. 최초 최소 왕복의 options 는 num_ctx 512, num_predict 16 이하. 기록 AUTO-CALL-TECH-REVIEW.txt.
+실행 코드 파일. 저장소에 그 호출을 담은 스크립트는 없다. 요청 형태는 증거 문장으로만 남아 있다.
+최초 응답. 2026-10-16. 프롬프트 "Reply with the single word pong." HTTP 200. 7.9초. done_reason stop. eval_count 2. 응답 " pong". 원문 JSON 파일은 없다. 두 번째 한 단어 응답 "확인" 도 같은 문서의 문장이다.
+이후 같은 엔드포인트의 사업 발췌 응답은 LOCAL-MODEL-E2E.txt, PATH-COMPARISON.txt, method-compare/*.json 에 있다. 그 입력은 이번 재현에 넣지 않았다.
+분류. 로컬 모델. 외부 AI가 아니다. 모의 응답은 아니다. 저장된 호출은 HTTP 200 과 done_reason stop 이다.
+
+구조 2. Pollinations 익명 텍스트. 외부 모델.
+서비스. https://text.pollinations.ai/openai
+경로. POST. Content-Type application/json. Authorization 없음.
+요청 코드. experiments/external-ai-roundtrip/extension/background.js. 실행 런처 experiments/external-ai-roundtrip/run-poc.mjs. 모델 칸은 문자열 openai. 응답 모델 필드는 gpt-oss-20b.
+인증. user_tier anonymous. API 키 없음.
+최초 원문. experiments/external-ai-roundtrip/last-run.json. 2026-10-16T05:19:09.939Z. HTTP 200. 6526ms. id pllns_5233625b21c6ceb7097bb02767559865. content "pong poc-1792127949939".
+분류. 외부 모델의 텍스트 응답. OpenAI GPT 완료가 아니다. 모의 응답은 아니다. ALABOM2·ALABOM3 에는 이 호출이 없다. 이 대화에서 나중에 만든 구조다.
+
+제품 코드의 통신 자리. packages/ai/src/providers/openai-http.ts 와 openrouter-http.ts 는 Bearer 키가 있는 클라이언트다. 그 함수가 모델 본문을 받아 저장한 기록은 이전 두 대화와 이 저장소 증거에 없다. 분류는 호출 자리이지 성공 사례가 아니다.
+
+이번 재현. 사업 문장 없음. 각 구조의 요청 형태만 3회. 런처 차이. 구조 2의 최초 실행은 Chrome 확장 서비스 워커였다. 이번 3회는 같은 URL·헤더·JSON을 urllib 로 보냈다. 확장 런처는 다시 실행하지 않았다. 그 런처의 현재 동작은 미확인이다.
+
+구조 1 재현. 모델 qwen2.5:3b. 호출 전 /api/ps 는 비어 있었다. 7b 는 올리지 않았다.
+1. 2026-10-16T06:31:26Z. HTTP 200. 7.27초. content "Pong LOCAL-PING-1". 마커 있음.
+2. 2026-10-16T06:31:34Z. HTTP 200. 0.695초. content 에 LOCAL-PING-2. 마커 있음.
+3. 2026-10-16T06:31:34Z. HTTP 200. 0.68초. content 에 LOCAL-PING-3. 마커 있음.
+성공 3/3. 오류 없음. 인증 만료 필드 없음. 원문 experiments/comm-structure-repeat/local.json.
+이 3회는 로컬 핑이다. 외부 AI 안정성이 아니다.
+
+구조 2 재현. Authorization 없음. 402 없음. user_tier anonymous.
+1. 2026-10-16T06:31:35Z. HTTP 200. 11.328초. model gpt-oss-20b. content "pong EXT-PING-1". id pllns_31ddce3a973bacfb498c7d2c6cc43461. 마커 있음.
+2. 2026-10-16T06:31:46Z. 45.091초. HTTP 상태 없음. TimeoutError: The read operation timed out. 본문 없음. 마커 없음.
+3. 2026-10-16T06:32:31Z. HTTP 200. 10.717초. model gpt-oss-20b. content "pong EXT-PING-3". 마커 있음.
+성공 2/3. 오류 유형은 클라이언트 읽기 시간 초과 1건. 인증 만료나 401·403·402는 없다. 원문 experiments/comm-structure-repeat/external.json.
+
+안정성. 과거 200이 지금 동작한다는 가정은 쓰지 않았다. 이번 측정에서 로컬 핑은 3회 모두 응답했다. 외부 익명 경로는 3회 중 2회만 응답했다. 표본이 3회이고 시간 초과가 1회이므로, 외부 경로를 안정적이라고 적지 않는다. 사업 검증과 제품 개발은 시작하지 않았다.
+
+비용. 0원. 키 발급 없음. 유료 전환 없음. 청구 응답 없음.

@@ -1,0 +1,110 @@
+[
+  {
+    "started": "2026-10-16T06:31:26Z",
+    "elapsed_sec": 7.27,
+    "http": 200,
+    "error": null,
+    "response_headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Date": "Fri, 16 Oct 2026 06:31:34 GMT",
+      "Content-Length": "343",
+      "Connection": "close"
+    },
+    "body": "{\"model\":\"qwen2.5:3b\",\"created_at\":\"2026-10-16T06:31:34.149508348Z\",\"message\":{\"role\":\"assistant\",\"content\":\"Pong LOCAL-PING-1\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":7241535964,\"load_duration\":6364932705,\"prompt_eval_count\":42,\"prompt_eval_cached_count\":0,\"prompt_eval_duration\":367239000,\"eval_count\":8,\"eval_duration\":504272000}",
+    "name": "LOCAL-PING-1",
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "authorization_sent": false,
+    "request": {
+      "model": "qwen2.5:3b",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reply with the single word pong and then LOCAL-PING-1"
+        }
+      ],
+      "stream": false,
+      "options": {
+        "num_ctx": 512,
+        "num_predict": 16,
+        "temperature": 0
+      }
+    },
+    "marker_in_body": true,
+    "model_field": "qwen2.5:3b",
+    "content": "Pong LOCAL-PING-1",
+    "done_reason": "stop",
+    "eval_count": 8
+  },
+  {
+    "started": "2026-10-16T06:31:34Z",
+    "elapsed_sec": 0.695,
+    "http": 200,
+    "error": null,
+    "response_headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Date": "Fri, 16 Oct 2026 06:31:34 GMT",
+      "Content-Length": "340",
+      "Connection": "close"
+    },
+    "body": "{\"model\":\"qwen2.5:3b\",\"created_at\":\"2026-10-16T06:31:34.844798193Z\",\"message\":{\"role\":\"assistant\",\"content\":\"Pong\\nLOCAL-PING-2\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":693636247,\"load_duration\":682557,\"prompt_eval_count\":42,\"prompt_eval_cached_count\":36,\"prompt_eval_duration\":107336000,\"eval_count\":9,\"eval_duration\":583775000}",
+    "name": "LOCAL-PING-2",
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "authorization_sent": false,
+    "request": {
+      "model": "qwen2.5:3b",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reply with the single word pong and then LOCAL-PING-2"
+        }
+      ],
+      "stream": false,
+      "options": {
+        "num_ctx": 512,
+        "num_predict": 16,
+        "temperature": 0
+      }
+    },
+    "marker_in_body": true,
+    "model_field": "qwen2.5:3b",
+    "content": "Pong\nLOCAL-PING-2",
+    "done_reason": "stop",
+    "eval_count": 9
+  },
+  {
+    "started": "2026-10-16T06:31:34Z",
+    "elapsed_sec": 0.68,
+    "http": 200,
+    "error": null,
+    "response_headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Date": "Fri, 16 Oct 2026 06:31:35 GMT",
+      "Content-Length": "339",
+      "Connection": "close"
+    },
+    "body": "{\"model\":\"qwen2.5:3b\",\"created_at\":\"2026-10-16T06:31:35.52528946Z\",\"message\":{\"role\":\"assistant\",\"content\":\"Pong\\nLOCAL-PING-3\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":679349255,\"load_duration\":604402,\"prompt_eval_count\":42,\"prompt_eval_cached_count\":36,\"prompt_eval_duration\":107991000,\"eval_count\":9,\"eval_duration\":568248000}",
+    "name": "LOCAL-PING-3",
+    "endpoint": "http://127.0.0.1:11434/api/chat",
+    "authorization_sent": false,
+    "request": {
+      "model": "qwen2.5:3b",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reply with the single word pong and then LOCAL-PING-3"
+        }
+      ],
+      "stream": false,
+      "options": {
+        "num_ctx": 512,
+        "num_predict": 16,
+        "temperature": 0
+      }
+    },
+    "marker_in_body": true,
+    "model_field": "qwen2.5:3b",
+    "content": "Pong\nLOCAL-PING-3",
+    "done_reason": "stop",
+    "eval_count": 9
+  }
+]
