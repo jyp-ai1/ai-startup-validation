@@ -16,6 +16,7 @@ import { applyAnswer, correctField, recordCounterClaim, replayStoredAnswer, star
 import { blockersToClose, decisionSnapshot, LMULM_PLAN_FIXTURE, RIDM_PLAN_FIXTURE, withFixtureResult } from '../lib/plan-journey';
 import { renderVerificationDocument } from '../lib/verification-document';
 import { PlanRefinementPanel } from './plan-refinement-panel';
+import { WebReviewPanel } from './web-review-panel';
 import { contextRoleLabel, executionBadgeLabel } from '../lib/present-execution';
 import { presentSingleDiagnosticAction } from '../lib/present-single-action';
 import { loadJourneyDraft, saveJourneyDraft } from '../lib/journey-session';
@@ -946,6 +947,8 @@ function UnderstandingView({
         </p>
         <p className="text-sm text-muted-foreground">실패 기준: {journey.nextAction.failureCriterion}</p>
       </section>
+
+      <WebReviewPanel journey={journey} onJourneyChange={onJourneyChange} />
 
       {question ? (
         <>
