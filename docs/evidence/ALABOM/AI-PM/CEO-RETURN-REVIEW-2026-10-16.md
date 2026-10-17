@@ -340,3 +340,7 @@ GitHub의 이 문서는 읽을 수 있다. 그것은 제품 화면의 직접 테
 ## 14. 비용 0원 구조 — 2026-10-17
 
 새 AI 기능은 만들지 않았다. 채택 절차는 사용자가 GPT 웹에서 1차 분석을 하고 Gemini 웹에서 반론한 뒤 ALABOM이 두 붙여넣기를 비교하는 것이다. 같은 입력으로 순서를 바꾼 원문은 저장소에 없다. API 연결과 웹 자동화는 넣지 않는다. 상세는 `docs/evidence/ALABOM/AI-PM/ZERO-COST-STRUCTURE-2026-10-17.md`다. 실패 1·2·5와 Preview는 BLOCKED다.
+
+## 15. 비용 0원 실행 — 2026-10-17
+
+같은 사업 입력으로 GPT 웹과 Gemini 웹을 실행하지 않았다. 이 환경의 브라우저 쿠키에 두 서비스 호스트가 없다. 원문을 만들지 않았다. Production `/ko/business-validation` 404는 라우트가 `origin/main`에 없기 때문이다. 붙여넣기는 칸 하나이고 화면의 교차 검토는 빈 패킷이다. `pnpm --filter web build`는 `plan-refinement.ts`의 `LABEL`이 `string`으로 넓어진 타입 오류로 실패했다. 그 상수만 리터럴로 고정한 뒤 같은 명령은 EXIT 0이다. 이 로컬 빌드는 Production 검증이 아니다. 전체 판정은 BLOCKED다. 기록은 `docs/evidence/ALABOM/AI-PM/ZERO-COST-EXECUTION-2026-10-17.md`다.
