@@ -33,6 +33,22 @@ describe('comparison route slice boundary', () => {
     expect(page.includes("? 'demo-guided'")).toBe(true);
   });
 
+  it('keeps the paste comparison off the research provider map', () => {
+    const files = [
+      'app/[locale]/(public)/business-validation/page.tsx',
+      'features/business-validation-journey/components/validation-journey-screen.tsx',
+      'features/business-validation-journey/components/web-review-panel.tsx',
+      'features/business-validation-journey/lib/web-review-comparison.ts',
+      'features/business-validation-journey/lib/stored-model-judgment.ts',
+    ];
+    for (const file of files) {
+      const src = source(file);
+      expect(src.includes('getResearchProvider')).toBe(false);
+      expect(src.includes('openai-counter-review-provider')).toBe(false);
+      expect(src.includes('OpenRouterResearchProvider')).toBe(false);
+    }
+  });
+
   it('publishes the full validation journey, including the comparison panel', () => {
     const page = source('app/[locale]/(public)/business-validation/page.tsx');
     const screen = source(
