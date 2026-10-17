@@ -9,6 +9,7 @@
 | 대상 | SHA | 확인 |
 | --- | --- | --- |
 | 작업 브랜치 시작 | `d77844516dff2eeb12b92c3ad760f948a469f631` | `cursor/business-refinement-loop-4b88` |
+| 타입 수정 | `a16923d616796855ebdb60dee61442e4dd3da704` | `LABEL`에 `as const` |
 | `origin/main` | `0b465226516e1a4f3eb9ce2087f8bca2c2c091da` | 조상이다 |
 | Production `/api/build-info` | `0b465226516e1a4f3eb9ce2087f8bca2c2c091da` | `environment` production. 응답 시각 `2026-10-17T05:36:04.635Z`. 이 브랜치의 배포가 아니다 |
 | 동결 기준 | `6f71ea3a` | 이번 수정 전 `apps/`·`packages/` diff는 비어 있었다 |
