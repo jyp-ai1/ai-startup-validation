@@ -1,14 +1,21 @@
-const LEDGER_MARKERS = ['원장', '결제', '입금', '세금계산서'] as const;
+import {
+  hasLedgerMarker,
+  unknownCostAndDuration,
+  type FactStatus,
+  type NextVerificationExperiment,
+} from './verification-outcome';
 
 export type OmittedInputClaim = 'A2' | 'S3';
 
 export type StoredModelJudgment = {
   output: string;
   fact: boolean;
+  factStatus: FactStatus;
   verifiedFact: false;
   modelFact: boolean;
   ledgerEvidence: boolean;
   omittedFromModel: OmittedInputClaim[];
+  nextExperiment: NextVerificationExperiment;
 };
 
 export function inputSection(source: string): string {
@@ -42,7 +49,32 @@ function coversS3(modelContent: string): boolean {
 }
 
 export function hasLedgerEvidence(section: string): boolean {
-  return LEDGER_MARKERS.some((marker) => section.includes(marker));
+  return hasLedgerMarker(section);
+}
+
+function experimentForOmissions(input: {
+  omittedFromModel: OmittedInputClaim[];
+  a2: string | null;
+  s3: string | null;
+  modelFact: boolean;
+  fact: boolean;
+}): NextVerificationExperiment {
+  const subjects = input.omittedFromModel
+    .map((id) => (id === 'A2' ? input.a2 : input.s3))
+    .filter((item): item is string => Boolean(item));
+  const hypothesis = subjects.length
+    ? `모델 출력에 없는 입력: ${subjects.join(' / ')}. 모델 Fact ${input.modelFact}는 판정 Fact ${input.fact}와 별개다.`
+    : `빠진 A2·S3 입력 행은 없다. 모델 Fact ${input.modelFact}는 판정 Fact ${input.fact}와 별개다.`;
+  return {
+    hypothesis,
+    material: '주문 원장. 모회사·계열사 매출과 그 밖 매출이 나뉜 기록.',
+    method: input.omittedFromModel.includes('S3')
+      ? '원장에서 모회사·계열사 매출과 그 밖 매출을 나누고, 입력 S3의 예상 연매출 10억이 입금 항목인지 확인한다.'
+      : '원장에서 모회사·계열사 매출과 그 밖 매출을 나눈다. 예상 연매출은 받은 돈으로 세지 않는다.',
+    ...unknownCostAndDuration(),
+    success: '원장에 두 매출이 나뉘어 있고, 예상 연매출 10억이 입금으로 적혀 있지 않다.',
+    failure: '원장이 없거나, 예상 연매출 10억이 받은 매출로 적혀 있다.',
+  };
 }
 
 /**
@@ -75,13 +107,16 @@ export function judgeStoredModelOutput(input: {
 
   const modelContent = input.modelContent.trim();
   const output = [modelContent, ...carried].filter((item) => item.length > 0).join('\n');
+  const fact = ledgerEvidence ? input.modelFact : false;
 
   return {
     output,
-    fact: ledgerEvidence ? input.modelFact : false,
+    fact,
+    factStatus: '미확인',
     verifiedFact: false,
     modelFact: input.modelFact,
     ledgerEvidence,
     omittedFromModel,
+    nextExperiment: experimentForOmissions({ omittedFromModel, a2, s3, modelFact: input.modelFact, fact }),
   };
 }

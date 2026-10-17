@@ -63,6 +63,11 @@ describe('path1 expected output', () => {
     expect(path1.content.includes('A2')).toBe(false);
     expect(judged.omittedFromModel).toContain('A2');
     expect(judged.output.includes('A2')).toBe(true);
+    expect(judged.factStatus).toBe('미확인');
+    expect(judged.verifiedFact).toBe(false);
+    expect(judged.nextExperiment.hypothesis).toContain('A2:');
+    expect(judged.nextExperiment.cost).toBe('미확인');
+    expect(judged.nextExperiment.duration).toBe('미확인');
   });
 
   it('includes the forecast annual revenue', () => {
@@ -129,7 +134,12 @@ describe('path4 fact judgment', () => {
     expect(path4.output_parse.object.Fact).toBe(true);
     expect(judged.modelFact).toBe(true);
     expect(judged.fact).toBe(false);
+    expect(judged.factStatus).toBe('미확인');
     expect(judged.verifiedFact).toBe(false);
+    expect(judged.nextExperiment.hypothesis).toContain('S3:');
+    expect(judged.nextExperiment.hypothesis).toContain('모델 Fact true');
+    expect(judged.nextExperiment.method).toContain('예상 연매출 10억');
+    expect(judged.nextExperiment.hypothesis).not.toBe(String(judged.verifiedFact));
   });
 });
 

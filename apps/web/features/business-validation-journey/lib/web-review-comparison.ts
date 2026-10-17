@@ -1,4 +1,9 @@
 import type { ExternalNote, JourneyState } from './journey-types';
+import {
+  unknownCostAndDuration,
+  type FactStatus,
+  type NextVerificationExperiment,
+} from './verification-outcome';
 
 export const WEB_REVIEW_PROMPT = [
   '아래 입력만 사용하라. 입력에 없는 수치, 상품, 시장 점유율, 고객 수를 만들지 마라.',
@@ -90,12 +95,40 @@ const CRITERIA: Criterion[] = [
 
 export type WebReviewComparison = {
   verifiedFact: false;
+  factStatus: FactStatus;
   liveModelCall: false;
   agreement: string[];
   conflict: string[];
   insufficient: string[];
+  nextExperiment: NextVerificationExperiment;
   nextAction: string;
 };
+
+function experimentForMissingOriginal(missingOriginal: string, method: string): NextVerificationExperiment {
+  return {
+    hypothesis: `${missingOriginal}이 없어 비교하지 않는다.`,
+    material: missingOriginal,
+    method,
+    ...unknownCostAndDuration(),
+    success: `${missingOriginal}이 보관되고 문장은 바꾸지 않았다.`,
+    failure: `${missingOriginal}이 없거나 추정으로 채워졌다.`,
+  };
+}
+
+function experimentForClaims(conflictLabels: string[], insufficientLabels: string[]): NextVerificationExperiment {
+  const subjects = [...conflictLabels, ...insufficientLabels];
+  const hypothesis = conflictLabels.length
+    ? `충돌: ${conflictLabels.join(', ')}. 어느 모델 문장도 사실로 고르지 않는다.`
+    : `근거 부족: ${insufficientLabels.join(', ') || '표시된 항목 없음'}. 합의한 문장도 사실이 아니다.`;
+  return {
+    hypothesis,
+    material: '주문 원장. 모회사·계열사 매출과 그 밖 매출이 나뉜 기록.',
+    method: `주문 원장에서 모회사·계열사 매출과 그 밖 매출을 나눈다. 대상: ${subjects.join(', ') || '표시된 항목 없음'}. 예상 연매출은 받은 돈으로 세지 않는다.`,
+    ...unknownCostAndDuration(),
+    success: '원장에 두 매출이 나뉘어 있고, 예상 연매출이 입금으로 적혀 있지 않다.',
+    failure: '원장이 없거나, 모델 문장만으로 매출을 사실로 적었다.',
+  };
+}
 
 function hasNeedle(text: string, needle: string): boolean {
   if (needle === '1억') return /(?<![0-9])1억/.test(text);
@@ -128,21 +161,29 @@ export function compareWebReviews(gptText: string | null, geminiText: string | n
   const gpt = gptText?.trim() || null;
   const gemini = geminiText?.trim() || null;
   if (!gpt || !gemini) {
-    const missing = [gpt ? null : 'GPT 웹 원문', gemini ? null : 'Gemini 웹 원문'].filter(Boolean);
+    const missing = [gpt ? null : 'GPT 웹 원문', gemini ? null : 'Gemini 웹 원문'].filter(
+      (item): item is string => Boolean(item),
+    );
+    const missingOriginal = missing[0] ?? '원문';
+    const nextAction = gpt
+      ? '보관한 GPT 원문과 같은 사업 입력을 Gemini 웹에 넣고, 반론 원문을 바꾸지 않고 Gemini 칸에 붙여 넣는다.'
+      : 'GPT 웹에 위 사업 입력을 넣고, 받은 원문을 바꾸지 않고 GPT 칸에 붙여 넣는다.';
     return {
       verifiedFact: false,
+      factStatus: '미확인',
       liveModelCall: false,
       agreement: [],
       conflict: [],
       insufficient: [`${missing.join(', ')}이 없다. 빈칸을 추정으로 채우지 않는다.`],
-      nextAction: gpt
-        ? '보관한 GPT 원문과 같은 사업 입력을 Gemini 웹에 넣고, 반론 원문을 바꾸지 않고 Gemini 칸에 붙여 넣는다.'
-        : 'GPT 웹에 위 사업 입력을 넣고, 받은 원문을 바꾸지 않고 GPT 칸에 붙여 넣는다.',
+      nextExperiment: experimentForMissingOriginal(missingOriginal, nextAction),
+      nextAction,
     };
   }
 
   const agreement: string[] = [];
   const conflict: string[] = [];
+  const conflictLabels: string[] = [];
+  const insufficientLabels: string[] = [];
   const insufficient: string[] = [
     '두 원문은 모델 주장이다. 원장·결제·입금·세금계산서가 없어도 문장 속 숫자만으로 사실로 올리지 않는다.',
   ];
@@ -151,6 +192,7 @@ export function compareWebReviews(gptText: string | null, geminiText: string | n
     const left = classify(gpt, item);
     const right = classify(gemini, item);
     if (left === 'missing' || right === 'missing' || left === 'mixed' || right === 'mixed') {
+      insufficientLabels.push(item.label);
       insufficient.push(
         `${item.label}: GPT ${stanceLabel(left)}, Gemini ${stanceLabel(right)}. 빠진 쪽을 모델이 말한 것으로 보충하지 않는다.`,
       );
@@ -160,19 +202,23 @@ export function compareWebReviews(gptText: string | null, geminiText: string | n
       agreement.push(`${item.label}: 둘 다 ${stanceLabel(left)}. 같은 문장도 검증된 사실이 아니다.`);
       continue;
     }
+    conflictLabels.push(item.label);
     conflict.push(`${item.label}: GPT ${stanceLabel(left)}, Gemini ${stanceLabel(right)}. 어느 쪽도 사실로 고르지 않는다.`);
   }
 
-  const nextAction = conflict.length
-    ? '상충 항목을 모델 문장으로 고르지 않는다. 다음 검증: 주문 원장에서 모회사·계열사 매출과 그 밖 매출을 나눈다. 예상 연매출은 받은 돈으로 세지 않는다.'
-    : '합의한 문장도 원장이 없으면 사실이 아니다. 다음 검증: 주문 원장에서 모회사·계열사 매출과 그 밖 매출을 나눈다. 예상 연매출은 받은 돈으로 세지 않는다.';
+  const nextExperiment = experimentForClaims(conflictLabels, insufficientLabels);
+  const nextAction = conflictLabels.length
+    ? `상충 항목을 모델 문장으로 고르지 않는다. ${nextExperiment.method}`
+    : `합의한 문장도 원장이 없으면 사실이 아니다. ${nextExperiment.method}`;
 
   return {
     verifiedFact: false,
+    factStatus: '미확인',
     liveModelCall: false,
     agreement,
     conflict,
     insufficient,
+    nextExperiment,
     nextAction,
   };
 }

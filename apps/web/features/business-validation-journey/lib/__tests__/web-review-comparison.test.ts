@@ -52,7 +52,9 @@ describe('web review comparison', () => {
   it('asks for the missing original and leaves verifiedFact false', () => {
     const onlyGpt = compareWebReviews(GPT, null);
     expect(onlyGpt.verifiedFact).toBe(false);
+    expect(onlyGpt.factStatus).toBe('미확인');
     expect(onlyGpt.liveModelCall).toBe(false);
+    expect(onlyGpt.nextExperiment.material).toContain('Gemini');
     expect(onlyGpt.agreement).toEqual([]);
     expect(onlyGpt.conflict).toEqual([]);
     expect(onlyGpt.insufficient.join(' ')).toContain('Gemini 웹 원문');
@@ -68,15 +70,24 @@ describe('web review comparison', () => {
     expect(compared.agreement.join(' ')).toContain('검증된 사실이 아니다');
     expect(compared.insufficient.join(' ')).toContain('원장');
     expect(compared.conflict).toEqual([]);
+    expect(compared.factStatus).toBe('미확인');
+    expect(compared.nextExperiment.hypothesis).toContain('S2');
+    expect(compared.nextExperiment.cost).toBe('미확인');
     expect(compared.nextAction).toContain('주문 원장');
+    expect(compared.nextAction).toContain('S2');
   });
 
   it('keeps a forecast-versus-actual clash and an A2 reversal as conflict', () => {
     const compared = compareWebReviews(GPT, GEMINI_CONFLICT);
     expect(compared.verifiedFact).toBe(false);
+    expect(compared.factStatus).toBe('미확인');
+    expect(compared.factStatus).not.toBe('검증 완료');
     expect(compared.conflict.some((item) => item.includes('S3'))).toBe(true);
     expect(compared.conflict.some((item) => item.includes('A2'))).toBe(true);
+    expect(compared.nextExperiment.hypothesis).toContain('S3 예상 연매출 10억');
+    expect(compared.nextExperiment.hypothesis).toContain('A2');
     expect(compared.nextAction).toContain('모델 문장으로 고르지 않는다');
+    expect(compared.nextAction).toContain('S3 예상 연매출 10억');
   });
 
   it('stores each slot independently and does not change the judgment', () => {

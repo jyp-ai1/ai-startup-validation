@@ -118,6 +118,7 @@ export function WebReviewPanel({
       ) : null}
       <div className="space-y-2 text-sm" data-testid="web-review-comparison">
         <p data-testid="web-review-verified">검증된 사실 아님. verifiedFact {comparison.verifiedFact ? 'true' : 'false'}.</p>
+        <p data-testid="web-review-fact-status">사실 상태: {comparison.factStatus}. 이 상태는 verifiedFact와 다른 칸이다.</p>
         <div>
           <h3 className="font-medium">합의</h3>
           <ul data-testid="web-review-agreement">
@@ -137,6 +138,15 @@ export function WebReviewPanel({
               <li key={item}>{item}</li>
             ))}
           </ul>
+        </div>
+        <div data-testid="web-review-experiment">
+          <h3 className="font-medium">다음 검증 실험</h3>
+          <p>가설: {comparison.nextExperiment.hypothesis}</p>
+          <p>자료: {comparison.nextExperiment.material}</p>
+          <p>방법: {comparison.nextExperiment.method}</p>
+          <p>비용: {comparison.nextExperiment.cost}. 기간: {comparison.nextExperiment.duration}.</p>
+          <p>성공: {comparison.nextExperiment.success}</p>
+          <p>실패: {comparison.nextExperiment.failure}</p>
         </div>
         <p data-testid="web-review-next">다음 검증 행동: {comparison.nextAction}</p>
       </div>
