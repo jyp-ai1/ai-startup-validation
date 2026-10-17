@@ -1,0 +1,28 @@
+{
+  "recordedAt": "2026-10-16T09:13Z",
+  "url": "http://localhost:3000/ko/business-validation",
+  "engineFilesUnchanged": [
+    "verification-action.ts",
+    "journey-engine.ts",
+    "plan-journey.ts",
+    "decide-next-question-from-review.ts"
+  ],
+  "lmulm": {
+    "path": ["parent", "required", "none"],
+    "sourceAppended": ["S3", "S4", "S5", "S6"],
+    "visibleAction": "주문 원장에서 모회사·납품 매출과 일반 소비자 매출을 나눈다. 2,000만 회원은 모회사 회원수다.",
+    "successCriterion": "주문 원장에서 모회사·납품 매출과 일반 소비자 매출이 나뉜 한 건. 모회사 회원수는 그 원장이 아니다.",
+    "withheldFromScreen": [
+      "재구매율을 추정하지 않는다",
+      "모회사 채널 밖 고객 확보 기록을 찾는다"
+    ],
+    "questionEnded": true
+  },
+  "ridm": {
+    "path": ["none", "not_yet"],
+    "visibleAction": "최초 유료 고객 1명의 결제 원문을 가져온다. 전환율 가정은 실적으로 세지 않는다.",
+    "successCriterion": "최초 유료 고객 1명의 결제 원문. 날짜, 금액, 낸 사람이 적혀 있다. 전환율 가정은 실적이 아니다.",
+    "withheldFromScreen": ["그 고객의 사용량, 호출한 모델, 인프라 비용을 측정한다"],
+    "questionEnded": true
+  }
+}

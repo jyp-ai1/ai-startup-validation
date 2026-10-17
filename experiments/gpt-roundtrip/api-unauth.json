@@ -1,0 +1,27 @@
+{
+  "started": "2026-10-16T05:30:38Z",
+  "elapsed_sec": 0.125,
+  "url": "https://api.openai.com/v1/chat/completions",
+  "authorization_sent": false,
+  "http": 401,
+  "error": null,
+  "response_headers": {
+    "Date": "Fri, 16 Oct 2026 05:30:38 GMT",
+    "Content-Type": "application/json; charset=utf-8",
+    "Content-Length": "496",
+    "Connection": "close",
+    "CF-Ray": "a4b4ac38389c1fb9-PDX",
+    "CF-Cache-Status": "DYNAMIC",
+    "Server": "cloudflare",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+    "Vary": "Origin",
+    "Access-Control-Expose-Headers": "CF-Ray",
+    "X-Content-Type-Options": "nosniff",
+    "x-openai-proxy-wasm": "v0.1",
+    "x-request-id": "req_28fcf4c53fe34b129733afd7a199dbdc",
+    "alt-svc": "h3=\":443\"; ma=86400"
+  },
+  "body": "{\n    \"error\": {\n        \"message\": \"You didn't provide an API key. You need to provide your API key in an Authorization header using Bearer auth (i.e. Authorization: Bearer YOUR_KEY), or as the password field (with blank username) if you're accessing the API from your browser and are prompted for a username and password. You can obtain an API key from https://platform.openai.com/account/api-keys.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\": null\n    }\n}\n",
+  "marker_in_body": false,
+  "request_content": "Reply with the exact marker: GPT-POC-TEST-001"
+}

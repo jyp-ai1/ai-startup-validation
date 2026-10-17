@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "External roundtrip PoC",
+  "version": "0.1.0",
+  "description": "Sends one free test prompt to a documented no-key text endpoint. Does not open consumer chat sites.",
+  "permissions": [],
+  "host_permissions": ["https://text.pollinations.ai/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "External roundtrip PoC"
+  }
+}

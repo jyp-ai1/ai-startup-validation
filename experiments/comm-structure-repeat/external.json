@@ -1,0 +1,114 @@
+[
+  {
+    "started": "2026-10-16T06:31:35Z",
+    "elapsed_sec": 11.328,
+    "http": 200,
+    "error": null,
+    "response_headers": {
+      "Date": "Fri, 16 Oct 2026 06:31:46 GMT",
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "635",
+      "Connection": "close",
+      "Access-Control-Allow-Origin": "*",
+      "ETag": "W/\"27b-nkM8E5oH8xvj9iWX9FWH7cJjVmw\"",
+      "Link": "<https://pollinations.ai>; rel=\"service\"",
+      "Access-Control-Expose-Headers": "Payment-Required, Payment-Response, Retry-After, Link, X-Pollinations-Logo, X-Powered-By",
+      "X-Pollinations-Logo": "https://raw.githubusercontent.com/pollinations/pollinations/main/packages/ui/src/brand/lockup-horizontal-black.svg",
+      "X-Powered-By": "Pollinations.AI",
+      "x-model-used": "gpt-oss-20b",
+      "x-usage-completion-text-tokens": "86",
+      "x-usage-prompt-text-tokens": "327",
+      "x-usage-total-tokens": "413",
+      "Server": "cloudflare",
+      "CF-RAY": "a4b5057f9ddaac0d-PDX"
+    },
+    "body": "{\"id\":\"pllns_31ddce3a973bacfb498c7d2c6cc43461\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong EXT-PING-1\",\"reasoning\":\"The user says: \\\"Connection test. Reply with the single word pong and then this marker: EXT-PING-1\\\". So just reply \\\"pong\\\" followed by marker. Ensure exactly that format. Probably \\\"pong EXT-PING-1\\\". They want \\\"single word pong and then this marker\\\". So maybe \\\"pong EXT-PING-1\\\".\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792132299,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":327,\"completion_tokens\":86,\"total_tokens\":413},\"user_tier\":\"anonymous\"}",
+    "name": "EXT-PING-1",
+    "endpoint": "https://text.pollinations.ai/openai",
+    "authorization_sent": false,
+    "request": {
+      "model": "openai",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Connection test. Reply with the single word pong and then this marker: EXT-PING-1"
+        }
+      ],
+      "stream": false
+    },
+    "marker_in_body": true,
+    "paid_refused": false,
+    "model_field": "gpt-oss-20b",
+    "user_tier": "anonymous",
+    "content": "pong EXT-PING-1",
+    "id": "pllns_31ddce3a973bacfb498c7d2c6cc43461"
+  },
+  {
+    "started": "2026-10-16T06:31:46Z",
+    "elapsed_sec": 45.091,
+    "http": null,
+    "error": "TimeoutError: The read operation timed out",
+    "response_headers": {},
+    "body": "",
+    "name": "EXT-PING-2",
+    "endpoint": "https://text.pollinations.ai/openai",
+    "authorization_sent": false,
+    "request": {
+      "model": "openai",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Connection test. Reply with the single word pong and then this marker: EXT-PING-2"
+        }
+      ],
+      "stream": false
+    },
+    "marker_in_body": false,
+    "paid_refused": false,
+    "content": null
+  },
+  {
+    "started": "2026-10-16T06:32:31Z",
+    "elapsed_sec": 10.717,
+    "http": 200,
+    "error": null,
+    "response_headers": {
+      "Date": "Fri, 16 Oct 2026 06:32:42 GMT",
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "580",
+      "Connection": "close",
+      "Access-Control-Allow-Origin": "*",
+      "ETag": "W/\"244-c726O+ML95RmAyPeRZG572R2o6Q\"",
+      "Link": "<https://pollinations.ai>; rel=\"service\"",
+      "Access-Control-Expose-Headers": "Payment-Required, Payment-Response, Retry-After, Link, X-Pollinations-Logo, X-Powered-By",
+      "X-Pollinations-Logo": "https://raw.githubusercontent.com/pollinations/pollinations/main/packages/ui/src/brand/lockup-horizontal-black.svg",
+      "X-Powered-By": "Pollinations.AI",
+      "x-model-used": "gpt-oss-20b",
+      "x-usage-completion-text-tokens": "76",
+      "x-usage-prompt-text-tokens": "327",
+      "x-usage-total-tokens": "403",
+      "Server": "cloudflare",
+      "CF-RAY": "a4b506e009e9ac0d-PDX"
+    },
+    "body": "{\"id\":\"pllns_84dd84b023f84efa4d284f3f2bacb6af\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong EXT-PING-3\",\"reasoning\":\"The user wants \\\"pong\\\" followed by \\\"EXT-PING-3\\\". They said \\\"Reply with the single word pong and then this marker: EXT-PING-3\\\". Likely they want pong followed by that marker exactly, no extra text. So respond: pong EXT-PING-3.\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792132358,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":327,\"completion_tokens\":76,\"total_tokens\":403},\"user_tier\":\"anonymous\"}",
+    "name": "EXT-PING-3",
+    "endpoint": "https://text.pollinations.ai/openai",
+    "authorization_sent": false,
+    "request": {
+      "model": "openai",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Connection test. Reply with the single word pong and then this marker: EXT-PING-3"
+        }
+      ],
+      "stream": false
+    },
+    "marker_in_body": true,
+    "paid_refused": false,
+    "model_field": "gpt-oss-20b",
+    "user_tier": "anonymous",
+    "content": "pong EXT-PING-3",
+    "id": "pllns_84dd84b023f84efa4d284f3f2bacb6af"
+  }
+]

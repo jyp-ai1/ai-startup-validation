@@ -1,0 +1,10 @@
+{
+  "result": {
+    "languageModel": "function",
+    "windowAi": "undefined",
+    "planSent": false,
+    "availability": "unavailable"
+  },
+  "blockedHits": [],
+  "finalUrl": "http://127.0.0.1:8771/"
+}

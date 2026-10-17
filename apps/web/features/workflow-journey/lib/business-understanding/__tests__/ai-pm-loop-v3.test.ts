@@ -19,7 +19,11 @@ import {
 } from '../evaluate-stage-readiness';
 import { appendLoopTurnWithReview } from '../process-loop-answer';
 import { resolveNextQuestionDecision } from '../resolve-next-question-decision';
-import { decideNextQuestion } from '../question-decision-engine';
+import {
+  countUnclosedGapAsks,
+  decideNextQuestion,
+  MAX_SAME_GAP_ASKS_BEFORE_YIELD,
+} from '../question-decision-engine';
 import {
   createEmptyGapState,
   isGapAskable,
@@ -729,6 +733,67 @@ describe('PR4 — decideNextQuestionFromReview (AC1–AC19)', () => {
     }
     expect(gapState.gaps.payer?.completeness).toBe('CLOSED');
     expect(lastDecision?.targetGapId).toBe('businessOneLiner');
+  });
+
+  it('AC5 yield: repeated unclosed problemJtbd asks move to another gap', () => {
+    const turns: AiPmLoopTurn[] = [1, 2].map((n) => ({
+      issueId: 'problem_definition' as const,
+      answer: `아직 모름 ${n}`,
+      appliedAt: String(n),
+      semanticFactKey: 'customer' as const,
+      semanticFactKeys: ['customer' as const],
+      intent: 'business_fact' as const,
+      targetGap: 'problemJtbd',
+    }));
+    const { review } = buildAnswerReview(
+      baseReviewInput({
+        userAnswer: '콘텐츠 제작 시간',
+        askedGapId: 'problemJtbd',
+        askedQuestionText: '핵심 문제는?',
+        displayedQuestionText: '핵심 문제는?',
+        askedIssueId: 'problem_definition',
+      }),
+    );
+    const prior = createEmptyGapState();
+    prior.gaps.payer = {
+      gapId: 'payer',
+      completeness: 'CLOSED',
+      sourceTurnId: 't-payer',
+      sourceReviewId: 'rev-payer',
+      evidence: [],
+      confidence: 'high',
+      lastUpdated: '2026-10-16T08:18:00.000Z',
+      rationale: 'payer already closed',
+    };
+    const gapState = updateGapStateFromReview(review, prior);
+    const stageReadiness = evaluateStageReadiness({ gapState });
+    const firstProbe = decideNextQuestionFromReview({
+      living: minimalLiving(),
+      turns: [],
+      memory: null,
+      lastReview: review,
+      gapState,
+      stageReadiness,
+    });
+    const decision = decideNextQuestionFromReview({
+      living: minimalLiving(),
+      turns,
+      memory: null,
+      lastReview: review,
+      gapState,
+      stageReadiness,
+    });
+
+    expect(review.recommendedAction).toBe('probe');
+    expect(firstProbe?.targetGapId).toBe('problemJtbd');
+    expect(firstProbe?.reason ?? '').not.toContain('yield');
+    expect(isGapAskable('problemJtbd', gapState)).toBe(true);
+    expect(countUnclosedGapAsks(turns, 'problemJtbd')).toBe(MAX_SAME_GAP_ASKS_BEFORE_YIELD);
+    expect(decision?.targetGapId).toBe('businessOneLiner');
+    expect(decision?.excludedGaps).toEqual(expect.arrayContaining(['payer', 'problemJtbd']));
+    expect(decision?.reason).toContain('yield problemJtbd after 2 unclosed asks');
+    expect(gapState.gaps.payer?.completeness).toBe('CLOSED');
+    expect(gapState.gaps.problemJtbd?.completeness).not.toBe('CLOSED');
   });
 
   it('AC17/AC18/AC19: scope guards — PR5 evaluateStageReadiness wired, PR6+ not started', async () => {

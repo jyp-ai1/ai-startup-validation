@@ -1,0 +1,15 @@
+{
+  "name": "gpt-official-not-repeated",
+  "recorded": "2026-10-16T05:45:41Z",
+  "marker": "ALABOM-ROUNDTRIP-001",
+  "sent": false,
+  "web_ui_opened": false,
+  "authorization_sent": false,
+  "api_key_sent": false,
+  "cost_krw": 0,
+  "prior_http": 401,
+  "prior_started": "2026-10-16T05:30:38Z",
+  "prior_marker": "GPT-POC-TEST-001",
+  "prior_file": "experiments/gpt-roundtrip/api-unauth.json",
+  "reason": "The only executed official OpenAI call returned HTTP 401 with no API key. The auth condition is unchanged, so that unauthenticated POST was not sent again. No saved procedure returned a GPT completion."
+}

@@ -1,0 +1,295 @@
+PR #198 멀티 AI 실행 경로와 반복 루프 검증 명세.
+
+이 파일은 설계와 정적 코드 추적이다. 제품 동작을 바꾸지 않았다. API 키를 넣지 않았다. 유료 모델 호출, 브라우저 자동화 구현, DB 변경, PR 병합, Production 배포를 하지 않았다.
+
+기준 HEAD: 36de435c6ecc35d79981377a8fe748f6c22b9aa8
+Production 잠금 SHA: 0b465226516e1a4f3eb9ce2087f8bca2c2c091da
+앞 설계: docs/evidence/ALABOM/AI-PM/EXTERNAL-AI-JUDGMENT-DESIGN.txt
+루프 설계: docs/evidence/ALABOM/AI-PM/EXTERNAL-AI-JUDGMENT-LOOP.txt
+
+정적 사실과 실행 전 확인을 나눈다. 이 환경의 process.env 를 2026-10-15T01:51:27Z 에 읽었다. 값은 출력하지 않았다. Production 과 Vercel 의 환경 변수는 읽지 않았다.
+
+1. 실제 호출 경로와 모델 ID
+
+연구 공급자 이름과 모델 호출은 다르다.
+
+apps/web/features/agents/research/providers/index.ts
+- getResearchProvider('gemini') 와 getResearchProvider('openai') 는 같은 OpenRouterResearchProvider 인스턴스다.
+- claude, perplexity, mcp_search, browser_agent 는 MockResearchProvider 다.
+- 이 클래스의 id 필드는 'gemini' 로 고정이다. openai 를 골라도 클래스 id 는 gemini 다.
+
+apps/web/features/agents/research/providers/openrouter-provider.ts
+- chatService.chat 을 호출한다. chatWithFallback 을 호출하지 않는다.
+- model 은 resolveDefaultModel('openrouter') 다.
+- AI_DEFAULT_MODEL 이 없으면 packages/ai/src/config/defaults.ts 가 google/gemini-2.5-flash 를 반환한다.
+- AI_DEFAULT_MODEL 이 있으면 provider 인자와 관계없이 그 문자열이 반환된다. 이 환경에서는 unset 이다.
+
+packages/ai/src/models/registry.ts
+- google/gemini-2.5-flash 의 provider 는 openrouter 다.
+- gpt-4o-mini 의 provider 는 openai 다.
+- gemini-2.0-flash 의 provider 는 google 다.
+- openai/gpt-4o-mini 라는 OpenRouter 용 GPT id 는 카탈로그에 없다.
+
+packages/ai/src/chat/service.ts
+- chat 은 model id 로 provider 를 찾고 provider.chat 을 호출한다.
+- withRetry 의 기본 maxRetries 는 3 이다. 429, 5xx, TimeoutError 만 다시 시도한다. 최대 4회 시도다.
+
+packages/ai/src/providers/registry.ts
+- get 은 등록된 인스턴스가 없으면 create(id) 를 설정 없이 호출한다.
+
+packages/ai/src/providers/adapters/index.ts
+- OpenRouterProviderAdapter.chat 만 openRouterChat 으로 이어진다.
+- OpenAIProviderAdapter.chat 만 openAIChat 으로 이어진다.
+- GoogleProviderAdapter 와 AnthropicProviderAdapter 는 chat 을 재정의하지 않는다. 키만 있고 호출하면 BaseProviderAdapter 의 stub 문자열이다. Google 또는 Anthropic 의 HTTP endpoint 로 이어지지 않는다.
+
+packages/ai/src/providers/openrouter-http.ts
+- 채팅 endpoint: https://openrouter.ai/api/v1/chat/completions
+- 요청 본문의 model 은 request.model 이다.
+- 키가 빈 어댑터는 ensureConfigured 가 503 을 던진다. fetch 앞에 있다.
+
+packages/ai/src/providers/openai-http.ts
+- 채팅 endpoint: https://api.openai.com/v1/chat/completions
+- 연구 경로는 이 함수를 호출하지 않는다.
+
+packages/ai/src/chat/fallback-chat.ts
+- chatWithFallback 은 1차 호출이 429 또는 5xx 이고 OPENAI_API_KEY 가 있을 때만 openAIChat 을 호출한다.
+- 그때 model 은 resolveFallbackModel() 이고, AI_FALLBACK_MODEL 이 없으면 gpt-4o-mini 다.
+- 연구 공급자는 이 함수를 쓰지 않는다.
+- 결정 공급자 apps/web/features/decision/services/providers/openrouter-decision-provider.ts 와 컨설턴트 apps/web/features/ai-consultant/services/consultant-llm-service.ts 는 쓴다. 그 경로는 이 루프가 아니다.
+
+packages/agents/src/adapters/openrouter/openrouter-research-provider.ts
+- OPENROUTER_API_KEY 가 없으면 fetch 없이 mockResearchProvider 를 반환한다.
+- 키가 있고 chat 이 실패하면 역시 mock 을 반환한다.
+- JSON 이 깨지면 overallConfidence 55 를 두고, 비어 있는 영역은 mock 문장으로 채운다.
+- 모델이 적은 URL 을 출처로 받는다.
+
+packages/ai/src/validation/ai-client.ts
+- 별도 경로다. OPENAI_API_KEY 가 없으면 fetch 전에 503 이다.
+- 키가 있으면 https://api.openai.com/v1/chat/completions 또는 https://api.anthropic.com/v1/messages 다.
+- 기본 openai 모델 id 는 gpt-4o 다. 이 루프의 반대 검토가 아니다.
+
+표. 연구 루프에서 이름을 골랐을 때의 정적 결과.
+
+선택 이름 gemini
+- 실제 호출 함수: apps OpenRouterResearchProvider.execute → chatService.chat → OpenRouterProviderAdapter.chat → openRouterChat
+- endpoint: https://openrouter.ai/api/v1/chat/completions
+- 요청 model: AI_DEFAULT_MODEL 이 없으면 google/gemini-2.5-flash
+- Gemini 와 GPT 가 독립인가: 이 호출 하나만 있다. GPT 호출이 없다.
+- 키가 없을 때: openrouter 어댑터가 비어 있으면 503. fetch 없음. 연구 클래스는 그 오류를 잡지 않는다.
+- 유료 호출: 키가 있고 503 이 아니면 이 endpoint 로 나간다. 자동 GPT fallback 은 이 클래스에 없다.
+- 실패 후 동작: JSON 실패는 네트워크 실패가 아니다. confidence 55 와 점수 대체가 응답을 만든다. 그것은 페이지 조사가 아니다.
+
+선택 이름 openai
+- 실제 호출 함수: gemini 와 같은 execute 다.
+- endpoint: 같다. https://openrouter.ai/api/v1/chat/completions
+- 요청 model: 같다. google/gemini-2.5-flash
+- 독립인가: 아니다. 이름만 openai 다. GPT 미완성이다. 완료로 적지 않는다.
+- 키가 없을 때: gemini 와 같다.
+- 유료 호출과 fallback: 연구 경로에서는 OpenAI endpoint 로 넘어가지 않는다.
+
+카탈로그대로 gpt-4o-mini 를 chatService.chat 에 직접 넣는 경우
+- endpoint: https://api.openai.com/v1/chat/completions
+- model: gpt-4o-mini
+- 독립 모델 id 인지는 카탈로그상 openai provider 다. Gemini 의 openrouter 호출과 HTTP 호스트가 다르다.
+- 연구 공급자는 이 호출을 만들지 않는다. 실행으로 확인하지 않았다.
+- OPENAI_API_KEY 가 없으면 ensureConfigured 가 fetch 전에 503 이다.
+
+Google 이름 gemini-2.0-flash
+- provider 는 google 이다.
+- GoogleProviderAdapter 는 HTTP 를 호출하지 않고 stub 본문을 만든다.
+- 소비자 Gemini 앱이나 Gemini 브라우저 자동화로 이어진다는 코드는 없다.
+
+이 환경 2026-10-15T01:51:27Z
+- OPENROUTER_API_KEY unset
+- OPENAI_API_KEY unset
+- ANTHROPIC_API_KEY unset
+- GOOGLE_AI_API_KEY unset
+- AZURE_OPENAI_API_KEY unset
+- AI_DEFAULT_PROVIDER unset
+- AI_DEFAULT_MODEL unset
+- AI_FALLBACK_MODEL unset
+- AI_PROVIDER unset
+- 따라서 이 셸에서 연구 경로를 호출하면 fetch 전에 503 이 나도록 코드가 되어 있다. 그 호출 자체를 실행하지 않았다.
+- Production 키 유무는 미확인이다.
+
+실행 전에만 알 수 있는 것.
+- 키가 있는 환경에서 OpenRouter 가 요청 model 을 다른 모델로 바꾸는지. 응답의 model 필드는 data.model ?? request.model 이라 서버가 다른 id 를 돌려줄 수 있다. 그 응답을 보지 않았다.
+- 429 나 5xx 에서 withRetry 가 실제로 몇 번 과금되는지.
+- 결정 경로의 chatWithFallback 이 Production 에서 GPT 로 넘어가는지. 연구 루프의 완료 조건으로 쓰지 않는다.
+
+2. 반복 루프 상태 전이
+
+상태는 구현 파일의 enum 이 아니다. 의미와 전이만 고정한다.
+
+research_not_run
+- URL 이 없거나, 브라우저 함수를 호출하지 않았거나, 호출 전에 끝났다.
+- 모델이 조사했다는 문장만으로는 이 상태에서 나가지 않는다.
+
+research_completed
+- 이번 바퀴의 캡처에 requestedUrl, finalUrl, http status, title, excerpt, collectedAt 이 있고 error 가 없다.
+- 같은 url 과 같은 excerpt 해시가 이전 바퀴에 있으면 새 조사 완료가 아니다. 이전 캡처를 가리킨다.
+
+counter_review_completed
+- Gemini 요청과 다른 두 번째 HTTP 요청이 있고, 그 요청 model 이 GPT 카탈로그 id 이며, 응답 원문이 저장되었다.
+- 두 번째 호출이 google/gemini-2.5-flash 이면 이 상태에 들어가지 않는다. 현재 연구 코드는 이 상태에 도달하지 못한다. 미완성이다.
+
+synthesis_pending
+- 한쪽 역할의 원문이 없거나, 주장의 근거 id 가 캡처나 창업자 원문에 연결되지 않았거나, 충돌 목록을 만들기 전이다.
+- 이 상태에서 판단을 제공하지 않는다.
+
+judgment_provisional
+- 잠정 판단 문장이 있고, 각 문장의 근거 id 가 page_record 또는 observed_outcome 또는 founder_claim 이다.
+- founder_claim 만 있으면 이 상태가 아니다.
+- 직전 판단과 본문이 다르면 changeCauseIds 가 비어 있으면 이 상태로 저장하지 않는다.
+
+judgment_deferred
+- 독립 근거가 부족하다. 미확인과 다음 검증이 있다.
+- 조사 완료도 판단 완료도 아니다.
+
+reentry_required
+- 새 캡처 해시, 새 founder_claim, 새 observed_outcome, 또는 changeCauseIds 가 있는 판단 본문 변경이 있다.
+- 다음 바퀴의 Gemini 와 GPT 입력이 된다. 직전 판단 원문은 유지한다.
+
+loop_budget_held
+- 바퀴 수가 4 에 닿았거나, 승인된 금액 한도에 닿았다.
+- 직전 판단을 유지한다. 사업 검증의 성공도 실패도 아니다. 추가 모델 호출을 하지 않는다.
+
+전이.
+- 시작과 URL 없음 → research_not_run → 모델이 질문만 내면 synthesis_pending 을 거치지 않고 judgment_deferred.
+- URL 있고 캡처 성공 → research_completed. GPT 독립 호출이 없으면 counter_review_completed 로 가지 않고 synthesis_pending 에 머문다. 판단은 judgment_deferred.
+- 캡처 성공과 GPT 독립 호출 성공 → counter_review_completed. 근거가 연결되면 judgment_provisional 또는, 고객 행동이 없으면 judgment_deferred.
+- 새 근거 또는 원인 있는 변경 → reentry_required → 다음 바퀴의 research 단계. 이전 기록은 삭제하지 않는다.
+- 브라우저 실패나 모델 실패 → 직전 상태와 직전 판단을 유지하고 error 를 추가한다. research_completed 나 counter_review_completed 로 올리지 않는다.
+- 4바퀴 → loop_budget_held. 그 전에 독립 근거가 있으면 마지막 provisional 을 보여 주되 성공으로 세지 않는다. 없으면 deferred 를 유지한다.
+
+3. 근거·충돌·판단 변경 계약
+
+LoopRoundRecord. 구현 타입이 아니다.
+
+- inputRevisionId, conversationTurnIds: 원본 입력과 대화 id. 본문을 복사해 둔다.
+- captures: requestedUrl, finalUrl, status, title, excerpt, excerptHash, collectedAt, error.
+- geminiCall: modelId, endpoint, requestBody, responseBody, error. 호출하지 않았으면 null.
+- gptCall: modelId, endpoint, requestBody, responseBody, error. 독립 호출이 아니면 null. 이름만 openai 인 연구 공급자 결과는 여기에 넣지 않는다.
+- claims: claimId, text, grade, sourceId, excerptStart, excerptEnd.
+- conflicts: conflictId, claimIdA, claimIdB, unresolved.
+- provisional: text, previousHash, nextHash, changeCauseIds.
+- nextAction: uncertaintyId, text, reason, kind.
+- execution: attempted, status, failureReason.
+
+grade 는 founder_claim, page_record, model_inference, observed_outcome 만 둔다.
+model_inference 는 캡처 excerpt 안에 없는 문장이다. page_record 로 올리지 않는다.
+excerptHash 가 이전과 같으면 새 근거 수에 넣지 않는다. sourceId 는 처음 캡처 id 를 재사용한다.
+changeCauseIds 가 비어 있는 본문 변경은 저장하지 않는다. previousHash 의 판단을 유지한다.
+두 모델의 같은 문장은 grade 를 바꾸지 않는다.
+
+4. 시나리오 A–J
+
+공통 입력의 사업 주장은 배송 소상공인, 주문과 배송을 따로 관리, 월 구독이다. 성패를 알고 있다고 말하지 않는다. 아래는 기대 전이다. 화면과 모델로 실행하지 않았다.
+
+A. 사업 정보만 있고 URL 이 없다.
+- 입력: 위 주장. allowedUrls 빈 배열.
+- 기대: research_not_run, judgment_deferred.
+- 보존: 창업자 원문. 캡처 없음. geminiCall 과 gptCall 은 null 이거나, 질문을 만들기 위해 호출했다면 그 원문만 있고 조사 완료가 아니다.
+- 다음 행동: 공개 URL 또는 관찰 기록을 하나만 요청.
+- 종료: 유보. 재진입은 새 주장, URL, 관찰이 생길 때.
+
+B. 창업자가 URL 을 주고 페이지가 캡처된다.
+- 입력: A 의 기록과 URL 하나. 브라우저가 status, excerpt, collectedAt 을 남긴다.
+- 기대: research_completed. GPT 독립 호출이 없으면 counter_review_completed 가 아니다. synthesis_pending 또는 judgment_deferred.
+- 보존: 캡처 원문과 URL. A 의 유보 문장.
+- 다음 행동: 그 캡처에 대한 반대 검토가 없으면 판단 제공이 아니다.
+- 재진입: 캡처 해시가 새것이면 reentry_required.
+
+C. Gemini 는 수요, GPT 는 판매자 소개.
+- 입력: B 의 같은 excerpt.
+- 기대: 두 독립 호출이 있을 때만 counter_review_completed. conflicts 에 두 해석. unresolved true. judgment_deferred. 고객 행동이 없으므로 judgment_provisional 로 확정하지 않는다.
+- 보존: 두 요청·응답 원문, 모델 id, 같은 sourceId.
+- 다음 행동: 결제나 재구매 같은 관찰 하나. 같은 excerpt 를 다시 읽자고 하지 않는다.
+- 현재 코드는 GPT 호출이 없으므로 이 시나리오의 counter_review_completed 는 미완성이다.
+
+D. 새 근거 없이 같은 미확인을 다시 묻는다.
+- 입력: A 또는 C 이후. 새 해시 없음.
+- 기대: nextAction 거절. 상태는 judgment_deferred 유지.
+- 보존: 직전 질문과 직전 판단.
+- 다음 행동: withhold. 같은 문장을 다시 내지 않는다.
+- 재진입 없음.
+
+E. 새 페이지 기록이 기존 판단을 바꾼다.
+- 입력: 직전 provisional 또는 deferred 와, 해시가 다른 새 캡처.
+- 기대: reentry_required 후 새 바퀴. 본문이 바뀌면 changeCauseIds 에 새 캡처 id. judgment_provisional 은 그 id 가 있을 때만.
+- 보존: 이전 판단 해시와 이전 캡처.
+- 다음 행동: 아직 열린 미확인 하나.
+- changeCauseIds 가 없으면 본문을 바꾸지 않는다.
+
+F. 브라우저 실패 또는 모델 실패.
+- 입력: 열리지 않는 URL, 또는 모델 503, 429, 5xx, 빈 응답.
+- 기대: research_completed 와 counter_review_completed 로 올리지 않는다. 직전 판단 유지. failureReason 기록.
+- 보존: 실패 URL 과 error. 성공했던 이전 캡처.
+- 다음 행동: 직전 다음 행동을 유지하거나, 다른 URL 을 받지 못하면 withhold.
+- 현재 제품 crawl() 은 한 URL 실패가 전체 예외다. 부분 성공을 돌려주는 동작은 없다. mock 대체 점수는 실패 기록이 아니다.
+
+G. 결제 문장은 있으나 귀속과 진위가 없다.
+- 입력: 금액이 적힌 문자 기록. projectAttribution 은 unreviewed. authenticityGuaranteed 는 false.
+- 기대: page_record 또는 기존 장부의 record FACT 로만 남긴다. 사업 성공 판단으로 올리지 않는다. judgment_deferred 또는, 문자 자체만 잠정으로 인용하는 judgment_provisional. VALIDATED 없음.
+- 보존: 문자 원문, 귀속 unreviewed.
+- 다음 행동: 이 기록이 이 사업의 거래인지 확인하는 관찰 하나.
+- 재진입: 귀속 accepted 또는 rejected 가 관찰로 들어올 때. 모델 동의만으로는 안 된다.
+
+H. 4바퀴.
+- 입력: 네 번째 바퀴가 끝났다. 새 근거가 더 있을 수 있다.
+- 기대: loop_budget_held. 성공도 실패도 아니다.
+- 보존: 네 바퀴의 원문과 마지막 판단.
+- 다음 행동: 추가 모델 호출 없음. 남은 미확인을 보여 준다.
+- 재진입: 한도가 승인으로 늘어나거나, 모델 없이 붙일 관찰이 생길 때. 횟수 자체는 재진입 이유가 아니다.
+
+I. 두 모델이 동의하고 외부 근거가 없다.
+- 입력: 같은 시장 크기 문장. 캡처 없음.
+- 기대: research_not_run. counter_review_completed 가 되어도 근거 grade 는 model_inference. judgment_deferred. 동의는 확신도를 올리지 않는다.
+- 보존: 두 원문. 없는 URL 은 출처가 아니다.
+- 다음 행동: 그 문장을 뒷받침할 URL 또는 관찰 하나.
+- 현재 코드의 점수 65 와 mock URL 은 이 시나리오의 외부 근거로 세지 않는다.
+
+J. 새 근거가 판단을 바꾸지 않는다.
+- 입력: 새 캡처가 직전 판단의 미확인을 닫지 않는다. 종합이 본문을 유지한다.
+- 기대: changed false. changeCauseIds 는 비어도 된다. 본문이 같기 때문이다. reentry_required 는 새 해시 때문에 한 번 돌았고, 그 결과 본문이 같으면 다음 재진입은 없다.
+- 보존: 새 캡처와 같은 판단 해시.
+- 다음 행동: 여전히 열린 다른 미확인이 있으면 그것 하나. 같은 질문을 반복하지 않는다. 열린 것이 없으면 judgment_deferred 의 검증 계획을 유지한다.
+- 종료: 고객 관찰이 없으면 판단 완료가 아니다.
+
+5. 비용·보안 경계
+
+키가 없는 이 셸.
+- 연구 경로의 fetch 는 ensureConfigured 이전으로 가지 않도록 되어 있다. 호출 테스트는 하지 않았다.
+- chatWithFallback 은 OPENAI_API_KEY 가 없으면 1차 오류를 다시 던진다. 이 환경에서는 폴백 fetch 도 없다.
+- packages/agents 연구 어댑터는 키가 없으면 mock 을 반환한다. mock 은 네트워크가 아니지만 조사 완료도 아니다.
+
+향후 승인용 분리. 지금 승인하지 않는다.
+- Gemini: 바퀴당 1요청. model google/gemini-2.5-flash. endpoint OpenRouter. 가정 입력 8,000, 출력 2,000.
+- GPT: 바퀴당 1요청. model gpt-4o-mini. endpoint api.openai.com. 같은 토큰 가정. 현재 연구 경로는 이 요청을 만들지 않는다.
+- 종합: 바퀴당 1요청. 모델은 승인 때 정한다. 표결이 아니다.
+- 재시도: ChatService 가 429 와 5xx 에서 최대 4시도. 실패 재시도는 성공 요청과 따로 센다.
+- chatWithFallback 을 루프에 붙이면 5xx 이후 GPT 요청이 한 번 더 생길 수 있다. 루프 명세는 그 함수를 쓰지 않는다.
+- 저장소 DEFAULT_PRICING 추정. 오늘 공급자 가격이 아니다. 입력 1M 당 0.15 USD, 출력 1M 당 0.6 USD 가 두 모델 표에 같다.
+- 시도 1회의 추정은 0.0024 USD. 바퀴 3요청은 0.0072 USD. 4바퀴는 0.0288 USD. 매 요청이 4회까지 재시도되면 약 0.115 USD. 최대 지출 제안은 그 0.115 USD 를 넘기면 loop_budget_held 다. 승인 전에는 0 이다.
+
+개인정보와 비밀.
+- 현재 연구 프롬프트는 프로젝트 제목, 산업, 과제 이름을 모델에 넣도록 되어 있다. 페이지 HTML 은 넣지 않는다.
+- 제안 루프가 대화와 발췌를 제3자 모델에 보내는 것은 아직 구현이 아니다. 보내기 전에 승인할 경계는 다음이다. 세션 쿠키, 인증 헤더, API 키, 비밀번호, 결제 원문의 불필요한 식별자, 전체 HTML 은 보내지 않는다. URL 과 짧은 발췌도 사업 정보가 제3자에게 간다.
+- sessionStorage 의 대화는 그 브라우저 안에 있다. 그 사실만으로 조사 원본이 보존되지는 않는다.
+- 소비자용 Gemini 또는 GPT 웹사이트를 브라우저로 조작하는 코드는 없다. 약관과 접근 방법을 확인하지 않았다. 그 자동화가 허용된다고 적지 않는다. API endpoint 가 코드에 있다는 것은 약관 검토가 끝났다는 뜻이 아니다.
+
+6. 실행 보고서
+
+코드 변경: 이 명세 파일과 루프 문서의 한 줄 연결뿐이다. 런타임 코드는 바꾸지 않았다.
+테스트: 실행하지 않았다.
+네트워크: 모델 호출 없음. 브라우저 호출 없음. 키 설정 없음.
+정적 확인: 위 파일의 호출 순서와 이 셸의 키 unset.
+미확인: Production 환경 변수, 키가 있을 때의 실제 응답 model, 화면 시나리오 A–J.
+
+미해결과 승인.
+
+GPT 독립 호출은 미완성이다. openai 라는 공급자 이름은 Gemini 경로다.
+실패 시 mock 과 점수 대체가 조사 완료처럼 보일 수 있다. 루프 상태는 그 대체를 research_completed 로 받지 않는다.
+브라우저 실패가 이전 캡처를 반환하지 않는 제품 crawl() 은 그대로다.
+sessionStorage 는 조사 원본 저장소가 아니다.
+구현 승인은 보류다. 필요한 승인은 GPT 를 다른 model id 와 endpoint 로 부르는 변경, 지출 한도, DB 또는 다른 지속 저장, 브라우저 자동화, 제3자 전송 범위다. 병합과 Production 배포는 그 전이 아니다.

@@ -20,6 +20,7 @@ import type { LivingUnderstandingState } from './living-understanding-state';
 import { whyNowForGapField } from './living-understanding-state';
 import {
   countUnclosedGapAsks,
+  MAX_SAME_GAP_ASKS_BEFORE_YIELD,
   type QuestionDecision,
 } from './question-decision-engine';
 import {
@@ -183,6 +184,23 @@ function pickAdvanceTargetGap(input: {
   return null;
 }
 
+function maskGapClosed(gapState: GapKnowledgeState, gapId: string): GapKnowledgeState {
+  const existing = gapState.gaps[gapId];
+  const closed = existing
+    ? { ...existing, completeness: 'CLOSED' as const, rationale: '같은 공백을 반복하지 않기 위해 다음 후보에서 뺀다.' }
+    : {
+        gapId,
+        completeness: 'CLOSED' as const,
+        sourceTurnId: null,
+        sourceReviewId: null,
+        evidence: [],
+        confidence: 'low' as const,
+        lastUpdated: '',
+        rationale: '같은 공백을 반복하지 않기 위해 다음 후보에서 뺀다.',
+      };
+  return { ...gapState, gaps: { ...gapState.gaps, [gapId]: closed } };
+}
+
 function resolveTargetGapId(
   review: AnswerReview,
   action: RecommendedAction,
@@ -317,7 +335,7 @@ export function decideNextQuestionFromReview(
 
   const reviewAction = lastReview.recommendedAction;
   const action = mapReviewActionToDecisionAction(reviewAction);
-  const targetGapId = resolveTargetGapId(
+  let targetGapId = resolveTargetGapId(
     lastReview,
     action,
     gapState,
@@ -325,6 +343,22 @@ export function decideNextQuestionFromReview(
     turns,
     stageReadiness,
   );
+  let yieldedFrom: { gapId: string; asks: number } | null = null;
+  if (action === 'probe' || action === 'clarify') {
+    const unclosedAsks = countUnclosedGapAsks(turns, targetGapId);
+    if (unclosedAsks >= MAX_SAME_GAP_ASKS_BEFORE_YIELD) {
+      const stuckGapId = targetGapId;
+      const yielded = pickAdvanceTargetGap({
+        living,
+        turns,
+        gapState: maskGapClosed(gapState, stuckGapId),
+        stageReadiness,
+      });
+      if (!yielded || yielded === stuckGapId) return null;
+      yieldedFrom = { gapId: stuckGapId, asks: unclosedAsks };
+      targetGapId = yielded;
+    }
+  }
 
   if (!isGapAskable(targetGapId, gapState)) {
     if (action !== 'advance') {
@@ -373,14 +407,21 @@ export function decideNextQuestionFromReview(
     rationale: binding.whyNow,
     score: action === 'advance' ? 40_000 : 30_000,
     reframed,
-    excludedGaps: [...closedGapExcludeSet(gapState)],
+    excludedGaps: [
+      ...closedGapExcludeSet(gapState),
+      ...(yieldedFrom && !closedGapExcludeSet(gapState).has(yieldedFrom.gapId)
+        ? [yieldedFrom.gapId]
+        : []),
+    ],
     drivenByReview: true,
     sourceAnswerId: lastReview.turnId,
     sourceReviewId: lastReview.reviewId,
     reviewAction,
     action,
     actionRationale,
-    reason: traceReason(action, finalTarget, lastReview),
+    reason: yieldedFrom
+      ? `${traceReason(action, finalTarget, lastReview)}; yield ${yieldedFrom.gapId} after ${yieldedFrom.asks} unclosed asks (cap ${MAX_SAME_GAP_ASKS_BEFORE_YIELD})`
+      : traceReason(action, finalTarget, lastReview),
   };
 
   if (action === 'probe') {

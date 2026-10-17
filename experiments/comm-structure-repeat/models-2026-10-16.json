@@ -1,0 +1,5 @@
+{
+  "fetched": "2026-10-16T09:45:25.550119Z",
+  "http": 200,
+  "body": "[{\"name\":\"openai-fast\",\"description\":\"GPT-OSS 20B Reasoning LLM (OVH)\",\"reasoning\":true,\"tier\":\"anonymous\",\"community\":false,\"input_modalities\":[\"text\"],\"output_modalities\":[\"text\"],\"tools\":true,\"aliases\":[\"openai\",\"gpt-oss\",\"gpt-oss-20b\",\"ovh-reasoning\"],\"vision\":false,\"audio\":false}]"
+}

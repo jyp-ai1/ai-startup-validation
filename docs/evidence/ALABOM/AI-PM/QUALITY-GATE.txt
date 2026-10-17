@@ -1,0 +1,205 @@
+QUALITY GATE — 2026-10-16
+model: qwen2.5:3b digest 357c53fb659c
+endpoint: POST http://127.0.0.1:11434/api/chat
+cost: local_runtime_no_api_invoice
+product: not connected. Failed text was not saved into ALABOM.
+judgment: 판단 유보 for both businesses. Test answers are not revenue.
+
+Changed condition versus lmulm-03-final-v4 and question-v4:
+- A validator rejects a missing question mark, a missing verbatim span, invented dates, repetition, and a price line that treats an unset price as later fixed.
+- One repair only.
+- The final is one short call per item, not one heading list.
+Gate pass is not quality pass. Keyword presence let copied answers through.
+
+Content scores:
+LMULM question: 실패. First response has no question mark. Repair repeats the instruction.
+LMULM reanalysis: 실패. Says 재고율 and repeats the instruction. 재구매 is absent.
+LMULM final: 실패. Sections that passed the length gate still misread 재구매 as 재고율, and the success line invents 200만원.
+RIDM question: 실패. The line has a question mark and the span 구독 단가 ₩9,900/ 월, but the sentence is the instruction frame pasted onto that span.
+RIDM reanalysis: 실패. It copies both test answers and the instruction sentence. It does not separate what stays and what changes.
+RIDM final: 실패. The same two answer sentences are pasted under most headings. 남은 불확실성 has no 판단 유보. 성공 기준 uses 2025년 매출 2,400만 원 as if it were a result bar.
+Product connection: 미실행. Quality did not pass.
+Paid API, browser automation, AI extension: not re-run. Prior exclusion stands.
+7B local model: not started. After the 3B runner, available memory was about 4.5Gi with the 3B model loaded.
+
+========================================================================
+{"name": "lmulm-question", "started": "2026-10-16T00:06:25.074295+00:00", "http": 200, "elapsed_sec": 120.2, "eval_count": 38, "prompt_eval_count": 9495, "done_reason": "stop", "gate": null, "prior_gate": null}
+이 사업은 2024년 1월부터 시작하여, 2026년 100억 원 매출을 목표로 설정하였다.
+
+========================================================================
+{"name": "lmulm-question-repair", "started": "2026-10-16T00:08:25.924278+00:00", "http": 200, "elapsed_sec": 11.1, "eval_count": 23, "prompt_eval_count": 1472, "done_reason": "stop", "gate": "물음표가 없다", "prior_gate": "물음표가 없다"}
+이 구절이 이미 받은 매출인지, 아직 예정인지 묻는 것이어야 한다.
+
+========================================================================
+{"name": "lmulm-reanalysis", "started": "2026-10-16T00:08:38.037417+00:00", "http": 200, "elapsed_sec": 56.7, "eval_count": 380, "prompt_eval_count": 9482, "done_reason": "length", "gate": null, "prior_gate": null}
+이 사업계획서는 블록체인 기술을 활용한 리셀 거래 플랫폼으로의 확장을 목표로 설정한 것으로 보입니다. 사업비 구성 계획에서 정부지원 비중이 100만원으로 되어 있고, 자기 부담 비중이 150만원으로 되어 있습니다. 사업장 소재지가 경기도 안양시이며, 사업자 구분이 법인사업자입니다. 사업자 등록번호는 170-86-03222이며, 법인등록번호는 134111-0654041입니다. 사업자 구성은 대표자 본인 제외한 1명이 포함되어 있습니다. 사업자 구성은 1명이 운영리드 아이템 소싱 총괄하고, 2명이 개발리드 기술 총괄하고, 3명이 디자인리드 디자인 총괄하고,입니다. 사업비 구성 계획에서 정부지원 비중이 100만원으로 되어 있고, 자기 부담 비중이 150만원으로 되어 있습니다. 사업비 구성 계획에서 정부지원 비중이 100만원으로 되어 있고, 자기 부담 비중이 150만원으로 되어 있습니다. 사업비 구성 계획에서 정부지원 비중이 100만원으로 되어 있고, 자기 부담 비중이 150만원으로 되어 있습니다. 사업비 구성 계획에서 정부지원 비중이 100만원으로 되어 있고, 자기 부담 비중이 150만원으로
+
+========================================================================
+{"name": "lmulm-reanalysis-repair", "started": "2026-10-16T00:09:35.304801+00:00", "http": 200, "elapsed_sec": 14.4, "eval_count": 45, "prompt_eval_count": 1800, "done_reason": "stop", "gate": "재구매가 없다", "prior_gate": "문장 반복"}
+답변: 재고율은 모른다.
+
+유지할 문서 주장과 답변 때문에 빼는 수익 가설을 구분해라. 판단은 판단 유보로 남겨라.
+
+========================================================================
+{"name": "ridm-question", "started": "2026-10-16T00:11:28.083601+00:00", "http": 200, "elapsed_sec": 59.1, "eval_count": 75, "prompt_eval_count": 5898, "done_reason": "stop", "gate": null, "prior_gate": null}
+아래 구절 중 하나를 질문에 넣어라: "현재 Pre-revenue 단계" 또는 "유료화 전환 예정" 또는 "구독 단가 ₩9,900/ 월" 중 어느 구절이 이미 받은 매출인지, 아직 예정인지 묻는 것이어야 한다.
+
+========================================================================
+{"name": "ridm-question-repair", "started": "2026-10-16T00:12:27.742510+00:00", "http": 200, "elapsed_sec": 9.7, "eval_count": 28, "prompt_eval_count": 1312, "done_reason": "stop", "gate": "pass", "prior_gate": "물음표가 없다"}
+구독 단가 ₩9,900/ 월 이미 받은 매출인지, 아직 예정인지?
+
+========================================================================
+{"name": "ridm-reanalysis", "started": "2026-10-16T00:12:38.429321+00:00", "http": 200, "elapsed_sec": 7.7, "eval_count": 51, "prompt_eval_count": 5908, "done_reason": "stop", "gate": null, "prior_gate": null}
+답변 1: 아직 유료 고객이 없다.
+답변 2 가설: 창작자용 캐릭터 URL 하나의 지불 의사를 검증하고, 가격은 미리 확정하지 않는다.
+
+========================================================================
+{"name": "ridm-reanalysis-repair", "started": "2026-10-16T00:12:46.638818+00:00", "http": 200, "elapsed_sec": 13.6, "eval_count": 80, "prompt_eval_count": 1285, "done_reason": "stop", "gate": "pass", "prior_gate": "판단 유보가 없다"}
+답변 1: 아직 유료 고객이 없다.
+답변 2 가설: 창작자용 캐릭터 URL 하나의 지불 의사를 검증하고, 가격은 미리 확정하지 않는다.
+
+판단: 판단 유보
+
+유지할 문서 주장과 답변 때문에 빼는 수익 가설을 구분해라.
+
+========================================================================
+{"name": "lmulm-final-00-repair", "started": "2026-10-16T00:10:01.743948+00:00", "http": 200, "elapsed_sec": 7.2, "eval_count": 39, "prompt_eval_count": 773, "done_reason": "stop", "gate": "pass", "prior_gate": "본문이 짧다"}
+사업 모델:
+① 판매 수수료 15~35%
+② 경매 수수료 5~20% (초기에는 보류)
+
+========================================================================
+{"name": "lmulm-final-00", "started": "2026-10-16T00:09:50.857460+00:00", "http": 200, "elapsed_sec": 10.4, "eval_count": 32, "prompt_eval_count": 678, "done_reason": "stop", "gate": null, "prior_gate": null}
+사업 모델:
+① 판매 수수료 15~35%
+② 경매 수수료 5~20%
+
+========================================================================
+{"name": "lmulm-final-01", "started": "2026-10-16T00:10:09.868312+00:00", "http": 200, "elapsed_sec": 3.8, "eval_count": 44, "prompt_eval_count": 680, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+답변: 초기에는 수집가 대상 출시 알림부터 검증하고, 재판매 수수료는 보류할 계획입니다. 문제 해결과 고객 확보가 우선입니다.
+
+========================================================================
+{"name": "lmulm-final-02", "started": "2026-10-16T00:10:14.545038+00:00", "http": 200, "elapsed_sec": 7.0, "eval_count": 88, "prompt_eval_count": 679, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+구절:
+"가치 제안" 항목: 
+- 앱 고도화로 한정판을 구매하고, 집, 교보생명FP몰 등의 채널에서 리셀 거래 수수료를 받을 계획입니다. 또한, 사내벤처 모기업 온라인 쇼핑몰을 활용해 초기 유저를 확보할 예정입니다.
+
+========================================================================
+{"name": "lmulm-final-03", "started": "2026-10-16T00:10:22.562177+00:00", "http": 200, "elapsed_sec": 4.0, "eval_count": 48, "prompt_eval_count": 682, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+답변: 초기에는 수집가 대상 출시 알림부터 검증하고, 재판매 수수료는 보류할 수 있다. 수익과 가격 검증을 위해 추가 연구가 필요하다.
+
+========================================================================
+{"name": "lmulm-final-04", "started": "2026-10-16T00:10:27.537468+00:00", "http": 200, "elapsed_sec": 5.8, "eval_count": 73, "prompt_eval_count": 678, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+비용과 운영 항목만 두 문장으로 써어보겠습니다:
+
+비용: 118원 ~ 220원
+운영: 5400원 ~ 8200원 노출 광고비를 포함하여 구매전환율: 3.8~5.7%
+
+========================================================================
+{"name": "lmulm-final-05", "started": "2026-10-16T00:10:34.269426+00:00", "http": 200, "elapsed_sec": 4.1, "eval_count": 48, "prompt_eval_count": 680, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+가정과 위험: 
+1. 재구매율은 모른다.
+2. 초기에는 수집가 대상 출시 알림부터 검증하고, 재판매 수수료는 보류한다.
+
+========================================================================
+{"name": "lmulm-final-06", "started": "2026-10-16T00:10:39.316443+00:00", "http": 200, "elapsed_sec": 4.0, "eval_count": 49, "prompt_eval_count": 682, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+답변 1: 재고율은 모른다.
+답변 2: 가설: 초기에는 수집가 대상 출시 알림부터 검증하고, 재판매 수수료는 보류한다.
+
+========================================================================
+{"name": "lmulm-final-07", "started": "2026-10-16T00:10:44.368249+00:00", "http": 200, "elapsed_sec": 6.3, "eval_count": 80, "prompt_eval_count": 680, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+구절:
+"1. 비즈니스 모델 ① 판매 수수료 15~35% ② 경매 수수료 5~20%"
+
+재분석:
+답변: 초기에는 수집가 대상 출시 알림부터 검증하고, 재판매 수수료는 보류할 예정입니다.
+
+========================================================================
+{"name": "lmulm-final-08", "started": "2026-10-16T00:10:51.478552+00:00", "http": 200, "elapsed_sec": 9.6, "eval_count": 120, "prompt_eval_count": 682, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+성공 기준: 매출이 2000만원 이상 달성하고, 40대, 30대 여성, 20대 고객에게 고른 구매율이 3.8% 이상으로 증가하는 것이 있다면 성공으로 판단한다.
+중단 기준: 유입비용이 118원 이상, 구매전환율이 3.8% 미만으로 하락하거나, 매출이 200만원 미만이 되는 경우 중단으로 판단한다.
+
+========================================================================
+{"name": "lmulm-final-09-repair", "started": "2026-10-16T00:11:08.064782+00:00", "http": 200, "elapsed_sec": 9.4, "eval_count": 69, "prompt_eval_count": 815, "done_reason": "stop", "gate": "재구매 답이 변경 이력에 없다", "prior_gate": "재구매 답이 변경 이력에 없다"}
+변경 이력: 앱 고도화 기반으로 한 구매이력 및 정품인증 시스템을 통해 한정판을 구매하고, 집, 교보생명FP몰 등의 채널 입점 리셀 거래 수수료 (3~5%)를 예정한다.
+
+========================================================================
+{"name": "lmulm-final-09", "started": "2026-10-16T00:11:02.092162+00:00", "http": 200, "elapsed_sec": 5.5, "eval_count": 69, "prompt_eval_count": 679, "done_reason": "stop", "gate": null, "prior_gate": null}
+변경 이력: 앱 고도화 기반으로 한 구매이력 및 정품인증 시스템을 통해 한정판을 구매하고, 집, 교보생명FP몰 등의 채널 입점 리셀 거래 수수료 (3~5%)를 예정한다.
+
+========================================================================
+{"name": "lmulm-final-10-repair", "started": "2026-10-16T00:11:21.347886+00:00", "http": 200, "elapsed_sec": 5.4, "eval_count": 17, "prompt_eval_count": 770, "done_reason": "stop", "gate": "본문이 짧다", "prior_gate": "본문이 짧다"}
+남은 불확실성: 재고율과 구매전환율
+
+========================================================================
+{"name": "lmulm-final-10", "started": "2026-10-16T00:11:18.555785+00:00", "http": 200, "elapsed_sec": 2.3, "eval_count": 25, "prompt_eval_count": 681, "done_reason": "stop", "gate": null, "prior_gate": null}
+남은 불확실성: 재고율과 구매전환율, 초기 유저 확보 방안
+
+========================================================================
+{"name": "ridm-final-00", "started": "2026-10-16T00:13:01.903004+00:00", "http": 200, "elapsed_sec": 9.2, "eval_count": 49, "prompt_eval_count": 513, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+답변 1: 아직 유료 고객이 없다.
+답변 2: 창작자용 캐릭터 URL 하나의 지불 의사를 검증하고, 가격은 미리 확정하지 않는다.
+
+========================================================================
+{"name": "ridm-final-01", "started": "2026-10-16T00:13:12.349143+00:00", "http": 200, "elapsed_sec": 4.2, "eval_count": 51, "prompt_eval_count": 515, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+답변 1: 아직 유료 고객이 없다.
+답변 2 가설: 창작자용 캐릭터 URL 하나의 지불 의사를 검증하고, 가격은 미리 확정하지 않는다.
+
+========================================================================
+{"name": "ridm-final-02", "started": "2026-10-16T00:13:17.763867+00:00", "http": 200, "elapsed_sec": 4.0, "eval_count": 49, "prompt_eval_count": 514, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+답변 1: 아직 유료 고객이 없다.
+답변 2: 창작자용 캐릭터 URL 하나의 지불 의사를 검증하고, 가격은 미리 확정하지 않는다.
+
+========================================================================
+{"name": "ridm-final-03", "started": "2026-10-16T00:13:22.810654+00:00", "http": 200, "elapsed_sec": 3.9, "eval_count": 49, "prompt_eval_count": 517, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+답변 1: 아직 유료 고객이 없다.
+답변 2: 창작자용 캐릭터 URL 하나의 지불 의사를 검증하고, 가격은 미리 확정하지 않는다.
+
+========================================================================
+{"name": "ridm-final-04", "started": "2026-10-16T00:13:28.438915+00:00", "http": 200, "elapsed_sec": 4.2, "eval_count": 51, "prompt_eval_count": 513, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+답변 1: 아직 유료 고객이 없다.
+답변 2 가설: 창작자용 캐릭터 URL 하나의 지불 의사를 검증하고, 가격은 미리 확정하지 않는다.
+
+========================================================================
+{"name": "ridm-final-05", "started": "2026-10-16T00:13:33.524876+00:00", "http": 200, "elapsed_sec": 3.7, "eval_count": 45, "prompt_eval_count": 515, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+가정: 아직 유료 고객이 없다.
+위험: 창작자용 캐릭터 URL 하나의 지불 의사를 검증하고, 가격은 미리 확정하지 않는다.
+
+========================================================================
+{"name": "ridm-final-06", "started": "2026-10-16T00:13:38.131194+00:00", "http": 200, "elapsed_sec": 4.4, "eval_count": 54, "prompt_eval_count": 517, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+사실과 주장과 가설:
+- 주장: 현재 유료 고객이 없습니다.
+- 가설: 창작자용 캐릭터 URL 하나의 지불 의사를 검증하고, 가격은 미리 확정하지 않습니다.
+
+========================================================================
+{"name": "ridm-final-07", "started": "2026-10-16T00:13:43.932689+00:00", "http": 200, "elapsed_sec": 4.2, "eval_count": 51, "prompt_eval_count": 515, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+답변 1: 아직 유료 고객이 없다.
+답변 2 가설: 창작자용 캐릭터 URL 하나의 지불 의사를 검증하고, 가격은 미리 확정하지 않는다.
+
+========================================================================
+{"name": "ridm-final-08", "started": "2026-10-16T00:13:49.170824+00:00", "http": 200, "elapsed_sec": 4.1, "eval_count": 51, "prompt_eval_count": 517, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+판단: 판단 유보
+
+성공 기준: 2025년 매출 2,400만 원 달성
+중단 기준: 유료 고객 확보 실패 또는 가격 미정 유지
+
+========================================================================
+{"name": "ridm-final-09", "started": "2026-10-16T00:13:54.180333+00:00", "http": 200, "elapsed_sec": 4.8, "eval_count": 59, "prompt_eval_count": 514, "done_reason": "stop", "gate": "pass", "prior_gate": null}
+변경 이력: 
+1. 답변 1: 아직 유료 고객이 없다.
+2. 답변 2 가설: 창작자용 캐릭터 URL 하나의 지불 의사를 검증하고, 가격은 미리 확정하지 않는다.
+
+========================================================================
+{"name": "ridm-final-10-repair", "started": "2026-10-16T00:14:03.603482+00:00", "http": 200, "elapsed_sec": 7.4, "eval_count": 55, "prompt_eval_count": 613, "done_reason": "stop", "gate": "판단 유보가 없다", "prior_gate": "판단 유보가 없다"}
+남은 불확실성 항목: 아직 유료 고객이 없으며, 창작자용 캐릭터 URL 하나의 지불 의사를 검증하고, 가격은 미리 확정하지 않는 가설이 남아 있다.
+
+========================================================================
+{"name": "ridm-final-10", "started": "2026-10-16T00:14:00.099610+00:00", "http": 200, "elapsed_sec": 3.0, "eval_count": 35, "prompt_eval_count": 516, "done_reason": "stop", "gate": null, "prior_gate": null}
+남은 불확실성 항목: 아직 유료 고객이 없으며, 가격은 미리 확정되지 않았다는 가설이 남아 있다.
+
+========================================================================
+lmulm summary gates
+{"question": "물음표가 없다", "reanalysis": "재구매가 없다", "sections": {"사업 모델": "pass", "핵심 고객과 문제": "pass", "가치 제안": "pass", "수익과 가격 검증": "pass", "비용과 운영": "pass", "가정과 위험": "pass", "사실과 주장과 가설": "pass", "실행 계획": "pass", "성공과 중단 기준": "pass", "변경 이력": "재구매 답이 변경 이력에 없다", "남은 불확실성": "본문이 짧다"}}
+========================================================================
+ridm summary gates
+{"question": "pass", "reanalysis": "pass", "sections": {"사업 모델": "pass", "핵심 고객과 문제": "pass", "가치 제안": "pass", "수익과 가격 검증": "pass", "비용과 운영": "pass", "가정과 위험": "pass", "사실과 주장과 가설": "pass", "실행 계획": "pass", "성공과 중단 기준": "pass", "변경 이력": "pass", "남은 불확실성": "판단 유보가 없다"}}

@@ -1,0 +1,100 @@
+{
+  "at": "2026-10-16T12:20:51.461Z",
+  "modelCalls": 0,
+  "productRefs": [],
+  "failure1": {
+    "inputFile": "experiments/business-judgment-poc/prompt.txt",
+    "outputFile": "experiments/business-judgment-poc/path1.json",
+    "id": "pllns_ad8b0ebe46b1c7533e046a2c0e703f36",
+    "model": "gpt-oss-20b",
+    "inputHas": {
+      "A2": true,
+      "예상 연매출": true,
+      "10억": true,
+      "원장": false,
+      "결제": false,
+      "입금": false,
+      "세금계산서": false
+    },
+    "contentHas": {
+      "1000000000": false,
+      "A2": false,
+      "예상 연매출": false,
+      "10억": false,
+      "십억": false,
+      "1,000,000,000": false,
+      "10억원": false,
+      "10억 원": false
+    },
+    "storedFact": false,
+    "omissionDetected": true,
+    "factPromoted": false
+  },
+  "failure2": {
+    "inputFile": "experiments/business-judgment-poc/prompt.txt",
+    "outputFile": "experiments/business-judgment-poc/path4.json",
+    "model": "qwen2.5:3b",
+    "inputEvidenceHits": {
+      "원장": false,
+      "결제": false,
+      "입금": false,
+      "세금계산서": false
+    },
+    "storedFact": true,
+    "claim": "모회사와 계열사의 판매가 문서의 매출 2,000만 원에서 가장 큰 비중을 차지하고 있으며, 모회사와 계열사의 지원이 없어도 현재의 매출 구조를 유지할 수 없다.",
+    "missingEvidence": "모회사와 계열사의 구체적인 매출 데이터, 모회사와 계열사의 판매 비중, 모회사와 계열사의 지원이 없어도 매출 구조를 유지할 수 있는 증거",
+    "factTrueWithoutInputEvidence": true,
+    "factTrueWhileMissingEvidenceNonempty": true
+  },
+  "recordExternalAnalysis": {
+    "accepted": true,
+    "noteKeys": [
+      "executionId",
+      "origin",
+      "liveModelCall",
+      "providerLabel",
+      "provenance",
+      "evidenceKind",
+      "sourceLabel",
+      "text",
+      "citedExcerpt",
+      "verifiedFact",
+      "realAnalysisSuccess",
+      "systemVerified",
+      "userDeclaredReal",
+      "claimStatus",
+      "judgmentChanged",
+      "receivedAt",
+      "questionId",
+      "hypothesisIds",
+      "status"
+    ],
+    "verifiedFact": false,
+    "realAnalysisSuccess": false,
+    "systemVerified": false,
+    "liveModelCall": false,
+    "claimStatus": "unassessed",
+    "status": "reference",
+    "noteContainsFactTrue": true,
+    "factKeyOnNote": false
+  },
+  "failure5": {
+    "input": {
+      "answer": "정정합니다. 초기 타깃은 방한 FIT 외국인만이 아니라, 국내 MZ 개별 여행객도 포함합니다.",
+      "askedIssueId": "competitor_analysis",
+      "askedTargetGap": "validationTestability"
+    },
+    "expected": {
+      "quality": "PARTIAL",
+      "mergeable": false
+    },
+    "thisCall": {
+      "quality": "VALID",
+      "mergeable": true,
+      "factKey": "customer",
+      "intent": "correction",
+      "rationale": "CEO CORRECT — customer revised to , 국내 MZ 개별 여행객도 포함합"
+    },
+    "originalMergeable": "unverified"
+  }
+}

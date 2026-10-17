@@ -1,0 +1,73 @@
+2026-10-16 오프라인 명령. 모델 호출 없음. apps/ packages 수정 없음.
+
+1. node experiments/judgment-failure-offline/inventory.mjs
+   인벤토리 JSON을 만든다. 10:39 원본 로그 파일은 없다.
+
+2. node /workspace/node_modules/.pnpm/vite-node@3.2.4_@types+node@20.19.43_jiti@2.7.0_lightningcss@1.32.0/node_modules/vite-node/dist/cli.mjs --config /workspace/apps/web/vitest.config.ts /workspace/experiments/judgment-failure-offline/observe.ts
+   cwd apps/web. EXIT 0.
+   failure1Omission true, failure1FactPromoted false, failure2FactTrue true,
+   recordedVerifiedFact false, failure5Quality VALID, failure5Mergeable true.
+   제품 참조 0.
+
+3. node experiments/judgment-failure-offline/detector.mjs
+   EXIT 0. auditAgrees true. productRefCount 0.
+   path1 tokenOmission true, factPromotion false. 모델 Fact와 저장 Fact 모두 false.
+   path4 tokenOmission true, factPromotion true. 모델 Fact와 저장 Fact 모두 true.
+   control-clean 두 깃발 false. control-promotion-only는 승격만 true.
+   denial-tokens는 토큰 검사를 통과한다. 의미상 누락은 보지 못한다.
+   original-1039-log는 unverified-no-raw-log.
+
+4. cd apps/web && pnpm exec vitest run features/business-validation-journey/lib/__tests__/judgment-development.test.ts --reporter=basic
+   2026-10-16T12:20:31Z. EXIT 0. Test Files 1 passed. Tests 3 passed.
+   이 파일은 path1.json과 path4.json을 열지 않는다.
+
+5. cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/core-final-stabilization.test.ts -t "validationTestability weak answer is PARTIAL and not mergeable" --reporter=verbose
+   2026-10-16T12:20:52Z. EXIT 1. Tests 1 failed, 77 skipped.
+   Expected PARTIAL. Received VALID. 996행 mergeable 단정은 실행되지 않음.
+   발췌 vitest-failure5.txt.
+
+6. cd experiments/id-selection-validator && python3 validator.py
+   EXIT 0. checks_pass true. validator.py에 path1, path4 문자열 없음.
+   네 ID 픽스처의 형식 실패 탐지다. 실패 1·2·5의 해결이 아니다.
+
+7. node experiments/judgment-failure-offline/detector.mjs
+   2026-10-17 재실행. EXIT 0. auditAgrees true. falsePositives 빈 목록.
+   토큰 미탐 denial-tokens. 의미 미탐 paraphrase-sibillion.
+   path4 raw Fact true, verifiedFact false, verificationSuccess false.
+   이 일치는 라벨 일치다. 제품 통과가 아니다.
+
+8. node experiments/judgment-failure-offline/search-1039.mjs
+   2026-10-17T03:07:08.839Z. rawVitestLogs 빈 목록.
+   지정한 트랜스크립트에 10:39:10 문자열 없음. /tmp/f13-after/unit2.log 없음.
+   mergeable unverified.
+
+9. cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/core-final-stabilization.test.ts -t "validationTestability weak answer is PARTIAL and not mergeable" --reporter=verbose
+   2026-10-17T03:07:09Z. EXIT 1. Tests 1 failed, 77 skipped.
+   Expected PARTIAL. Received VALID. 996행은 실행되지 않음.
+   발췌 vitest-failure5-2026-10-17.txt. 이전 발췌 vitest-failure5.txt는 12:20:52Z 실행으로 남겨 둔다.
+
+10. node experiments/judgment-failure-offline/detector.mjs
+    2026-10-17T03:26:57.102Z. EXIT 0. auditAgrees true. productRefCount 0.
+    토큰 미탐: denial-tokens, quote-needles, bare-mention, equiv-usd.
+    의미 미탐: paraphrase-sibillion. 금액은 unverified. 자동 인정 없음.
+    falsePositives 빈 목록. 이 일치는 제품 통과가 아니다.
+
+11. node /workspace/node_modules/.pnpm/vite-node@3.2.4_@types+node@20.19.43_jiti@2.7.0_lightningcss@1.32.0/node_modules/vite-node/dist/cli.mjs --config /workspace/apps/web/vitest.config.ts /workspace/experiments/judgment-failure-offline/trace-failure5.ts
+    cwd apps/web. 2026-10-17T03:25:16.294Z. EXIT 0.
+    customerCorrection true. quality VALID. mergeable true. factKey customer.
+    customerReturn true. partialReturn false.
+    Vitest 두 발췌는 Received VALID, 996행 미실행.
+    original1039Mergeable unverified. productChanged false.
+
+12. node experiments/judgment-failure-offline/preview-check.mjs
+    2026-10-17T04:47:17.111Z. EXIT 0.
+    PR #199 deployment 7134241920 SHA 860ee75e state failure.
+    인증 없는 요청은 HTTP 302, Vercel SSO.
+    제품 검증기 연결 false. Production commit 0b465226. apps/packages diff 비어 있음.
+    ceoBrowserStatus BLOCKED. 빌드 로그 본문은 토큰이 없어 읽지 않음.
+
+13. 2026-10-17 재확인. origin/main과 Production build-info는 0b465226.
+    deployment 7134972631 SHA e58d597c state failure.
+    /ko/business-validation 404. /auth/login 과 /demo/start 와 Clinicflow workspace 는 200.
+    스크린샷 docs/evidence/ALABOM/AI-PM/browser-block-2026-10-17/.
+    판정 BLOCKED. apps/packages 수정 없음.

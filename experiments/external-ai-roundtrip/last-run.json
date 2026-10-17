@@ -1,0 +1,35 @@
+{
+  "runner": "chrome-extension",
+  "extensionPath": "/workspace/experiments/external-ai-roundtrip/extension",
+  "serviceWorkerUrl": "chrome-extension://fphgemcdhkjkplcikhnhgpcnndpcjfkj/background.js",
+  "started": "2026-10-16T05:19:09.939Z",
+  "elapsedMs": 6526,
+  "input": "Connection test. Reply with the single word pong and then this marker: poc-1792127949939",
+  "marker": "poc-1792127949939",
+  "endpoint": "https://text.pollinations.ai/openai",
+  "requestBody": {
+    "model": "openai",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Connection test. Reply with the single word pong and then this marker: poc-1792127949939"
+      }
+    ],
+    "stream": false
+  },
+  "http": 200,
+  "raw": "{\"id\":\"pllns_5233625b21c6ceb7097bb02767559865\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"pong poc-1792127949939\",\"reasoning\":\"The user wants \\\"Connection test. Reply with the single word pong and then this marker: poc-1792127949939\\\". They ask to output the text: \\\"pong poc-1792127949939\\\". Probably exactly: pong poc-1792127949939? They wrote \\\"Reply with the single word pong and then this marker: poc-1792127949939\\\". So \\\"pong poc-1792127949939\\\" with a space between? They didn't specify punctuation. Could be \\\"pong poc-1792127949939\\\". Provide that.\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792127953,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":329,\"completion_tokens\":131,\"total_tokens\":460},\"user_tier\":\"anonymous\"}",
+  "error": null,
+  "paidRefused": false,
+  "webUi": {
+    "attempted": false,
+    "targets": [
+      "chatgpt.com",
+      "gemini.google.com",
+      "claude.ai",
+      "copilot.microsoft.com"
+    ],
+    "reason": "consumer chat automation is disallowed and those sites were not opened"
+  },
+  "ok": true
+}

@@ -1,0 +1,44 @@
+AUTO CALL TECH REVIEW — 2026-10-16
+1단계 기술검토와 접근 가능한 후보의 최소 왕복이다. 제품 코드, 규칙 분기, 모델 연결, 병합, Production 은 바꾸지 않았다. 공식 API와 API 키는 쓰지 않았다. 사람이 웹에 질문을 넣거나 응답을 붙이지 않았다. 사업계획서 원문은 이번 호출에 넣지 않았다. GPT 1차 답변은 재분석으로 쓰지 않았다.
+
+하드웨어. RAM 15Gi, 가용 약 2.3Gi. CPU 4. NVIDIA GPU 없음. Chrome 154.0.8037.92. deviceMemory 16, hardwareConcurrency 4.
+
+후보 A. 브라우저 내장 AI. 실험 결과: 실패.
+구조. 페이지 스크립트에서 LanguageModel.availability 와 LanguageModel.create, 성공 시 prompt. window.ai 는 없다.
+실행 조건. Chrome 154, Linux, GPU 없음. 이전 기록 PATH-COMPARISON.txt 에서는 기본값과 영어가 downloadable, 한국어가 unavailable, create 는 NotSupportedError 였다. 이번 조건은 availability 가 모두 unavailable 로 바뀐 점이다.
+제약. 2026-10-16 측정. default unavailable 71ms, en unavailable 32ms, ko unavailable 3ms. expectedInputs 영어·한국어도 unavailable. create 는 NotSupportedError: Unable to create a text session because the service is not running. 세션이 생기지 않아 추론 문장을 보내지 않았다. 응답 원문 없음.
+비용. 호출 비용 0. 모델 다운로드는 시작되지 않았다.
+자동화. 질문 전달과 응답 수신은 되지 않았다.
+다음 조치. 제외. 같은 서비스 미기동 상태에서 사업계획서를 넣지 않는다.
+
+후보 B. 로그인 세션 브라우저 자동화. 실험 결과: 미실행. 정책상 제외.
+구조. Playwright 1.61.1 은 설치되어 있다. 대상은 소비자 AI 웹의 입력칸과 응답 완료다.
+실행 조건. Chrome 쿠키 호스트는 vercel.com 과 Preview 호스트뿐이다. chatgpt.com 세션은 없다.
+제약. 2026-10-16 chatgpt.com/robots.txt HTTP 200, 4390바이트. User-agent * 는 홈과 일부 공개 경로만 Allow 하고 Disallow: / 와 Disallow: /backend-anon/conversation$ 가 있다. gemini.google.com/robots.txt 는 /app/ 과 /chat/ 를 Disallow 한다. 대화 화면은 열지 않았다. 로그인 우회는 하지 않았다.
+비용. 시도하지 않아 0.
+자동화. 세션이 없고 자동 대화가 허용되지 않아 질문 입력과 응답 추출을 실행하지 않았다.
+다음 조치. 제외. 다른 후보와 구분한다. 인증 세션 부재와 서비스 정책이 이유다.
+
+후보 C. 공식 API가 아닌 외부 프로그램 인터페이스. 실험 결과: 미실행.
+구조. 설치된 실행 파일은 ollama 하나다. 그 외 llama-server, gpt4all, kobold, text-generation 은 없다. Chrome 확장은 결제 구성요소 nmmhkkegccagdldgiimedpiccmgmieda 뿐이다. 11434 이외의 로컬 추론 포트는 없다.
+제약. 추론을 수행하는 별도 외부 프로그램이 없다. UI 껍데기와 추론을 구분할 대상이 없다.
+비용. 해당 없음.
+자동화. 호출할 인터페이스가 없다.
+다음 조치. 제외. Ollama 는 후보 D로만 다룬다.
+
+후보 D. 로컬 추론 서버. 실험 결과: 최소 왕복은 성공. 외부 AI가 아니다. 사업 재분석은 미실행.
+구조. 프로그램이 http://127.0.0.1:11434/api/chat 로 JSON 을 보내고 message.content 를 받는다. 모델 qwen2.5:3b. 서버 PID 는 ollama serve. 비용 라벨은 local_runtime_no_api_invoice.
+실행 조건. 디스크에 qwen2.5:3b 와 qwen2.5:7b 가 있다. 호출 전 api/ps 는 비어 있었다. 3b 만 올렸다. num_ctx 512, num_predict 16 이하. 7b 는 가용 메모리가 약 2.3Gi 라 이번에 올리지 않았다.
+제약. 로컬 모델은 외부 AI와 같지 않다. 3b 와 7b 의 사업계획서 품질 실패는 LOCAL-MODEL-E2E.txt, QUALITY-GATE.txt, PATH-COMPARISON.txt 에 있다. 그 사업 프롬프트는 반복하지 않았다.
+비용. API 청구 0. 로컬 계산만 사용.
+자동화. 사람이 전달하지 않았다.
+왕복 1. 2026-10-16. 프롬프트 "Reply with the single word pong." HTTP 200. 7.9초. done_reason stop. eval_count 2. 응답 " pong".
+왕복 2. 같은 모델이 이미 올라간 상태. 프롬프트 "한국어로 한 단어만 답하라: 확인". HTTP 200. 0.3초. eval_count 3. 응답 "확인".
+오류 구분. 두 호출 모두 시간 초과나 인증 실패가 아니다. 응답 완료는 done_reason stop 이다.
+다음 조치. 최소 왕복은 통과. 사업계획서 재분석과 GPT 품질 비교는 다음 실험이다. 이번 한 단어 응답으로 품질을 통과시키지 않는다.
+
+2단계 판정. 외부 AI 자동 왕복은 통과 후보가 없다. A는 세션 생성 실패, B는 정책과 세션 부재로 미실행, C는 인터페이스 없음. D만 로컬 대안으로 한 단어 왕복이 됐다.
+
+3단계 품질 비교. 미실행. 통과한 자동 호출이 사업 재분석이 아니다. GPT 1차 분석을 재분석으로 쓰지 않았다. 숫자 점수는 만들지 않았다.
+
+4단계 ALABOM 연결 설계. 미실행. 품질 비교 전이다. 제품 코드는 승인 없이 변경하지 않았다.

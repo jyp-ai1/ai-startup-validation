@@ -1,0 +1,777 @@
+ALABOM 사업성 검증 여정 Phase 1·2.
+
+초기 사업 입력을 나누고, 잠정 이해와 질문 하나를 보여주는 화면이다. Gemini·GPT 호출, 페이지 캡처, DB 저장, 병합, Production 배포는 하지 않았다.
+
+기준 브랜치: cursor/external-ai-judgment-design-4b88
+앞 명세: docs/evidence/ALABOM/AI-PM/EXTERNAL-AI-JUDGMENT-LOOP-SPEC.txt
+Production 잠금 SHA: 0b465226516e1a4f3eb9ce2087f8bca2c2c091da
+
+1. 기존 시작 경로
+
+apps/web/features/projects/components/project-form.tsx
+- 프로젝트 생성은 이름, 한 덩어리 설명, 유형만 받는다.
+- 고객, 문제, 해결책, 지불자, 수익 방식, 확보 근거, URL 이 분리되어 있지 않다.
+
+apps/web/lib/project/build-project-intake-seed.ts
+- 시드는 프로젝트 이름과 사업 설명이다.
+
+apps/web/features/agents/research/providers/index.ts
+- gemini 와 openai 이름은 같은 OpenRouter 경로다. 이 단계에서 그 경로를 호출하지 않는다.
+
+2. 이번 화면
+
+경로: /business-validation
+파일:
+- apps/web/app/[locale]/(public)/business-validation/page.tsx
+- apps/web/features/business-validation-journey/lib/journey-engine.ts
+- apps/web/features/business-validation-journey/components/validation-journey-screen.tsx
+
+필수 입력은 사업 설명, 목표 고객, 고객 문제다. 해결책, 지불자, 수익 방식, 확보 근거, URL 은 비워도 시작한다.
+
+URL 이 없거나 URL 문자열만 있으면 research_not_run 이다. 페이지를 열지 않는다.
+counter_review_not_run 이다. GPT 를 호출하지 않는다.
+judgment_deferred 다. 창업자 진술을 검증된 사실로 올리지 않는다.
+
+테스트 가설 채우기는 소상공인 배송·월 구독 문장을 입력칸에 넣는다. 화면에 테스트 가설이며 검증된 사업 사실이 아니라고 적는다. 외부 모델로 보내지 않는다.
+
+세션 키 alabom.validationJourney.v1 은 이 브라우저 세션 초안이다. 화면에 조사 기록 보관소가 아니라고 적는다.
+
+퍼널 이벤트는 validation_journey_started, validation_journey_answered 다. 사업 본문은 이벤트에 넣지 않는다.
+
+3. 질문
+
+첫 질문이 근거 메뉴일 때는 문장이 다음이다.
+고객에게 이 문제가 실제로 발생한다는 근거가 있나요?
+
+선택 등급:
+- 실제로 비용을 지불한 고객이 있다: claimed_record
+- 고객이 실제로 사용한 기록이 있다: claimed_record
+- 고객 인터뷰에서 문제가 반복적으로 확인됐다: founder_estimate
+- 현재는 내 추측 또는 가설이다: founder_estimate
+- 아직 모르겠다: unknown
+
+첫 화면에서 근거 종류를 이미 고르면 같은 메뉴를 다시 내지 않고, 장면 질문으로 좁힌다. 왜 다른 질문인지 문장을 남긴다.
+지불자를 아직 모름으로 고르면 지불자 객관식을 다시 내지 않는다.
+같은 고객 문장을 다시 보내면 이해를 바꾸지 않고 이미 낸 질문을 다시 내지 않는다.
+고객 문장이 바뀌면 이전 문장과 새 문장을 둘 다 남긴다.
+
+claimed_record 는 기록이 있다는 창업자 진술이다. 검증된 사실이 아니다.
+모름, 근거 없음, 창업자 추정, 기록이 있다는 진술은 등급 문자열이 서로 다르다.
+
+analysisDelivery.status 는 not_sent 다. 답변 이력은 상태에 있고 모델에는 보내지 않았다.
+
+4. 테스트
+
+2026-10-15T02:36:07Z
+명령: pnpm --filter web exec vitest run features/business-validation-journey/lib/__tests__/journey-engine.test.ts --reporter=verbose
+결과: 1 file, 14 passed, exit 0
+모델 네트워크 호출 없음. 외부 URL fetch 없음.
+
+같은 파일 eslint: exit 0. 2026-10-15 에 features/business-validation-journey, page.tsx, product-analytics.ts 를 검사했다.
+
+5. 로컬 화면
+
+2026-10-15T02:37Z 전후. 로컬 Next dev http://localhost:3000/business-validation
+Chrome 으로 입력, 테스트 가설, 이해 확인, 객관식과 주관식, 고객 문장 수정, 같은 문장 재전송, 새로고침, 빈 사업 설명 제출을 눌렀다.
+8단계 모두 기대한 문장과 일치했다.
+
+확인한 문장:
+- 조사 미실행 / 반대 검토 미실행 / 판단 유보
+- URL이 없다. 조사를 실행하지 않았다.
+- 고객에게 이 문제가 실제로 발생한다는 근거가 있나요?
+- 선택과 서술을 기록했다. 창업자 진술이며 검증된 사실이 아니다.
+- 그 근거가 나온 구체적인 한 장면을 알려 달라.
+- 같은 질문을 반복하지 않고
+- 이전 고객 문장과 동네 서점 문장이 함께 남음
+- 같은 진술이다. 이해를 바꾸지 않았고 이미 낸 질문을 다시 내지 않는다.
+- 새로고침 후 조사 미실행, 판단 유보, 동네 서점 유지
+- 사업 설명을 비우면 이해 화면으로 넘어가지 않음
+
+이 실행은 제품의 브라우저 자동화가 아니다. 로컬 화면 확인이다. Gemini·GPT 요청은 만들지 않았다.
+
+소비자 ChatGPT·Gemini 웹을 자동으로 여는 경로는 그 뒤 robots.txt 로 닫았다. 기록: docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt
+
+6. 답변 재전달 계약
+
+apps/web/features/business-validation-journey/lib/answer-redelivery.ts
+
+새 답이 핵심 가설을 바꾸면 그 가설의 답만 포함 목록에 넣고, 다른 답 ID 는 생략 목록에 남긴다. 전체 답변 배열은 상태에서 지우지 않는다.
+같은 진술이면 reinvestigation 은 skipped 다. 조사 함수를 호출하지 않는다.
+sent 는 false 다. research_not_run, counter_review_not_run, judgmentChange preserved 다.
+원인 ID 가 없는 판단 문장 변경은 거절하고 이전 문장을 유지한다.
+같은 pageHash 는 캡처 목록에 다시 넣지 않는다.
+provider 이름을 openai 로 두고 model 이 gemini 이거나 liveCall 이 아니면 counter_review_not_run 이다. 이 저장소에는 그 호출을 실행하는 클라이언트를 넣지 않았다.
+
+2026-10-15T02:49:31Z
+명령: pnpm --filter web exec vitest run features/business-validation-journey/lib/__tests__/journey-engine.test.ts features/business-validation-journey/lib/__tests__/answer-redelivery.test.ts --reporter=verbose
+결과: 2 files, 20 passed, exit 0
+모델 네트워크 호출 없음.
+
+로컬 Chrome 에서 첫 입력 노트는 "조사를 열지 않는다", "포함 0건, 생략 0건", "모델에는 보내지 않았다" 였다. 가설 선택과 주관식 이후 노트는 "포함 1건, 생략 0건" 이었고 배지는 조사 미실행, 반대 검토 미실행으로 남았다.
+
+8. 재전달 맥락과 판단 전이 검증
+
+시각: 2026-10-15T02:59:45Z 단위 테스트 3 files, 28 passed, exit 0.
+시각: 2026-10-15T03:00:29Z 역할 문장을 한글로 바꾼 뒤 재전달·전이 14 passed, exit 0.
+네트워크 호출 없음. 페이지 캡처를 열지 않았다. 키를 넣지 않았다.
+
+화면 상태와 배지
+- state.researchStatus research_not_run → 배지 조사 미실행
+- state.counterReviewStatus counter_review_not_run → 배지 반대 검토 미실행
+- state.judgmentStatus judgment_deferred → 배지 판단 유보
+로컬 Chrome 에서 고객을 대기업 물류본부로 바꾼 뒤 포함 목록에 문제, 해결책, 지불자, 수익, 과거 답변이 보였다. 판단 배지는 판단 유보로 남았다.
+
+판정 전이 함수 applyEvidenceTransition 은 테스트에서만 호출한다. 화면은 캡처를 만들지 않으므로 그 함수의 provisional 결과를 표시하지 않는다.
+
+테스트 표. 실패 사유는 기대와 어긋난 경우에만 적는다. 아래는 모두 기대와 같았고 실패 사유는 없다.
+
+1. 고객을 대기업 물류본부로 변경
+- 입력: 테스트 가설, 인터뷰 답 ans-1, 장면 답 ans-2, 고객 문장을 대기업 물류본부로 수정
+- 기대: changeClass core_hypothesis_change, inputReady true, sent false, 포함에 고객·문제·해결책·지불자·수익과 ans-1·ans-2, 판단 문장 유지. 문제 역할을 빼면 inputReady false
+- 실제: 기대와 같음
+- 실패 사유: 없음
+
+2. 새 캡처가 판단 문장을 바꿈
+- 입력: 빈 캡처 목록, cap-1 https://example.com/logistics, 발췌 한 문장, 제안 문장, round 1
+- 기대: accepted true, causeIds cap-1, sourceUrl 과 excerpt 연결, verifiedFact false, status judgment_provisional
+- 실제: 기대와 같음
+- 실패 사유: 없음
+
+3. 같은 페이지 해시
+- 입력: hash-a 캡처 뒤 같은 hash-a 를 id 만 바꿔 다시 넣음
+- 기대: execution duplicate_evidence, 판단 문장 유지, 캡처 1건
+- 실제: 기대와 같음
+- 실패 사유: 없음
+
+4. 브라우저·모델·빈 응답·키 없음
+- 입력: 직전 판단과 캡처 1건이 있는 상태에서 각 실패 종류
+- 기대: 판단 객체와 캡처 배열이 그대로, execution 이 그 실패 종류, accepted false
+- 실제: 네 종류 모두 기대와 같음
+- 실패 사유: 없음
+
+5. 원인 ID 없음, 검증된 사실 문장
+- 입력: capture id 빈 문자열과 제안 문장. 다른 입력은 검증된 사실이다 라는 제안
+- 기대: 둘 다 accepted false, 직전 판단 문장 유지, verifiedFact false
+- 실제: 기대와 같음
+- 실패 사유: 없음
+
+6. 반복 상한
+- 입력: round 4, 새 해시 캡처와 제안 문장
+- 기대: execution round_cap_held, 판단 유보 유지, 성공이나 실패로 적지 않음
+- 실제: 기대와 같음
+- 실패 사유: 없음
+
+7. 독립 GPT 경로
+- 입력: getResearchProvider('gemini') 와 getResearchProvider('openai')
+- 기대: 같은 객체, id gemini. OpenRouter 경로에 openai 이름과 gemini 모델을 넣어도 counter_review_not_run. 키 없이 gpt-4o-mini 를 적어도 counter_review_not_run
+- 실제: 기대와 같음. fetch 없음
+- 실패 사유: 없음
+- 코드 기준: Gemini 연구 호출 자리는 packages/ai 의 https://openrouter.ai/api/v1/chat/completions 와 google/gemini-2.5-flash. GPT 카탈로그는 https://api.openai.com/v1/chat/completions 와 gpt-4o-mini. 연구 provider 의 openai 이름은 그 GPT endpoint 로 가지 않는다.
+
+10. 실제 판단 루프 추적
+
+시각: 2026-10-15T03:13:25Z 여정 테스트 4 files, 33 passed, exit 0.
+시각: 2026-10-15T03:14:55Z 루프 테스트 5 passed, exit 0.
+features/business-validation-journey eslint 통과.
+pnpm --filter web build exit 0. Next.js 15.5.20. 타입 검사 포함. 기존 경고 2건은 이 여정 파일이 아니다.
+네트워크 호출 없음. 키를 넣지 않았다. 페이지 캡처를 열지 않았다.
+
+호출 경로. 식별자는 코드가 만드는 값이다.
+
+1. screen-input. connected_local.
+   ValidationJourneyScreen.onStart / onAnswer / onCorrect
+   → startJourney, applyAnswer, correctField
+   상태: research_not_run, counter_review_not_run, judgment_deferred
+2. context. connected_local.
+   buildRedelivery. 재전달 id relay-{답 수}-{수정 수}. sent false.
+   고객을 대기업 물류본부로 바꾸면 inputReady true. 포함 역할은 고객, 문제, 해결책, 지불자, 수익, 과거 답.
+   지불자 항목을 빼면 빠진 역할은 payer.
+3. gemini-research. not_called.
+   호출 자리는 apps/web/features/agents/research/providers/openrouter-provider.ts
+   endpoint https://openrouter.ai/api/v1/chat/completions
+   model google/gemini-2.5-flash
+   여정 화면은 이 파일을 import 하지 않는다.
+4. gpt-counter-review. blocked_same_provider.
+   getResearchProvider('openai') === getResearchProvider('gemini')
+   반환 id 는 gemini
+   GPT 카탈로그 endpoint https://api.openai.com/v1/chat/completions
+   model gpt-4o-mini
+   이 여정은 그 endpoint 를 호출하지 않는다. counter_review_not_run
+5. compare. not_connected.
+   compareReadings 는 화면이 호출하지 않는다.
+   테스트 입력으로만 일치, 불일치, 근거 부족을 구분한다.
+   세 경우 모두 judgmentChange preserved, verifiedFact false.
+   이름이 openai 이고 모델이 gemini 이면 not_compared.
+6. judgment. not_connected.
+   applyEvidenceTransition 은 화면이 호출하지 않는다.
+   화면 판단 문장은 시작 문장과 같다.
+   테스트에서 cap-1 을 넣으면 causeIds cap-1, hypothesisIds h-customer h-problem, verifiedFact false.
+7. next-step. connected_local.
+   고객 변경 후 검증 행동: 「대기업 물류본부」의 실제 발주나 배송 절차를 한 건 보고 원문 한 줄을 가져온다.
+   필요한 증거: 그 고객의 업무 절차 관찰 원문.
+   로컬 Chrome 에서 배지는 조사 미실행, 반대 검토 미실행, 판단 유보.
+   판단 문장은 고객 수정 전후가 같았다.
+
+시나리오 표. 실패 사유는 없다.
+
+A. 입력: 고객 문장을 대기업 물류본부로 수정. 출력: 이해와 재전달 기록만 바뀜. 판단 문장 유지. 근거 ID 없음.
+B. 출력: 포함 항목에 문제, 해결책, 지불자, 수익, ans-1, ans-2. sent false.
+C. 입력: 포함 목록에서 payer 역할 제거. 출력: 빠진 역할 payer. 화면의 정상 경로는 빼지 않으므로 inputReady true.
+D. 입력: cap-1, https://example.com/logistics, 발췌, 가설 h-customer h-problem. 출력: 테스트 함수만 문장을 바꿈. 화면은 이 전이를 호출하지 않음. verifiedFact false.
+E. 입력: 실행되지 않은 두 읽기, 그리고 Gemini endpoint 에 openai 이름을 단 읽기. 출력: not_compared. 픽스처로 준 서로 다른 문장은 disagreement. 어느 쪽도 화면 판단을 바꾸지 않음. 실제 HTTP 없음.
+F. 입력: 새 캡처 없는 고객 변경. 출력: 판단 문장 동일. 새 캡처가 있는 테스트만 변경 이유와 가설 ID를 남김.
+G. 출력: 화면의 검증 행동은 인터뷰 반복이 아니라 대기업 물류본부의 절차 관찰 원문.
+
+9. 미검증
+
+Phase 3 관련 이력 패킷을 모델에 보내는 경로.
+Phase 4 독립 GPT HTTP. 키를 넣지 않았다. counter_review_not_run 만 있다.
+Phase 5 원문 통합과 캡처 ID 로 판단을 바꾸는 경로. 이 화면의 판단은 유보에서 움직이지 않는다.
+Phase 6 의 모델 원문 상세. 호출이 없으므로 원문 없음으로만 적는다.
+시나리오 B 실제 페이지 캡처.
+시나리오 F 두 모델의 상반된 해석.
+시나리오 G 같은 페이지 해시의 중복 근거.
+시나리오 H 브라우저·모델 실패.
+시나리오 I 새 외부 근거로 판단이 바뀌는 전이.
+시나리오 K 조사 반복 한도. 질문 나열의 끝은 유보이고, AI 반복 한도가 아니다.
+
+기존 Production 잠금 SHA 0b465226 은 이 브랜치의 배포 대상으로 바꾸지 않았다.
+
+11. 원문 연결과 독립 GPT 객체
+
+시각: 2026-10-15T03:24:36Z 여정 테스트 5 files, 40 passed, exit 0.
+03:26:50Z 원문·GPT 테스트 7 passed.
+features/business-validation-journey 와 openai provider eslint 통과.
+pnpm --filter web build exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+네트워크 호출 없음. 키를 넣지 않았다. 페이지를 자동으로 열지 않았다.
+
+구현
+- 화면의 원문 폼이 attachFounderSource를 호출하고, 그 함수가 applyEvidenceTransition을 호출한다.
+- 원문, 원인 ID, 관련 가설이 모두 있을 때만 전이가 실행된다.
+- 하나라도 없으면 판단 문장을 유지하고 빠진 항목을 보여 준다.
+- 원문을 연결해도 judgmentStatus는 judgment_deferred, verifiedFact는 false, 라벨은 창업자가 붙인 원문 · 검증된 사실 아님.
+- 같은 원문 해시는 두 번째 기록으로 세지 않는다.
+- 고객을 바꾸면 문제·해결책·지불자·수익·과거 답은 남기되 relevance는 unconfirmed다. 새 고객에게 유효하다고 확정하지 않는다.
+- getResearchProvider('openai')는 OpenAICounterReviewProvider다. id는 openai. Gemini 객체와 다르다.
+- 모델은 gpt-4o-mini, endpoint는 https://api.openai.com/v1/chat/completions.
+- 키가 없으면 gateCounterReview는 key_missing, counter_review_not_run, networkCalled false.
+- execute는 fetch를 호출하지 않고 거절한다. 분석 완료로 표시하지 않는다.
+- 원문을 붙여도 researchStatus와 counterReviewStatus는 서로 덮어쓰지 않고 둘 다 not_run이다.
+
+로컬 화면
+- 빈 제출: 빠진 항목에 원문, 관련 가설, 원인 ID.
+- 문제 가설에 메모 한 줄을 연결: 원문 id, 원인 id, 이전 판단과 이후 판단이 같다.
+- 배지: 조사 미실행, 반대 검토 미실행, 판단 유보.
+- 그 다음 고객을 대기업 물류본부로 바꿔도 원문 기록이 남고, 문제 문장은 유효하다고 보지 않는다고 표시된다.
+
+외부 호출 미실행. 화면의 사업성 판단 문장은 유보에서 움직이지 않았다. Gemini HTTP와 키가 있는 GPT 호출은 이 커밋에 없다.
+
+12. 가설 판단의 유지·수정·유보
+
+시각: 2026-10-15T03:32:54Z 여정 테스트 6 files, 47 passed, exit 0.
+여정 폴더 eslint 통과. pnpm --filter web build exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+로컬 화면에서 세 전이를 같은 세션에서 확인했다. fetch 없음.
+
+유지
+- 입력: 「오늘 날씨가 흐렸다」를 문제 가설에 연결. 원인 ID는 원문 해시로 만든다.
+- 사업 판단 이전과 이후는 같다. 유보 문장이다.
+- 가설 판단 이전과 이후도 같다. 효과 unchanged. 사유는 기존 판단을 바꿀 근거가 아니다.
+
+수정
+- 입력: 발주 담당자가 주문 화면과 배송 화면이 따로라 누락이 생긴다고 말한 원문. 가설은 문제와 지불자.
+- 문제 가설만 supported로 바뀐다. 이전 문장은 아직 재평가하지 않았다. 이후 문장은 원인 ID의 원문이 지지한다이고, 사업 전체의 결론은 확정하지 않는다.
+- 지불자 가설 기록은 만들지 않는다.
+- 미검증: 지불 의사, 구매, 반복 사용, 확장.
+- 사업 판단 문장은 유보 그대로다. verifiedFact는 false.
+
+유보
+- 입력: 같은 문제 가설에, 주문과 배송은 이미 한 화면이라 그 문제는 없다고 한 원문을 뒤에 붙인다.
+- 가설 판단은 held. 이전 문장은 지지한다. 이후 문장은 두 원문이 충돌한다.
+- 검증 행동: 발주 담당자의 실제 업무 절차를 한 건 더 본다.
+- 사업 판단 배지는 판단 유보. 조사 미실행. 반대 검토 미실행.
+
+누락과 중복
+- 원인 ID가 없으면 전이를 실행하지 않고 판단은 그대로다.
+- 같은 원문 해시를 다시 넣으면 가설 판단을 한 번 더 바꾸지 않는다.
+
+GPT
+- openai 객체 id는 openai. gemini 객체와 다르다.
+- 키가 없으면 counter_review_not_run, networkCalled false.
+
+이 구분은 원문 문구의 규칙이다. Gemini나 GPT가 읽은 결과가 아니다. 사업성 판단의 정확도가 나아졌다는 증거가 아니다.
+
+13. AI 교차 검토 연동 계약
+
+시각: 2026-10-15T04:22:06Z 여정 테스트 7 files, 54 passed, exit 0.
+여정 폴더 eslint 통과. pnpm --filter web build exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+픽스처만 사용했다. fetch 없음. 키를 넣지 않았다.
+
+결과 계약. 각 분석 패킷은 다음을 가진다.
+- executionId, providerId, modelId, endpoint
+- purpose: research 또는 counter_review
+- answerIds, evidenceIds
+- claim, support, counter, uncertainty
+- hypothesisIds
+- citedExcerpt 는 모델이 말한 발췌다. capturedSourceId 는 확보한 원문 ID다. 둘은 다르다.
+- status: succeeded, failed, not_run
+
+상태 전이
+
+| 입력 | 결과 | 가설 | 사업 판단 |
+| --- | --- | --- | --- |
+| Gemini만 succeeded | not_compared | 유지 | 유지 |
+| GPT만 succeeded | not_compared | 유지 | 유지 |
+| 둘 다 succeeded, 결론 같음, 확보 원문 없음 | agreement. verifiedFact false | 바꾸지 않음. supported면 그대로 | judgment_deferred |
+| 둘 다 succeeded, 결론 다름 | disagreement. 양쪽 claim 보존. 다음 원문을 요청 | 한쪽을 고르지 않음 | 유지 |
+| 한쪽 failed | not_compared. state 객체 유지 | 유지 | 유지. 원문 이력 유지 |
+| 패킷 가설이 h-problem뿐 | affectedHypothesisIds는 h-problem | h-payer는 생기지 않음 | 유지 |
+| 화면의 실제 상태 | not_compared | 호출 없음 | 배지 조사 미실행, 반대 검토 미실행, 판단 유보 |
+
+로컬 화면
+- 교차 검토 문장은 not_compared이고, 실제 분석 결과가 없다고 적힌다.
+- 문제 원문을 붙여 문제 가설이 supported가 되어도 교차 검토 문장과 사업 판단 문장은 그대로다.
+- 미검증 목록에 지불 의사가 남는다.
+
+미해결
+- Gemini HTTP와 키가 있는 GPT 호출은 이 계약에 연결하지 않았다.
+- 모델이 제시한 출처를 확보 원문으로 확인하는 절차는 없다.
+- agreement는 사실 검증이 아니다. 사업성 판단 정확도의 개선이 아니다.
+
+14. 모델 발췌와 확보 원문 대조
+
+시각: 2026-10-15T04:33:55Z 여정 테스트 8 files, 62 passed, exit 0.
+여정 폴더 eslint 통과. pnpm --filter web build exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+픽스처만 사용했다. fetch 없음. 키를 넣지 않았다. DB 스키마는 바꾸지 않았다.
+
+citedExcerpt는 모델이 말한 발췌다. capturedSourceId는 저장된 원문 ID다. 두 필드가 함께 있어도 일치로 세지 않는다. ID로 저장된 원문 텍스트를 찾아 발췌가 그 안에 있는지를 본다.
+
+출처 대조: matched 원문 일치, mismatched 원문 불일치, uncheckable 대조 불가.
+주장 상태: grounded 발췌가 주장을 담고 있음, ungrounded 발췌가 주장을 담지 않음, unassessed 평가 보류.
+주장 판정은 문구 규칙이다. 발췌와 주장의 읽기가 같고 발췌가 근거 또는 주장 안에 있을 때만 grounded다. 지불, 구매, 반복, 확장이 주장에만 있으면 ungrounded다. grounded여도 verifiedFact는 false다.
+
+원문: 물류본부 발주 담당자가 주문 화면과 배송 화면이 따로라 누락이 생긴다고 말했다
+발췌: 주문 화면과 배송 화면이 따로
+문제 주장: 문제 가설은 발주와 배송이 나뉜다는 원문과 맞는다.
+
+| 사례 | 출처 대조 | 주장 | 가설 | 교차 검토 | 사업 판단 |
+| --- | --- | --- | --- | --- | --- |
+| 발췌가 원문에 있음. 두 결론 같음 | matched, grounded | verifiedFact false | h-problem supported 유지. h-payer 없음 | agreement | judgment_deferred |
+| 발췌가 원문에 없음 | mismatched | unassessed. 반대 사실로 바꾸지 않음 | supported 유지 | agreement. 사실 검증 아님 | 유지 |
+| 원문 ID 없음 | uncheckable | unassessed | 유지 | agreement | 유지 |
+| ID가 저장소에 없거나 본문이 null | uncheckable | unassessed | 유지 | agreement | 유지 |
+| 발췌는 일치. 주장은 고객이 비용을 낸다 | matched | ungrounded | h-problem만. 지불 의사 미검증 | agreement. verifiedFact false | 유지 |
+| 같은 원문을 Gemini와 GPT가 다르게 해석 | 둘 다 matched. 발췌와 주장 둘 다 보존 | 각 주장 grounded. 어느 쪽도 사실 아님 | supported 유지. 한쪽을 고르지 않음 | disagreement | 유지 |
+| 한쪽 failed 또는 not_run | 그 쪽은 uncheckable | unassessed | state 객체 유지 | not_compared | 유지. 원문 이력 유지 |
+
+로컬 화면
+- 배지: 조사 미실행, 반대 검토 미실행, 판단 유보.
+- 교차 검토: not_compared.
+- 출처 대조: Gemini 대조 불가, GPT 대조 불가.
+- 문제 원문을 붙이면 h-problem만 supported가 된다. 지불자 가설은 생기지 않는다. 출처 대조 문장과 사업 판단 문장은 그대로다.
+- 이 화면 확인은 모델 실행 증거가 아니다.
+
+미해결
+- 화면의 대조 불가는 두 분석이 연결되지 않았다는 뜻이다. Gemini HTTP와 키가 있는 GPT 호출은 이 함수에 붙이지 않았다.
+- grounded는 문구 규칙이다. 주장의 진실이나 사업성을 입증하지 않는다.
+- 모델이 말한 출처를 네트워크에서 새로 받아 대조하지 않는다. 이미 저장된 원문 텍스트만 본다.
+
+15. 분석 결과 수용 기록
+
+시각: 2026-10-15T04:47:33Z 여정 테스트 9 files, 72 passed, exit 0.
+여정 폴더 eslint 통과. pnpm --filter web build exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+픽스처만 사용했다. fetch 없음. 키를 넣지 않았다. DB 스키마는 바꾸지 않았다.
+
+수용 기록 한 건이 Gemini 슬롯과 GPT 슬롯을 같이 가진다. 각 슬롯은 실행 ID, 제공자, 모델, 엔드포인트, 목적, 발췌, 확보 원문 ID, 출처 대조, 주장 평가를 보존한다. 나중 결과는 앞 기록을 덮어쓰지 않고 새 기록으로 붙는다. verifiedFact는 false다. judgmentChanged는 false다. 사업 판단 문장은 유지된다.
+
+없는 결과의 analysisStatus는 absent다. 실패는 failed다. 실행하지 않은 상태는 not_run이다. 셋 다 출처 대조는 uncheckable, 주장 평가는 unassessed다.
+
+원문: 물류본부 발주 담당자가 주문 화면과 배송 화면이 따로라 누락이 생긴다고 말했다. 가설 h-problem은 supported. 원인 cause-support.
+
+| 사례 | 출처 대조 | 주장 | 가설 | 교차 검토 | 사업 판단 | 기록 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 문제 가설을 지지하는 일치 분석 | matched, grounded | verifiedFact false | supported 유지. h-payer 없음 | agreement | judgment_deferred. 변경 없음 | 원인 cause-support. 실행 ID 보존 |
+| 발췌는 일치. 주장은 고객이 비용을 낸다 | matched | ungrounded | h-problem만 | agreement | 유지 | 지불 가설을 만들지 않음 |
+| 발췌 불일치 또는 원문 ID 없음 | mismatched 또는 uncheckable | unassessed. sourceConflict not_established | supported 유지 | agreement | 유지 | 반대 사실로 바꾸지 않음 |
+| 두 해석이 같음 | 둘 다 matched, grounded | 같은 주장. 사실 아님 | 유지 | agreement | 유지 | 제공자 슬롯이 서로 다름 |
+| 두 해석이 충돌 | 둘 다 matched, grounded | 양쪽 주장 보존 | supported 유지. 원문 2건 유지 | disagreement | 변경 없음 | 실행 ID와 원문 ID가 슬롯에 남음 |
+| 한쪽 failed, 다른 쪽 없음 | failed는 uncheckable. absent는 uncheckable | unassessed | 유지 | not_compared | 유지 | 실패 문장과 없음 문장이 다름 |
+| 기존 원문과 새 분석이 충돌 | GPT matched, grounded. sourceConflict preserved | 반대 주장을 사실로 올리지 않음 | supported 유지. 원문 텍스트 유지 | not_compared | 변경 없음. 원인 cause-support와 cause-both | 원문을 지우지 않고 한쪽을 고르지 않음 |
+
+로컬 화면
+- 배지: 조사 미실행, 반대 검토 미실행, 판단 유보.
+- 교차 검토: not_compared.
+- 출처 대조: Gemini 대조 불가, GPT 대조 불가. 분석 결과가 없다.
+- 분석 수용 기록 없음.
+- 문제 원문을 붙여도 수용 기록은 생기지 않는다. h-problem만 supported. 지불자 가설은 없다.
+- 이 화면은 모델 실행 증거가 아니다.
+
+미해결
+- 수용 함수는 픽스처 패킷만 받는다. Gemini HTTP와 키가 있는 GPT 호출은 연결하지 않았다.
+- 화면은 수용 기록이 비어 있다. 실제 분석 결과가 들어오기 전에는 연결을 만들지 않는다.
+- grounded와 수용 기록은 사업성 판단의 정확도를 입증하지 않는다.
+
+16. 수용 기록 재전달과 판단 경계
+
+시각: 2026-10-15T04:55:29Z 여정 테스트 10 files, 81 passed, exit 0.
+여정 폴더 eslint 통과. pnpm --filter web build exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+픽스처만 사용했다. fetch 없음. 키를 넣지 않았다. DB 스키마는 바꾸지 않았다.
+
+같은 실행 ID가 다시 도착하면 disposition은 duplicate_delivery다. 첫 기록 객체는 유지되고, 재전달은 countedExecutionIds에 다시 들어가지 않는다. 재전달 문장이 달라도 첫 주장 문장은 바뀌지 않는다.
+
+새 실행 ID의 주장이 기존 분석과 다르면 두 기록을 남기고 conflictsWithExecutionIds에 이전 실행 ID를 적는다. 어느 쪽도 가설로 채택하지 않는다.
+
+원문 전이는 수용 기록과 다른 단계다. 반대 원문을 붙이면 가설은 held가 되고 원인 ID는 그 원문의 원인이다. 수용 기록의 judgmentChanged는 false로 남고, 수용 시점의 가설 스냅샷은 supported다. 사업 판단 문장은 유보로 남는다. researchStatus와 counterReviewStatus는 not_run이다.
+
+| 사례 | 전 | 후 | 보존 |
+| --- | --- | --- | --- |
+| Gemini만 | 기록 0 | Gemini exec-gemini-1, openrouter. GPT absent | 원인 cause-support. 판단 유보 |
+| GPT만 | 기록 0 | GPT exec-gpt-1, openai. Gemini absent | 원인 cause-support. 판단 유보 |
+| 순차 도착 | Gemini 기록 1건 | 첫 객체 유지. GPT 기록이 뒤에 붙음 | 실행 ID 둘 다 집계. 앞 슬롯 유지 |
+| 같은 실행 재전달 | 집계 exec-gemini-1, exec-gpt-1 | duplicate_delivery. 집계 길이 동일 | 첫 기록 객체와 첫 주장 유지 |
+| 새 실행이 기존 분석과 충돌 | exec-gemini-1 주장 유지 | exec-gemini-2를 추가. conflictsWith exec-gemini-1 | 가설 supported. 양쪽 주장 유지 |
+| 기존 원문과 나중 원문 충돌 | 수용 기록 supported 스냅샷 | 가설 held, 원인 cause-deny | 수용 기록 객체 유지. 원문 2건. 판단 유보 |
+| 원문 ID 없음 또는 본문 없음 | Gemini 기록 유지 | GPT uncheckable, unassessed | 반대 사실로 바꾸지 않음. 원인 cause-support |
+| failed와 not_run | 기록 없음 | Gemini failed, GPT not_run. 교차 not_compared | 실패만 집계. 재전달은 집계를 늘리지 않음 |
+
+로컬 화면
+- 배지: 조사 미실행, 반대 검토 미실행, 판단 유보.
+- 실행 상태: research_not_run, counter_review_not_run, not_compared. 분석 완료로 표시하지 않는다.
+- 수용 기록 없음. 문제 원문을 붙여도 수용 기록은 생기지 않는다.
+- 이 화면은 모델 실행 증거가 아니다.
+
+미해결
+- 수용 함수는 픽스처만 받는다. Gemini HTTP와 키가 있는 GPT 호출은 없다.
+- 화면의 미실행은 실제 분석이 연결되지 않았다는 뜻이다. 테스트 통과는 분석 품질이나 사업성 판단 정확도가 아니다.
+- 다음으로 실제 모델 결과를 이 기록에 넣는 범위는 별도 승인 대상이다.
+
+17. 모델 연결 전 실행 계약
+
+시각: 2026-10-15T05:02:59Z 여정 테스트 11 files, 87 passed, exit 0.
+명령: pnpm --filter web exec vitest run features/business-validation-journey/lib/__tests__
+여정 폴더 eslint 통과. pnpm --filter web build exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+fetch 호출 없음. 키, 환경변수, DB 스키마는 바꾸지 않았다.
+
+실행 요청 필드
+- executionId, providerId, modelId, endpoint, purpose
+- inputSnapshot: snapshotId, answerIds, evidenceIds, hypothesisIds, causeIds
+- status: succeeded, failed, not_run
+- claim, support, counter, uncertainty, citedExcerpt, capturedSourceId
+
+상태 구분
+- succeeded 이고 주장 본문이 비어 있으면 result_missing
+- failed, not_run, absent, result_missing 은 서로 다른 상태
+- 출처 대조 uncheckable 은 결과 상태와 별도다. 주장 평가는 unassessed
+- not_compared 는 결론 일치가 아니다. 비교할 실제 분석 결과가 없다는 뜻이다
+- supported 는 사업성 검증이 아니다
+- agreement, matched, grounded 는 verifiedFact 를 true 로 만들지 않는다
+
+전이
+
+| 입력 | 기록 | 판단 |
+| --- | --- | --- |
+| 같은 실행 ID 재전달 | duplicate_delivery. 첫 객체, 첫 주장, 첫 스냅샷 유지 | 유지 |
+| Gemini 다음 GPT, 또는 GPT 다음 Gemini | 각 실행 ID 보존. 앞 객체 유지 | 유지 |
+| 실패 실행을 같은 ID로 성공이라고 다시 보냄 | 첫 기록은 failed. 새 성공으로 세지 않음 | 유지 |
+| 실패 뒤 새 실행 ID | 실패 기록 유지. 새 실행은 recorded | 유지. 가설 유지 |
+| 원문 ID 없음, 본문 없음, 발췌 불일치 | uncheckable 또는 mismatched. unassessed | 검증된 사실로 올리지 않음 |
+| 두 주장이 같고 문장에 VALIDATED 가 있음 | agreement. verifiedFact false | 판단 문장 유지 |
+| 새 실행의 주장이 기존 분석과 다름 | 양쪽 주장 보존. conflictsWith 에 이전 실행 ID | 어느 쪽도 채택하지 않음 |
+
+화면
+- 조사 실행 research_not_run. 배지 조사 미실행
+- 반대 검토 counter_review_not_run. 배지 반대 검토 미실행
+- 분석 수용 기록 없음
+- 인용 검증 대조 불가. 비교 not_compared
+- 사업 판단 judgment_deferred. 배지 판단 유보
+- 문제 원문을 붙여 h-problem 이 supported 가 되어도 위 다섯 줄은 그대로다
+
+실제 연결에 필요한 최소 변경. 이번 커밋에는 없다.
+- 서버에서만 OpenRouter Gemini 와 OpenAI GPT 를 한 번씩 호출하는 승인된 실행기
+- 실행 ID 는 호출 전에 우리가 발급한다. 재시도는 새 ID 다
+- 응답은 AnalysisExecutionRequest 로만 수용한다. 수용 함수가 판단을 바꾸지 않는다
+- 키는 서버 환경에만 둔다. 클라이언트 번들, 저장소, 로그에 넣지 않는다
+- 비용 상한은 호출 1회당 출력 토큰 상한, 실행은 Gemini 1회와 GPT 1회로 시작한다
+- 실패 응답은 failed 로 기록하고 이전 기록을 덮어쓰지 않는다
+- 보안: 원문과 프롬프트를 제3자 로그로 보내지 않는다. 키 없는 상태에서는 네트워크를 열지 않는다
+
+미검증
+- 실제 Gemini HTTP 와 유료 GPT 호출은 하지 않았다
+- 모델 품질, 재시도의 실제 네트워크 복구, 사업 판단 정확도는 검증되지 않았다
+- 다음 승인 게이트: 제한된 입력, 비용 상한, 서버 전용 키, 결과 수용이 판단을 바꾸지 않는 추적 경로가 있을 때 별도 범위로 호출을 승인한다
+
+18. 호출 전 실행 원장
+
+시각: 2026-10-15T05:17:24Z 여정 테스트 12 files, 95 passed, exit 0.
+명령: pnpm --filter web exec vitest run features/business-validation-journey/lib/__tests__
+여정 폴더 eslint 통과. pnpm --filter web build 는 2026-10-15T05:19:29Z 시작, exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+fetch 호출 없음. networkCalled 는 false 로 고정이다. 키, 환경변수, DB 스키마, 자동 재시도 구현은 없다.
+
+원장은 여정 상태와 분리된 순수 객체다. 화면은 원장을 열지 않는다. 표시 문구는 `실행 원장 없음. 호출을 열지 않았다. 자동 재호출은 하지 않는다.`
+
+상태 전이
+
+| 현재 | 사건 | 다음 | 호출 |
+| --- | --- | --- | --- |
+| 없음 | 실행 등록 | registered. callsOpened 0 | 없음 |
+| registered | 같은 실행 ID 재등록 | 첫 객체 유지. duplicate_delivery | 없음 |
+| registered | 호출 슬롯. 제공자 상한 미만이거나 retryApproval | in_progress. callsOpened 1. networkCalled false | 이 빌드는 HTTP를 열지 않음 |
+| registered | 상한 도달. 승인 없음 | registered 유지. callsOpened 0. retry_refused | 추가 호출 없음 |
+| in_progress | 같은 실행의 응답 | response_received. 응답 보관. 수용 전 | 추가 호출 없음 |
+| in_progress | 다른 실행의 응답 | in_progress 유지. response null. response_mismatch | 없음 |
+| in_progress | 제공자의 명시적 실패 | failed. failureReason | 자동 재호출 없음 |
+| in_progress | 응답 유실 또는 서버 중단 | unconfirmed. unconfirmedReason. failureReason 은 null | 자동 재호출 없음 |
+| failed | 같은 ID를 성공으로 재전달 | 첫 failed 객체 유지. duplicate_delivery | 없음 |
+| unconfirmed | 수용 시도 | 첫 객체 유지. phase_refused. 여정 상태 참조 유지 | 없음 |
+| response_received | 보관된 응답 수용 | accepted. 수용 1건 | 추가 호출 없음 |
+| accepted | 같은 응답 재수용 | accepted 유지. 여정 상태 참조 유지 | 없음 |
+| failed 또는 unconfirmed | 새 ID. 승인 없음 | 새 항목은 registered 에서 멈춤 | 없음 |
+| failed | 새 ID와 retryApproval | 새 항목만 in_progress. 첫 실패 객체 유지 | 이 빌드는 HTTP를 열지 않음 |
+
+unconfirmed 와 failed 는 다른 상태다. 호출 여부가 불명확하면 새 호출을 열지 않는다. retryApproval 은 입력이다. 원장이 승인을 만들지 않는다.
+
+장애 복구와 중복 방지. 95개 중 원장 픽스처 8개.
+
+| 사례 | 최초 기록 | 실행 수 | 수용 기록 | 가설 | 사업 판단 |
+| --- | --- | --- | --- | --- | --- |
+| 등록과 슬롯 | registered 다음 in_progress. networkCalled false | Gemini 1. callsOpened 1 | 없음 | 원문 supported | 문장 유지 |
+| 같은 ID 실패 후 성공 재전달 | failed 객체 동일. response null | 1 | 없음 | supported | 문장 유지 |
+| 실패 후 새 ID, 승인 없음 | 첫 failed 객체 유지 | 새 항목 callsOpened 0. retry_refused | 없음 | 변경 없음 | 변경 없음 |
+| 실패 후 새 ID와 승인 | 첫 failed 객체 유지 | 새 항목 callsOpened 1. networkCalled false | 없음 | 변경 없음 | 변경 없음 |
+| 응답 수신 후 수용 전 | response_received. 주장 보관 | 1 | 빈 배열 | supported | 문장 유지 |
+| 수용 후 같은 응답 | accepted 객체 유지 | 집계 exec-gemini-1 한 번 | 1건. 재수용은 거절. 상태 참조 유지 | 같은 가설 객체 | 문장 유지. judgmentChanged false |
+| 다른 실행의 응답 | in_progress. response null. response_mismatch | 1 | 없음 | 변경 없음 | 변경 없음 |
+| 미확정 | unconfirmed. failureReason null | 재시작 거부 | 수용 거절. 여정 참조 유지 | 변경 없음 | 변경 없음 |
+| 명시적 GPT 실패 | failed. 미확정과 다른 phase | 해당 원장 1 | 없음 | 변경 없음 | 변경 없음 |
+| GPT 먼저 수용, 이어서 Gemini | 두 항목 모두 accepted | exec-gpt-1, exec-gemini-1 | 순서대로 2건 | 같은 가설 객체. judgment_deferred | 문장 유지 |
+| Gemini만 먼저 수용 | accepted | exec-gemini-1 | 1건 | 같은 가설 객체 | 문장 유지 |
+| 분석 주장이 원문과 반대 | 원장 응답 주장은 반대 문장 | 1 | verifiedFact false | 수용 직후 supported 유지 | 문장 유지 |
+| 그 다음 반대 원문 | 수용 기록 객체와 원장 응답 유지 | 1 | 같은 수용 객체 | held. 원인 cause-deny. 원문 2건 | 문장 유지. research_not_run |
+
+판단 불변
+
+| 비교 | 수용 전 | 수용 후 | 달라지는 경로 |
+| --- | --- | --- | --- |
+| verifiedFact | 수용 기록 없음 | false | 분석 수용이 true 로 만들지 않음 |
+| 가설 | 원문 전이 supported | 같은 객체 | 나중 반대 원문만 held. 원인 cause-deny |
+| 사업 판단 문장 | JUDGMENT_TEXT. judgment_deferred | 같은 문장. judgmentChanged false | 분석 수용은 문장을 바꾸지 않음 |
+| 충돌 | 원문 지지와 분석의 반대 주장이 공존 | 양쪽 기록 | 분석은 원문을 지우거나 한쪽을 고르지 않음 |
+
+가설이 held 로 바뀌는 원인은 분석 수용이 아니다. 창업자 원문 `attachFounderSource` 와 그 causeId 다.
+
+비용과 보안 계약. 금액은 확정값이 아니다.
+
+| 항목 | 계약 |
+| --- | --- |
+| Gemini 초기 호출 | 최대 1. 승인 없는 추가 슬롯은 retry_refused |
+| GPT 초기 호출 | 최대 1. 제공자 ID가 다르면 각자 1 |
+| 출력 토큰 상한 | 1024. 측정된 사용량이 아니다 |
+| 비용 산정 | 출력 토큰 수에 제공자 게시 단가를 곱한다. priceStatus unconfirmed. 단가는 요금표 확인 전까지 비어 있다 |
+| 타임아웃 | 30000ms 계약값. 실제 소켓 타임아웃은 이번 빌드에서 실행하지 않음 |
+| 실패 시 추가 호출 | 금지. additionalCallOnFailure false |
+| 미확정 시 추가 호출 | 금지. additionalCallOnUnconfirmed false |
+| 자동 재시도 | autoRetry false. 구현하지 않음 |
+| 재실행 | 새 실행 ID와 외부 retryApproval 이 있을 때만 다음 슬롯. 원장은 승인을 만들지 않음 |
+| 키 | server_only. 이번 커밋은 키를 추가하지 않음 |
+| 로그 | executionId, providerId, phase, callsOpened. 주장, 발췌, 엔드포인트, 스냅샷은 redact 대상 |
+
+화면
+- 조사 실행 research_not_run. 배지 조사 미실행
+- 반대 검토 counter_review_not_run. 배지 반대 검토 미실행
+- 분석 수용 기록 없음
+- 인용 검증 대조 불가. 비교 not_compared
+- 사업 판단 judgment_deferred. supported는 사업성 검증이 아니다
+- 실행 원장 없음. 호출을 열지 않았다. 자동 재호출은 하지 않는다
+- 로컬 `/ko/business-validation` 에서 문제 원문을 붙인 뒤 h-problem 은 supported, h-payer 는 0건, 위 여섯 줄은 그대로다. `/_next` 404 는 0건
+
+실제 연결에 필요한 최소 구현. 이번 커밋에는 없다. 별도 승인 전이다.
+- 서버 전용 실행기가 호출 전에 원장 항목을 지속 저장한다. 이 커밋의 원장은 메모리 순수 함수다. 프로세스 중단 시 메모리 기록은 사라진다
+- 복구 시 저장된 phase 가 in_progress 또는 unconfirmed 이면 재호출하지 않고 unconfirmed 로 남긴다
+- response_received 로 응답이 남아 있으면 그 본문만 수용한다. 다시 호출하지 않는다
+- 명시적 failed 는 failed 로 남긴다. 같은 ID 성공 재전달로 바꾸지 않는다
+- 재호출은 새 실행 ID와 사람이 넘긴 retryApproval 이 있을 때만
+- OpenRouter Gemini 1회, OpenAI GPT 1회. 출력 토큰 상한 1024
+- 키는 서버에만 둔다. 로그는 redact 필드로 제한한다
+- 수용은 기존 admitExecutions 만 통과한다. 가설과 사업 판단 문장을 바꾸지 않는다
+- 요금표 확인 전에는 금액을 확정값으로 쓰지 않는다
+
+미검증
+- 실제 Gemini HTTP, 유료 GPT, 서버 중단 후 디스크 복구, 모델 품질, 사업 판단 정확도는 검증되지 않았다
+- 95개 테스트와 화면 확인은 원장 규칙과 미실행 화면이다. 분석 품질의 증거가 아니다
+- Production 잠금 SHA 0b465226. 병합과 배포는 하지 않았다
+
+19. 실행 원장 복구 계약
+
+시각: 2026-10-15T05:31:40Z 여정 테스트 13 files, 104 passed, exit 0.
+명령: pnpm --filter web exec vitest run features/business-validation-journey/lib/__tests__
+여정 폴더 eslint 통과. pnpm --filter web build 는 2026-10-15T05:31:47Z 시작, exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+fetch 호출 없음. 키, 환경변수, DB 스키마, 저장소 어댑터, 자동 재시도, 화면 파일은 바꾸지 않았다.
+
+이 절의 테스트는 메모리 로그 시뮬레이션이다. 결과 객체의 storeKind 는 in_memory_simulation, restartedProcess 는 false, durableVerified 는 false 로 고정이다. 프로세스 재시작이나 디스크 복구의 증거가 아니다.
+
+복구 시나리오
+
+| 상황 | 복구 시 상태 | 허용 | 금지 | 보존 |
+| --- | --- | --- | --- | --- |
+| 등록 후 호출 전 중단 | registered. callsOpened 0. networkCalled false | 복구 함수는 슬롯을 열지 않는다. 이후 명시적 슬롯은 별도 기록이다 | 복구 중 자동 호출 | 첫 등록 이벤트 객체 |
+| 슬롯 진입 후 전송 여부가 불명확 | unconfirmed. callsOpened 1. networkCalled false. failureReason null | 사람이 새 실행 ID와 retryApproval 을 넘기기 전까지 대기 | 자동 재호출. callsOpened 를 HTTP 발생으로 읽기 | 슬롯 이벤트 객체. 새 ID는 registered, callsOpened 0 |
+| 전송 기록이 true 로 주입되고 응답이 없음 | unconfirmed. networkCalled true. callsOpened 1 | 진단용으로 전송 기록을 유지 | 실패로 바꾸거나 자동 재호출 | 실행 ID 목록. 두 번째 복구는 항목을 추가하지 않음 |
+| 응답 수신 후 수용 전 | response_received. 주장 본문 유지 | 보관된 그 본문만 수용 | 복구 중 수용. 추가 호출 | 수용 전 여정의 수용 배열은 빈 배열 |
+| 수용 후 같은 응답 | accepted | 거절 알림만 추가 | 두 번째 수용. 집계 증가 | 첫 수용 상태 참조. 집계는 해당 실행 ID 한 번 |
+| 저장 쓰기 거절 | 쓰기 직전 상태 | 거절을 성공으로 보지 않음 | 등록, 슬롯, 응답, 수용, 미확정 전이를 저장된 것으로 보고 | 직전 records 배열 참조 |
+| 두 제공자 순서 | 각자 response_received 또는 accepted | GPT 다음 Gemini, 또는 Gemini만 수용 | 순서가 가설이나 판단 문장을 바꿈 | 두 항목. verifiedFact false |
+| 두 슬롯이 함께 열려 있음 | 둘 다 unconfirmed 이거나, 쓰기가 거절되면 둘 다 in_progress | 한 번의 쓰기로 둘을 같이 남김 | 한쪽만 저장된 것으로 보고 | 거절 시 직전 records |
+| 같은 실행 ID가 로그에 두 번 | 첫 기록. 실패 뒤의 성공 이벤트는 duplicate_found | 첫 실패를 유지 | 나중 성공으로 덮어쓰기. 실패를 unconfirmed 로 변경 | 실패 이벤트 객체. response null |
+
+callsOpened 1 은 슬롯이 열렸다는 뜻이다. networkCalled true 만 전송이 기록됐다는 뜻이다. 이 빌드의 기록 함수는 networkCalled 를 false 로 저장한다. 복구는 둘을 서로 대입하지 않는다.
+
+저장 경계
+
+| 책임 | 메모리 원장 | 시뮬레이션 로그 |
+| --- | --- | --- |
+| 전이 계산 | register, start, fail, unconfirmed, receive, accept | 하지 않음. 계산 결과를 이벤트로 덧붙임 |
+| 기록 | 프로세스 안에서만 유효 | 이벤트 배열. 불법 전이는 접을 때 무시 |
+| 성공 판정 | 함수 반환값 | 쓰기가 받아진 뒤에만 persisted true. 거절 시 직전 로그 |
+
+저장이 필요한 지점: 등록, 슬롯, 명시적 실패, 응답 본문, 수용, 복구로 in_progress 를 unconfirmed 로 남기는 기록. 수용 기록 ID는 같은 쓰기 안에서 다뤄져야 한다. 이 시뮬레이션은 수용 단계 이벤트를 로그에 남기고, 쓰기가 거절되면 여정 상태 참조를 바꾸지 않는다. 데이터베이스 트랜잭션은 없다.
+
+같은 실행 ID의 등록이 이미 있으면 첫 항목을 유지한다. 수용된 항목에 같은 응답을 다시 보내면 수용 집계가 늘지 않는다. 저장소가 거절하면 그 전이를 성공으로 세지 않는다. unconfirmed 는 외부 retryApproval 없이 다시 호출되지 않는다.
+
+지속 저장 제안. 구현하지 않았다. SQL 마이그레이션 파일이 없다.
+
+| 안 | 내용 | 판단 |
+| --- | --- | --- |
+| 덧붙이는 이벤트 로그 | 실행 ID마다 이벤트를 추가하고, 합법 전이만 접는다. 실패 뒤의 성공 이벤트는 로그에 남아도 첫 실패를 바꾸지 않는다 | 제안. 승인 전 |
+| 실행 ID당 한 행 | phase 가 기대값일 때만 갱신 | 대안. 갱신 한 번이 첫 기록을 지울 수 있다 |
+| 브라우저 저장 | 클라이언트에 원장을 둠 | 기각. 서버 중단을 견디지 못한다 |
+| analytics_events 재사용 | 기존 분석 이벤트 테이블에 넣음 | 기각. 원문과 실행 기록이 제품 분석과 섞인다 |
+
+제안 필드. 스키마가 아니다. event_id, execution_id, phase, provider_id, side, calls_opened, network_called, request payload, response payload, failure_reason, unconfirmed_reason, retry_approval, recorded_at, acceptance_id. request 와 response 에는 창업자 원문이 들어갈 수 있으므로 서버에만 둔다. 운영 로그는 executionId, providerId, phase, callsOpened 만 남긴다.
+
+승인 요청 범위. 이번 커밋의 승인이 아니다.
+
+- 저장: 덧붙이는 이벤트 로그의 서버 저장소. 실제 프로세스 재시작 뒤에 첫 이벤트와 unconfirmed 복구를 확인하는 별도 범위
+- 모델: 그 저장이 검증된 뒤의 제한 입력. Gemini 1회, GPT 1회, 출력 토큰 상한 1024. 키는 서버에만 둔다
+- 비용: 금액은 priceStatus unconfirmed. 단가는 요금표 확인 전 비어 있다. 비용 기록은 networkCalled 가 true 로 저장된 뒤에만 남긴다. callsOpened 로 비용을 세지 않는다. 실패와 미확정은 추가 호출을 만들지 않는다
+- 불확실성: in_progress 이고 networkCalled 가 false 여도 전송 후 기록 전에 죽었을 수 있다. 그래서 재호출하지 않는다. networkCalled 가 true 이고 응답이 없어도 unconfirmed 이며 재호출하지 않는다
+- 키와 원문: 저장소 구현 승인 전에 키를 추가하지 않는다. 원문 본문은 로그에 남기지 않는다
+
+미검증
+- 디스크, 데이터베이스, 운영체제 프로세스 재시작, Gemini HTTP, 유료 GPT, 모델 품질, 사업 판단 정확도
+- 104개 테스트는 시뮬레이션 로그의 접기와 전이이다. durableVerified false 를 유지한다
+- 화면은 수정하지 않았다. 라이브 화면은 계속 실행 원장 없음이다
+- Production 잠금 SHA 0b465226. 병합과 배포는 하지 않았다
+
+20. 서버 원장 저장 승인안
+
+시각: 2026-10-15T05:39:20Z 여정 테스트 14 files, 108 passed, exit 0.
+명령: pnpm --filter web exec vitest run features/business-validation-journey/lib/__tests__
+여정 폴더 eslint 통과. pnpm --filter web build 는 2026-10-15T05:39:30Z 시작, exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+fetch 호출 없음. DB 스키마, 저장소 어댑터, API 키, 자동 재시도, 화면 파일은 바꾸지 않았다.
+
+이 절의 4개 테스트는 저장 계약 픽스처다. storeKind 는 storage_contract_fixture, implemented 는 false, diskVerified 와 processRestartVerified 는 false 다. 108개 전체도 디스크 저장이나 프로세스 재시작을 입증하지 않는다. 재시작 계획 7건의 executed 는 모두 false 다.
+
+저장 방식
+
+| 방식 | 첫 기록 | 원자성 | 중복·순서 | 권고 |
+| --- | --- | --- | --- | --- |
+| 덧붙이는 이벤트 로그 | 첫 이벤트는 갱신하지 않는다. 실패 뒤의 성공 이벤트는 남아도 접기에서 무시한다 | phase 이벤트와 수용 seal 을 같은 commitId 로 쓴다. 덧붙이기만으로 원자성이 생기지는 않는다 | 같은 eventId 는 다시 추가하지 않는다. 새 eventId 의 불법 전이는 감사용으로 남기고 접힌 상태는 유지한다 | 권고. 구현 전 |
+| 실행 ID당 조건부 갱신 | 조건이 빠지면 첫 실패가 성공으로 바뀐다 | phase 열과 수용 테이블이 따로 커밋되면 불일치가 생긴다 | eventId 가 없으면 같은 갱신의 중복을 알아보기 어렵고, 나중 쓰기가 이전 phase 를 덮을 수 있다 | 대안 |
+
+원자성. 수용은 phase accepted 와 seal 이 함께 있을 때만 aligned 다. 커밋이 거절되면 둘 다 쓰이지 않고 여정 상태 참조는 유지된다. phase 만 있으면 phase_without_seal, seal 만 있으면 seal_without_phase 이며 둘 다 수용 집계에 넣지 않는다.
+
+멱등. 같은 실행의 seal 이 있으면 두 번째 수용 커밋은 같은 저장 객체를 반환하고 이벤트와 seal 을 늘리지 않는다. 같은 eventId 를 다시 넣어도 쓰지 않는다. unconfirmed 로그의 두 번째 복구는 실행 ID 를 추가하지 않는다.
+
+미확정. 자동 재호출은 없다. 새 슬롯은 새 실행 ID 와 외부 retryApproval 이 있을 때만 연다. callsOpened 1 은 비용이 아니다. 비용은 저장된 networkCalled true 만 센다. 출력 토큰 상한은 1024. priceStatus 는 unconfirmed 다.
+
+원문 보존. 제안이며 구현이 아니다. 로그에서 본문을 빼는 것만으로 저장 보안이 충족되지는 않는다.
+
+| 항목 | 제안 |
+| --- | --- |
+| 접근 | 서버 프로세스만. 창업자 화면은 실행 ID, 제공자, phase, callsOpened, networkCalled, 가설 ID |
+| 저장 본문 | 창업자 원문, 모델 주장, 발췌, 프롬프트. 클라이언트 번들과 분석 이벤트에는 넣지 않는다 |
+| 운영 로그 | executionId, providerId, phase, callsOpened, networkCalled, persisted |
+| 보존 | 프로젝트 수명 동안 서버에 둔다. 공개 개인정보 처리방침과 대조하기 전에는 확정 기간이 아니다 |
+| 삭제 | 프로젝트 삭제 또는 창업자 삭제 요청 후 30일 안에 본문을 지운다. 30일은 제안값이다 |
+| tombstone | 실행 ID, phase, 제공자, callsOpened, networkCalled, 시각만 남긴다 |
+| 키 | 원장에 넣지 않는다. 서버 전용. 이번 커밋은 키를 추가하지 않는다 |
+
+실제 재시작 검증 계획. 실행하지 않았다.
+
+| ID | 절차 | 기대 |
+| --- | --- | --- |
+| restart_after_event | 등록 커밋 후 프로세스를 재시작하고 같은 eventId 를 읽는다 | registered, callsOpened 0, networkCalled false. 복구가 슬롯을 열지 않는다 |
+| interrupt_in_progress | 슬롯만 커밋하고 응답 없이 재시작한다 | unconfirmed. networkCalled 는 저장값 유지. 자동 재호출 없음 |
+| interrupt_before_acceptance | 응답 커밋 후 수용 전에 재시작한다 | 본문은 남고 seal 은 없다. 복구는 수용하지 않는다 |
+| redelivery_after_acceptance | 수용 후 같은 eventId 를 다시 전달한다 | 이벤트와 seal 이 늘지 않는다. 집계 1. 가설과 판단 문장 유지 |
+| write_failure_and_partial | 트랜잭션 거절과, phase 또는 seal 만 있는 스냅샷 | 거절은 둘 다 없다. 부분 저장은 수용으로 세지 않는다 |
+| failure_then_success_same_id | 실패 뒤 같은 ID 의 성공 이벤트 | 접힌 phase 는 failed. 첫 실패가 남는다 |
+| recover_unconfirmed | unconfirmed 로그를 다시 읽고 복구를 반복한다 | 실행 ID 수 유지. 승인 없는 새 ID 는 슬롯을 열지 않는다 |
+
+구현 범위. 이번 커밋 밖이다. 별도 승인 두 단계다.
+
+- 저장 승인: 이벤트 로그와 seal 을 한 트랜잭션으로 쓰는 서버 저장소. 그 다음 위 7개 시나리오를 실제 프로세스 재시작으로 실행한다
+- 모델 승인: 재시작 검증이 끝난 뒤의 제한 입력. Gemini 1회, GPT 1회, 출력 토큰 상한 1024, 서버 전용 키. 저장 승인이 모델 승인을 대신하지 않는다
+
+미검증
+- 디스크, 데이터베이스, 프로세스 재시작, Gemini HTTP, 유료 GPT, 모델 품질, 사업 판단 정확도
+- 화면은 수정하지 않았다
+- Production 잠금 SHA 0b465226. 병합과 배포는 하지 않았다
+
+21. 로컬 SQLite 원장과 프로세스 재시작
+
+시각: 2026-10-15T05:51:27Z 여정 테스트 15 files, 109 passed, exit 0.
+명령: pnpm --filter web exec vitest run features/business-validation-journey/lib/__tests__
+여정 폴더 eslint 통과. pnpm --filter web build 는 2026-10-15T05:51:42Z 시작, exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+실행 환경: Node v22.14.0. 저장은 node:sqlite DatabaseSync. 이 버전은 SQLite 를 experimental 로 경고한다. 파일 모드는 0600. HTTP 라우트에 붙이지 않았다.
+
+109개 가운데 108개는 메모리 계약과 픽스처다. 디스크와 프로세스 재시작의 증거는 ledger-disk-restart.test.ts 1개다. 그 테스트는 esbuild 로 워커를 묶은 뒤, 쓰기 프로세스와 읽기 프로세스를 따로 띄운다. 부모 프로세스는 SQLite 파일을 직접 읽지 않는다.
+
+저장 선택. ADR-052. 프로덕션 Supabase 스키마는 바꾸지 않았다. 로컬 SQLite 파일이 트랜잭션과 event_id 고유 제약을 가진다. 조건부 행 갱신은 쓰지 않는다. phase accepted 와 seal 은 BEGIN IMMEDIATE 부터 COMMIT 까지 한 트랜잭션이다. COMMIT 전에 예외가 나거나 프로세스가 SIGKILL 로 죽으면 둘 다 남지 않는다.
+
+재시작 결과. 같은 파일, 다른 pid.
+
+| 시나리오 | 쓰기 pid | 읽기 pid | 결과 |
+| --- | --- | --- | --- |
+| restart_after_event | 75026 | 75053 | registered. callsOpened 0. networkCalled false. 복구는 슬롯을 열지 않음 |
+| interrupt_in_progress | 75104 | 75115 | unconfirmed. callsOpened 1. networkCalled false. 비용 계수 0. 두 번째 복구의 이벤트 수는 3 으로 유지 |
+| interrupt_before_acceptance | 75194 | 75205 | response_received. 주장 본문 유지. seal 0. 자동 수용 없음. journeyMutated false |
+| redelivery_after_acceptance | 75295 | 75306 | 이벤트 4, seal 1 유지. 두 번째 커밋은 쓰지 않음. 가설 객체와 판단 문장 유지. verifiedFact false. 디스크 실패 시 여정 상태 참조 유지 |
+| write_failure_and_partial | SIGKILL | 75328 | 커밋 전 SIGKILL 행은 0. throw_before_commit 도 행 0. phase 만 있으면 phase_without_seal. seal 만 있으면 seal_without_phase. 둘 다 수용 집계 아님 |
+| failure_then_success_same_id | 75434 | 75473 | 이벤트 evt-fail 과 evt-success-same-id 가 파일에 있음. 접힌 phase 는 failed |
+| recover_unconfirmed | 75517 | 75552 | 실행 ID 는 exec-gemini-1 하나. 두 번째 복구는 쓰지 않음. 승인 없는 새 ID 는 retry_refused. 비용 계수 0 |
+
+networkCalled false 는 전송이 없었다는 증거가 아니다. 미확정 사유는 전송 기록이 남기 전에 중단됐을 수 있다고 말한다. callsOpened 1 은 비용이 아니다.
+
+보안 대조. 공개 개인정보 문장: "ALABOM은 사용자 데이터를 존중합니다. 프로젝트 정보는 Workspace에 저장되며 제3자에게 판매되지 않습니다. Sprint L2 인증 출시 전 전체 Privacy Policy가 게시됩니다." 이 문장에는 삭제 기한이 없다. 30일 삭제는 제안값으로 남고, 이 저장소는 그 기한으로 지우지 않는다. 운영 로그는 executionId, providerId, phase, callsOpened, networkCalled, persisted 만 본다. 재시작 워커의 stderr 에 원문과 주장은 없었다. API 키는 추가하지 않았다. 화면 파일은 수정하지 않았다.
+
+미검증
+- 프로덕션 데이터베이스, 배포된 서버의 재시작, Gemini HTTP, 유료 GPT, 자동 재시도
+- node:sqlite 는 Node v22.14.0 에서 experimental 이다
+- 라이브 화면은 여전히 실행 원장 없음이다. 이 파일 저장소를 요청 경로에 연결하지 않았다
+- 모델 품질과 사업 판단 정확도
+- Production 잠금 SHA 0b465226. 병합과 배포는 하지 않았다
+
+22. 제한된 호출 계약
+
+문서: docs/evidence/ALABOM/AI-PM/LIMITED-MODEL-CALL-CONTRACT.md
+이 단계는 설계와 검증 계획이다. 모델을 호출하지 않았고, 키를 넣지 않았고, 원장을 화면이나 요청 경로에 연결하지 않았다.
+
+상태 단어. 확인됨은 이 브랜치의 픽스처 또는 로컬 SQLite 재시작이 규칙을 잠갔다는 뜻이다. 설계안은 호출 전에 지키기로 정한 경계다. 미검증은 실제 모델, 배포 재시작, 요금, 약관, 삭제 기한, 사업 판단 정확도다. 픽스처 통과는 모델 품질의 증거가 아니다.
+
+전이. registered 에서 in_progress, 그 다음 failed 또는 unconfirmed 또는 response_received, response_received 에서만 accepted. 실패를 성공으로 덮지 않는다. callsOpened 와 networkCalled 는 따로다. 미확정 전송을 비용 0으로 단정하지 않는다.
+
+근거. 원문, Gemini, GPT 는 따로 보존한다. 인용 일치와 주장의 근거 충족은 다른 축이다. 합의와 grounded 도 verifiedFact 를 true 로 만들지 않는다. 상충은 둘 다 남긴다. 모델 수용은 판단 문장을 바꾸지 않는다. 판단 문장을 바꾸는 모델 경로는 설계안이며, 이전 문장·사유·가설 ID·근거 ID가 없으면 유보한다.
+
+개인정보. 공개 문장에는 삭제 기한이 없다. 30일 삭제는 구현되어 있지 않고, 이 계약은 그 기간을 약속하지 않는다. 기존 SOURCE_RETENTION_POLICY.erasure 의 30일 문장은 채택하지 않은 제안으로 남긴다.
+
+호출 전 체크리스트 14항은 문서에 있다. 그 목록을 적었다는 사실은 호출 승인이 아니다.
+
+23. AI 브라우저 왕복 1차 게이트
+
+기록: docs/evidence/ALABOM/AI-PM/AI-BROWSER-ROUNDTRIP-GATE.txt
+2026-10-15T06:22:13Z. 통과하지 않음. ChatGPT, Gemini, Claude 의 자동 세션은 robots 또는 이용약관에서 막혀 있다. API 키는 없다. 사업정보를 보내지 않았고 비용은 0이다. 테스트 1, 테스트 2, 왕복은 실행하지 않았다.
+
+24. 공식 API 접근 경로
+
+기록: docs/evidence/ALABOM/AI-PM/OFFICIAL-API-ACCESS-PATH.txt
+2026-10-15T06:32:25Z. 분석은 Gemini Developer API 유료 할당량, 반대 검토는 OpenAI Chat Completions 다. 키 다섯 개가 없어 호출하지 않았다. Gemini 무상 할당량은 제출 내용을 제품 개선에 쓴다. 화면은 모델 질문을 표시하지 않는다. 왕복은 실행할 수 없다.

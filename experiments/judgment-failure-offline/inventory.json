@@ -1,0 +1,236 @@
+{
+  "at": "2026-10-17T04:48:45.158Z",
+  "rows": [
+    {
+      "id": "prompt",
+      "rel": "experiments/business-judgment-poc/prompt.txt",
+      "role": "failure-1-2-input",
+      "exists": true,
+      "bytes": 1174,
+      "sha256": "749223f592ddbbb0e0a869de328d882bbe76a691b6f1bcb2bc86003680ff518c"
+    },
+    {
+      "id": "path1",
+      "rel": "experiments/business-judgment-poc/path1.json",
+      "role": "failure-1-stored-output",
+      "exists": true,
+      "bytes": 3750,
+      "sha256": "4463765691ff599fce25bce768430c9a8ffb95ab34c352d1ab0634d1beca2b94"
+    },
+    {
+      "id": "path4",
+      "rel": "experiments/business-judgment-poc/path4.json",
+      "role": "failure-2-stored-output",
+      "exists": true,
+      "bytes": 3414,
+      "sha256": "4a7c4b39c6faecc4bd0918510160a0163d2161f6b585bd5b27f52b317e04ed7e"
+    },
+    {
+      "id": "poc-note",
+      "rel": "docs/evidence/ALABOM/AI-PM/BUSINESS-JUDGMENT-POC.txt",
+      "role": "narrative-of-stored-run",
+      "exists": true,
+      "bytes": 4898,
+      "sha256": "b23ac1f5180e68d36f52b20291c10408a00f2c48240f5d2b347daef166998284"
+    },
+    {
+      "id": "failure-trace",
+      "rel": "docs/evidence/ALABOM/AI-PM/FAILURE-TRACE-2026-10-16.md",
+      "role": "narrative",
+      "exists": true,
+      "bytes": 3153,
+      "sha256": "55215976512c1cf4cdef751ecfe7d270fc605d55b4b1b8e8e007d5fb832dbe43"
+    },
+    {
+      "id": "gate-plan",
+      "rel": "docs/evidence/ALABOM/AI-PM/NEXT-GATE-VALIDATION-PLAN-2026-10-16.md",
+      "role": "plan-not-execution",
+      "exists": true,
+      "bytes": 7191,
+      "sha256": "0057e943c7c905cdb4057336b336a2f4d74bf99e98e0a03814f412ec5dda9612"
+    },
+    {
+      "id": "scope",
+      "rel": "docs/evidence/ALABOM/AI-PM/NEXT-SCOPE-CRITERIA-2026-10-16.md",
+      "role": "plan-not-execution",
+      "exists": true,
+      "bytes": 4403,
+      "sha256": "7d1bd41b1ce47f61e5bda31102a830c73fe39dbe1183ce3a4940a265b2a410e0"
+    },
+    {
+      "id": "offline-note",
+      "rel": "docs/evidence/ALABOM/AI-PM/FAILURE-125-OFFLINE-2026-10-16.md",
+      "role": "prior-execution-note",
+      "exists": true,
+      "bytes": 5341,
+      "sha256": "1ca896c3f958960a8877bec7e1d6e591b1f19e399d31a217bf813620534834ec"
+    },
+    {
+      "id": "semantics",
+      "rel": "apps/web/features/workflow-journey/lib/business-understanding/interpret-answer-semantics.ts",
+      "role": "product-source-read",
+      "exists": true,
+      "bytes": 30640,
+      "sha256": "a818c76ec1aa1789396ffb67d68d370f7f66879a48b985d406761e7344479434"
+    },
+    {
+      "id": "stabilization-test",
+      "rel": "apps/web/features/workflow-journey/lib/business-understanding/__tests__/core-final-stabilization.test.ts",
+      "role": "existing-test-source",
+      "exists": true,
+      "bytes": 127293,
+      "sha256": "3982c37f1138cf7b8aef5a4904859e05926cc1e51db5abd0bc5a8c8fcb377a10"
+    },
+    {
+      "id": "judgment-src",
+      "rel": "apps/web/features/business-validation-journey/lib/judgment-development.ts",
+      "role": "product-source-read",
+      "exists": true,
+      "bytes": 14373,
+      "sha256": "f6d007973346b664156719a38eaab8010f2a52b731ff484d8710a48b256d0e25"
+    },
+    {
+      "id": "judgment-test",
+      "rel": "apps/web/features/business-validation-journey/lib/__tests__/judgment-development.test.ts",
+      "role": "existing-test-source",
+      "exists": true,
+      "bytes": 10033,
+      "sha256": "2057ec9ea737a612da84395a6cb3e7a64fbd0d61b3fa7a5ea0640a581480da22"
+    },
+    {
+      "id": "id-validator",
+      "rel": "experiments/id-selection-validator/validator.py",
+      "role": "unrelated-format-checker",
+      "exists": true,
+      "bytes": 10066,
+      "sha256": "27fa753f4035ac4262bd593ae4dc3fb0712109ceab1d56bdd09adffcc9582f55"
+    },
+    {
+      "id": "observe",
+      "rel": "experiments/judgment-failure-offline/observe.ts",
+      "role": "this-sprint-script",
+      "exists": true,
+      "bytes": 5794,
+      "sha256": "ea058bc4db9598caa8b2197c0a558b95ecd3a8a5083d36c8da40130a1d8df70c"
+    },
+    {
+      "id": "last-run",
+      "rel": "experiments/judgment-failure-offline/last-run.json",
+      "role": "this-sprint-function-call",
+      "exists": true,
+      "bytes": 3041,
+      "sha256": "21c322e05c4751e6cfe97f79613a112bc8d34507e0546f610533416a79dc9c59"
+    },
+    {
+      "id": "vitest-excerpt",
+      "rel": "experiments/judgment-failure-offline/vitest-failure5.txt",
+      "role": "this-sprint-test-excerpt",
+      "exists": true,
+      "bytes": 761,
+      "sha256": "d713c6ca2db119d87e541149d4017d082517bb7dd93981c3103045db6f0eefbd"
+    },
+    {
+      "id": "detector",
+      "rel": "experiments/judgment-failure-offline/detector.mjs",
+      "role": "this-sprint-script",
+      "exists": true,
+      "bytes": 12090,
+      "sha256": "5598a698357039c6c84f19b71a2c1908218f3afda7d2006d9c30106923305564"
+    },
+    {
+      "id": "detector-run",
+      "rel": "experiments/judgment-failure-offline/detector-run.json",
+      "role": "this-sprint-detector-output",
+      "exists": true,
+      "bytes": 19260,
+      "sha256": "54b142b7d1a689e2c7042d95755460d1bbc58b790b077162570f6cca2c6cef05"
+    },
+    {
+      "id": "fixtures",
+      "rel": "experiments/judgment-failure-offline/fixtures.json",
+      "role": "this-sprint-labels",
+      "exists": true,
+      "bytes": 6252,
+      "sha256": "11c63475c5837862a7ce2158da86f283a9aa363cc16ed2e657bb6921c1beaf77"
+    },
+    {
+      "id": "commands",
+      "rel": "experiments/judgment-failure-offline/commands.txt",
+      "role": "this-sprint-command-log",
+      "exists": true,
+      "bytes": 4425,
+      "sha256": "5f6158aa9907b60b54a1f6cdb7f2a1c57237892ae0b241a520324e884e83c76b"
+    },
+    {
+      "id": "ceo-review",
+      "rel": "docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md",
+      "role": "this-sprint-review",
+      "exists": true,
+      "bytes": 31506,
+      "sha256": "68f303893d70d33188542b705a3f025a2e16115b701296125dfa2ab0d2d65b09"
+    },
+    {
+      "id": "log-search",
+      "rel": "experiments/judgment-failure-offline/log-search.json",
+      "role": "1039-search",
+      "exists": true,
+      "bytes": 735,
+      "sha256": "8a8873cd30cf08def1c515ba955f557c89c56dc11a60163d174bf409b5008b10"
+    },
+    {
+      "id": "search-script",
+      "rel": "experiments/judgment-failure-offline/search-1039.mjs",
+      "role": "1039-search-script",
+      "exists": true,
+      "bytes": 2774,
+      "sha256": "de1ff0e70a617852585243d4ded698a9ad8344dcd2e92fdd295988e9fb1cfdad"
+    },
+    {
+      "id": "vitest-2026-10-17",
+      "rel": "experiments/judgment-failure-offline/vitest-failure5-2026-10-17.txt",
+      "role": "failure5-rerun",
+      "exists": true,
+      "bytes": 761,
+      "sha256": "d713c6ca2db119d87e541149d4017d082517bb7dd93981c3103045db6f0eefbd"
+    },
+    {
+      "id": "trace-script",
+      "rel": "experiments/judgment-failure-offline/trace-failure5.ts",
+      "role": "failure5-path-script",
+      "exists": true,
+      "bytes": 2644,
+      "sha256": "c76a6ed6903ca21a9e533113de21fffab4c9e420e692e616a539fa0c7f56abc6"
+    },
+    {
+      "id": "failure5-trace",
+      "rel": "experiments/judgment-failure-offline/failure5-trace.json",
+      "role": "failure5-path-result",
+      "exists": true,
+      "bytes": 1355,
+      "sha256": "9d8d0a9d737afe552510fd400f4abe9b830ae49d9dcb447905b7e8591d1e1d71"
+    },
+    {
+      "id": "preview-check-script",
+      "rel": "experiments/judgment-failure-offline/preview-check.mjs",
+      "role": "preview-status-script",
+      "exists": true,
+      "bytes": 3832,
+      "sha256": "8259dc82ba8a74cf5d1813ec34ab5a2fc40abba6000bf088ecbbe8dc429c967a"
+    },
+    {
+      "id": "preview-check",
+      "rel": "experiments/judgment-failure-offline/preview-check.json",
+      "role": "preview-status-result",
+      "exists": true,
+      "bytes": 1822,
+      "sha256": "fc95dba72970509a034a7d470c297d6f036c0ef0a2453797db012dd92d9b4d91"
+    }
+  ],
+  "missingRaw": [
+    {
+      "rel": "docs or experiments raw vitest log named for 2026-10-16T10:39:10Z",
+      "exists": false,
+      "role": "original-failure5-log"
+    }
+  ]
+}

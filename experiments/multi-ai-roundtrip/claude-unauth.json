@@ -1,0 +1,43 @@
+{
+  "name": "claude-unauth",
+  "started": "2026-10-16T05:45:41Z",
+  "elapsed_sec": 0.122,
+  "url": "https://api.anthropic.com/v1/messages",
+  "authorization_sent": false,
+  "api_key_sent": false,
+  "request_headers_sent": [
+    "Content-Type",
+    "anthropic-version"
+  ],
+  "request_body": {
+    "model": "claude-3-5-haiku-latest",
+    "max_tokens": 32,
+    "messages": [
+      {
+        "role": "user",
+        "content": "Reply with the exact marker: ALABOM-ROUNDTRIP-001"
+      }
+    ]
+  },
+  "http": 401,
+  "error": null,
+  "response_headers": {
+    "Date": "Fri, 16 Oct 2026 05:45:41 GMT",
+    "Content-Type": "application/json",
+    "Transfer-Encoding": "chunked",
+    "Connection": "close",
+    "x-should-retry": "false",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "request-id": "req_011Cg5PNpXVVcm9mLXUfwr25",
+    "traceresponse": "00-593d105d380c101ac405ccbbf9db35b9-bbe7e5de73f1ee3a-01",
+    "vary": "Accept-Encoding",
+    "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
+    "Server": "cloudflare",
+    "cf-cache-status": "DYNAMIC",
+    "X-Robots-Tag": "none",
+    "CF-RAY": "a4b4c24359e62d7c-PDX"
+  },
+  "body": "{\"type\":\"error\",\"error\":{\"type\":\"authentication_error\",\"message\":\"x-api-key header is required\"},\"request_id\":\"req_011Cg5PNpXVVcm9mLXUfwr25\"}",
+  "marker_in_body": false,
+  "cost_krw": 0
+}

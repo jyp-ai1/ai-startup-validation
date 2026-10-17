@@ -1,0 +1,54 @@
+MULTI AI ROUNDTRIP — 2026-10-16T05:45:41Z
+기존 GPT 경로를 추적한 뒤, 성공 절차가 없어 키 없는 공식 호출만 새로 실행했다. 제품 코드, 규칙 분기, 모델 연결, 병합, Production은 바꾸지 않았다. 사업계획서 원문은 보내지 않았다. API 키를 만들지 않았다. 대화 화면은 열지 않았다. 쿠키와 세션 토큰은 저장하지 않았다.
+
+테스트 입력. Reply with the exact marker: ALABOM-ROUNDTRIP-001
+합격은 해당 서비스의 모델 응답 원문에 마커가 있고, 비용이 0원이며, 이용 조건과 접근 정책을 지킨 경우만이다. HTTP 상태만으로 합격으로 적지 않는다.
+
+경로 추적. docs/evidence/ALABOM/AI-PM/EXISTING-GPT-PATH-REVIEW.txt
+재사용 가능한 GPT 성공 절차는 확인되지 않았다. 같은 무인증 OpenAI POST는 이미 2026-10-16T05:30:38Z 에 HTTP 401 이었다. 인증 조건이 그대로이므로 그 호출은 반복하지 않았다.
+
+접근 정책 재확인. 2026-10-16T05:45:41Z. 대화 화면은 열지 않았다.
+chatgpt.com/robots.txt HTTP 200, 4388바이트, Last-Modified Wed, 14 Oct 2026 20:40:36 GMT. User-agent * 는 공개 경로만 Allow 한 뒤 Disallow: / 이다. Disallow: /backend-anon/conversation$ 가 있다.
+gemini.google.com/robots.txt HTTP 200, 116바이트. Allow: /app/download. Disallow: /app/. Disallow: /chat/.
+claude.ai/robots.txt HTTP 200, 281바이트. User-agent * 는 Allow: /api/desktop/, Disallow: /api/*, Disallow: /lti/* 이다. 소비자 약관은 API 키 또는 명시적 허용이 없는 bot·script 접근을 금지한다. 근거 시각은 AI-BROWSER-ROUNDTRIP-GATE.txt. 이번 실행은 claude.ai 를 열지 않고 api.anthropic.com 공식 엔드포인트만 호출했다.
+
+환경. AI 키 이름 없음. Chrome 쿠키 호스트는 .vercel.com, vercel.com, Preview 호스트뿐이다. chatgpt.com, gemini.google.com, claude.ai 쿠키는 없다.
+
+GPT
+실제 요청 전달. 이번 마커는 보내지 않음. 과거 공식 호출 1회는 전달 후 401로 거절. experiments/gpt-roundtrip/api-unauth.json.
+실제 응답 수신. GPT 완료 원문 없음. 저장된 과거 본문은 키 없음 오류다. 마커 GPT-POC-TEST-001 없음.
+이번 기록. experiments/multi-ai-roundtrip/gpt-not-repeated.json. sent false.
+인증. 과거 호출은 Authorization 없음. 세션 쿠키 없음.
+비용. 0원. 401 본문에 사용량 청구가 없다.
+결과. 실패. 성공 절차가 없어 재현 합격을 시작할 수 없었다. 같은 401을 새 마커로 다시 받지 않았다.
+
+Gemini
+실제 요청. 2026-10-16T05:45:41Z. POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent. Content-Type 만 보냈다. API 키 쿼리와 Authorization 은 없다. 0.102초.
+실제 응답. HTTP 403. status PERMISSION_DENIED. message: Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API.
+마커 ALABOM-ROUNDTRIP-001. 본문에 없음.
+원문. experiments/multi-ai-roundtrip/gemini-unauth.json.
+인증. 키 없음. gemini.google.com 세션 없음. /app/ 와 /chat/ 는 열지 않았다.
+비용. 0원. 응답에 usage 나 청구 필드가 없다. 완료된 추론이 아니다.
+결과. 실패. 공식 API가 신원 없는 호출을 거절했다. 모델 응답이 아니다.
+
+Claude
+실제 요청. 2026-10-16T05:45:41Z. POST https://api.anthropic.com/v1/messages. Content-Type 과 anthropic-version: 2023-06-01 만 보냈다. x-api-key 와 Authorization 은 없다. 모델 칸은 claude-3-5-haiku-latest. max_tokens 32. 0.122초.
+실제 응답. HTTP 401. type authentication_error. message: x-api-key header is required. request-id req_011Cg5PNpXVVcm9mLXUfwr25. x-should-retry false.
+마커 ALABOM-ROUNDTRIP-001. 본문에 없음.
+원문. experiments/multi-ai-roundtrip/claude-unauth.json.
+인증. 키 없음. claude.ai 세션 없음. 대화 화면은 열지 않았다.
+비용. 0원. 응답에 usage 나 청구 필드가 없다. 완료된 추론이 아니다.
+결과. 실패. 공식 API가 키 없는 호출을 거절했다. 모델 응답이 아니다.
+
+서비스별 독립. Gemini 403과 Claude 401은 서로의 성공이 아니다. 둘 다 GPT 성공이 아니다. Pollinations gpt-oss-20b 200은 이번 세 서비스의 결과가 아니며 반복하지 않았다.
+
+비용 합계. 0원. 키 발급 없음. 유료 전환 없음. 402 응답 없음.
+
+실패한 지점
+GPT. 성공 절차 부재. 과거 유일 공식 호출은 인증 전 401.
+Gemini. 공식 generateContent 가 403으로 신원을 요구. 모델 출력 전.
+Claude. 공식 messages 가 401으로 x-api-key 를 요구. 모델 출력 전.
+
+이 환경에서 아직 실행하지 않은 무료 후보
+이미 발급된 공식 무료 등급 키가 계정에 있는 경우의 공식 호출. 그 키는 여기 없고 새로 만들지 않았다. 그 추론은 미검증이다.
+사람이 자신의 로그인 세션에 이 마커를 넣고 응답을 돌려 주는 경로. 이 환경의 브라우저에는 해당 쿠키가 없어 미실행이다. 자동 로그인과 대화 화면 자동화는 하지 않았다.

@@ -1,0 +1,7 @@
+{
+  "started": "2026-10-16T07:22:28.072Z",
+  "channel": "chrome",
+  "url": "http://127.0.0.1:8773/",
+  "text": "{\"ua\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36\",\"deviceMemory\":16,\"hardwareConcurrency\":4,\"hasLanguageModel\":\"function\",\"hasWindowAi\":\"undefined\",\"defaultAvailability\":{\"value\":\"unavailable\",\"ms\":23},\"en\":{\"value\":\"unavailable\",\"ms\":14},\"ko\":{\"value\":\"unavailable\",\"ms\":3},\"promptCalled\":false,\"createSkipped\":\"no availability value was available\"}",
+  "error": null
+}

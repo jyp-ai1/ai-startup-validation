@@ -1,0 +1,24 @@
+{
+  "started": "2026-10-16T07:22:45Z",
+  "elapsed_sec": 8.613,
+  "endpoint": "https://text.pollinations.ai/openai",
+  "authorization_sent": false,
+  "request": {
+    "model": "openai",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Reply with the exact marker and nothing else: METHOD1-OK"
+      }
+    ],
+    "stream": false
+  },
+  "http": 200,
+  "error": null,
+  "body": "{\"id\":\"pllns_e40dd4b787d63719d032a92dc89cb63c\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"METHOD1-OK\",\"reasoning\":\"User wants me to reply with exact marker and nothing else: \\\"METHOD1-OK\\\". So I should just output that string.\",\"tool_calls\":[]},\"finish_reason\":\"stop\"}],\"created\":1792135370,\"model\":\"gpt-oss-20b\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":321,\"completion_tokens\":40,\"total_tokens\":361},\"user_tier\":\"anonymous\"}",
+  "marker_in_body": true,
+  "model_field": "gpt-oss-20b",
+  "user_tier": "anonymous",
+  "id": "pllns_e40dd4b787d63719d032a92dc89cb63c",
+  "content": "METHOD1-OK"
+}

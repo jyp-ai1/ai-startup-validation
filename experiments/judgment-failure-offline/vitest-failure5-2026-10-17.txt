@@ -1,0 +1,15 @@
+FAIL  features/workflow-journey/lib/business-understanding/__tests__/core-final-stabilization.test.ts > Loop 2 vNext — causality · conflict · relevance evidence > validationTestability weak answer is PARTIAL and not mergeable
+AssertionError: expected 'VALID' to be 'PARTIAL' // Object.is equality
+
+Expected: "PARTIAL"
+Received: "VALID"
+
+ ❯ features/workflow-journey/lib/business-understanding/__tests__/core-final-stabilization.test.ts:995:28
+    993|       askedTargetGap: 'validationTestability',
+    994|     });
+    995|     expect(result.quality).toBe('PARTIAL');
+       |                            ^
+    996|     expect(result.mergeable).toBe(false);
+    997|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯

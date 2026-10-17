@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-17T04:47:17.111Z",
+  "pr": 199,
+  "prUrl": "https://github.com/jyp-ai1/ai-startup-validation/pull/199",
+  "branch": "cursor/business-refinement-loop-4b88",
+  "headAtCheck": "860ee75e054f61c7049ddf8442b694496803f910",
+  "deploymentChecked": {
+    "id": 7134241920,
+    "sha": "860ee75e054f61c7049ddf8442b694496803f910",
+    "state": "failure",
+    "description": "Deployment has failed — run this Vercel CLI command: npx vercel inspect dpl_3AGqp3F4Mztks5gDzdTnB6DDFZJw --logs",
+    "environmentUrl": "https://ai-startup-validation-3cgzg4to7-jyp-ai1s-projects.vercel.app",
+    "inspectUrl": "https://vercel.com/jyp-ai1s-projects/ai-startup-validation/3AGqp3F4Mztks5gDzdTnB6DDFZJw",
+    "createdAt": "2026-10-17T03:32:30Z"
+  },
+  "unauthenticatedFetch": {
+    "http": "HTTP/2 302 \r",
+    "locationHost": "vercel.com",
+    "redirectsToVercelSso": true
+  },
+  "logBodyRead": false,
+  "vercelTokenPresent": false,
+  "productVerifier": {
+    "connectedInAppsOrPackages": false,
+    "matchingFiles": [],
+    "offlineTool": "experiments/judgment-failure-offline/detector.mjs"
+  },
+  "production": {
+    "url": "https://ai-startup-validation-tau.vercel.app",
+    "commit": "0b465226516e1a4f3eb9ce2087f8bca2c2c091da",
+    "environment": "production",
+    "matchesLock": true
+  },
+  "freeze": {
+    "productDiffFrom6f71ea3a": "",
+    "appsPackagesDiffEmpty": true,
+    "productionAncestor": true
+  },
+  "failure5VitestExcerpts": [
+    "experiments/judgment-failure-offline/vitest-failure5.txt",
+    "experiments/judgment-failure-offline/vitest-failure5-2026-10-17.txt"
+  ],
+  "ceoBrowserStatus": "BLOCKED",
+  "blockedBecause": [
+    "PR #199 head deployment state is failure",
+    "unauthenticated fetch redirects to Vercel SSO",
+    "apps and packages do not reference the offline verifier or path1/path4"
+  ]
+}

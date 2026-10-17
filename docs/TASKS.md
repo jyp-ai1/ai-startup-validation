@@ -4,6 +4,94 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## 순수 규칙 엔진 — AC16·AC5와 S1–S6
+
+**CPO Gate:** 동결 · 규칙 엔진 추가 수정 중지 · 병합·Production 금지 · Production 잠금 `0b465226`  
+**Branch:** `cursor/business-refinement-loop-4b88`  
+**PR:** #199  
+**Evidence:** `docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | V3 질문 결정이 같은 공백 한도를 무시해 problemJtbd 에 남는 충돌 | `134667d9`에서 멈춤 |
+| 2 | S3–S6 예상 문장은 ASSUMPTION. Fact 상태 없음. 선택·수정·불확실·반증의 다음 질문 | `134667d9`에서 멈춤 |
+| 3 | 규칙 엔진만으로 수동 GPT 판단 수준에 도달하는가 | 도달하지 않음 · 추가 수정 없음 |
+| 4 | 진단 UX 방향. 행동 하나. 신호등·점수·체크리스트 아님 | `55586a62`에서 멈춤. 우선순위 변경 없음 |
+| 5 | 검증 기록 종합. 코드 변경 없음 | `docs/evidence/ALABOM/AI-PM/FINAL-VALIDATION-SUMMARY.md` |
+| 6 | CPO 부재 3시간 보고. 코드 변경 없음 | `docs/evidence/ALABOM/AI-PM/CPO-ABSENCE-BRIEF-2026-10-16.md` |
+| 7 | 1단계 통신 인수. Gemini·GPT 재현 성공은 없음. 2·3단계 미착수 | `docs/evidence/ALABOM/AI-PM/STAGE1-COMM-HANDOFF-2026-10-16.md` |
+| 8 | 성공 경로 출처와 익명 시간 초과 경계. 관문은 닫힘 | `docs/evidence/ALABOM/AI-PM/SUCCESS-PATH-TRACE-2026-10-16.md` |
+| 9 | 30초 간격 8회. 200은 7회, 상태 없는 시간 초과 1회. 관문은 닫힘 | `docs/evidence/ALABOM/AI-PM/INTERVAL-STABILITY-2026-10-16.md` |
+| 10 | 운영 기준 미달. 익명 경로는 실험용. 추가 핑 없음 | `docs/evidence/ALABOM/AI-PM/ANON-OPS-LIMIT-2026-10-16.md` |
+| 11 | 통신 경로와 판단 실패 다섯 건을 구분. 관문 닫힘. 코드 변경 없음 | `docs/evidence/ALABOM/AI-PM/AI-COMM-AND-ACCURACY-REVIEW.md` |
+| 12 | 실패 다섯 건의 입력·기대·실제 연결. Fact 무시는 검증 성공이 아님. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/FAILURE-TRACE-2026-10-16.md` |
+| 13 | 기존 도구는 실패 1·2번을 자동 탐지하지 못함. 검사기 미구현. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/DETECTION-GAP-2026-10-16.md` |
+| 14 | 탐지 공백의 검증 명세. 검사기 미구현. 1단계 통과 아님 | `docs/evidence/ALABOM/AI-PM/NEXT-GATE-VALIDATION-PLAN-2026-10-16.md` |
+| 15 | 다음 실행 범위. 1·2번은 기존 도구로 불가. 5번 mergeable 미확인. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/NEXT-SCOPE-CRITERIA-2026-10-16.md` |
+| 16 | 비로그인 GPT·Gemini 왕복. 두 번째 실행에서 같은 대화의 두 응답 연결. 관문과 실패 1·2·5는 유지 | `docs/evidence/ALABOM/AI-PM/BROWSER-REPEAT-ROUNDTRIP-POC-2026-10-16.md` |
+| 17 | 실패 1·2·5 오프라인 대조. 탐지와 해결을 구분. 10:39 mergeable은 미확인. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/FAILURE-125-OFFLINE-2026-10-16.md` |
+| 18 | CEO 복귀용 증거 패키지. 최소 세트와 기존 테스트 범위를 분리. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md` |
+| 19 | 탐지기 확장. 부정문·바꿔 말하기·Fact 불일치를 분리. 세 실패는 미해결. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md` |
+| 20 | 미탐 원인과 실패 5 경로. 인용·언급·통화·기간·실적은 분리. 10:39 mergeable은 미확인. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md` |
+| 21 | CEO 브라우저 검증 경로. PR #199 Preview 실패와 SSO. 제품 검증기 없음. 상태 BLOCKED. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md` |
+| 22 | 프로덕션·Preview 재확인. Demo는 열리나 실패 1·2·5 입력이 아님. 전체 BLOCKED. 제품 수정 없음 | `docs/evidence/ALABOM/AI-PM/CEO-BROWSER-PATH-2026-10-17.md` |
+| 23 | 비용 0원 구조. 사용자 GPT 웹 다음 Gemini 웹 다음 ALABOM 비교. 순서 품질 차이는 미확인. API·자동화 제외. BLOCKED 유지 | `docs/evidence/ALABOM/AI-PM/ZERO-COST-STRUCTURE-2026-10-17.md` |
+| 24 | 비용 0원 실행. GPT·Gemini 세션 없음. 원문 합성 없음. 404는 main에 라우트 없음. 빌드 타입 오류만 수정. 전체 BLOCKED | `docs/evidence/ALABOM/AI-PM/ZERO-COST-EXECUTION-2026-10-17.md` |
+| 25 | 두 칸 비교는 브랜치 로컬에서 테스트 문장으로 저장·재조회. 실제 원문과 Production 경로는 BLOCKED. 실패 5는 미수정 | `docs/evidence/ALABOM/AI-PM/WEB-REVIEW-PATH-2026-10-17.md` |
+| 26 | 원문 세션 없음. Production 404는 라우트 부재. Demo는 읽기 전용이라 실패 5 문장을 넣지 못함. 로직 미수정. BLOCKED | `docs/evidence/ALABOM/AI-PM/ACCESS-AND-FAILURE-PATH-2026-10-17.md` |
+| 27 | PR #199는 193파일. 비교 페이지만 분리 배포 불가. 질문 선택과 provider 교체가 함께 나감. 병합하지 않음. 실패 5 입력 화면 없음. BLOCKED | `docs/evidence/ALABOM/AI-PM/MERGE-SCOPE-2026-10-17.md` |
+| 28 | 페이지 실행 그래프 25파일은 질문 넘김·provider 교체를 import하지 않음. 슬라이스는 가능하나 만들지 않음. 전체 병합 보류. 실패 1·2 제품 경로 없음. 실패 5 브라우저 재현 없음. 원문 BLOCKED | `docs/evidence/ALABOM/AI-PM/DECOUPLING-AND-REPRO-PLAN-2026-10-17.md` |
+| 29 | 슬라이스는 PR #200 `cursor/comparison-route-slice-4b88`. 실행 25파일. 질문·provider 미포함. 빌드 0, 회귀 34 PASS. 실패 1·2 재현 4 FAIL. 실패 5는 로그인 리다이렉트. 원문 BLOCKED. #199 병합 없음 | `docs/evidence/ALABOM/AI-PM/ROUTE-SLICE-AND-REPRO-2026-10-17.md` |
+| 30 | 실패 1·2 판정은 PR #200 `4f0d1187`. JSON은 유지. 입력의 A2·S3를 누락으로 옮기고 원장 없는 Fact true는 false. 재현 9와 회귀 34 통과. 실패 5·원문 BLOCKED. 병합 없음 | `docs/evidence/ALABOM/AI-PM/FAILURE-12-JUDGMENT-2026-10-17.md` |
+| 31 | 전략 유지. 44개 테스트는 규칙 범위. provider 동일 객체는 비교 경로가 쓰지 않음. 실제 원문·여정·실패 5·Production은 BLOCKED 또는 NOT RUN. #199·#200 병합 없음 | `docs/evidence/ALABOM/AI-PM/STRATEGY-GATE-2026-10-17.md` |
+| 32 | 사실 판정과 다음 행동을 분리. 상수 verifiedFact는 완료가 아님. 단일 모델 판정에 다음 실험 필드 없음. 실제 원문·실패 5·병합은 BLOCKED 또는 NOT RUN | `docs/evidence/ALABOM/AI-PM/FACT-AND-ACTION-SPLIT-2026-10-17.md` |
+| 33 | 출력 계약은 PR #200 `42732f5b`. 사실 상태와 다음 실험은 별도 칸. 상태 전이는 없고 회수는 보류. 규칙 46 PASS. 원문·실행 관문 통과는 파일 부재라 BLOCKED. #199·#200 병합 없음 | `docs/evidence/ALABOM/AI-PM/CONTRACT-SPLIT-2026-10-17.md` |
+| 34 | 연결 감사는 PR #200 `e4858dfe`. 화면은 비교의 미확인과 실행 전 보류만 소비. 단일 모델 실험은 화면 import 없음. 상태 전이 미구현. 규칙 53 PASS. 원문·실패 5·병합은 BLOCKED 또는 NOT RUN | `docs/evidence/ALABOM/AI-PM/OUTPUT-CONTRACT-CONNECTIONS-2026-10-17.md` |
+| 35 | 반복 회차는 PR #200 `9f551dba`. 시험 문장으로 피드백이 다음 GPT 입력에 들어가고 이전 원문은 유지. 실제 웹 재조회는 BLOCKED. 규칙 62 PASS. #199·#200 병합 없음 | `docs/evidence/ALABOM/AI-PM/VALIDATION-ROUND-LOOP-2026-10-17.md` |
+| 36 | 실제 웹 세션 없음. Chrome 호스트는 Vercel뿐. 원문 파일을 만들지 않음. 실제 왕복 NOT RUN. PR #200 `eb033bc0`. 병합 없음 | `docs/evidence/ALABOM/AI-PM/REAL-WEB-SESSION-BLOCK-2026-10-17.md` |
+
+---
+
+## ALABOM 사업성 검증 여정 — Phase 1·2
+
+**CPO Gate:** OPEN · API 호출·확장 자동화·DB·병합·Production 금지 · Production 잠금 `0b465226`  
+**Branch:** `cursor/external-ai-judgment-design-4b88`  
+**PR:** #198  
+**Evidence:** `docs/evidence/ALABOM/AI-PM/VALIDATION-JOURNEY-MVP.txt`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 8필드 입력 · 이해 · 객관식/주관식 한 질문 | 구현 |
+| 2 | 조사 미실행 · 반대 검토 미실행 · 판단 유보 | 구현 |
+| 3 | 고객 변경 시 문제·해결책·지불자·수익을 함께 선별 | 테스트 |
+| 4 | 캡처 원인 연결·실패·해시·상한은 순수 함수 테스트. 화면 캡처와 GPT 실호출 | 보류 |
+| 5 | 판단 루프 추적. openai 이름은 Gemini 객체. 유보 시 검증 행동 | 기록 |
+| 6 | 창업자 원문을 화면 판단 전이에 연결. 유보 유지 | 구현 |
+| 7 | openai 제공자 객체를 Gemini와 분리. 키 없으면 호출 차단 | 구현 |
+| 8 | 문제 원문은 가설만 수정·충돌 시 유보. 지불·구매·반복·확장은 미검증 | 테스트 |
+| 9 | AI 교차 검토 계약. 픽스처만. 화면은 not_compared | 테스트 |
+| 10 | 모델 발췌와 확보 원문 대조. 픽스처만. 화면 출처 대조는 대조 불가 | 테스트 |
+| 11 | 분석 수용 기록. 원문·가설·판단 사유를 한 기록에 연결. 화면은 기록 없음 | 테스트 |
+| 12 | 수용 기록 재전달은 새 분석으로 세지 않음. 원문 전이와 분리. 화면은 미실행 | 테스트 |
+| 13 | 모델 연결 전 실행 계약. 실패·재시도·결과 누락 구분. 화면 다섯 상태 | 테스트 |
+| 14 | 실행 원장. 미확정은 실패와 구분. 자동 재호출 없음. 요금은 미확정. 화면은 원장 없음 | 테스트 |
+| 15 | 원장 복구 계약. 메모리 시뮬레이션. 디스크·재시작·모델 호출은 미검증 | 테스트 |
+| 16 | 서버 원장 저장 승인안. 원자성·멱등·보존 제안. 재시작 시험은 계획만 | 제안 |
+| 17 | 로컬 SQLite 원장. 프로세스 재시작 7건. 프로덕션 DB·모델 호출 없음 | 검증 |
+| 18 | 제한 호출 계약. 전이·근거·비용·개인정보·체크리스트. 호출·키·화면 연결 없음 | 설계 |
+| 19 | AI 브라우저 왕복 1차 게이트. 약관·robots 에서 세션을 열지 못함. 분석·질문·답변 회수 미실행 | 실패 |
+| 20 | 공식 API 경로. Gemini 유료와 OpenAI Chat Completions. 키 없음. 호출·화면 연결 없음 | 차단 |
+| 21 | AI 연결 대안 A–E. 허용된 붙여넣기 PoC. 실제 모델 왕복 0 | 제안 · `docs/evidence/ALABOM/AI-PM/AI-CONNECTION-ARCHITECTURE.txt` |
+| 22 | 판단 전후 비교. 테스트 문장과 실분석 구분. 시나리오 A–E. 실분석 성공 아님 | 검증 · `docs/evidence/ALABOM/AI-PM/JUDGMENT-DEVELOPMENT.txt` |
+| 23 | 실제 분석 수용 준비. 원문·출처 공백과 사용자 표시·시스템 확인 분리. 실제 결과 없음 | 미검증 · `docs/evidence/ALABOM/AI-PM/REAL-ANALYSIS-INTAKE.txt` |
+| 24 | 실제 원문 없음. 기능 확장 없이 최소 검증 경로만 기록 | 미검증 · `docs/evidence/ALABOM/AI-PM/REAL-ANALYSIS-MINIMUM-PATH.txt` |
+| 25 | LMULM·RIDM 문서 잠정 판단을 CPO 가 채택. 재구매·리셀·공헌이익, 유료 결제·유지·고객당 비용이 오기 전에는 같은 검토와 코드 변경을 반복하지 않음 | 채택 · `docs/evidence/ALABOM/AI-PM/LMULM-RIDM-DOCUMENT-JUDGMENT.txt` |
+| 26 | 두 사업계획서 발췌로 입력·판단·질문·재평가·검증 행동·마무리 거절을 한 여정으로 연결. 픽스처는 실제 검증이 아님 | 로컬만 · `docs/evidence/ALABOM/AI-PM/PLAN-JOURNEY-E2E.txt` |
+| 27 | a2c8943e Preview 는 배포됐으나 Vercel 로그인으로 막힘. LMULM·RIDM 호스팅 여정은 미실행 | 미검증 · `docs/evidence/ALABOM/AI-PM/PREVIEW-ACCEPTANCE.txt` |
+| 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  
