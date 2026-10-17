@@ -34,6 +34,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 19 | 탐지기 확장. 부정문·바꿔 말하기·Fact 불일치를 분리. 세 실패는 미해결. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md` |
 | 20 | 미탐 원인과 실패 5 경로. 인용·언급·통화·기간·실적은 분리. 10:39 mergeable은 미확인. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md` |
 | 21 | CEO 브라우저 검증 경로. PR #199 Preview 실패와 SSO. 제품 검증기 없음. 상태 BLOCKED. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md` |
+| 22 | 프로덕션·Preview 재확인. Demo는 열리나 실패 1·2·5 입력이 아님. 전체 BLOCKED. 제품 수정 없음 | `docs/evidence/ALABOM/AI-PM/CEO-BROWSER-PATH-2026-10-17.md` |
 
 ---
 

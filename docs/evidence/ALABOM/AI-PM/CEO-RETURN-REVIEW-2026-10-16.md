@@ -332,3 +332,7 @@ A와 B가 제품 적용 수준인지의 판단은 열려 있다. 연결은 하�
 GitHub의 이 문서는 읽을 수 있다. 그것은 제품 화면의 직접 테스트가 아니다.
 
 경로 기록 커밋 `28d6d1fa`. 그 커밋 포함 `6f71ea3a` 이후 `apps/`·`packages/` diff는 비어 있다. Production `0b465226`은 조상이다.
+
+## 13. 브라우저 경로 재확인 — 2026-10-17
+
+12절 이후 HEAD `e58d597c`의 Preview 배포 `7134972631`도 `failure`다. Production과 `origin/main`은 `0b465226`으로 같다. `/auth/login`은 Google 계정 화면이고, `/demo/start`와 Clinicflow Demo는 열린다. 그 Demo는 실패 1·2·5의 입력이 아니다. `/ko/business-validation`은 404다. 전체 판정은 BLOCKED다. 절차와 완료 조건 표는 `docs/evidence/ALABOM/AI-PM/CEO-BROWSER-PATH-2026-10-17.md`다. 화면 기록은 `docs/evidence/ALABOM/AI-PM/browser-block-2026-10-17/`다. 제품 코드는 바꾸지 않았다.
