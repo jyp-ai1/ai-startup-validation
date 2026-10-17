@@ -45,6 +45,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 30 | 실패 1·2 판정은 PR #200 `4f0d1187`. JSON은 유지. 입력의 A2·S3를 누락으로 옮기고 원장 없는 Fact true는 false. 재현 9와 회귀 34 통과. 실패 5·원문 BLOCKED. 병합 없음 | `docs/evidence/ALABOM/AI-PM/FAILURE-12-JUDGMENT-2026-10-17.md` |
 | 31 | 전략 유지. 44개 테스트는 규칙 범위. provider 동일 객체는 비교 경로가 쓰지 않음. 실제 원문·여정·실패 5·Production은 BLOCKED 또는 NOT RUN. #199·#200 병합 없음 | `docs/evidence/ALABOM/AI-PM/STRATEGY-GATE-2026-10-17.md` |
 | 32 | 사실 판정과 다음 행동을 분리. 상수 verifiedFact는 완료가 아님. 단일 모델 판정에 다음 실험 필드 없음. 실제 원문·실패 5·병합은 BLOCKED 또는 NOT RUN | `docs/evidence/ALABOM/AI-PM/FACT-AND-ACTION-SPLIT-2026-10-17.md` |
+| 33 | 출력 계약은 PR #200 `42732f5b`. 사실 상태와 다음 실험은 별도 칸. 상태 전이는 없고 회수는 보류. 규칙 46 PASS. 원문·실행 관문 통과는 파일 부재라 BLOCKED. #199·#200 병합 없음 | `docs/evidence/ALABOM/AI-PM/CONTRACT-SPLIT-2026-10-17.md` |
 
 ---
 
