@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { startJourney } from '../journey-engine';
 import { TEST_HYPOTHESIS_INTAKE } from '../journey-types';
 import { recordExternalAnalysis } from '../judgment-development';
+import { hasLedgerEvidence, judgeStoredModelOutput } from '../stored-model-judgment';
 
 const repoRoot = path.resolve(__dirname, '../../../../../..');
 const fixtureDir = path.join(repoRoot, 'experiments/business-judgment-poc');
@@ -37,12 +38,6 @@ function inputSection(prompt: string): string {
   return prompt.slice(at + marker.length);
 }
 
-const LEDGER_MARKERS = ['원장', '결제', '입금', '세금계산서'] as const;
-
-function hasLedgerEvidence(section: string): boolean {
-  return LEDGER_MARKERS.some((marker) => section.includes(marker));
-}
-
 const prompt = readFileSync(path.join(fixtureDir, 'prompt.txt'), 'utf8');
 const input = inputSection(prompt);
 const path1 = readStored('path1.json');
@@ -60,18 +55,39 @@ describe('path1 receipt', () => {
 
 describe('path1 expected output', () => {
   it('includes A2', () => {
-    expect(path1.content.includes('A2')).toBe(true);
+    const judged = judgeStoredModelOutput({
+      sourceText: prompt,
+      modelContent: path1.content,
+      modelFact: path1.output_parse.object.Fact,
+    });
+    expect(path1.content.includes('A2')).toBe(false);
+    expect(judged.omittedFromModel).toContain('A2');
+    expect(judged.output.includes('A2')).toBe(true);
   });
 
   it('includes the forecast annual revenue', () => {
-    expect(path1.content.includes('예상 연매출') || path1.content.includes('10억')).toBe(true);
+    const judged = judgeStoredModelOutput({
+      sourceText: prompt,
+      modelContent: path1.content,
+      modelFact: path1.output_parse.object.Fact,
+    });
+    expect(path1.content.includes('예상 연매출') || path1.content.includes('10억')).toBe(false);
+    expect(judged.omittedFromModel).toContain('S3');
+    expect(judged.output.includes('예상 연매출') || judged.output.includes('10억')).toBe(true);
   });
 });
 
 describe('path1 fact judgment', () => {
   it('keeps Fact false when the input section has no ledger evidence', () => {
+    const judged = judgeStoredModelOutput({
+      sourceText: prompt,
+      modelContent: path1.content,
+      modelFact: path1.output_parse.object.Fact,
+    });
     expect(hasLedgerEvidence(input)).toBe(false);
     expect(path1.output_parse.object.Fact).toBe(false);
+    expect(judged.fact).toBe(false);
+    expect(judged.verifiedFact).toBe(false);
   });
 });
 
@@ -91,14 +107,29 @@ describe('path4 expected output', () => {
   });
 
   it('includes the forecast annual revenue', () => {
-    expect(path4.content.includes('예상 연매출') || path4.content.includes('10억')).toBe(true);
+    const judged = judgeStoredModelOutput({
+      sourceText: prompt,
+      modelContent: path4.content,
+      modelFact: path4.output_parse.object.Fact,
+    });
+    expect(path4.content.includes('예상 연매출') || path4.content.includes('10억')).toBe(false);
+    expect(judged.omittedFromModel).toContain('S3');
+    expect(judged.output.includes('예상 연매출') || judged.output.includes('10억')).toBe(true);
   });
 });
 
 describe('path4 fact judgment', () => {
   it('keeps Fact false when the input section has no ledger evidence', () => {
+    const judged = judgeStoredModelOutput({
+      sourceText: prompt,
+      modelContent: path4.content,
+      modelFact: path4.output_parse.object.Fact,
+    });
     expect(hasLedgerEvidence(input)).toBe(false);
-    expect(path4.output_parse.object.Fact).toBe(false);
+    expect(path4.output_parse.object.Fact).toBe(true);
+    expect(judged.modelFact).toBe(true);
+    expect(judged.fact).toBe(false);
+    expect(judged.verifiedFact).toBe(false);
   });
 });
 

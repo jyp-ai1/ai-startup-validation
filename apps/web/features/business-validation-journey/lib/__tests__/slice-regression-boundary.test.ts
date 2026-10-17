@@ -42,5 +42,7 @@ describe('comparison route slice boundary', () => {
     expect(page.includes('내 사업 이해하기')).toBe(true);
     expect(screen.includes('WebReviewPanel')).toBe(true);
     expect(screen.includes('startJourney')).toBe(true);
+    expect(screen.includes('stored-model-judgment')).toBe(false);
+    expect(screen.includes('judgeStoredModelOutput')).toBe(false);
   });
 });
