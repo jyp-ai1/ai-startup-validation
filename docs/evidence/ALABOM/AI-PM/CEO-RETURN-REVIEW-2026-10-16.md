@@ -352,3 +352,7 @@ GPT·Gemini 원문은 여전히 없다. 브랜치 화면은 두 칸을 따로 �
 ## 17. 접근 경로와 실패 재현 — 2026-10-17
 
 GPT·Gemini 원문은 없다. 비교 단계로 넘어가지 않았다. Production `/ko/business-validation`은 페이지 파일 없는 커밋 `0b465226`의 404다. Preview는 SSO다. Clinicflow Demo는 공개되지만 답변 칸이 읽기 전용이라 실패 5 문장을 넣지 못했다. 실패 5 코드는 바꾸지 않았다. 전체 BLOCKED. 기록은 `docs/evidence/ALABOM/AI-PM/ACCESS-AND-FAILURE-PATH-2026-10-17.md`다.
+
+## 18. 병합 범위 — 2026-10-17
+
+비교 페이지 커밋 `9aa94edd`는 `origin/main`에 없다. PR #199는 193파일이고 비교 페이지만 떼어 Production에 올릴 수 없다. 병합하면 질문 넘김과 research provider 교체가 함께 나간다. 병합하지 않았다. 공개 편집 화면의 질문은 결제 후보이고 `interpretAnswerSemantics`를 타지 않는다. 실패 5 문장은 넣지 않았다. 원문은 없다. 전체 BLOCKED. 기록은 `docs/evidence/ALABOM/AI-PM/MERGE-SCOPE-2026-10-17.md`다.
