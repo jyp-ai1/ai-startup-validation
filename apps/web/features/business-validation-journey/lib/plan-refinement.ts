@@ -29,7 +29,7 @@ export type BusinessDraft = {
   verifiedFact: false;
 };
 
-const LABEL = '규칙 재분석 · 외부 모델 호출 아님';
+const LABEL = '규칙 재분석 · 외부 모델 호출 아님' as const;
 
 export function refinePlan(state: JourneyState): BusinessDraft | null {
   const plan = state.planCase;
