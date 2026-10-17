@@ -65,3 +65,9 @@
     인증 없는 요청은 HTTP 302, Vercel SSO.
     제품 검증기 연결 false. Production commit 0b465226. apps/packages diff 비어 있음.
     ceoBrowserStatus BLOCKED. 빌드 로그 본문은 토큰이 없어 읽지 않음.
+
+13. 2026-10-17 재확인. origin/main과 Production build-info는 0b465226.
+    deployment 7134972631 SHA e58d597c state failure.
+    /ko/business-validation 404. /auth/login 과 /demo/start 와 Clinicflow workspace 는 200.
+    스크린샷 docs/evidence/ALABOM/AI-PM/browser-block-2026-10-17/.
+    판정 BLOCKED. apps/packages 수정 없음.
