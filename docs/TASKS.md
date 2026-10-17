@@ -38,6 +38,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 23 | 비용 0원 구조. 사용자 GPT 웹 다음 Gemini 웹 다음 ALABOM 비교. 순서 품질 차이는 미확인. API·자동화 제외. BLOCKED 유지 | `docs/evidence/ALABOM/AI-PM/ZERO-COST-STRUCTURE-2026-10-17.md` |
 | 24 | 비용 0원 실행. GPT·Gemini 세션 없음. 원문 합성 없음. 404는 main에 라우트 없음. 빌드 타입 오류만 수정. 전체 BLOCKED | `docs/evidence/ALABOM/AI-PM/ZERO-COST-EXECUTION-2026-10-17.md` |
 | 25 | 두 칸 비교는 브랜치 로컬에서 테스트 문장으로 저장·재조회. 실제 원문과 Production 경로는 BLOCKED. 실패 5는 미수정 | `docs/evidence/ALABOM/AI-PM/WEB-REVIEW-PATH-2026-10-17.md` |
+| 26 | 원문 세션 없음. Production 404는 라우트 부재. Demo는 읽기 전용이라 실패 5 문장을 넣지 못함. 로직 미수정. BLOCKED | `docs/evidence/ALABOM/AI-PM/ACCESS-AND-FAILURE-PATH-2026-10-17.md` |
 
 ---
 

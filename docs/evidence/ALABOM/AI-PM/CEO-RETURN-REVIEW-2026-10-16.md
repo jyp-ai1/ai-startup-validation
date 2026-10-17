@@ -348,3 +348,7 @@ GitHub의 이 문서는 읽을 수 있다. 그것은 제품 화면의 직접 테
 ## 16. 두 칸 비교 — 2026-10-17
 
 GPT·Gemini 원문은 여전히 없다. 브랜치 화면은 두 칸을 따로 보관하고 합의, 충돌, 근거 부족, 다음 검증으로 나눈다. 로컬 `127.0.0.1:3010`에서 테스트 문장만 저장하고 새로고침 뒤 다시 읽었다. `verifiedFact`는 false다. Production `/ko/business-validation`은 404다. 실패 5 코드는 바꾸지 않았다. 전체 BLOCKED. 기록은 `docs/evidence/ALABOM/AI-PM/WEB-REVIEW-PATH-2026-10-17.md`다.
+
+## 17. 접근 경로와 실패 재현 — 2026-10-17
+
+GPT·Gemini 원문은 없다. 비교 단계로 넘어가지 않았다. Production `/ko/business-validation`은 페이지 파일 없는 커밋 `0b465226`의 404다. Preview는 SSO다. Clinicflow Demo는 공개되지만 답변 칸이 읽기 전용이라 실패 5 문장을 넣지 못했다. 실패 5 코드는 바꾸지 않았다. 전체 BLOCKED. 기록은 `docs/evidence/ALABOM/AI-PM/ACCESS-AND-FAILURE-PATH-2026-10-17.md`다.
