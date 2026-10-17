@@ -40,6 +40,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 25 | 두 칸 비교는 브랜치 로컬에서 테스트 문장으로 저장·재조회. 실제 원문과 Production 경로는 BLOCKED. 실패 5는 미수정 | `docs/evidence/ALABOM/AI-PM/WEB-REVIEW-PATH-2026-10-17.md` |
 | 26 | 원문 세션 없음. Production 404는 라우트 부재. Demo는 읽기 전용이라 실패 5 문장을 넣지 못함. 로직 미수정. BLOCKED | `docs/evidence/ALABOM/AI-PM/ACCESS-AND-FAILURE-PATH-2026-10-17.md` |
 | 27 | PR #199는 193파일. 비교 페이지만 분리 배포 불가. 질문 선택과 provider 교체가 함께 나감. 병합하지 않음. 실패 5 입력 화면 없음. BLOCKED | `docs/evidence/ALABOM/AI-PM/MERGE-SCOPE-2026-10-17.md` |
+| 28 | 페이지 실행 그래프 25파일은 질문 넘김·provider 교체를 import하지 않음. 슬라이스는 가능하나 만들지 않음. 전체 병합 보류. 실패 1·2 제품 경로 없음. 실패 5 브라우저 재현 없음. 원문 BLOCKED | `docs/evidence/ALABOM/AI-PM/DECOUPLING-AND-REPRO-PLAN-2026-10-17.md` |
 
 ---
 
