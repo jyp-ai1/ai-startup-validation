@@ -29,3 +29,19 @@
 6. cd experiments/id-selection-validator && python3 validator.py
    EXIT 0. checks_pass true. validator.py에 path1, path4 문자열 없음.
    네 ID 픽스처의 형식 실패 탐지다. 실패 1·2·5의 해결이 아니다.
+
+7. node experiments/judgment-failure-offline/detector.mjs
+   2026-10-17 재실행. EXIT 0. auditAgrees true. falsePositives 빈 목록.
+   토큰 미탐 denial-tokens. 의미 미탐 paraphrase-sibillion.
+   path4 raw Fact true, verifiedFact false, verificationSuccess false.
+   이 일치는 라벨 일치다. 제품 통과가 아니다.
+
+8. node experiments/judgment-failure-offline/search-1039.mjs
+   2026-10-17T03:07:08.839Z. rawVitestLogs 빈 목록.
+   지정한 트랜스크립트에 10:39:10 문자열 없음. /tmp/f13-after/unit2.log 없음.
+   mergeable unverified.
+
+9. cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/core-final-stabilization.test.ts -t "validationTestability weak answer is PARTIAL and not mergeable" --reporter=verbose
+   2026-10-17T03:07:09Z. EXIT 1. Tests 1 failed, 77 skipped.
+   Expected PARTIAL. Received VALID. 996행은 실행되지 않음.
+   발췌 vitest-failure5-2026-10-17.txt. 이전 발췌 vitest-failure5.txt는 12:20:52Z 실행으로 남겨 둔다.

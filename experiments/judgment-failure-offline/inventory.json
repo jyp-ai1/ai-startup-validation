@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-16T12:22:01.820Z",
+  "at": "2026-10-17T03:08:05.903Z",
   "rows": [
     {
       "id": "prompt",
@@ -134,40 +134,64 @@
       "rel": "experiments/judgment-failure-offline/detector.mjs",
       "role": "this-sprint-script",
       "exists": true,
-      "bytes": 5363,
-      "sha256": "ef4298201bd0596d34c3f5c136bf251a3e04ebd75b23029dc3003a3e9be68db7"
+      "bytes": 8911,
+      "sha256": "80d9208bb749160be7952accf49d7f9cf0761d4817b919c079c11c0646ea77f0"
     },
     {
       "id": "detector-run",
       "rel": "experiments/judgment-failure-offline/detector-run.json",
       "role": "this-sprint-detector-output",
       "exists": true,
-      "bytes": 5444,
-      "sha256": "f214b6fc3087ed7f09a76d7f7584e00a8ab021f1a1038a6ed385dbdc55affdf5"
+      "bytes": 9231,
+      "sha256": "694d2d6d0f8ed8f2f66b9780d253bbe6d1f4bdc7745cd45fe4f0e81f12d0fbe1"
     },
     {
       "id": "fixtures",
       "rel": "experiments/judgment-failure-offline/fixtures.json",
       "role": "this-sprint-labels",
       "exists": true,
-      "bytes": 2145,
-      "sha256": "201f7695f780bc65677f017f8e5b8f8e17e234f13dcc03a8a6d58b447a2318ce"
+      "bytes": 3261,
+      "sha256": "ce1846145d6ee99e276bdf66370e1aaa23c3299abf55c2a76ad6467399b8d828"
     },
     {
       "id": "commands",
       "rel": "experiments/judgment-failure-offline/commands.txt",
       "role": "this-sprint-command-log",
       "exists": true,
-      "bytes": 2064,
-      "sha256": "2d23d69d499003ae68675f89276a344f22542d5bc227e245fe1780c48037aacf"
+      "bytes": 3109,
+      "sha256": "7e3f66519444bd958dbe5e3e602231329c7466aae1e793fb9938b5d7151a985b"
     },
     {
       "id": "ceo-review",
       "rel": "docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md",
       "role": "this-sprint-review",
       "exists": true,
-      "bytes": 9791,
-      "sha256": "da631f0b80124a9ef372ef3e0d074e6944aa13b99db388024d6b63aa8acafaa5"
+      "bytes": 13173,
+      "sha256": "6889ccc8d69514f5c4b447a029a7d82954691ab577a3bf95dafb267f3de08627"
+    },
+    {
+      "id": "log-search",
+      "rel": "experiments/judgment-failure-offline/log-search.json",
+      "role": "1039-search",
+      "exists": true,
+      "bytes": 735,
+      "sha256": "8a8873cd30cf08def1c515ba955f557c89c56dc11a60163d174bf409b5008b10"
+    },
+    {
+      "id": "search-script",
+      "rel": "experiments/judgment-failure-offline/search-1039.mjs",
+      "role": "1039-search-script",
+      "exists": true,
+      "bytes": 2774,
+      "sha256": "de1ff0e70a617852585243d4ded698a9ad8344dcd2e92fdd295988e9fb1cfdad"
+    },
+    {
+      "id": "vitest-2026-10-17",
+      "rel": "experiments/judgment-failure-offline/vitest-failure5-2026-10-17.txt",
+      "role": "failure5-rerun",
+      "exists": true,
+      "bytes": 761,
+      "sha256": "d713c6ca2db119d87e541149d4017d082517bb7dd93981c3103045db6f0eefbd"
     }
   ],
   "missingRaw": [

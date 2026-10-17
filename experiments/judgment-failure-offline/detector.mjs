@@ -38,6 +38,33 @@ function loadStored(rel) {
   };
 }
 
+const DENIAL_VERB = /출력하지|포함하지|확인되지|언급하지|제외|빠졌/;
+
+function sentencesOf(content) {
+  return String(content).split(/[\n.]+/).map((part) => part.trim()).filter(Boolean);
+}
+
+function sentenceDenies(sentence, needle) {
+  if (!sentence.includes(needle)) return false;
+  const tail = sentence.slice(sentence.indexOf(needle));
+  return DENIAL_VERB.test(tail) && tail.length <= 40;
+}
+
+function meaningOmission(content) {
+  const denied = [];
+  const missing = [];
+  for (const needle of fixtures.needles) {
+    const parts = sentencesOf(content).filter((part) => part.includes(needle));
+    if (parts.length === 0) {
+      missing.push(needle);
+      continue;
+    }
+    const acknowledged = parts.some((part) => !sentenceDenies(part, needle));
+    if (!acknowledged) denied.push(needle);
+  }
+  return { flagged: missing.length > 0 || denied.length > 0, missing, denied };
+}
+
 function tokenOmission(content) {
   const missing = fixtures.needles.filter((needle) => !content.includes(needle));
   return { flagged: missing.length > 0, missing };
@@ -58,21 +85,29 @@ const cases = fixtures.cases.map((item) => {
   const content = stored ? stored.content : item.content;
   const fact = stored ? stored.storedFact : item.fact;
   const omission = tokenOmission(content);
+  const meaning = meaningOmission(content);
   const promotion = factPromotion(fact);
-  const actual = { tokenOmission: omission.flagged, factPromotion: promotion };
+  const actual = {
+    tokenOmission: omission.flagged,
+    meaningOmission: meaning.flagged,
+    factPromotion: promotion,
+  };
+  const agrees = Object.keys(item.expected).every((key) => actual[key] === item.expected[key]);
   return {
     id: item.id,
     kind: item.kind,
     file: item.file ?? null,
     note: item.note ?? null,
+    humanWouldCountAsPresent: Boolean(item.humanWouldCountAsPresent),
     missingTokens: omission.missing,
+    deniedTokens: meaning.denied,
     storedFact: fact,
     modelFact: stored?.modelFact ?? null,
     modelParse: stored?.modelParse ?? null,
     modelFactMatchesStored: stored ? stored.modelFact === stored.storedFact : null,
     expected: item.expected,
     actual,
-    agrees: actual.tokenOmission === item.expected.tokenOmission && actual.factPromotion === item.expected.factPromotion,
+    agrees,
   };
 });
 
@@ -110,6 +145,62 @@ const qualityCases = fixtures.qualityCases.map((item) => {
   };
 });
 
+const note = prior.recordExternalAnalysis;
+const fieldActual = {
+  rawFact: prior.failure2.storedFact,
+  verifiedFact: note.verifiedFact,
+  claimStatus: note.claimStatus,
+  factKeyOnNote: note.factKeyOnNote,
+  noteContainsFactTrue: note.noteContainsFactTrue,
+  fieldMismatch: prior.failure2.storedFact === true && note.verifiedFact === false,
+  verificationSuccess: inputHasEvidence && note.verifiedFact === true,
+};
+const fieldExpected = {
+  rawFact: true,
+  verifiedFact: false,
+  claimStatus: "unassessed",
+  factKeyOnNote: false,
+  noteContainsFactTrue: true,
+  fieldMismatch: true,
+  verificationSuccess: false,
+};
+const fieldCase = {
+  id: "path4-raw-vs-function",
+  source: "experiments/judgment-failure-offline/last-run.json",
+  expected: fieldExpected,
+  actual: fieldActual,
+  agrees: Object.keys(fieldExpected).every((key) => fieldActual[key] === fieldExpected[key]),
+};
+
+const vitestText = fs.readFileSync(path.join(here, "vitest-failure5.txt"), "utf8");
+const failure5SideBySide = {
+  vitestExcerpt: "experiments/judgment-failure-offline/vitest-failure5.txt",
+  vitestExpected: "PARTIAL",
+  vitestReceived: /Received: "VALID"/.test(vitestText) ? "VALID" : null,
+  vitestMergeableAssertionRan: false,
+  thisCall: prior.failure5.thisCall,
+  original1039: { rawLogFound: false, mergeable: "unverified" },
+};
+
+const falsePositives = cases.filter((item) => (
+  (item.expected.tokenOmission === false && item.actual.tokenOmission)
+  || (item.expected.meaningOmission === false && item.actual.meaningOmission)
+  || (item.expected.factPromotion === false && item.actual.factPromotion)
+)).map((item) => item.id);
+
+const misses = [
+  ...cases.filter((item) => item.actual.meaningOmission && item.actual.tokenOmission === false).map((item) => ({
+    id: item.id,
+    checker: "token",
+    detail: "부정문 또는 미인정 문장인데 토큰이 있어 누락으로 보지 않음",
+  })),
+  ...cases.filter((item) => item.humanWouldCountAsPresent && item.actual.meaningOmission).map((item) => ({
+    id: item.id,
+    checker: "meaning",
+    detail: "사람이 매출 언급으로 읽을 수 있는 다른 표현을 인정으로 보지 않음",
+  })),
+];
+
 const productRefs = execSync(
   "rg -l 'path1\\.json|path4\\.json' --glob '*.ts' --glob '*.tsx' --glob '*.js' --glob '*.mjs' --glob '*.py' apps packages || true",
   { cwd: root, encoding: "utf8" },
@@ -124,11 +215,18 @@ const report = {
   productRefCount: productRefs ? productRefs.split("\n").length : 0,
   cases,
   qualityCases,
-  auditAgrees: cases.every((item) => item.agrees) && qualityCases.filter((item) => item.agrees !== null).every((item) => item.agrees),
+  fieldCase,
+  failure5SideBySide,
+  falsePositives,
+  misses,
+  auditAgrees: cases.every((item) => item.agrees)
+    && qualityCases.filter((item) => item.agrees !== null).every((item) => item.agrees)
+    && fieldCase.agrees,
   limits: [
-    "denial-tokens는 토큰이 있어도 부정이면 누락이다. 이 검사는 그 부정을 보지 못한다.",
-    "path4의 Fact true 탐지는 입력 구간에 증거 표지가 없다는 형식 규칙이다. 사업적 참은 정하지 않는다.",
-    "10:39 원본 로그 파일은 저장소에 없다. 그 mergeable은 미확인이다.",
+    "토큰 검사는 denial-tokens의 부정문을 누락으로 보지 못한다.",
+    "의미 검사는 십억 같은 다른 표현을 10억의 인정으로 보지 못한다.",
+    "Fact true와 verifiedFact false의 불일치는 사실 검증 성공이 아니다.",
+    "10:39 원본 로그는 미확인이다. 이번 호출의 mergeable로 그 로그를 채우지 않는다.",
   ],
 };
 
@@ -138,4 +236,9 @@ console.log(JSON.stringify({
   productRefCount: report.productRefCount,
   cases: cases.map((item) => ({ id: item.id, agrees: item.agrees, actual: item.actual, modelFactMatchesStored: item.modelFactMatchesStored })),
   quality: qualityCases.map((item) => ({ id: item.id, status: item.status ?? "checked", agrees: item.agrees, qualityMismatch: item.qualityMismatch })),
+  fieldAgrees: fieldCase.agrees,
+  falsePositives,
+  misses,
+  vitestReceived: failure5SideBySide.vitestReceived,
+  thisCallMergeable: failure5SideBySide.thisCall.mergeable,
 }, null, 2));

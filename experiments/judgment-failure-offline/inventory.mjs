@@ -26,6 +26,9 @@ const files = [
   ["fixtures", "experiments/judgment-failure-offline/fixtures.json", "this-sprint-labels"],
   ["commands", "experiments/judgment-failure-offline/commands.txt", "this-sprint-command-log"],
   ["ceo-review", "docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md", "this-sprint-review"],
+  ["log-search", "experiments/judgment-failure-offline/log-search.json", "1039-search"],
+  ["search-script", "experiments/judgment-failure-offline/search-1039.mjs", "1039-search-script"],
+  ["vitest-2026-10-17", "experiments/judgment-failure-offline/vitest-failure5-2026-10-17.txt", "failure5-rerun"],
 ];
 
 const rows = files.map(([id, rel, role]) => {

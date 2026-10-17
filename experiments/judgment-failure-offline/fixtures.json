@@ -6,35 +6,52 @@
       "id": "path1-stored",
       "kind": "stored-failure",
       "file": "experiments/business-judgment-poc/path1.json",
-      "expected": { "tokenOmission": true, "factPromotion": false }
+      "expected": { "tokenOmission": true, "meaningOmission": true, "factPromotion": false }
     },
     {
       "id": "path4-stored",
       "kind": "stored-failure",
       "file": "experiments/business-judgment-poc/path4.json",
-      "expected": { "tokenOmission": true, "factPromotion": true }
+      "expected": { "tokenOmission": true, "meaningOmission": true, "factPromotion": true }
     },
     {
       "id": "control-clean",
       "kind": "synthetic-control",
       "content": "{\"Claim\":\"A2: 모회사 지원이 없어도 매출 구조를 유지할 수 없다.\",\"Fact\":false,\"Missing_Evidence\":\"원장\",\"Next_Action\":\"S3 예상 연매출 10억의 계약서를 요청\"}",
       "fact": false,
-      "expected": { "tokenOmission": false, "factPromotion": false }
+      "expected": { "tokenOmission": false, "meaningOmission": false, "factPromotion": false }
     },
     {
       "id": "control-promotion-only",
       "kind": "synthetic-failure",
       "content": "{\"Claim\":\"A2와 S3 예상 연매출 10억을 사실로 둔다.\",\"Fact\":true}",
       "fact": true,
-      "expected": { "tokenOmission": false, "factPromotion": true }
+      "expected": { "tokenOmission": false, "meaningOmission": false, "factPromotion": true }
     },
     {
       "id": "denial-tokens",
       "kind": "synthetic-semantic-limit",
       "content": "A2는 출력하지 않는다. 예상 연매출 10억은 확인되지 않았다.",
       "fact": false,
-      "expected": { "tokenOmission": false, "factPromotion": false },
-      "note": "토큰은 있으나 문장은 부정이다. 토큰 검사는 누락으로 보지 않는다."
+      "expected": { "tokenOmission": false, "meaningOmission": true, "factPromotion": false },
+      "note": "토큰 검사는 존재를 누락으로 보지 않는다. 부정문 검사는 인정 실패로 본다."
+    },
+    {
+      "id": "ledger-absent-still-affirms",
+      "kind": "synthetic-control",
+      "content": "원장 증거는 없다. A2: 모회사·계열사 지원이 없어도 현재 매출 구조를 유지할 수 없다. S3 예상 연매출 10억은 가정으로 적는다.",
+      "fact": false,
+      "expected": { "tokenOmission": false, "meaningOmission": false, "factPromotion": false },
+      "note": "A2 문장 안의 없다와 원장 부재는 10억 삭제가 아니다."
+    },
+    {
+      "id": "paraphrase-sibillion",
+      "kind": "synthetic-semantic-limit",
+      "content": "모회사 지원 없이는 매출 구조를 유지할 수 없다. 공급 계약의 연간 규모는 십억 원이다.",
+      "fact": false,
+      "humanWouldCountAsPresent": true,
+      "expected": { "tokenOmission": true, "meaningOmission": true, "factPromotion": false },
+      "note": "십억을 10억의 인정으로 바꾸지 않는다. 의미 검사의 미탐으로 남긴다."
     }
   ],
   "qualityCases": [

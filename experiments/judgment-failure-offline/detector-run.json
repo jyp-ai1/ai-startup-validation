@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-16T12:20:51.553Z",
+  "at": "2026-10-17T03:07:36.871Z",
   "selfPassIsNotProductPass": true,
   "productFailuresRemainOpen": [
     "failure1",
@@ -48,21 +48,25 @@
       "kind": "stored-failure",
       "file": "experiments/business-judgment-poc/path1.json",
       "note": null,
+      "humanWouldCountAsPresent": false,
       "missingTokens": [
         "A2",
         "예상 연매출",
         "10억"
       ],
+      "deniedTokens": [],
       "storedFact": false,
       "modelFact": false,
       "modelParse": "parsed",
       "modelFactMatchesStored": true,
       "expected": {
         "tokenOmission": true,
+        "meaningOmission": true,
         "factPromotion": false
       },
       "actual": {
         "tokenOmission": true,
+        "meaningOmission": true,
         "factPromotion": false
       },
       "agrees": true
@@ -72,21 +76,25 @@
       "kind": "stored-failure",
       "file": "experiments/business-judgment-poc/path4.json",
       "note": null,
+      "humanWouldCountAsPresent": false,
       "missingTokens": [
         "A2",
         "예상 연매출",
         "10억"
       ],
+      "deniedTokens": [],
       "storedFact": true,
       "modelFact": true,
       "modelParse": "parsed",
       "modelFactMatchesStored": true,
       "expected": {
         "tokenOmission": true,
+        "meaningOmission": true,
         "factPromotion": true
       },
       "actual": {
         "tokenOmission": true,
+        "meaningOmission": true,
         "factPromotion": true
       },
       "agrees": true
@@ -96,17 +104,21 @@
       "kind": "synthetic-control",
       "file": null,
       "note": null,
+      "humanWouldCountAsPresent": false,
       "missingTokens": [],
+      "deniedTokens": [],
       "storedFact": false,
       "modelFact": null,
       "modelParse": null,
       "modelFactMatchesStored": null,
       "expected": {
         "tokenOmission": false,
+        "meaningOmission": false,
         "factPromotion": false
       },
       "actual": {
         "tokenOmission": false,
+        "meaningOmission": false,
         "factPromotion": false
       },
       "agrees": true
@@ -116,17 +128,21 @@
       "kind": "synthetic-failure",
       "file": null,
       "note": null,
+      "humanWouldCountAsPresent": false,
       "missingTokens": [],
+      "deniedTokens": [],
       "storedFact": true,
       "modelFact": null,
       "modelParse": null,
       "modelFactMatchesStored": null,
       "expected": {
         "tokenOmission": false,
+        "meaningOmission": false,
         "factPromotion": true
       },
       "actual": {
         "tokenOmission": false,
+        "meaningOmission": false,
         "factPromotion": true
       },
       "agrees": true
@@ -135,18 +151,78 @@
       "id": "denial-tokens",
       "kind": "synthetic-semantic-limit",
       "file": null,
-      "note": "토큰은 있으나 문장은 부정이다. 토큰 검사는 누락으로 보지 않는다.",
+      "note": "토큰 검사는 존재를 누락으로 보지 않는다. 부정문 검사는 인정 실패로 본다.",
+      "humanWouldCountAsPresent": false,
       "missingTokens": [],
+      "deniedTokens": [
+        "A2",
+        "예상 연매출",
+        "10억"
+      ],
       "storedFact": false,
       "modelFact": null,
       "modelParse": null,
       "modelFactMatchesStored": null,
       "expected": {
         "tokenOmission": false,
+        "meaningOmission": true,
         "factPromotion": false
       },
       "actual": {
         "tokenOmission": false,
+        "meaningOmission": true,
+        "factPromotion": false
+      },
+      "agrees": true
+    },
+    {
+      "id": "ledger-absent-still-affirms",
+      "kind": "synthetic-control",
+      "file": null,
+      "note": "A2 문장 안의 없다와 원장 부재는 10억 삭제가 아니다.",
+      "humanWouldCountAsPresent": false,
+      "missingTokens": [],
+      "deniedTokens": [],
+      "storedFact": false,
+      "modelFact": null,
+      "modelParse": null,
+      "modelFactMatchesStored": null,
+      "expected": {
+        "tokenOmission": false,
+        "meaningOmission": false,
+        "factPromotion": false
+      },
+      "actual": {
+        "tokenOmission": false,
+        "meaningOmission": false,
+        "factPromotion": false
+      },
+      "agrees": true
+    },
+    {
+      "id": "paraphrase-sibillion",
+      "kind": "synthetic-semantic-limit",
+      "file": null,
+      "note": "십억을 10억의 인정으로 바꾸지 않는다. 의미 검사의 미탐으로 남긴다.",
+      "humanWouldCountAsPresent": true,
+      "missingTokens": [
+        "A2",
+        "예상 연매출",
+        "10억"
+      ],
+      "deniedTokens": [],
+      "storedFact": false,
+      "modelFact": null,
+      "modelParse": null,
+      "modelFactMatchesStored": null,
+      "expected": {
+        "tokenOmission": true,
+        "meaningOmission": true,
+        "factPromotion": false
+      },
+      "actual": {
+        "tokenOmission": true,
+        "meaningOmission": true,
         "factPromotion": false
       },
       "agrees": true
@@ -191,10 +267,64 @@
       "status": "unverified-no-raw-log"
     }
   ],
+  "fieldCase": {
+    "id": "path4-raw-vs-function",
+    "source": "experiments/judgment-failure-offline/last-run.json",
+    "expected": {
+      "rawFact": true,
+      "verifiedFact": false,
+      "claimStatus": "unassessed",
+      "factKeyOnNote": false,
+      "noteContainsFactTrue": true,
+      "fieldMismatch": true,
+      "verificationSuccess": false
+    },
+    "actual": {
+      "rawFact": true,
+      "verifiedFact": false,
+      "claimStatus": "unassessed",
+      "factKeyOnNote": false,
+      "noteContainsFactTrue": true,
+      "fieldMismatch": true,
+      "verificationSuccess": false
+    },
+    "agrees": true
+  },
+  "failure5SideBySide": {
+    "vitestExcerpt": "experiments/judgment-failure-offline/vitest-failure5.txt",
+    "vitestExpected": "PARTIAL",
+    "vitestReceived": "VALID",
+    "vitestMergeableAssertionRan": false,
+    "thisCall": {
+      "quality": "VALID",
+      "mergeable": true,
+      "factKey": "customer",
+      "intent": "correction",
+      "rationale": "CEO CORRECT — customer revised to , 국내 MZ 개별 여행객도 포함합"
+    },
+    "original1039": {
+      "rawLogFound": false,
+      "mergeable": "unverified"
+    }
+  },
+  "falsePositives": [],
+  "misses": [
+    {
+      "id": "denial-tokens",
+      "checker": "token",
+      "detail": "부정문 또는 미인정 문장인데 토큰이 있어 누락으로 보지 않음"
+    },
+    {
+      "id": "paraphrase-sibillion",
+      "checker": "meaning",
+      "detail": "사람이 매출 언급으로 읽을 수 있는 다른 표현을 인정으로 보지 않음"
+    }
+  ],
   "auditAgrees": true,
   "limits": [
-    "denial-tokens는 토큰이 있어도 부정이면 누락이다. 이 검사는 그 부정을 보지 못한다.",
-    "path4의 Fact true 탐지는 입력 구간에 증거 표지가 없다는 형식 규칙이다. 사업적 참은 정하지 않는다.",
-    "10:39 원본 로그 파일은 저장소에 없다. 그 mergeable은 미확인이다."
+    "토큰 검사는 denial-tokens의 부정문을 누락으로 보지 못한다.",
+    "의미 검사는 십억 같은 다른 표현을 10억의 인정으로 보지 못한다.",
+    "Fact true와 verifiedFact false의 불일치는 사실 검증 성공이 아니다.",
+    "10:39 원본 로그는 미확인이다. 이번 호출의 mergeable로 그 로그를 채우지 않는다."
   ]
 }

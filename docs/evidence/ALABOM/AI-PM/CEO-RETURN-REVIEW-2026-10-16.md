@@ -1,6 +1,6 @@
 # CEO 복귀 검토 — 2026-10-16
 
-1단계 관문을 열 근거는 없다. 실패 1·2·5는 미해결이다. 이 문서는 그 판단을 위한 실행 증거다. 모델 재호출은 없다. 비용은 0원이다. `apps/`·`packages/`는 바꾸지 않았다. PR #199는 초안이다. Production `0b465226`은 조상이다. 2·3단계는 착수하지 않았다.
+1단계 관문을 열 근거는 없다. 실패 1·2·5는 미해결이다. 10절은 그 다음 실험 확장이다. 이 문서는 그 판단을 위한 실행 증거다. 모델 재호출은 없다. 비용은 0원이다. `apps/`·`packages/`는 바꾸지 않았다. PR #199는 초안이다. Production `0b465226`은 조상이다. 2·3단계는 착수하지 않았다.
 
 ## 1. 실행 요약
 
@@ -110,3 +110,51 @@ CTO가 지시 없이 이어갈 수 있는 일.
 - 문서에 명령과 경로를 보태는 것.
 
 제품 수정, 병합, Production, 유료 호출, 2·3단계 착수는 위 결정 없이는 시작하지 않는다.
+
+## 10. 탐지기 확장 — 2026-10-17
+
+실험 폴더만 바꿨다. 제품 판단 로직과 테스트 게이트는 그대로다. 검사기 라벨 일치 `auditAgrees` true는 제품 통과가 아니다. `detector-run.json`의 `selfPassIsNotProductPass`는 true다. 시각 `2026-10-17T03:07:36.871Z`.
+
+명령은 `experiments/judgment-failure-offline/commands.txt` 7–9항이다.
+
+### 분리한 검사
+
+| 검사 | 보는 것 | 보지 않는 것 |
+| --- | --- | --- |
+| 토큰 | `A2`, `예상 연매출`, `10억`의 존재 | 부정문인지 |
+| 의미 | 그 토큰이 부정 동사 없이 한 문장에 있는지 | `십억` 같은 다른 표현 |
+| 승격 | 입력 구간에 증거 표지가 없는데 저장 Fact가 true인지 | 그 주장이 사업에서 참인지 |
+| 함수 대조 | 원문 Fact와 `verifiedFact`, `claimStatus` | 원문 필드가 있다는 것을 검증 성공으로 셈 |
+
+### 사례
+
+| 사례 | 입력 요지 | 기대 | 실제 | 기록 |
+| --- | --- | --- | --- | --- |
+| path1-stored | 저장 content | 토큰 누락, 의미 누락, 승격 없음 | 그대로 | 실패 1 미해결 |
+| path4-stored | 저장 Fact true | 토큰 누락, 의미 누락, 승격 | 그대로. 모델 Fact와 저장 Fact 일치 | 실패 2 미해결 |
+| control-clean | A2 문장과 `예상 연매출 10억`, Fact false | 세 깃발 없음 | 없음 | 오탐 없음 |
+| control-promotion-only | 토큰은 있고 Fact true | 승격만 | 승격만 | 누락과 승격이 분리됨 |
+| denial-tokens | `A2는 출력하지 않는다. 예상 연매출 10억은 확인되지 않았다.` | 토큰 누락 아님, 의미 누락 | 그대로 | 토큰 검사 미탐 |
+| ledger-absent-still-affirms | 원장 없음과 A2의 `없다`, 그리고 10억을 가정으로 적음 | 세 깃발 없음 | 없음 | 오탐 없음 |
+| paraphrase-sibillion | `십억 원`만 있음 | 토큰·의미 모두 누락으로 남음 | 그대로 | 의미 검사 미탐 |
+
+오탐 목록은 비어 있다. 미탐은 `denial-tokens`의 토큰 검사, `paraphrase-sibillion`의 의미 검사다. 근거 `detector-run.json`의 `falsePositives`, `misses`.
+
+### 원문 Fact와 함수
+
+`path4-raw-vs-function`. 원문 저장 Fact true. note의 `verifiedFact` false, `claimStatus` `unassessed`, Fact 키 없음, 원문 문자열에는 `"Fact": true`. `fieldMismatch` true. `verificationSuccess` false. 필드가 남아 있는 것을 검증 성공으로 두지 않는다.
+
+### 실패 5를 나란히
+
+| 기록 | quality | mergeable |
+| --- | --- | --- |
+| Vitest `vitest-failure5.txt` 12:20:52Z | 수신 `VALID`. 기대 `PARTIAL` | 996행 미실행 |
+| Vitest `vitest-failure5-2026-10-17.txt` 03:07:09Z | 수신 `VALID`. 기대 `PARTIAL` | 996행 미실행 |
+| 함수 호출 `last-run.json` `failure5.thisCall` | `VALID` | true. factKey `customer` |
+| 10:39 원본 | 로그 파일 없음 | 미확인 |
+
+10:39 검색은 `log-search.json`이다. `docs/`와 `experiments/`에서 그 시각 문자열이 있는 Vitest 원본은 0건이다. 있는 것은 서술 문서다. 지정 트랜스크립트와 `/tmp/f13-after/unit2.log`에도 그 시각이 없다. 이번 호출의 mergeable true로 그 시각을 채우지 않는다.
+
+### 해결 여부
+
+실패 1·2·5는 모두 미해결이다. 1단계 관문은 닫혀 있다. 제품 테스트 연결, 제품 수정, 병합, 배포는 하지 않았다.
