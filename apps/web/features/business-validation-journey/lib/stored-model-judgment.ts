@@ -70,7 +70,9 @@ function experimentForOmissions(input: {
     material: '주문 원장. 모회사·계열사 매출과 그 밖 매출이 나뉜 기록.',
     method: input.omittedFromModel.includes('S3')
       ? '원장에서 모회사·계열사 매출과 그 밖 매출을 나누고, 입력 S3의 예상 연매출 10억이 입금 항목인지 확인한다.'
-      : '원장에서 모회사·계열사 매출과 그 밖 매출을 나눈다. 예상 연매출은 받은 돈으로 세지 않는다.',
+      : input.omittedFromModel.includes('A2')
+        ? 'A2는 모회사 지원이 없을 때의 매출 구성이다. 주문 원장에서 모회사·계열사 매출과 그 밖 매출을 나눈다.'
+        : '빠진 A2·S3 입력 행은 없다. 모델 Fact와 판정 Fact는 별개다.',
     ...unknownCostAndDuration(),
     success: '원장에 두 매출이 나뉘어 있고, 예상 연매출 10억이 입금으로 적혀 있지 않다.',
     failure: '원장이 없거나, 예상 연매출 10억이 받은 매출로 적혀 있다.',

@@ -90,6 +90,28 @@ describe('web review comparison', () => {
     expect(compared.nextAction).toContain('S3 예상 연매출 10억');
   });
 
+  it('does not prescribe a revenue ledger when the only open issue is the conversion rate', () => {
+    const shared = [
+      'S1 매출 2,000만 원은 문서의 주장이다.',
+      'S3 예상 연매출 10억은 받은 돈이 아니다.',
+      'S4 예상 연매출 1억은 계획이다.',
+      'S5 예상 매출 4억은 계획이다.',
+      'S6 회원수 2,000만 명은 계획이다.',
+      'A1 가장 큰 비중은 계열사 판매다.',
+      'A2 모회사 지원이 필수이고 유지할 수 없다.',
+    ];
+    const gpt = ['구매전환율 3.8%는 문서의 주장이다.', ...shared].join('\n');
+    const gemini = ['전환율은 없다.', ...shared].join('\n');
+    const compared = compareWebReviews(gpt, gemini);
+    expect(compared.conflict.join(' ')).toContain('S2');
+    expect(compared.conflict.join(' ')).not.toContain('S3');
+    expect(compared.nextExperiment.method).toContain('S2');
+    expect(compared.nextExperiment.method).not.toContain('주문 원장');
+    expect(compared.nextExperiment.material).not.toContain('주문 원장');
+    expect(compared.nextExperiment.cost).toBe('미확인');
+    expect(compared.factStatus).toBe('미확인');
+  });
+
   it('stores each slot independently and does not change the judgment', () => {
     const initial = started();
     const gpt = storeWebReview(initial, { slot: 'gpt', text: GPT, now: NOW, provenance: 'test_fixture' });

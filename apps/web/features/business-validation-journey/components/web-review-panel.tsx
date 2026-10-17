@@ -7,6 +7,7 @@ import { Button, Textarea } from '@repo/ui';
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 
 import type { JourneyState } from '../lib/journey-types';
+import { assessFounderExecution } from '../lib/verification-outcome';
 import { readWebReview, storeWebReview, WEB_REVIEW_PROMPT } from '../lib/web-review-comparison';
 
 export function WebReviewPanel({
@@ -22,6 +23,7 @@ export function WebReviewPanel({
   const [provenance, setProvenance] = useState<'test_fixture' | 'user_declared'>('user_declared');
   const [message, setMessage] = useState('');
   const comparison = stored.comparison;
+  const hold = assessFounderExecution({ stage: 'before_execution' });
 
   function onStore(slot: 'gpt' | 'gemini', text: string) {
     const result = storeWebReview(journey, {
@@ -117,8 +119,15 @@ export function WebReviewPanel({
         </p>
       ) : null}
       <div className="space-y-2 text-sm" data-testid="web-review-comparison">
-        <p data-testid="web-review-verified">검증된 사실 아님. verifiedFact {comparison.verifiedFact ? 'true' : 'false'}.</p>
-        <p data-testid="web-review-fact-status">사실 상태: {comparison.factStatus}. 이 상태는 verifiedFact와 다른 칸이다.</p>
+        <p data-testid="web-review-verified">
+          verifiedFact {comparison.verifiedFact ? 'true' : 'false'}. 이 값은 사실 검증이 끝났다는 표시가 아니다.
+        </p>
+        <p data-testid="web-review-fact-status">
+          사실 상태: {comparison.factStatus}. 이 화면의 비교는 사실 상태를 미확인에서 옮기지 않는다.
+        </p>
+        <p data-testid="web-review-rejudge">
+          재판정: {hold.decision}. {hold.reason}
+        </p>
         <div>
           <h3 className="font-medium">합의</h3>
           <ul data-testid="web-review-agreement">
@@ -141,6 +150,9 @@ export function WebReviewPanel({
         </div>
         <div data-testid="web-review-experiment">
           <h3 className="font-medium">다음 검증 실험</h3>
+          <p data-testid="web-review-experiment-scope">
+            이 실험은 붙여 넣은 두 문장의 비교에서 만든다. 저장된 단일 모델 출력의 실험은 이 화면에 없다.
+          </p>
           <p>가설: {comparison.nextExperiment.hypothesis}</p>
           <p>자료: {comparison.nextExperiment.material}</p>
           <p>방법: {comparison.nextExperiment.method}</p>

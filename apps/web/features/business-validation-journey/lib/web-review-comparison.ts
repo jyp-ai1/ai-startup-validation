@@ -115,18 +115,57 @@ function experimentForMissingOriginal(missingOriginal: string, method: string): 
   };
 }
 
+function isRevenueLabel(label: string): boolean {
+  return ['S1 ', 'S3 ', 'S4 ', 'S5 ', 'A1 ', 'A2 '].some((prefix) => label.startsWith(prefix));
+}
+
 function experimentForClaims(conflictLabels: string[], insufficientLabels: string[]): NextVerificationExperiment {
   const subjects = [...conflictLabels, ...insufficientLabels];
   const hypothesis = conflictLabels.length
     ? `충돌: ${conflictLabels.join(', ')}. 어느 모델 문장도 사실로 고르지 않는다.`
     : `근거 부족: ${insufficientLabels.join(', ') || '표시된 항목 없음'}. 합의한 문장도 사실이 아니다.`;
+  const revenue = subjects.filter(isRevenueLabel);
+  const other = subjects.filter((label) => !isRevenueLabel(label));
+  const steps: string[] = [];
+  if (revenue.length > 0) {
+    steps.push(
+      `매출 쟁점 ${revenue.join(', ')}은 주문 원장에서 모회사·계열사 매출과 그 밖 매출을 나눈다. 예상 연매출은 받은 돈으로 세지 않는다.`,
+    );
+  }
+  if (other.length > 0) {
+    steps.push(
+      `매출 원장으로 닫지 않는 쟁점 ${other.join(', ')}은 해당 측정 기록이나 계획 문서를 가져온다. 회원 수와 전환율은 받은 매출이 아니다.`,
+    );
+  }
+  if (subjects.length === 0) {
+    steps.push(
+      '열린 쟁점 라벨은 없다. 합의된 매출 주장도 사실이 아니다. 주문 원장에서 모회사·계열사 매출과 그 밖 매출을 나눈다. 예상 연매출은 받은 돈으로 세지 않는다.',
+    );
+  }
+  const material = revenue.length > 0 || subjects.length === 0
+    ? '주문 원장. 모회사·계열사 매출과 그 밖 매출이 나뉜 기록.'
+    : '해당 쟁점의 측정 기록 또는 계획 문서.';
+  const success = [
+    revenue.length > 0 || subjects.length === 0
+      ? '원장에 두 매출이 나뉘어 있고, 예상 연매출이 입금으로 적혀 있지 않다.'
+      : '',
+    other.length > 0 ? `${other.join(', ')}의 측정 기록 또는 계획 문서가 있다.` : '',
+  ]
+    .filter((item) => item.length > 0)
+    .join(' ');
+  const failure = [
+    revenue.length > 0 || subjects.length === 0 ? '원장이 없거나, 모델 문장만으로 매출을 사실로 적었다.' : '',
+    other.length > 0 ? '측정 기록이 없거나 모델 문장만으로 그 쟁점을 골랐다.' : '',
+  ]
+    .filter((item) => item.length > 0)
+    .join(' ');
   return {
     hypothesis,
-    material: '주문 원장. 모회사·계열사 매출과 그 밖 매출이 나뉜 기록.',
-    method: `주문 원장에서 모회사·계열사 매출과 그 밖 매출을 나눈다. 대상: ${subjects.join(', ') || '표시된 항목 없음'}. 예상 연매출은 받은 돈으로 세지 않는다.`,
+    material,
+    method: steps.join(' '),
     ...unknownCostAndDuration(),
-    success: '원장에 두 매출이 나뉘어 있고, 예상 연매출이 입금으로 적혀 있지 않다.',
-    failure: '원장이 없거나, 모델 문장만으로 매출을 사실로 적었다.',
+    success,
+    failure,
   };
 }
 

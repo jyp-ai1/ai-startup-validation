@@ -14,6 +14,7 @@ export default defineConfig({
       'features/business-validation-journey/lib/__tests__/slice-regression-boundary.test.ts',
       'features/business-validation-journey/lib/__tests__/stored-model-output-repro.test.ts',
       'features/business-validation-journey/lib/__tests__/verification-outcome.test.ts',
+      'features/business-validation-journey/lib/__tests__/output-contract-connections.test.ts',
       'lib/analysis-engine/**/__tests__/**/*.test.ts',
       'lib/brand/**/__tests__/**/*.test.ts',
       'lib/project/**/__tests__/**/*.test.ts',
