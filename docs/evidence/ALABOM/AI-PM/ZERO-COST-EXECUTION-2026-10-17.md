@@ -75,7 +75,9 @@ EXIT:1
 
 `LABEL`이 `string`으로 넓어져 `BusinessDraft.label` 리터럴에 들어가지 않았다. 이 파일이 `origin/main`에는 없다. 읽지 못한 Vercel 로그와 로컬 실패가 같은 줄이라고 단정하지 않는다. 같은 명령이 이 오류만으로도 실패하는 것은 확인했다.
 
-수정은 그 상수에 `as const`를 붙인 한 줄이다. 문장과 판단 분기는 바꾸지 않았다. 같은 명령을 다시 실행해 EXIT 0을 받았다. 빌드 목록에 `/ko/business-validation`이 있다. `plan-refinement` 단위 테스트 3건은 통과했다. 이 로컬 빌드는 Production 검증이 아니다. 수정 SHA의 Preview 상태는 푸시 뒤에 별도로 본다.
+수정은 그 상수에 `as const`를 붙인 한 줄이다. 커밋 `a16923d616796855ebdb60dee61442e4dd3da704`. 문장과 판단 분기는 바꾸지 않았다. 같은 명령을 다시 실행해 EXIT 0을 받았다. 빌드 목록에 `/ko/business-validation`이 있다. `plan-refinement` 단위 테스트 3건은 통과했다. 이 로컬 빌드는 Production 검증이 아니다.
+
+푸시 후 Preview `7135471423`, SHA `2312cd66c529`, 시각 `2026-10-17T05:46:37Z`는 GitHub 상태 `success`, 설명 `Deployment has completed`다. 주소는 `https://ai-startup-validation-nd3hf22dp-jyp-ai1s-projects.vercel.app`. 비로그인 `/ko/business-validation`은 302로 `vercel.com/sso-api`에 간다. 빌드 성공과 화면 열람은 별개다. 로그인이나 protection bypass는 하지 않았다. 실패 1·2·5를 이 Preview에서 끝내지 못했다. Production `/ko/business-validation`은 그 시각에도 404이고 SHA는 `0b465226`이다.
 
 ## 7. 비교 화면 — 선택한 최소 범위
 
