@@ -48,6 +48,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 33 | 출력 계약은 PR #200 `42732f5b`. 사실 상태와 다음 실험은 별도 칸. 상태 전이는 없고 회수는 보류. 규칙 46 PASS. 원문·실행 관문 통과는 파일 부재라 BLOCKED. #199·#200 병합 없음 | `docs/evidence/ALABOM/AI-PM/CONTRACT-SPLIT-2026-10-17.md` |
 | 34 | 연결 감사는 PR #200 `e4858dfe`. 화면은 비교의 미확인과 실행 전 보류만 소비. 단일 모델 실험은 화면 import 없음. 상태 전이 미구현. 규칙 53 PASS. 원문·실패 5·병합은 BLOCKED 또는 NOT RUN | `docs/evidence/ALABOM/AI-PM/OUTPUT-CONTRACT-CONNECTIONS-2026-10-17.md` |
 | 35 | 반복 회차는 PR #200 `9f551dba`. 시험 문장으로 피드백이 다음 GPT 입력에 들어가고 이전 원문은 유지. 실제 웹 재조회는 BLOCKED. 규칙 62 PASS. #199·#200 병합 없음 | `docs/evidence/ALABOM/AI-PM/VALIDATION-ROUND-LOOP-2026-10-17.md` |
+| 36 | 실제 웹 세션 없음. Chrome 호스트는 Vercel뿐. 원문 파일을 만들지 않음. 실제 왕복 NOT RUN. PR #200 `eb033bc0`. 병합 없음 | `docs/evidence/ALABOM/AI-PM/REAL-WEB-SESSION-BLOCK-2026-10-17.md` |
 
 ---
 
