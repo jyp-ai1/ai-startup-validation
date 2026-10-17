@@ -4,6 +4,23 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Manual validation bench
+
+**CPO Gate:** OPEN · 실제 GPT/Gemini 왕복 BLOCKED · Merge/Production 금지  
+**Branch:** `cursor/comparison-route-slice-4b88`  
+**Route:** `/ko/validation-bench`  
+**Evidence:** `docs/evidence/ALABOM/AI-PM/MANUAL-VALIDATION-BENCH-2026-10-17.md`  
+**Storage:** browser session `alabom.validationBench.v1`. No new table.
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Paste, copy, and separate rounds on the bench | `bf450dbc` 로컬 확인. 그 커밋은 비로그인으로 열림 |
+| 2 | Login gate without demo bypass | 프로덕션 모드에서 로그인 화면 확인. CEO 세션 경로는 NOT RUN |
+| 3 | Real GPT and Gemini originals | BLOCKED |
+| 4 | Preview and Production | Preview는 배포 URL 확인 전. Production NOT RUN |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  
