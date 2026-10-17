@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { startJourney } from '../journey-engine';
 import type { Intake } from '../journey-types';
-import { storeWebReview } from '../web-review-comparison';
+import { storeLoopOriginal } from '../validation-round-loop';
 
 const webRoot = path.resolve(__dirname, '../../../..');
 const componentsDir = path.resolve(__dirname, '../../components');
@@ -39,12 +39,13 @@ describe('output contract connections', () => {
   it('consumes the comparison hold on the panel and does not store fact status', () => {
     const panel = source('features/business-validation-journey/components/web-review-panel.tsx');
     expect(panel.includes('assessFounderExecution')).toBe(true);
-    expect(panel.includes("stage: 'before_execution'")).toBe(true);
+    expect(panel.includes('before_execution')).toBe(true);
     expect(panel.includes('사실 검증이 끝났다는 표시가 아니다')).toBe(true);
     expect(panel.includes('미확인에서 옮기지 않는다')).toBe(true);
     expect(panel.includes('저장된 단일 모델 출력의 실험은 이 화면에 없다')).toBe(true);
-    expect(panel.includes('readWebReview')).toBe(true);
-    expect(panel.includes('storeWebReview')).toBe(true);
+    expect(panel.includes('storeLoopOriginal')).toBe(true);
+    expect(panel.includes('submitRoundFeedback')).toBe(true);
+    expect(panel.includes('storeWebReview')).toBe(false);
 
     const screen = source(
       'features/business-validation-journey/components/validation-journey-screen.tsx',
@@ -56,7 +57,7 @@ describe('output contract connections', () => {
 
     const started = startJourney(INTAKE, 'test_hypothesis');
     if (!started.ok) throw new Error('start failed');
-    const stored = storeWebReview(started.state, {
+    const stored = storeLoopOriginal(started.state, {
       slot: 'gpt',
       text: 'S3 예상 연매출 10억은 받은 돈이 아니다.',
       now: '2026-10-17T07:20:00.000Z',

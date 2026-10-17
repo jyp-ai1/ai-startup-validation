@@ -193,6 +193,7 @@ export type JourneyState = {
   externalNotes?: ExternalNote[];
   judgmentComparisons?: JudgmentComparison[];
   planCase?: PlanCase;
+  validationLoop?: import('./validation-round-loop').ValidationLoop;
 };
 
 export type AnalysisProvenance = 'test_fixture' | 'user_declared';

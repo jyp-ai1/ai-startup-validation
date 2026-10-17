@@ -7,8 +7,16 @@ import { Button, Textarea } from '@repo/ui';
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 
 import type { JourneyState } from '../lib/journey-types';
+import {
+  holdValidationLoop,
+  LOOP_PHASE_NOTE,
+  openRound,
+  readValidationLoop,
+  storeLoopOriginal,
+  submitRoundFeedback,
+} from '../lib/validation-round-loop';
 import { assessFounderExecution } from '../lib/verification-outcome';
-import { readWebReview, storeWebReview, WEB_REVIEW_PROMPT } from '../lib/web-review-comparison';
+import { compareWebReviews, WEB_REVIEW_PROMPT } from '../lib/web-review-comparison';
 
 export function WebReviewPanel({
   journey,
@@ -17,16 +25,18 @@ export function WebReviewPanel({
   journey: JourneyState;
   onJourneyChange: (state: JourneyState) => void;
 }) {
-  const stored = readWebReview(journey);
+  const loop = readValidationLoop(journey);
+  const round = openRound(loop);
   const [gptText, setGptText] = useState('');
   const [geminiText, setGeminiText] = useState('');
+  const [feedbackText, setFeedbackText] = useState('');
   const [provenance, setProvenance] = useState<'test_fixture' | 'user_declared'>('user_declared');
   const [message, setMessage] = useState('');
-  const comparison = stored.comparison;
-  const hold = assessFounderExecution({ stage: 'before_execution' });
+  const comparison = round?.aggregation ?? compareWebReviews(round?.gptText ?? null, round?.geminiText ?? null);
+  const hold = assessFounderExecution({ stage: round?.founderFeedback ? 'evidence_insufficient' : 'before_execution' });
 
   function onStore(slot: 'gpt' | 'gemini', text: string) {
-    const result = storeWebReview(journey, {
+    const result = storeLoopOriginal(journey, {
       slot,
       text,
       now: new Date().toISOString(),
@@ -45,9 +55,34 @@ export function WebReviewPanel({
     });
   }
 
+  function onFeedback(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const result = submitRoundFeedback(journey, { text: feedbackText, now: new Date().toISOString() });
+    setMessage(result.reason);
+    if (!result.accepted) return;
+    onJourneyChange(result.state);
+    setFeedbackText('');
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.validationJourneyAnswered, {
+      screen: '/business-validation',
+      status: 'research_not_run',
+      question_id: round?.roundId,
+      category: 'loop_feedback',
+    });
+  }
+
+  function onHold() {
+    const result = holdValidationLoop(journey, new Date().toISOString());
+    setMessage(result.reason);
+    if (!result.accepted) return;
+    onJourneyChange(result.state);
+  }
+
   return (
     <section className="space-y-4 rounded-xl border border-border p-4" data-testid="web-review-panel">
       <h2 className="text-sm font-medium">GPT 웹과 Gemini 웹 원문 비교</h2>
+      <p className="text-sm" data-testid="loop-phase">
+        회차 {round?.roundId ?? 'r1'} · {round?.phase ?? 'GPT 원문 대기'}. {LOOP_PHASE_NOTE}
+      </p>
       <p className="text-sm text-muted-foreground">
         ALABOM은 이 입력을 모델 API나 AI 웹 화면에 보내지 않는다. GPT 웹에서 먼저 분석하고, 그 원문과 같은 입력을 Gemini 웹에 넣어 반론을 받은 뒤, 두 원문을 각각 붙여 넣는다. 두 문장이 같아도 원장이 없으면 검증된 사실이 아니다.
       </p>
@@ -86,7 +121,7 @@ export function WebReviewPanel({
             GPT 원문 보관
           </Button>
           <p className="whitespace-pre-wrap text-sm" data-testid="web-review-gpt-stored">
-            {stored.gpt ? `보관됨 ${stored.gpt.receivedAt}. 사실 아님. ${stored.gpt.text}` : '보관한 GPT 원문 없음'}
+            {round?.gptText ? `보관됨 ${round.gptRecordedAt}. 사실 아님. ${round.gptText}` : '보관한 GPT 원문 없음'}
           </p>
         </form>
         <form
@@ -109,7 +144,7 @@ export function WebReviewPanel({
             Gemini 원문 보관
           </Button>
           <p className="whitespace-pre-wrap text-sm" data-testid="web-review-gemini-stored">
-            {stored.gemini ? `보관됨 ${stored.gemini.receivedAt}. 사실 아님. ${stored.gemini.text}` : '보관한 Gemini 원문 없음'}
+            {round?.geminiText ? `보관됨 ${round.geminiRecordedAt}. 사실 아님. ${round.geminiText}` : '보관한 Gemini 원문 없음'}
           </p>
         </form>
       </div>
@@ -161,7 +196,47 @@ export function WebReviewPanel({
           <p>실패: {comparison.nextExperiment.failure}</p>
         </div>
         <p data-testid="web-review-next">다음 검증 행동: {comparison.nextAction}</p>
+        <div>
+          <h3 className="font-medium">미해결 질문</h3>
+          <ul data-testid="loop-questions">
+            {(round?.unresolvedQuestions ?? []).length === 0 ? (
+              <li>없음</li>
+            ) : (
+              round?.unresolvedQuestions.map((item) => <li key={item}>{item}</li>)
+            )}
+          </ul>
+        </div>
       </div>
+      {round && round.roundNumber > 1 ? (
+        <Textarea readOnly value={round.businessSnapshot} data-testid="loop-next-input" rows={6} />
+      ) : null}
+      {round?.phase === 'Founder 검토 대기' ? (
+        <form className="space-y-2" data-testid="loop-feedback-form" onSubmit={onFeedback}>
+          <h3 className="text-sm font-medium">Founder 피드백</h3>
+          <p className="text-sm text-muted-foreground">
+            이 답은 다음 회차의 GPT 입력에 들어간다. 증빙 검토가 아니므로 사실 상태를 옮기지 않는다.
+          </p>
+          <Textarea
+            value={feedbackText}
+            data-testid="loop-feedback-input"
+            rows={4}
+            onChange={(event) => setFeedbackText(event.target.value)}
+          />
+          <Button type="submit" variant="outline" data-testid="loop-feedback-save">
+            피드백을 다음 회차 입력에 반영
+          </Button>
+        </form>
+      ) : null}
+      <Button type="button" variant="outline" data-testid="loop-hold" onClick={onHold}>
+        이 반복을 보류
+      </Button>
+      <ul className="space-y-1 text-sm" data-testid="loop-rounds">
+        {(loop?.rounds ?? []).map((item) => (
+          <li key={item.roundId} data-testid={`loop-round-${item.roundNumber}`}>
+            {item.roundId} · {item.phase} · GPT {item.gptText ? '있음' : '없음'} · Gemini {item.geminiText ? '있음' : '없음'}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
