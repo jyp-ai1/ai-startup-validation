@@ -1474,6 +1474,51 @@ PR #92–#97 built judgment, evidence update, AI PM bind, journey integration, a
 
 ---
 
+## ADR-052: Manual validation bench stays in the browser session
+
+**Status:** Accepted  
+**Date:** 2026-10-17  
+**Sprint:** Closed Alpha — manual web-original capture  
+**Authors:** CTO (autonomous)
+
+### Context
+
+CEO needs a place inside ALABOM to paste a business plan, a GPT web original, a Gemini web original, a human synthesis, and feedback, then open a next round. No external AI API is allowed. Workspace routes call `requireAuthUser`, and this change must not bypass that check. Existing review storage was not confirmed as a safe place for a new permanent table.
+
+### Decision
+
+1. The bench is a public page at `/[locale]/validation-bench`. It does not live under `/workspace`.
+2. Records stay in `sessionStorage` key `alabom.validationBench.v1`. There is no new table and no migration.
+3. The screen may say the tab session was written only after `sessionStorage.setItem` returns. It does not say the record was permanently saved.
+4. Pasted model text, human feedback, and the ALABOM rule summary stay in separate fields. Empty fields stay `미입력`. A step that did not run stays `미실행`.
+5. The existing `compareWebReviews` rule runs only when both pasted originals are non-empty. It checks the fixed S1–S6 and A1–A2 phrases and does not call a model.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+|--------|------|------|
+| `/workspace/validation-lab` | Sits behind the existing login | Requires a session or an auth bypass |
+| New database table | Survives refresh and account switch | Storage policy was not confirmed |
+| Reuse the journey session key | Already reloads | Would overwrite the journey draft |
+
+### Consequences
+
+**Positive:**
+
+- CEO can paste and copy without a model call.
+- Round 1 stays sealed when round 2 opens.
+
+**Negative:**
+
+- Closing the tab drops the record. The record is not tied to a user account.
+- The rule summary does not judge a business plan that lacks the fixed phrases.
+
+**Neutral:**
+
+- This page is not evidence that GPT or Gemini was queried.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

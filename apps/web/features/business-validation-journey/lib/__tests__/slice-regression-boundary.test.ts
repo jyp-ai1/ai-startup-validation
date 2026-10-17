@@ -40,6 +40,9 @@ describe('comparison route slice boundary', () => {
       'features/business-validation-journey/components/web-review-panel.tsx',
       'features/business-validation-journey/lib/web-review-comparison.ts',
       'features/business-validation-journey/lib/stored-model-judgment.ts',
+      'app/[locale]/(public)/validation-bench/page.tsx',
+      'features/manual-validation-bench/components/validation-bench-screen.tsx',
+      'features/manual-validation-bench/lib/validation-bench.ts',
     ];
     for (const file of files) {
       const src = source(file);
