@@ -336,3 +336,7 @@ GitHub의 이 문서는 읽을 수 있다. 그것은 제품 화면의 직접 테
 ## 13. 브라우저 경로 재확인 — 2026-10-17
 
 12절 이후 HEAD `e58d597c`의 Preview 배포 `7134972631`도 `failure`다. Production과 `origin/main`은 `0b465226`으로 같다. `/auth/login`은 Google 계정 화면이고, `/demo/start`와 Clinicflow Demo는 열린다. 그 Demo는 실패 1·2·5의 입력이 아니다. `/ko/business-validation`은 404다. 전체 판정은 BLOCKED다. 절차와 완료 조건 표는 `docs/evidence/ALABOM/AI-PM/CEO-BROWSER-PATH-2026-10-17.md`다. 화면 기록은 `docs/evidence/ALABOM/AI-PM/browser-block-2026-10-17/`다. 제품 코드는 바꾸지 않았다.
+
+## 14. 비용 0원 구조 — 2026-10-17
+
+새 AI 기능은 만들지 않았다. 채택 절차는 사용자가 GPT 웹에서 1차 분석을 하고 Gemini 웹에서 반론한 뒤 ALABOM이 두 붙여넣기를 비교하는 것이다. 같은 입력으로 순서를 바꾼 원문은 저장소에 없다. API 연결과 웹 자동화는 넣지 않는다. 상세는 `docs/evidence/ALABOM/AI-PM/ZERO-COST-STRUCTURE-2026-10-17.md`다. 실패 1·2·5와 Preview는 BLOCKED다.
