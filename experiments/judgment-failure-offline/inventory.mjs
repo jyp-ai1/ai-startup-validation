@@ -29,6 +29,8 @@ const files = [
   ["log-search", "experiments/judgment-failure-offline/log-search.json", "1039-search"],
   ["search-script", "experiments/judgment-failure-offline/search-1039.mjs", "1039-search-script"],
   ["vitest-2026-10-17", "experiments/judgment-failure-offline/vitest-failure5-2026-10-17.txt", "failure5-rerun"],
+  ["trace-script", "experiments/judgment-failure-offline/trace-failure5.ts", "failure5-path-script"],
+  ["failure5-trace", "experiments/judgment-failure-offline/failure5-trace.json", "failure5-path-result"],
 ];
 
 const rows = files.map(([id, rel, role]) => {

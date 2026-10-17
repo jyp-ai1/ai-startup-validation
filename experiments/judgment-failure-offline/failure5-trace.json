@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-17T03:25:16.294Z",
+  "input": {
+    "answer": "정정합니다. 초기 타깃은 방한 FIT 외국인만이 아니라, 국내 MZ 개별 여행객도 포함합니다.",
+    "askedIssueId": "competitor_analysis",
+    "askedTargetGap": "validationTestability"
+  },
+  "predicates": {
+    "isCorrectionUtterance": true,
+    "isCustomerFieldCorrection": true,
+    "parsedNotXButY": {
+      "rejected": "방한 FIT 외국인만",
+      "accepted": ", 국내 MZ 개별 여행객도 포함합"
+    }
+  },
+  "thisCall": {
+    "quality": "VALID",
+    "mergeable": true,
+    "factKey": "customer",
+    "intent": "correction",
+    "rationale": "CEO CORRECT — customer revised to , 국내 MZ 개별 여행객도 포함합"
+  },
+  "path": {
+    "customerCorrectionReturnMatched": true,
+    "partialReturnMatched": false,
+    "sourceOrder": "interpret-answer-semantics.ts 고객 정정 if가 validationTestability else if보다 앞이다. 고객 정정 조건이 참이면 PARTIAL 반환은 실행되지 않는다."
+  },
+  "vitest": [
+    {
+      "file": "vitest-failure5.txt",
+      "receivedValid": true,
+      "mergeableLineExecuted": false
+    },
+    {
+      "file": "vitest-failure5-2026-10-17.txt",
+      "receivedValid": true,
+      "mergeableLineExecuted": false
+    }
+  ],
+  "original1039Mergeable": "unverified",
+  "productChanged": false
+}

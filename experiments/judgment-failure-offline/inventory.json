@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-17T03:08:15.918Z",
+  "at": "2026-10-17T03:29:15.857Z",
   "rows": [
     {
       "id": "prompt",
@@ -134,40 +134,40 @@
       "rel": "experiments/judgment-failure-offline/detector.mjs",
       "role": "this-sprint-script",
       "exists": true,
-      "bytes": 8911,
-      "sha256": "80d9208bb749160be7952accf49d7f9cf0761d4817b919c079c11c0646ea77f0"
+      "bytes": 12090,
+      "sha256": "5598a698357039c6c84f19b71a2c1908218f3afda7d2006d9c30106923305564"
     },
     {
       "id": "detector-run",
       "rel": "experiments/judgment-failure-offline/detector-run.json",
       "role": "this-sprint-detector-output",
       "exists": true,
-      "bytes": 9231,
-      "sha256": "694d2d6d0f8ed8f2f66b9780d253bbe6d1f4bdc7745cd45fe4f0e81f12d0fbe1"
+      "bytes": 19260,
+      "sha256": "54b142b7d1a689e2c7042d95755460d1bbc58b790b077162570f6cca2c6cef05"
     },
     {
       "id": "fixtures",
       "rel": "experiments/judgment-failure-offline/fixtures.json",
       "role": "this-sprint-labels",
       "exists": true,
-      "bytes": 3261,
-      "sha256": "ce1846145d6ee99e276bdf66370e1aaa23c3299abf55c2a76ad6467399b8d828"
+      "bytes": 6252,
+      "sha256": "11c63475c5837862a7ce2158da86f283a9aa363cc16ed2e657bb6921c1beaf77"
     },
     {
       "id": "commands",
       "rel": "experiments/judgment-failure-offline/commands.txt",
       "role": "this-sprint-command-log",
       "exists": true,
-      "bytes": 3109,
-      "sha256": "7e3f66519444bd958dbe5e3e602231329c7466aae1e793fb9938b5d7151a985b"
+      "bytes": 4027,
+      "sha256": "fa636d51712bb2ffdcf234694603597ff195dfed5ef410d64714f8981750e642"
     },
     {
       "id": "ceo-review",
       "rel": "docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md",
       "role": "this-sprint-review",
       "exists": true,
-      "bytes": 13319,
-      "sha256": "99134cec6c1ebfe25de80176929ea0e068b703ce521329522eb8c5e2d0470986"
+      "bytes": 22209,
+      "sha256": "2cfc800f93deb4217c1ede0a34b532012d799331f49b8b99e04668edf43c454e"
     },
     {
       "id": "log-search",
@@ -192,6 +192,22 @@
       "exists": true,
       "bytes": 761,
       "sha256": "d713c6ca2db119d87e541149d4017d082517bb7dd93981c3103045db6f0eefbd"
+    },
+    {
+      "id": "trace-script",
+      "rel": "experiments/judgment-failure-offline/trace-failure5.ts",
+      "role": "failure5-path-script",
+      "exists": true,
+      "bytes": 2644,
+      "sha256": "c76a6ed6903ca21a9e533113de21fffab4c9e420e692e616a539fa0c7f56abc6"
+    },
+    {
+      "id": "failure5-trace",
+      "rel": "experiments/judgment-failure-offline/failure5-trace.json",
+      "role": "failure5-path-result",
+      "exists": true,
+      "bytes": 1355,
+      "sha256": "9d8d0a9d737afe552510fd400f4abe9b830ae49d9dcb447905b7e8591d1e1d71"
     }
   ],
   "missingRaw": [

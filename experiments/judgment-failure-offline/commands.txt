@@ -45,3 +45,16 @@
    2026-10-17T03:07:09Z. EXIT 1. Tests 1 failed, 77 skipped.
    Expected PARTIAL. Received VALID. 996행은 실행되지 않음.
    발췌 vitest-failure5-2026-10-17.txt. 이전 발췌 vitest-failure5.txt는 12:20:52Z 실행으로 남겨 둔다.
+
+10. node experiments/judgment-failure-offline/detector.mjs
+    2026-10-17T03:26:57.102Z. EXIT 0. auditAgrees true. productRefCount 0.
+    토큰 미탐: denial-tokens, quote-needles, bare-mention, equiv-usd.
+    의미 미탐: paraphrase-sibillion. 금액은 unverified. 자동 인정 없음.
+    falsePositives 빈 목록. 이 일치는 제품 통과가 아니다.
+
+11. node /workspace/node_modules/.pnpm/vite-node@3.2.4_@types+node@20.19.43_jiti@2.7.0_lightningcss@1.32.0/node_modules/vite-node/dist/cli.mjs --config /workspace/apps/web/vitest.config.ts /workspace/experiments/judgment-failure-offline/trace-failure5.ts
+    cwd apps/web. 2026-10-17T03:25:16.294Z. EXIT 0.
+    customerCorrection true. quality VALID. mergeable true. factKey customer.
+    customerReturn true. partialReturn false.
+    Vitest 두 발췌는 Received VALID, 996행 미실행.
+    original1039Mergeable unverified. productChanged false.

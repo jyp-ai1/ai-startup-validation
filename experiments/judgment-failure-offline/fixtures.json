@@ -33,7 +33,7 @@
       "kind": "synthetic-semantic-limit",
       "content": "A2는 출력하지 않는다. 예상 연매출 10억은 확인되지 않았다.",
       "fact": false,
-      "expected": { "tokenOmission": false, "meaningOmission": true, "factPromotion": false },
+      "expected": { "tokenOmission": false, "meaningOmission": true, "infoOmission": true, "factPromotion": false, "revenueEquivalence": "absent" },
       "note": "토큰 검사는 존재를 누락으로 보지 않는다. 부정문 검사는 인정 실패로 본다."
     },
     {
@@ -51,7 +51,63 @@
       "fact": false,
       "humanWouldCountAsPresent": true,
       "expected": { "tokenOmission": true, "meaningOmission": true, "factPromotion": false },
-      "note": "십억을 10억의 인정으로 바꾸지 않는다. 의미 검사의 미탐으로 남긴다."
+      "note": "예상 여부가 없어 십억을 10억 예상 연매출로 자동 인정하지 않는다."
+    },
+    {
+      "id": "quote-needles",
+      "kind": "synthetic-semantic-limit",
+      "content": "보고서는 \"A2\"와 \"예상 연매출 10억\"이라는 제목만 인용했다.",
+      "fact": false,
+      "expected": { "tokenOmission": false, "meaningOmission": false, "infoOmission": true, "factPromotion": false, "revenueEquivalence": "absent" },
+      "note": "짧은 인용 안의 토큰은 정보 인정이 아니다. 토큰 검사와 기존 의미 검사는 누락으로 보지 않는다."
+    },
+    {
+      "id": "bare-mention",
+      "kind": "synthetic-semantic-limit",
+      "content": "A2라는 단어와 예상 연매출 10억이라는 표현이 문서 제목에 있다.",
+      "fact": false,
+      "expected": { "tokenOmission": false, "meaningOmission": false, "infoOmission": true, "factPromotion": false, "revenueEquivalence": "absent" },
+      "note": "단순 언급이다."
+    },
+    {
+      "id": "equiv-forecast-explicit",
+      "kind": "synthetic-control",
+      "content": "S3 예상 연매출은 십억 원이다. A2: 모회사 지원이 없어도 매출 구조를 유지할 수 없다.",
+      "fact": false,
+      "expected": { "tokenOmission": true, "infoOmission": false, "factPromotion": false, "revenueEquivalence": "match-forecast-krw-year" },
+      "note": "문자열 10억은 없고, 예상·연·원화·십억이 함께 있다."
+    },
+    {
+      "id": "equiv-usd",
+      "kind": "synthetic-control",
+      "content": "S3 예상 연매출 10억 달러라고 적혀 있다. A2: 모회사 지원이 없어도 매출 구조를 유지할 수 없다.",
+      "fact": false,
+      "expected": { "tokenOmission": false, "infoOmission": true, "factPromotion": false, "revenueEquivalence": "currency-mismatch" },
+      "note": "10억 문자열은 있으나 통화가 다르다. 원화 10억으로 인정하지 않는다."
+    },
+    {
+      "id": "equiv-monthly",
+      "kind": "synthetic-control",
+      "content": "예상 월매출은 십억 원이다.",
+      "fact": false,
+      "expected": { "tokenOmission": true, "infoOmission": true, "factPromotion": false, "revenueEquivalence": "period-mismatch" },
+      "note": "월과 연을 같은 금액으로 보지 않는다."
+    },
+    {
+      "id": "equiv-actual",
+      "kind": "synthetic-control",
+      "content": "실적 연매출은 십억 원이다.",
+      "fact": false,
+      "expected": { "tokenOmission": true, "infoOmission": true, "factPromotion": false, "revenueEquivalence": "kind-mismatch" },
+      "note": "실적과 예상을 같은 값으로 보지 않는다."
+    },
+    {
+      "id": "equiv-vague",
+      "kind": "synthetic-semantic-limit",
+      "content": "십억 정도 될 수도 있다.",
+      "fact": false,
+      "expected": { "tokenOmission": true, "infoOmission": true, "factPromotion": false, "revenueEquivalence": "unverified" },
+      "note": "기간·예상·실적이 불명확해 자동 인정하지 않는다."
     }
   ],
   "qualityCases": [

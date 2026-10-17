@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-17T03:07:36.871Z",
+  "at": "2026-10-17T03:26:57.102Z",
   "selfPassIsNotProductPass": true,
   "productFailuresRemainOpen": [
     "failure1",
@@ -55,6 +55,15 @@
         "10억"
       ],
       "deniedTokens": [],
+      "spanRoles": {
+        "A2": "absent",
+        "예상 연매출": "absent",
+        "10억": "absent"
+      },
+      "revenue": {
+        "literal": false,
+        "equivalence": "absent"
+      },
       "storedFact": false,
       "modelFact": false,
       "modelParse": "parsed",
@@ -67,7 +76,9 @@
       "actual": {
         "tokenOmission": true,
         "meaningOmission": true,
-        "factPromotion": false
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "absent"
       },
       "agrees": true
     },
@@ -83,6 +94,15 @@
         "10억"
       ],
       "deniedTokens": [],
+      "spanRoles": {
+        "A2": "absent",
+        "예상 연매출": "absent",
+        "10억": "absent"
+      },
+      "revenue": {
+        "literal": false,
+        "equivalence": "absent"
+      },
       "storedFact": true,
       "modelFact": true,
       "modelParse": "parsed",
@@ -95,7 +115,9 @@
       "actual": {
         "tokenOmission": true,
         "meaningOmission": true,
-        "factPromotion": true
+        "infoOmission": true,
+        "factPromotion": true,
+        "revenueEquivalence": "absent"
       },
       "agrees": true
     },
@@ -107,6 +129,15 @@
       "humanWouldCountAsPresent": false,
       "missingTokens": [],
       "deniedTokens": [],
+      "spanRoles": {
+        "A2": "affirmation",
+        "예상 연매출": "affirmation",
+        "10억": "affirmation"
+      },
+      "revenue": {
+        "literal": true,
+        "equivalence": "match-forecast-krw-year"
+      },
       "storedFact": false,
       "modelFact": null,
       "modelParse": null,
@@ -119,7 +150,9 @@
       "actual": {
         "tokenOmission": false,
         "meaningOmission": false,
-        "factPromotion": false
+        "infoOmission": false,
+        "factPromotion": false,
+        "revenueEquivalence": "match-forecast-krw-year"
       },
       "agrees": true
     },
@@ -131,6 +164,15 @@
       "humanWouldCountAsPresent": false,
       "missingTokens": [],
       "deniedTokens": [],
+      "spanRoles": {
+        "A2": "affirmation",
+        "예상 연매출": "affirmation",
+        "10억": "affirmation"
+      },
+      "revenue": {
+        "literal": true,
+        "equivalence": "match-forecast-krw-year"
+      },
       "storedFact": true,
       "modelFact": null,
       "modelParse": null,
@@ -143,7 +185,9 @@
       "actual": {
         "tokenOmission": false,
         "meaningOmission": false,
-        "factPromotion": true
+        "infoOmission": false,
+        "factPromotion": true,
+        "revenueEquivalence": "match-forecast-krw-year"
       },
       "agrees": true
     },
@@ -159,6 +203,15 @@
         "예상 연매출",
         "10억"
       ],
+      "spanRoles": {
+        "A2": "negation",
+        "예상 연매출": "negation",
+        "10억": "negation"
+      },
+      "revenue": {
+        "literal": true,
+        "equivalence": "absent"
+      },
       "storedFact": false,
       "modelFact": null,
       "modelParse": null,
@@ -166,12 +219,16 @@
       "expected": {
         "tokenOmission": false,
         "meaningOmission": true,
-        "factPromotion": false
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "absent"
       },
       "actual": {
         "tokenOmission": false,
         "meaningOmission": true,
-        "factPromotion": false
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "absent"
       },
       "agrees": true
     },
@@ -183,6 +240,15 @@
       "humanWouldCountAsPresent": false,
       "missingTokens": [],
       "deniedTokens": [],
+      "spanRoles": {
+        "A2": "affirmation",
+        "예상 연매출": "affirmation",
+        "10억": "affirmation"
+      },
+      "revenue": {
+        "literal": true,
+        "equivalence": "match-forecast-krw-year"
+      },
       "storedFact": false,
       "modelFact": null,
       "modelParse": null,
@@ -195,7 +261,9 @@
       "actual": {
         "tokenOmission": false,
         "meaningOmission": false,
-        "factPromotion": false
+        "infoOmission": false,
+        "factPromotion": false,
+        "revenueEquivalence": "match-forecast-krw-year"
       },
       "agrees": true
     },
@@ -203,7 +271,7 @@
       "id": "paraphrase-sibillion",
       "kind": "synthetic-semantic-limit",
       "file": null,
-      "note": "십억을 10억의 인정으로 바꾸지 않는다. 의미 검사의 미탐으로 남긴다.",
+      "note": "예상 여부가 없어 십억을 10억 예상 연매출로 자동 인정하지 않는다.",
       "humanWouldCountAsPresent": true,
       "missingTokens": [
         "A2",
@@ -211,6 +279,15 @@
         "10억"
       ],
       "deniedTokens": [],
+      "spanRoles": {
+        "A2": "absent",
+        "예상 연매출": "absent",
+        "10억": "absent"
+      },
+      "revenue": {
+        "literal": false,
+        "equivalence": "unverified"
+      },
       "storedFact": false,
       "modelFact": null,
       "modelParse": null,
@@ -223,7 +300,277 @@
       "actual": {
         "tokenOmission": true,
         "meaningOmission": true,
-        "factPromotion": false
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "unverified"
+      },
+      "agrees": true
+    },
+    {
+      "id": "quote-needles",
+      "kind": "synthetic-semantic-limit",
+      "file": null,
+      "note": "짧은 인용 안의 토큰은 정보 인정이 아니다. 토큰 검사와 기존 의미 검사는 누락으로 보지 않는다.",
+      "humanWouldCountAsPresent": false,
+      "missingTokens": [],
+      "deniedTokens": [],
+      "spanRoles": {
+        "A2": "quotation",
+        "예상 연매출": "quotation",
+        "10억": "quotation"
+      },
+      "revenue": {
+        "literal": true,
+        "equivalence": "absent"
+      },
+      "storedFact": false,
+      "modelFact": null,
+      "modelParse": null,
+      "modelFactMatchesStored": null,
+      "expected": {
+        "tokenOmission": false,
+        "meaningOmission": false,
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "absent"
+      },
+      "actual": {
+        "tokenOmission": false,
+        "meaningOmission": false,
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "absent"
+      },
+      "agrees": true
+    },
+    {
+      "id": "bare-mention",
+      "kind": "synthetic-semantic-limit",
+      "file": null,
+      "note": "단순 언급이다.",
+      "humanWouldCountAsPresent": false,
+      "missingTokens": [],
+      "deniedTokens": [],
+      "spanRoles": {
+        "A2": "mention",
+        "예상 연매출": "affirmation",
+        "10억": "affirmation"
+      },
+      "revenue": {
+        "literal": true,
+        "equivalence": "absent"
+      },
+      "storedFact": false,
+      "modelFact": null,
+      "modelParse": null,
+      "modelFactMatchesStored": null,
+      "expected": {
+        "tokenOmission": false,
+        "meaningOmission": false,
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "absent"
+      },
+      "actual": {
+        "tokenOmission": false,
+        "meaningOmission": false,
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "absent"
+      },
+      "agrees": true
+    },
+    {
+      "id": "equiv-forecast-explicit",
+      "kind": "synthetic-control",
+      "file": null,
+      "note": "문자열 10억은 없고, 예상·연·원화·십억이 함께 있다.",
+      "humanWouldCountAsPresent": false,
+      "missingTokens": [
+        "10억"
+      ],
+      "deniedTokens": [],
+      "spanRoles": {
+        "A2": "affirmation",
+        "예상 연매출": "affirmation",
+        "10억": "absent"
+      },
+      "revenue": {
+        "literal": false,
+        "equivalence": "match-forecast-krw-year"
+      },
+      "storedFact": false,
+      "modelFact": null,
+      "modelParse": null,
+      "modelFactMatchesStored": null,
+      "expected": {
+        "tokenOmission": true,
+        "infoOmission": false,
+        "factPromotion": false,
+        "revenueEquivalence": "match-forecast-krw-year"
+      },
+      "actual": {
+        "tokenOmission": true,
+        "meaningOmission": true,
+        "infoOmission": false,
+        "factPromotion": false,
+        "revenueEquivalence": "match-forecast-krw-year"
+      },
+      "agrees": true
+    },
+    {
+      "id": "equiv-usd",
+      "kind": "synthetic-control",
+      "file": null,
+      "note": "10억 문자열은 있으나 통화가 다르다. 원화 10억으로 인정하지 않는다.",
+      "humanWouldCountAsPresent": false,
+      "missingTokens": [],
+      "deniedTokens": [],
+      "spanRoles": {
+        "A2": "affirmation",
+        "예상 연매출": "affirmation",
+        "10억": "affirmation"
+      },
+      "revenue": {
+        "literal": true,
+        "equivalence": "currency-mismatch"
+      },
+      "storedFact": false,
+      "modelFact": null,
+      "modelParse": null,
+      "modelFactMatchesStored": null,
+      "expected": {
+        "tokenOmission": false,
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "currency-mismatch"
+      },
+      "actual": {
+        "tokenOmission": false,
+        "meaningOmission": false,
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "currency-mismatch"
+      },
+      "agrees": true
+    },
+    {
+      "id": "equiv-monthly",
+      "kind": "synthetic-control",
+      "file": null,
+      "note": "월과 연을 같은 금액으로 보지 않는다.",
+      "humanWouldCountAsPresent": false,
+      "missingTokens": [
+        "A2",
+        "예상 연매출",
+        "10억"
+      ],
+      "deniedTokens": [],
+      "spanRoles": {
+        "A2": "absent",
+        "예상 연매출": "absent",
+        "10억": "absent"
+      },
+      "revenue": {
+        "literal": false,
+        "equivalence": "period-mismatch"
+      },
+      "storedFact": false,
+      "modelFact": null,
+      "modelParse": null,
+      "modelFactMatchesStored": null,
+      "expected": {
+        "tokenOmission": true,
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "period-mismatch"
+      },
+      "actual": {
+        "tokenOmission": true,
+        "meaningOmission": true,
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "period-mismatch"
+      },
+      "agrees": true
+    },
+    {
+      "id": "equiv-actual",
+      "kind": "synthetic-control",
+      "file": null,
+      "note": "실적과 예상을 같은 값으로 보지 않는다.",
+      "humanWouldCountAsPresent": false,
+      "missingTokens": [
+        "A2",
+        "예상 연매출",
+        "10억"
+      ],
+      "deniedTokens": [],
+      "spanRoles": {
+        "A2": "absent",
+        "예상 연매출": "absent",
+        "10억": "absent"
+      },
+      "revenue": {
+        "literal": false,
+        "equivalence": "kind-mismatch"
+      },
+      "storedFact": false,
+      "modelFact": null,
+      "modelParse": null,
+      "modelFactMatchesStored": null,
+      "expected": {
+        "tokenOmission": true,
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "kind-mismatch"
+      },
+      "actual": {
+        "tokenOmission": true,
+        "meaningOmission": true,
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "kind-mismatch"
+      },
+      "agrees": true
+    },
+    {
+      "id": "equiv-vague",
+      "kind": "synthetic-semantic-limit",
+      "file": null,
+      "note": "기간·예상·실적이 불명확해 자동 인정하지 않는다.",
+      "humanWouldCountAsPresent": false,
+      "missingTokens": [
+        "A2",
+        "예상 연매출",
+        "10억"
+      ],
+      "deniedTokens": [],
+      "spanRoles": {
+        "A2": "absent",
+        "예상 연매출": "absent",
+        "10억": "absent"
+      },
+      "revenue": {
+        "literal": false,
+        "equivalence": "unverified"
+      },
+      "storedFact": false,
+      "modelFact": null,
+      "modelParse": null,
+      "modelFactMatchesStored": null,
+      "expected": {
+        "tokenOmission": true,
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "unverified"
+      },
+      "actual": {
+        "tokenOmission": true,
+        "meaningOmission": true,
+        "infoOmission": true,
+        "factPromotion": false,
+        "revenueEquivalence": "unverified"
       },
       "agrees": true
     }
@@ -312,7 +659,22 @@
     {
       "id": "denial-tokens",
       "checker": "token",
-      "detail": "부정문 또는 미인정 문장인데 토큰이 있어 누락으로 보지 않음"
+      "detail": "문자열은 있으나 부정·인용·언급·다른 통화라 정보 인정은 아니다"
+    },
+    {
+      "id": "quote-needles",
+      "checker": "token",
+      "detail": "문자열은 있으나 부정·인용·언급·다른 통화라 정보 인정은 아니다"
+    },
+    {
+      "id": "bare-mention",
+      "checker": "token",
+      "detail": "문자열은 있으나 부정·인용·언급·다른 통화라 정보 인정은 아니다"
+    },
+    {
+      "id": "equiv-usd",
+      "checker": "token",
+      "detail": "문자열은 있으나 부정·인용·언급·다른 통화라 정보 인정은 아니다"
     },
     {
       "id": "paraphrase-sibillion",
@@ -322,8 +684,8 @@
   ],
   "auditAgrees": true,
   "limits": [
-    "토큰 검사는 denial-tokens의 부정문을 누락으로 보지 못한다.",
-    "의미 검사는 십억 같은 다른 표현을 10억의 인정으로 보지 못한다.",
+    "토큰 검사는 부정·인용·언급 안의 문자열을 누락으로 보지 못한다.",
+    "십억은 예상·연·원화가 함께 있을 때만 10억과 같게 본다. 불명확하면 미확인이다.",
     "Fact true와 verifiedFact false의 불일치는 사실 검증 성공이 아니다.",
     "10:39 원본 로그는 미확인이다. 이번 호출의 mergeable로 그 로그를 채우지 않는다."
   ]

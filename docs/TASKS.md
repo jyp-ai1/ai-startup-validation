@@ -32,6 +32,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 17 | 실패 1·2·5 오프라인 대조. 탐지와 해결을 구분. 10:39 mergeable은 미확인. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/FAILURE-125-OFFLINE-2026-10-16.md` |
 | 18 | CEO 복귀용 증거 패키지. 최소 세트와 기존 테스트 범위를 분리. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md` |
 | 19 | 탐지기 확장. 부정문·바꿔 말하기·Fact 불일치를 분리. 세 실패는 미해결. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md` |
+| 20 | 미탐 원인과 실패 5 경로. 인용·언급·통화·기간·실적은 분리. 10:39 mergeable은 미확인. 관문 닫힘 | `docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md` |
 
 ---
 

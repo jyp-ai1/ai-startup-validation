@@ -1,6 +1,6 @@
 # CEO 복귀 검토 — 2026-10-16
 
-1단계 관문을 열 근거는 없다. 실패 1·2·5는 미해결이다. 10절은 그 다음 실험 확장이다. 이 문서는 그 판단을 위한 실행 증거다. 모델 재호출은 없다. 비용은 0원이다. `apps/`·`packages/`는 바꾸지 않았다. PR #199는 초안이다. Production `0b465226`은 조상이다. 2·3단계는 착수하지 않았다.
+1단계 관문을 열 근거는 없다. 실패 1·2·5는 미해결이다. 10절은 탐지기 확장이고, 11절은 미탐 두 건과 실패 5의 원인 기록이다. 이 문서는 그 판단을 위한 실행 증거다. 모델 재호출은 없다. 비용은 0원이다. `apps/`·`packages/`는 바꾸지 않았다. PR #199는 초안이다. Production `0b465226`은 조상이다. 2·3단계는 착수하지 않았다.
 
 ## 1. 실행 요약
 
@@ -160,3 +160,66 @@ CTO가 지시 없이 이어갈 수 있는 일.
 실패 1·2·5는 모두 미해결이다. 1단계 관문은 닫혀 있다. 제품 테스트 연결, 제품 수정, 병합, 배포는 하지 않았다.
 
 확장 커밋 `f8c0956d`. 그 커밋 포함 `6f71ea3a` 이후 `apps/`·`packages/` diff는 비어 있다. Production `0b465226`은 조상이다.
+
+## 11. 미탐 원인과 실패 5 경로 — 2026-10-17
+
+실험 폴더만 바꿨다. 제품 판단과 테스트 게이트는 그대로다. 검사기 라벨 일치 `auditAgrees` true는 제품 통과가 아니다. `detector-run.json`의 `selfPassIsNotProductPass`는 true다. 시각 `2026-10-17T03:26:57.102Z`. 오탐 목록이 비어 있는 것만으로 탐지 범위를 신뢰로 두지 않는다.
+
+명령은 `commands.txt` 10–11항이다. 실패 5 경로 기록은 `failure5-trace.json`, 시각 `2026-10-17T03:25:16.294Z`다.
+
+회귀로 다시 읽은 저장·대조 사례는 기대와 같다. path1은 토큰·의미·정보 누락이고 사실 승격은 없다. path4는 같은 누락에 사실 승격이 있다. control-clean과 control-promotion-only, ledger-absent-still-affirms는 정보 누락이 없다. 이 일치는 실패 1·2의 해결이 아니다.
+
+### A. 부정·인용·언급
+
+문자열 존재와 정보 인정을 나눴다. 토큰 검사는 글자가 있으면 누락으로 보지 않는다. 기존 의미 검사는 부정 동사만 본다. 정보 누락은 문장 역할이 affirmation일 때만 그 바늘을 인정한다.
+
+| 사례 | 입력·출처 | 기대 | 실제 | 탐지 | 오탐·미탐 | 원인·미확인 |
+| --- | --- | --- | --- | --- | --- | --- |
+| denial-tokens | 합성. `A2는 출력하지 않는다. 예상 연매출 10억은 확인되지 않았다.` | 토큰 누락 false, 의미·정보 누락 true, 승격 false, 금액 `absent` | 역할 셋 다 `negation`. 그대로 | 의미 검사와 정보 누락은 잡음. 토큰 검사는 잡지 않음 | 토큰 검사 미탐. 오탐 아님 | 부정 동사가 바늘 뒤 40자 안에 있다. 금액 문장은 usable에서 빠져 동등성은 `absent`. 원문에는 `10억` 글자가 있다 |
+| quote-needles | 합성. `보고서는 "A2"와 "예상 연매출 10억"이라는 제목만 인용했다.` | 토큰·의미 누락 false, 정보 누락 true, 금액 `absent` | 역할 셋 다 `quotation`. 그대로 | 정보 누락만 잡음 | 토큰 검사와 기존 의미 검사의 미탐 | 24자 이하 따옴표 안만 인용으로 뺀다. 부정 동사가 없어 기존 의미 검사는 누락으로 보지 않는다 |
+| bare-mention | 합성. `A2라는 단어와 예상 연매출 10억이라는 표현이 문서 제목에 있다.` | 토큰·의미 누락 false, 정보 누락 true, 금액 `absent` | A2만 `mention`. `예상 연매출`과 `10억`은 `affirmation`. 정보 누락 true, 금액 `absent`, 원문 literal true | 정보 누락은 A2 때문에 true | 토큰·기존 의미 검사 미탐. 매출 바늘의 역할은 언급으로 닫히지 않음 | 언급 단서는 바늘 바로 뒤의 `라는 단어`, `라는 표현`, `이라는 말`, `이라고 적힌`뿐이다. 문장의 `이라는 표현`은 그 목록에 없다. 문장에 `라는 단어`가 있어 금액 usable에서는 빠진다 |
+
+### B. 숫자 표현
+
+문자열 `10억`과 의미상 `십억 원`을 나눴다. `예상`과 연간과 원화가 함께 있을 때만 `match-forecast-krw-year`다. 통화·기간·실적이 어긋나면 그 바늘은 정보로 인정하지 않는다. 조건이 빠지면 `unverified`이고 자동 인정하지 않는다.
+
+| 사례 | 입력·출처 | 기대 | 실제 | 탐지 | 오탐·미탐 | 원인·미확인 |
+| --- | --- | --- | --- | --- | --- | --- |
+| equiv-forecast-explicit | 합성. `S3 예상 연매출은 십억 원이다.`와 A2 문장 | 토큰 누락 true, 정보 누락 false, 금액 `match-forecast-krw-year` | 그대로. `10억` 역할은 `absent`, A2와 `예상 연매출`은 affirmation | 동등성 검사가 매출 두 바늘을 인정 | 토큰 검사는 글자 `10억`이 없어 누락. 그 누락은 기대와 같음 | 문자열 일치는 실패하고, 예상·연·원화·십억이 함께 있어 의미 일치는 성립 |
+| paraphrase-sibillion | 합성. `공급 계약의 연간 규모는 십억 원이다.` `예상` 없음. `humanWouldCountAsPresent` true | 토큰·의미 누락 true, 승격 false | 정보 누락 true, 금액 `unverified` | 토큰·의미·정보 모두 누락으로 봄. 동등성 자동 인정은 하지 않음 | 기존 의미 검사 미탐. 동등성도 S3 예상으로 올리지 않음 | `십억 원`과 연간은 있으나 `예상`이 없다. 사람이 매출로 읽을 수 있어도 미확인으로 남긴다 |
+| equiv-usd | 합성. `S3 예상 연매출 10억 달러`와 A2 문장 | 토큰 누락 false, 정보 누락 true, 금액 `currency-mismatch` | 역할은 affirmation. 정보 누락 true | 통화 불일치가 매출 바늘 인정을 막음 | 토큰 검사 미탐. 글자 `10억`과 `예상 연매출`은 있다 | 역할과 정보 인정이 다르다. A2는 인정된다. 매출은 달러라 원화 10억으로 세지 않는다 |
+| equiv-monthly | 합성. `예상 월매출은 십억 원이다.` | 토큰·정보 누락 true, 금액 `period-mismatch` | 그대로 | 기간 불일치 | 오탐 아님 | 월매출을 연매출로 보지 않는다. A2 문장은 없다 |
+| equiv-actual | 합성. `실적 연매출은 십억 원이다.` | 토큰·정보 누락 true, 금액 `kind-mismatch` | 그대로 | 실적과 예상 구분 | 오탐 아님 | `예상`이 없다 |
+| equiv-vague | 합성. `십억 정도 될 수도 있다.` | 토큰·정보 누락 true, 금액 `unverified` | 그대로 | 자동 인정 안 함 | 오탐 아님 | 기간·예상·실적이 없다 |
+
+`falsePositives`는 빈 목록이다. `misses`는 토큰 검사 4건(`denial-tokens`, `quote-needles`, `bare-mention`, `equiv-usd`)과 의미 검사 1건(`paraphrase-sibillion`)이다. 토큰 미탐 4건은 정보 누락 깃발이 따로 잡는다. paraphrase는 정보 누락도 true이고, 금액은 `unverified`라 S3 예상 연매출로 올리지 않는다.
+
+### C. 실패 5
+
+입력은 테스트와 같다. `정정합니다. 초기 타깃은 방한 FIT 외국인만이 아니라, 국내 MZ 개별 여행객도 포함합니다.` askedIssueId `competitor_analysis`, askedTargetGap `validationTestability`. 출처는 `core-final-stabilization.test.ts`와 `failure5-trace.json`이다.
+
+| 기록 | 기대 | 실제 | 탐지 | 오탐·미탐 | 원인·미확인 |
+| --- | --- | --- | --- | --- | --- |
+| Vitest `vitest-failure5.txt` 12:20:52Z | quality `PARTIAL`, 이어서 mergeable false | 995행 수신 `VALID`. 996행 미실행 | 품질 불일치 탐지 | 제품 판정이 기대와 다름 | mergeable은 이 실행에서 단정되지 않음 |
+| Vitest `vitest-failure5-2026-10-17.txt` 03:07:09Z | 같음 | 수신 `VALID`. 996행 미실행 | 같음 | 같음 | 12:20 발췌와 나란히 보존 |
+| 함수 호출 `failure5-trace.json` | 테스트 기대는 `PARTIAL`, mergeable false | quality `VALID`, mergeable true, factKey `customer`, intent `correction` | 품질·mergeable 모두 기대와 다름 | 제품 판정 불일치 | 아래 경로. 이 mergeable은 이번 호출의 값 |
+| 10:39 원본 | 서술상 `VALID` | 원본 로그 없음 | 확인 불가 | 미확인 | mergeable을 추정하지 않음 |
+
+경로. `interpret-answer-semantics.ts` 458행 `if`가 고객 정정이면 factKey를 `customer`로 둔다. 550행 `validationTestability`는 그 `if`의 `else if`라 이 입력에서는 실행되지 않는다. 562–574행의 `PARTIAL` 반환도 실행되지 않는다. 실행된 반환은 733–749행이다. `parseNotXButYCorrection`이 참이고 factKey가 `customer`이면 quality `VALID`, mergeable true, rationale은 `CEO CORRECT — customer revised to`로 시작한다. 이번 호출의 rationale은 그 접두와 같다. `partialReturnMatched`는 false다. 파서의 accepted는 `, 국내 MZ 개별 여행객도 포함합`이다.
+
+`isCorrectionUtterance` true, `isCustomerFieldCorrection` true. 제품 파일은 수정하지 않았다. `productChanged` false.
+
+### 제안. 제품에는 넣지 않음
+
+- 실험 검사기의 언급 단서에 `이라는 표현`을 더하고, 한 문장이 언급이면 그 문장의 바늘을 함께 mention으로 둔다. bare-mention의 매출 바늘이 affirmation으로 남는 칸을 닫기 위한 제안이다.
+- `십억`은 예상·연·원화가 함께 있을 때만 `10억`과 같게 본다. paraphrase처럼 `예상`이 없으면 `unverified`를 유지한다.
+- 실패 5의 제품 분기를 바꿀지는 별도 판단이다. 탐지기 라벨을 고치는 일과 품질이 `PARTIAL`로 나오게 하는 일은 서로 다른 승인 항목이다.
+
+### 아직 열지 않는 판단
+
+1. 의미 검증기를 실험 밖으로 개선할지.
+2. 실패 5의 제품 판정 분기를 수정할지.
+3. 검증기를 제품 테스트에 연결할지.
+4. 미해결 실패를 통과로 재분류할지.
+
+네 항목은 확정하지 않았다. 실패 1·2·5는 미해결이다. 1단계 관문은 닫혀 있다. 제품 테스트 연결, 제품 수정, 병합, 배포, 2·3단계는 하지 않았다.

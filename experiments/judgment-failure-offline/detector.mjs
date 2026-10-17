@@ -50,6 +50,33 @@ function sentenceDenies(sentence, needle) {
   return DENIAL_VERB.test(tail) && tail.length <= 40;
 }
 
+function removeShortQuotes(sentence) {
+  return sentence
+    .replace(/「[^」]{0,24}」/g, " ")
+    .replace(/"[^"]{0,24}"/g, " ")
+    .replace(/'[^']{0,24}'/g, " ");
+}
+
+function needleRole(sentence, needle) {
+  if (!sentence.includes(needle)) return null;
+  const outside = removeShortQuotes(sentence);
+  if (!outside.includes(needle)) return "quotation";
+  if (sentenceDenies(outside, needle)) return "negation";
+  if (new RegExp(`${needle}(?:라는 단어|라는 표현|이라는 말|이라고 적힌)`).test(outside)) return "mention";
+  return "affirmation";
+}
+
+function spanRoles(content) {
+  const roles = {};
+  for (const needle of fixtures.needles) {
+    const found = sentencesOf(content).map((part) => needleRole(part, needle)).filter(Boolean);
+    if (found.length === 0) roles[needle] = "absent";
+    else if (found.includes("affirmation")) roles[needle] = "affirmation";
+    else roles[needle] = found[0];
+  }
+  return roles;
+}
+
 function meaningOmission(content) {
   const denied = [];
   const missing = [];
@@ -63,6 +90,27 @@ function meaningOmission(content) {
     if (!acknowledged) denied.push(needle);
   }
   return { flagged: missing.length > 0 || denied.length > 0, missing, denied };
+}
+
+function revenueRead(content) {
+  const usable = sentencesOf(content).filter((sentence) => {
+    const outside = removeShortQuotes(sentence);
+    if (!/10억|십억|예상 연매출/.test(outside)) return false;
+    if (/라는 단어|라는 표현|이라는 말/.test(outside)) return false;
+    const start = ["10억", "십억", "예상 연매출"].filter((needle) => outside.includes(needle)).map((needle) => outside.indexOf(needle));
+    const tail = outside.slice(Math.min(...start));
+    return !(DENIAL_VERB.test(tail) && tail.length <= 48);
+  }).join(" ");
+  const literal = usable.includes("10억");
+  const sibillion = /십억\s*원?/.test(usable);
+  if (!literal && !sibillion) return { literal: content.includes("10억"), equivalence: "absent" };
+  if (/달러|USD/.test(usable)) return { literal, equivalence: "currency-mismatch" };
+  if (/월매출|매월|월간/.test(usable) && !/연매출|연간/.test(usable)) return { literal, equivalence: "period-mismatch" };
+  if (/실적/.test(usable) && !/예상/.test(usable)) return { literal, equivalence: "kind-mismatch" };
+  if (/예상/.test(usable) && /연매출|연간/.test(usable) && (literal || sibillion)) {
+    return { literal, equivalence: "match-forecast-krw-year" };
+  }
+  return { literal, equivalence: "unverified" };
 }
 
 function tokenOmission(content) {
@@ -86,11 +134,23 @@ const cases = fixtures.cases.map((item) => {
   const fact = stored ? stored.storedFact : item.fact;
   const omission = tokenOmission(content);
   const meaning = meaningOmission(content);
+  const roles = spanRoles(content);
+  const revenue = revenueRead(content);
+  const revenueCovered = revenue.equivalence === "match-forecast-krw-year";
+  const revenueBlocked = ["currency-mismatch", "period-mismatch", "kind-mismatch"].includes(revenue.equivalence);
+  const affirmed = Object.entries(roles).every(([needle, role]) => {
+    if (revenueBlocked && (needle === "10억" || needle === "예상 연매출")) return false;
+    if (role === "affirmation") return true;
+    if (revenueCovered && (needle === "10억" || needle === "예상 연매출")) return true;
+    return false;
+  });
   const promotion = factPromotion(fact);
   const actual = {
     tokenOmission: omission.flagged,
     meaningOmission: meaning.flagged,
+    infoOmission: !affirmed,
     factPromotion: promotion,
+    revenueEquivalence: revenue.equivalence,
   };
   const agrees = Object.keys(item.expected).every((key) => actual[key] === item.expected[key]);
   return {
@@ -101,6 +161,8 @@ const cases = fixtures.cases.map((item) => {
     humanWouldCountAsPresent: Boolean(item.humanWouldCountAsPresent),
     missingTokens: omission.missing,
     deniedTokens: meaning.denied,
+    spanRoles: roles,
+    revenue,
     storedFact: fact,
     modelFact: stored?.modelFact ?? null,
     modelParse: stored?.modelParse ?? null,
@@ -185,14 +247,16 @@ const failure5SideBySide = {
 const falsePositives = cases.filter((item) => (
   (item.expected.tokenOmission === false && item.actual.tokenOmission)
   || (item.expected.meaningOmission === false && item.actual.meaningOmission)
+  || (item.expected.infoOmission === false && item.actual.infoOmission)
   || (item.expected.factPromotion === false && item.actual.factPromotion)
+  || (item.expected.revenueEquivalence === "unverified" && item.actual.revenueEquivalence === "match-forecast-krw-year")
 )).map((item) => item.id);
 
 const misses = [
-  ...cases.filter((item) => item.actual.meaningOmission && item.actual.tokenOmission === false).map((item) => ({
+  ...cases.filter((item) => item.actual.infoOmission && item.actual.tokenOmission === false).map((item) => ({
     id: item.id,
     checker: "token",
-    detail: "부정문 또는 미인정 문장인데 토큰이 있어 누락으로 보지 않음",
+    detail: "문자열은 있으나 부정·인용·언급·다른 통화라 정보 인정은 아니다",
   })),
   ...cases.filter((item) => item.humanWouldCountAsPresent && item.actual.meaningOmission).map((item) => ({
     id: item.id,
@@ -223,8 +287,8 @@ const report = {
     && qualityCases.filter((item) => item.agrees !== null).every((item) => item.agrees)
     && fieldCase.agrees,
   limits: [
-    "토큰 검사는 denial-tokens의 부정문을 누락으로 보지 못한다.",
-    "의미 검사는 십억 같은 다른 표현을 10억의 인정으로 보지 못한다.",
+      "토큰 검사는 부정·인용·언급 안의 문자열을 누락으로 보지 못한다.",
+    "십억은 예상·연·원화가 함께 있을 때만 10억과 같게 본다. 불명확하면 미확인이다.",
     "Fact true와 verifiedFact false의 불일치는 사실 검증 성공이 아니다.",
     "10:39 원본 로그는 미확인이다. 이번 호출의 mergeable로 그 로그를 채우지 않는다.",
   ],
