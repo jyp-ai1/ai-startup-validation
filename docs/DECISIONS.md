@@ -1519,6 +1519,32 @@ CEO needs a place inside ALABOM to paste a business plan, a GPT web original, a 
 
 ---
 
+## ADR-053: Validation bench requires the existing login check
+
+**Status:** Accepted  
+**Date:** 2026-10-17  
+**Sprint:** Closed Alpha — manual web-original capture  
+**Authors:** CTO (autonomous)  
+**Supersedes:** the public-page bullet in ADR-052
+
+### Context
+
+`bf450dbc` placed the bench under `(public)` so it would not use the workspace demo-cookie bypass. An unauthenticated request then received the form. A business plan must not be entered on a page that opens without login.
+
+### Decision
+
+1. The page calls `requireAuthUser('/validation-bench')` and `cookies()`, and sets `dynamic = 'force-dynamic'`.
+2. It does not call `isDemoWorkspace`. The demo cookie does not open the form.
+3. The record remains in `sessionStorage`. Login does not copy the plan into a new table, the URL, or an analytics parameter.
+
+### Consequences
+
+- Anonymous and demo requests render the existing Google login screen. The bench form is absent.
+- A logged-in session is required before the form is rendered. This environment has no CEO Google session, so that path is unverified here.
+- ADR-052's session-storage rule still stands.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

@@ -14,9 +14,10 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 | # | Item | Status |
 |---|------|--------|
-| 1 | Paste, copy, and separate rounds on the bench | 로컬 브라우저에서 확인 |
-| 2 | Real GPT and Gemini originals | BLOCKED |
-| 3 | Production deploy | NOT RUN |
+| 1 | Paste, copy, and separate rounds on the bench | `bf450dbc` 로컬 확인. 그 커밋은 비로그인으로 열림 |
+| 2 | Login gate without demo bypass | 프로덕션 모드에서 로그인 화면 확인. CEO 세션 경로는 NOT RUN |
+| 3 | Real GPT and Gemini originals | BLOCKED |
+| 4 | Preview and Production | Preview는 배포 URL 확인 전. Production NOT RUN |
 
 ---
 

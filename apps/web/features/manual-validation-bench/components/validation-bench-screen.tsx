@@ -160,7 +160,7 @@ export function ValidationBenchScreen() {
           {sessionNote}
         </p>
         <p className="text-sm text-muted-foreground">
-          로그인 계정별로 서버에 나누어 저장하지 않는다. 다른 브라우저에는 이 탭의 기록이 없다. 같은 탭을 함께 쓰면 그 기록은 그 탭 안에 있다.
+          이 화면은 로그인 뒤에 열린다. 입력한 사업계획과 원문은 이 브라우저 탭의 세션에만 있고, 계정 서버 기록으로 저장하지 않는다. 다른 브라우저에는 이 탭의 기록이 없다.
         </p>
       </header>
 

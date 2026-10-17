@@ -43,3 +43,27 @@
 ## 하지 않은 것
 
 외부 AI API 0건. 웹 자동화 0건. 새 테이블과 마이그레이션 0건. PR #199와 PR #200 병합 0건. Production 배포 0건.
+
+## 인증 재검토
+
+`bf450dbc`의 `/ko/validation-bench`는 로그인 없이 HTTP 200으로 열렸고, 브라우저에서 입력 화면이 나왔다. 사업계획을 그 주소에 넣으라고 안내하면 안 된다.
+
+이후 페이지는 `requireAuthUser('/validation-bench')`를 호출한다. `isDemoWorkspace`는 호출하지 않는다. `cookies()`와 `dynamic = 'force-dynamic'`을 둔다. `robots`는 `noindex, nofollow`다.
+
+로컬 `next start -p 3012`에서 확인한 결과:
+
+- 쿠키 없는 요청은 `/auth/login?next=%2Fvalidation-bench`로 이동한다. 사업계획 입력란은 없다.
+- `WORKSPACE_MODE=demo` 쿠키와 Demo Workspace 진입 뒤에도 같은 로그인 화면으로 이동한다. 입력란은 없다.
+- 프로덕션 모드 HTML에는 개발 스택이 없고, 벤치 폼 테스트 아이디가 없다.
+- `/ko/business-validation`은 200이다.
+- Google로 로그인한 CEO 세션은 이 환경에 없다. 로그인 뒤에 폼이 열리는지는 NOT RUN이다.
+
+분석 이벤트 세 곳은 `screen: '/validation-bench'`와 상태, 구분, 질문 아이디만 보낸다. 호출부에 사업계획, GPT 원문, Gemini 원문, 수동 종합, 피드백, `message`는 없다. 저장소의 `persistAnalyticsEvent`는 그 params를 저장할 수 있으므로, 원문 필드를 params에 넣지 않는 상태를 테스트로 고정했다. 실패 로그는 이벤트 이름만 남긴다.
+
+## 테스트 구분
+
+이전 커밋에서 벤치 8개를 포함한 비교 슬라이스 7파일 46개가 통과했다. 인증 추가 뒤 같은 7파일은 48개다. 벤치 9개, 경계 테스트 6개, 나머지 슬라이스 테스트는 이전과 같은 수다. `next build` 종료 코드 0.
+
+전체 vitest의 실패 30개는 `features/workflow-journey/lib/business-understanding`, `features/workflow-journey/lib/first-trust`, `lib/ai-pm-accuracy`에 있다. `git diff origin/main`에 그 디렉터리는 없다. 이 분기에서 바뀐 분석 코드는 이벤트 이름 세 개다. 그 실패 테스트는 `PRODUCT_ANALYTICS_EVENTS`를 참조하지 않는다. 이 사실은 그 30개가 이번 diff의 파일이 아니라는 뜻이다. 전체 스위트가 통과했다는 뜻은 아니다. 30개를 `origin/main`에서 다시 실행하지는 않았다.
+
+실제 GPT·Gemini 원문 파일은 만들지 않았다. 게이트가 통과하면 그 파일이 없다는 뜻이다.

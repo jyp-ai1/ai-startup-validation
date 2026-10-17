@@ -25,6 +25,16 @@ describe('comparison route slice boundary', () => {
     expect(src.includes('yieldedFrom')).toBe(false);
   });
 
+  it('keeps the manual bench behind login without the demo cookie bypass', () => {
+    const page = source('app/[locale]/(public)/validation-bench/page.tsx');
+    expect(page.includes('requireAuthUser')).toBe(true);
+    expect(page.includes("'/validation-bench'")).toBe(true);
+    expect(page.includes('isDemoWorkspace')).toBe(false);
+    expect(page.includes("dynamic = 'force-dynamic'")).toBe(true);
+    expect(page.includes('await cookies()')).toBe(true);
+    expect(page.includes('index: false')).toBe(true);
+  });
+
   it('keeps the non-demo workspace behind login', () => {
     const layout = source('app/[locale]/(shell)/workspace/layout.tsx');
     const page = source('app/[locale]/(shell)/workspace/page.tsx');

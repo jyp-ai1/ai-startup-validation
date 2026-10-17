@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -132,6 +135,24 @@ describe('manual validation bench', () => {
     expect(restored?.liveModelCall).toBe(false);
     expect(restored?.permanent).toBe(false);
     expect(nextRoundPrompt(openRound(bench)).length).toBeGreaterThan(20_000);
+  });
+
+  it('sends analytics without the plan or the pasted originals', () => {
+    const screen = readFileSync(
+      path.resolve(__dirname, '../../components/validation-bench-screen.tsx'),
+      'utf8',
+    );
+    const calls = screen.match(/recordFunnelEvent\([\s\S]*?\}\);/g) ?? [];
+    expect(calls.length).toBe(3);
+    for (const call of calls) {
+      expect(call.includes('businessPlan')).toBe(false);
+      expect(call.includes('gptText')).toBe(false);
+      expect(call.includes('geminiText')).toBe(false);
+      expect(call.includes('manualSynthesis')).toBe(false);
+      expect(call.includes('feedback')).toBe(false);
+      expect(call.includes('message:')).toBe(false);
+      expect(call.includes("screen: '/validation-bench'")).toBe(true);
+    }
   });
 
   it('rejects a record that claims permanent storage or a live model call', () => {
