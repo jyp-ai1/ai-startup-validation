@@ -31,6 +31,8 @@ const files = [
   ["vitest-2026-10-17", "experiments/judgment-failure-offline/vitest-failure5-2026-10-17.txt", "failure5-rerun"],
   ["trace-script", "experiments/judgment-failure-offline/trace-failure5.ts", "failure5-path-script"],
   ["failure5-trace", "experiments/judgment-failure-offline/failure5-trace.json", "failure5-path-result"],
+  ["preview-check-script", "experiments/judgment-failure-offline/preview-check.mjs", "preview-status-script"],
+  ["preview-check", "experiments/judgment-failure-offline/preview-check.json", "preview-status-result"],
 ];
 
 const rows = files.map(([id, rel, role]) => {

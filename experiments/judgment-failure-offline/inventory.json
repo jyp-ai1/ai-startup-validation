@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-17T03:29:41.283Z",
+  "at": "2026-10-17T04:48:34.468Z",
   "rows": [
     {
       "id": "prompt",
@@ -158,16 +158,16 @@
       "rel": "experiments/judgment-failure-offline/commands.txt",
       "role": "this-sprint-command-log",
       "exists": true,
-      "bytes": 4027,
-      "sha256": "fa636d51712bb2ffdcf234694603597ff195dfed5ef410d64714f8981750e642"
+      "bytes": 4425,
+      "sha256": "5f6158aa9907b60b54a1f6cdb7f2a1c57237892ae0b241a520324e884e83c76b"
     },
     {
       "id": "ceo-review",
       "rel": "docs/evidence/ALABOM/AI-PM/CEO-RETURN-REVIEW-2026-10-16.md",
       "role": "this-sprint-review",
       "exists": true,
-      "bytes": 22515,
-      "sha256": "3dcf65587070c2e1b9fa785d75f1fa1fd50a12b646f51a806e7f115f075bd84c"
+      "bytes": 31353,
+      "sha256": "570c951b9d5ca923ab8329dbc41e9856cf699e01cfe13831a35b8c757fed727e"
     },
     {
       "id": "log-search",
@@ -208,6 +208,22 @@
       "exists": true,
       "bytes": 1355,
       "sha256": "9d8d0a9d737afe552510fd400f4abe9b830ae49d9dcb447905b7e8591d1e1d71"
+    },
+    {
+      "id": "preview-check-script",
+      "rel": "experiments/judgment-failure-offline/preview-check.mjs",
+      "role": "preview-status-script",
+      "exists": true,
+      "bytes": 3832,
+      "sha256": "8259dc82ba8a74cf5d1813ec34ab5a2fc40abba6000bf088ecbbe8dc429c967a"
+    },
+    {
+      "id": "preview-check",
+      "rel": "experiments/judgment-failure-offline/preview-check.json",
+      "role": "preview-status-result",
+      "exists": true,
+      "bytes": 1822,
+      "sha256": "fc95dba72970509a034a7d470c297d6f036c0ef0a2453797db012dd92d9b4d91"
     }
   ],
   "missingRaw": [

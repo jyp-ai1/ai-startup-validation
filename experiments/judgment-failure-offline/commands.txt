@@ -58,3 +58,10 @@
     customerReturn true. partialReturn false.
     Vitest 두 발췌는 Received VALID, 996행 미실행.
     original1039Mergeable unverified. productChanged false.
+
+12. node experiments/judgment-failure-offline/preview-check.mjs
+    2026-10-17T04:47:17.111Z. EXIT 0.
+    PR #199 deployment 7134241920 SHA 860ee75e state failure.
+    인증 없는 요청은 HTTP 302, Vercel SSO.
+    제품 검증기 연결 false. Production commit 0b465226. apps/packages diff 비어 있음.
+    ceoBrowserStatus BLOCKED. 빌드 로그 본문은 토큰이 없어 읽지 않음.

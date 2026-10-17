@@ -1,6 +1,6 @@
 # CEO 복귀 검토 — 2026-10-16
 
-1단계 관문을 열 근거는 없다. 실패 1·2·5는 미해결이다. 10절은 탐지기 확장이고, 11절은 미탐 두 건과 실패 5의 원인 기록이다. 이 문서는 그 판단을 위한 실행 증거다. 모델 재호출은 없다. 비용은 0원이다. `apps/`·`packages/`는 바꾸지 않았다. PR #199는 초안이다. Production `0b465226`은 조상이다. 2·3단계는 착수하지 않았다.
+1단계 관문을 열 근거는 없다. 실패 1·2·5는 미해결이다. 10절은 탐지기 확장이고, 11절은 미탐 두 건과 실패 5의 원인 기록이다. 12절은 CEO가 브라우저에서 직접 확인할 경로의 상태다. 이 문서는 그 판단을 위한 실행 증거다. 모델 재호출은 없다. 비용은 0원이다. `apps/`·`packages/`는 바꾸지 않았다. PR #199는 초안이다. Production `0b465226`은 조상이다. 2·3단계는 착수하지 않았다.
 
 ## 1. 실행 요약
 
@@ -226,4 +226,107 @@ CTO가 지시 없이 이어갈 수 있는 일.
 
 원인 기록 커밋 `b95b3bc8`. 그 커밋 포함 `6f71ea3a` 이후 `apps/`·`packages/` diff는 비어 있다. Production `0b465226`은 조상이다.
 
-원인 기록 커밋 `b95b3bc8`. 그 커밋 포함 `6f71ea3a` 이후 `apps/`·`packages/` diff는 비어 있다. Production `0b465226`은 조상이다.
+## 12. CEO 직접 검증 경로 — 2026-10-17
+
+상태: **BLOCKED**. CEO가 브라우저에서 실패 1·2·5를 제품 화면으로 재현할 경로가 없다. 이 상태는 제품 품질 통과가 아니다. 1단계 관문은 닫혀 있다. 병합과 Production 배포는 하지 않았다.
+
+기록 파일은 `experiments/judgment-failure-offline/preview-check.json`이다. 시각 `2026-10-17T04:47:17.111Z`. 명령은 `commands.txt` 12항이다.
+
+### 1. Preview와 SHA
+
+| 항목 | 값 |
+| --- | --- |
+| PR | [#199](https://github.com/jyp-ai1/ai-startup-validation/pull/199), 초안, 브랜치 `cursor/business-refinement-loop-4b88` |
+| 확인한 배포 | GitHub deployment `7134241920`, 시각 `2026-10-17T03:32:30Z` |
+| 배포 SHA | `860ee75e054f61c7049ddf8442b694496803f910` |
+| GitHub 상태 | `failure`. 설명은 Vercel inspect `dpl_3AGqp3F4Mztks5gDzdTnB6DDFZJw` |
+| 배포가 돌려 준 주소 | `https://ai-startup-validation-3cgzg4to7-jyp-ai1s-projects.vercel.app` |
+| 인증 없는 요청 | `HTTP/2 302`, 호스트 `vercel.com`, Vercel SSO |
+| 빌드 로그 본문 | 읽지 못함. `VERCEL_TOKEN` 없음. 대시보드 주소 `https://vercel.com/jyp-ai1s-projects/ai-startup-validation/3AGqp3F4Mztks5gDzdTnB6DDFZJw` |
+| Vercel 봇 | `previewUrl` 빈 문자열, `nextCommitStatus` `FAILED` |
+
+이번 조회에서 저장소의 Preview 배포 30건은 모두 `failure`다. 제품 동결 `6f71ea3a`의 배포 `7115529487`도 `failure`다. 별도로 읽은 2026-10-15T10:32:58Z 배포 `7090193506`, SHA `a2c8943e`는 `success`다. 주소 `https://ai-startup-validation-5t4xcwk8x-jyp-ai1s-projects.vercel.app`는 이번 요청에서 `302`로 Vercel SSO에 간다. 그 배포는 PR #199의 현재 커밋이 아니고, 검증기 화면이 아니다.
+
+Production `https://ai-startup-validation-tau.vercel.app/api/build-info`의 commit은 `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`다. 잠금 SHA와 같다. 이 주소를 PR #199 Preview로 쓰지 않는다.
+
+### 2. 제품 검증기
+
+`apps/`와 `packages/`에서 `path1.json`, `path4.json`, `judgment-failure-offline`을 찾는 파일은 0개다. 제품 화면에 검증기가 연결되어 있지 않다. 오프라인 도구는 `experiments/judgment-failure-offline/detector.mjs`뿐이다. 실패한 Preview 주소를 검증기 테스트 페이지로 두지 않는다.
+
+### 3. 실패 1·2·5를 지금 보는 방법
+
+브라우저 절차는 없다. 아래는 이미 실행한 로컬 대조다.
+
+| 실패 | 입력 | 기대 | 실제 | 화면에서 재현 |
+| --- | --- | --- | --- | --- |
+| 1 | `experiments/business-judgment-poc/path1.json` | A2와 S3 `예상 연매출 10억`이 출력에 있고, 원장 없으면 Fact false | 모델 Fact와 저장 Fact가 false. 세 토큰 없음. 사실 승격 없음 | 제품 화면 없음 |
+| 2 | `experiments/business-judgment-poc/path4.json` | Fact false | 모델 Fact와 저장 Fact가 true. `recordExternalAnalysis`의 `verifiedFact`는 false, `claimStatus`는 `unassessed` | 제품 화면 없음. 함수의 false는 검증 성공이 아님 |
+| 5 | `정정합니다. 초기 타깃은 방한 FIT 외국인만이 아니라, 국내 MZ 개별 여행객도 포함합니다.` askedIssueId `competitor_analysis`, askedTargetGap `validationTestability` | 테스트가 적은 `PARTIAL`, mergeable false | Vitest 995행 수신 `VALID`. 996행 미실행. 함수는 quality `VALID`, mergeable true, factKey `customer` | 제품 화면 없음 |
+
+`judgment-development.test.ts` 3건 통과는 path1·path4를 열지 않는다. 그 통과로 실패 1·2를 해결로 두지 않는다.
+
+### 4. 오탐·미탐
+
+11절과 같다. `falsePositives`는 빈 목록이다. 토큰 미탐은 `denial-tokens`, `quote-needles`, `bare-mention`, `equiv-usd`다. 의미 미탐은 `paraphrase-sibillion`이고 금액은 `unverified`다. 빈 오탐 목록만으로 탐지 범위를 신뢰로 두지 않는다. 실패 1·2·5는 미해결이다. 10:39 원본의 mergeable은 미확인이다.
+
+이번 조회의 `10:39:10` 일치는 서술 문서와 검색 스크립트다. Vitest 원본 로그는 추가되지 않았다. `/tmp/f13-after/unit2.log`는 없다. 과거 mergeable을 이번 호출 값으로 채우지 않는다.
+
+### 5. 오프라인 검증기와 제품 검증기
+
+| | 오프라인 검증기 | 제품 검증기 |
+| --- | --- | --- |
+| 있는 곳 | `experiments/judgment-failure-offline` | 이 브랜치에 없음 |
+| 읽는 것 | 저장 JSON, 합성 문장, 이미 실행한 함수 결과 | 해당 없음 |
+| 제품 테스트 게이트 | 연결하지 않음 | 해당 없음 |
+| CEO 브라우저 | 화면이 아님 | 화면이 없음 |
+
+### 6. 동결
+
+`git diff --stat 6f71ea3a -- apps packages`는 비어 있다. `0b465226`은 HEAD의 조상이다. Production build-info commit은 그 SHA다. 제품 판단 로직, 테스트 게이트, 병합, Production 배포, 2·3단계는 이번 절에서 하지 않았다. 비용은 0원이다.
+
+### A. 의미 검증기를 실험 밖으로 둘지 보기 위한 실행
+
+이것은 제품 적용 승인이 아니다. 이미 실행한 오프라인 결과다. 시각은 `detector-run.json`의 `2026-10-17T03:26:57.102Z`다.
+
+| 사례 | 기대 | 실제 | CEO가 볼 칸 |
+| --- | --- | --- | --- |
+| `A2는 출력하지 않는다` | 정보 인정으로 보지 않음 | 세 바늘 역할 `negation`, 정보 누락 true | 부정문을 사실 인정으로 두지 않았다 |
+| `A2라는 단어`와 `10억이라는 표현` | 단순 언급 | A2만 `mention`. 매출 두 바늘은 `affirmation`. 정보 누락은 A2 때문에 true | 언급과 주장의 구분이 매출 바늘에서는 아직 닫히지 않음 |
+| `예상 연매출은 십억 원`과 A2 문장 | 조건이 맞을 때만 동등 | `match-forecast-krw-year`. 글자 `10억`은 없음 | 예상·연·원화가 함께 있어 의미 일치를 인정 |
+| `십억 원`만 있고 `예상` 없음 | 자동 인정 안 함 | `unverified` | 불명확한 금액을 올리지 않음 |
+| `10억 달러` | 원화 10억과 다르게 | `currency-mismatch`, 정보 누락 true | 통화를 구분 |
+| `예상 월매출은 십억 원` | 연매출과 다르게 | `period-mismatch` | 기간을 구분 |
+
+### B. 실패 5의 기대와 현재 동작
+
+기대는 이미 테스트에 적혀 있다. `core-final-stabilization.test.ts`는 같은 입력에 quality `PARTIAL`, mergeable false를 요구한다. 그 테스트는 12:20:52Z와 03:07:09Z에 수신값 `VALID`로 실패했다. `failure5-trace.json`은 같은 입력의 함수가 733–749행 고객 정정 반환으로 `VALID`, mergeable true를 주는 것을 기록한다. 550행의 `validationTestability` `PARTIAL` 반환은 실행되지 않는다.
+
+품질과 mergeable은 이번 호출 안에서는 서로 같다. 둘 다 테스트가 적은 값과 다르다. Vitest는 mergeable 줄을 실행하지 않았다. 10:39의 mergeable은 미확인이다.
+
+아직 답하지 않은 질문이다. 고객 정정이 있어도 검증 근거가 부족하면 `PARTIAL`이어야 하는지, 어떤 근거가 있으면 `VALID`를 허용하는지는 제품 수정 승인 전에 남아 있다. 그 답을 제품 코드에 넣지 않았다. 새 제품 테스트 게이트도 추가하지 않았다.
+
+### C. 제품 테스트 연결 조건
+
+| 조건 | 지금 |
+| --- | --- |
+| 실패 1·2·5를 자동으로 보는 테스트 | 5는 기존 테스트가 불일치를 실패로 남긴다. 1·2를 path 파일로 읽는 제품 테스트는 없다 |
+| 각 테스트가 대상 입출력을 읽음 | 5의 입력은 테스트 문자열이다. 1·2의 JSON은 제품 테스트가 열지 않는다 |
+| 정상 사례의 불필요 실패 | 오프라인 대조 사례는 라벨과 맞았다. 그것을 제품 게이트로 두지 않는다 |
+| 실패 시 통합 또는 배포를 막음 | 이 검증기를 배포 차단에 연결하지 않았다 |
+| 기존 통과로 미해결 실패를 승인하지 않음 | `judgment-development` 3건 통과는 실패 1·2의 해결이 아니다 |
+
+A와 B가 제품 적용 수준인지의 판단은 열려 있다. 연결은 하지 않았다.
+
+### D. 10:39 원본
+
+접근한 `docs/`, `experiments/`, 이전에 지정한 트랜스크립트, `/tmp/f13-after/unit2.log`에서 Vitest 원본은 없다. 미확인을 유지한다.
+
+### READY가 되려면
+
+승인 전에 적용하지 않은 항목이다.
+
+1. 이 브랜치 Preview 배포가 `success`가 되고, 빌드 로그의 실패 원인이 확인된다. 로그를 보려면 프로젝트 멤버가 inspect 주소를 열거나, 승인된 토큰이 필요하다.
+2. CEO가 그 Preview를 연다. 이 환경에는 Vercel 세션과 protection bypass가 없다. 로그인을 시도하지 않았고 보호를 우회하지 않았다.
+3. 실패 1·2·5의 입력과 기대·실제를 보여주는 제품 화면이 있다. 그 화면은 새 제품 코드라 별도 승인 대상이다.
+
+GitHub의 이 문서는 읽을 수 있다. 그것은 제품 화면의 직접 테스트가 아니다.
