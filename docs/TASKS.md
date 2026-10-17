@@ -43,6 +43,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 28 | 페이지 실행 그래프 25파일은 질문 넘김·provider 교체를 import하지 않음. 슬라이스는 가능하나 만들지 않음. 전체 병합 보류. 실패 1·2 제품 경로 없음. 실패 5 브라우저 재현 없음. 원문 BLOCKED | `docs/evidence/ALABOM/AI-PM/DECOUPLING-AND-REPRO-PLAN-2026-10-17.md` |
 | 29 | 슬라이스는 PR #200 `cursor/comparison-route-slice-4b88`. 실행 25파일. 질문·provider 미포함. 빌드 0, 회귀 34 PASS. 실패 1·2 재현 4 FAIL. 실패 5는 로그인 리다이렉트. 원문 BLOCKED. #199 병합 없음 | `docs/evidence/ALABOM/AI-PM/ROUTE-SLICE-AND-REPRO-2026-10-17.md` |
 | 30 | 실패 1·2 판정은 PR #200 `4f0d1187`. JSON은 유지. 입력의 A2·S3를 누락으로 옮기고 원장 없는 Fact true는 false. 재현 9와 회귀 34 통과. 실패 5·원문 BLOCKED. 병합 없음 | `docs/evidence/ALABOM/AI-PM/FAILURE-12-JUDGMENT-2026-10-17.md` |
+| 31 | 전략 유지. 44개 테스트는 규칙 범위. provider 동일 객체는 비교 경로가 쓰지 않음. 실제 원문·여정·실패 5·Production은 BLOCKED 또는 NOT RUN. #199·#200 병합 없음 | `docs/evidence/ALABOM/AI-PM/STRATEGY-GATE-2026-10-17.md` |
 
 ---
 
