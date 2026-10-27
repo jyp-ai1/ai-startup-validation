@@ -2,7 +2,17 @@
 
 판정: **BLOCKED**
 
-CEO 최종 확인은 요청하지 않는다. Production 잠금 `0b465226`과 PR #207 미병합은 유지했다. 이 패키지는 통과 자료가 아니다.
+2026-10-28 08:30 KST에 비교 원문과 인증 세션을 다시 찾았다. 비교 분석은 시작하지 않았다. 인증 없는 Preview 재시도를 결과로 쓰지 않는다. CEO 최종 확인은 요청하지 않는다. Production 잠금 `0b465226`과 PR #207 미병합은 유지했다.
+
+| 확인 | 시각 | 결과 |
+|---|---|---|
+| `GPT_API_KEY`, `VERCEL_TOKEN` | 08:30 KST | 이 런에 없음 |
+| Chrome의 Vercel 쿠키 11개로 `/api/build-info` 1회 | 08:30 KST | 로그인 화면. 앱 SHA 없음. 인증 세션이 아니다 |
+| `ai_pm_reviews` | 08:30 KST | HTTP 200, `content-range */0` |
+| `knowledge_documents`에서 Gemini, GPT, 양조 검색 | 08:30 KST | 0건 |
+| 다른 데스크톱 실행 런 | 08:30 KST | ALABOM2, ALABOM3에는 이번 비교 원문이 없다 |
+
+전체 경로(모델 호출 → 비교 분석 → 저장 → 재조회 → 화면 일치)는 시작 전에 끊겨 있다. `c22ffacb`는 화면 커밋이며 이 경로의 증거가 아니다.
 
 ## 1. 대상
 
