@@ -2020,6 +2020,16 @@ On 2026-10-27 the configured `SUPABASE_URL` host had no public DNS record from t
 3. The review API keeps local sqlite, with `storage.durable: false`, until migration 023 is applied on a host that resolves. Production founder text is not written to that sqlite file as a durable record.
 4. No second database is added.
 
+### Pre-apply review (2026-10-27 20:15 KST)
+
+Schema: two new tables only. `001`–`022` are not altered. There is no seed insert. `user_id` is text and does not reference `auth.users`, so deleting a user does not delete the plan text. Feedback rows do not reference `ai_pm_reviews`. `record_json` stores the plan, the review sections, the feedback, and token counts. The stored review type has no API key field. Row level security is on and there is no anon policy, matching `analytics_events`.
+
+Existing data: no current table is changed and no current row is updated or deleted. `business_plans` stays a project document.
+
+Rollback: `DROP TABLE public.ai_pm_feedback;` then `DROP TABLE public.ai_pm_reviews;`. Indexes drop with the tables. The review route does not write these tables yet, so dropping them does not change the running API.
+
+Persistence: rows in Supabase Postgres would survive a Vercel redeploy. The configured host still has no public DNS record, so 023 is not applied. `apps/web` review routes still call `openAiPmReviewStore` and do not call `SupabaseAiPmReviewRepository`. Applying the SQL alone would not make a redeploy keep the reviews. `.data/ai-pm-reviews.sqlite` remains `storage.durable: false`.
+
 ### Alternatives Considered
 
 | Option | Pros | Cons |

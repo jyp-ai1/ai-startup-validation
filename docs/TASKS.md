@@ -10,7 +10,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 **Branch:** `cursor/ai-pm-first-review-4b88`  
 **저장:** 실행 경로는 `.data/ai-pm-reviews.sqlite`, `storage.durable` false. 영속 스키마는 기존 Supabase용 `packages/db/src/migration/023_ai_pm_reviews.sql`과 `SupabaseAiPmReviewRepository`. 023은 미적용이다. 설정된 Supabase 호스트는 공개 DNS 레코드가 없다. `business_plans`는 이 저장소가 아니다. 별도 데이터베이스는 추가하지 않는다.  
 **Production 잠금:** `0b465226` 유지. 병합하지 않음.  
-**Preview 실패 원인:** `pnpm --filter web build`가 `ai-pm-review.ts`의 `finishCall` 입력에 없는 `store` 필드로 타입 검사를 실패했다. Vercel 로그는 인증 없이 열리지 않았다. 같은 타입 오류가 `61cf5a38`, `e8cf4d75`(`dpl_2tT9wyZcUc7hvhpQ7q94igEFY644`), `68d29786` Preview를 막았다. 부모 `ef39e14e` Preview는 성공했다. Production `0b465226`에는 이 경로가 없다.
+**Preview:** `1b83d861` 배포는 2026-10-27 20:09 KST에 완료됐다. 주소 `https://ai-startup-validation-2n84mh03x-jyp-ai1s-projects.vercel.app` 는 Vercel Authentication이 켜져 있다. 이 실행 환경에는 Vercel 토큰, 자동화 우회 비밀, 브라우저 세션이 없다. 보호 설정은 유지했고 두 API는 호출하지 않았다. Preview의 `GPT_API_KEY`는 미확인이고 실 GPT 응답은 없다.  
+**023 적용 전 검토 (2026-10-27 20:15 KST):** 새 테이블 두 개뿐이며 기존 표와 기존 행은 바꾸지 않는다. 롤백은 `ai_pm_feedback`, `ai_pm_reviews` 순서로 DROP 한다. 라우트는 아직 sqlite만 쓴다. 호스트 DNS가 없고 023이 미적용이므로 재배포 뒤 보존은 미확보다.  
+**Production:** 잠금 `0b465226` 유지. `deployTime` `2026-10-27T11:15:23.965Z` (20:15 KST). 이 커밋에는 AI PM 검토 경로가 없다.
 
 ---
 
