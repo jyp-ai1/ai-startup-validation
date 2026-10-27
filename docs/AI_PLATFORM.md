@@ -142,7 +142,7 @@ toolRegistry.register({
 
 | Feature | Status | Tier |
 |---------|--------|------|
-| Provider Registry | ✅ Implemented (stub adapters) | Must Have |
+| Provider Registry | ✅ Google chat calls Gemini `generateContent`. Other adapters may still stub | Must Have |
 | Model Registry | ✅ Implemented | Must Have |
 | Chat API | ✅ Implemented | Must Have |
 | Streaming | ✅ Implemented | Must Have |
@@ -166,6 +166,7 @@ Optional until providers are configured:
 OPENAI_API_KEY=
 ANTHROPIC_API_KEY=
 GOOGLE_AI_API_KEY=
+GOOGLE_AI_MAX_OUTPUT_TOKENS=
 OPENROUTER_API_KEY=
 AZURE_OPENAI_API_KEY=
 AZURE_OPENAI_ENDPOINT=

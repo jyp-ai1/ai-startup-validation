@@ -4,6 +4,15 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Gemini generateContent HTTP
+
+**상태:** `GoogleProviderAdapter.chat`은 스텁을 반환하지 않고 공식 `generateContent` HTTP를 호출한다. 실 API 호출은 NOT RUN. 사업성 검토 화면과 DB는 이 경로를 호출하지 않는다.  
+**Branch:** `cursor/gemini-generate-content-4b88`  
+**검색:** 구현하지 않음. `groundingUsed`는 false, `sourceUrls`는 빈 배열.  
+**실호출 조건:** `GOOGLE_AI_API_KEY`와 양의 정수 `GOOGLE_AI_MAX_OUTPUT_TOKENS`가 있고, 유료 호출이 별도로 승인된 경우에만. 이번 변경은 그 호출을 실행하지 않는다.
+
+---
+
 ## 순수 규칙 엔진 — AC16·AC5와 S1–S6
 
 **CPO Gate:** 동결 · 규칙 엔진 추가 수정 중지 · 병합·Production 금지 · Production 잠금 `0b465226`  

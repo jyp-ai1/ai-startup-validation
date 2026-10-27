@@ -88,6 +88,17 @@ export * from './errors';
 export * from './providers';
 export { openRouterHealth } from './providers/openrouter-http';
 export { openAIHealth } from './providers/openai-http';
+export {
+  assertGeminiRequestAllowed,
+  buildSecondPassRequest,
+  geminiGenerateContentUrl,
+  googleChat,
+  mapGeminiHttpError,
+  readGoogleOutputTokenCeiling,
+  resolveGoogleApiModel,
+  runPreservedGeminiPasses,
+} from './providers/google-http';
+export type { GoogleChatOptions, PreservedAnalysisRound } from './providers/google-http';
 
 // Models
 export * from './models';

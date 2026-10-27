@@ -158,7 +158,7 @@ export async function* openAIStream(
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '';
-  let streamId = crypto.randomUUID();
+  let streamId: string = crypto.randomUUID();
   let fullContent = '';
 
   while (true) {
