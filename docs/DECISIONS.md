@@ -1736,6 +1736,52 @@ External models were not adopted as the judgment engine. The remaining question 
 
 ---
 
+## ADR-058: Google chat uses Gemini generateContent HTTP
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** ALABOM Gemini call path  
+**Authors:** CTO (autonomous)
+
+### Context
+
+`GoogleProviderAdapter.chat` inherited the base stub. A configured key returned `[Google Gemini stub]` and estimated tokens. That response could be read as a successful model call. The business-review screen still prepares a paste handoff and does not select this adapter.
+
+### Decision
+
+1. `GoogleProviderAdapter.chat` calls `POST https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent` with header `x-goog-api-key`. The key is not placed in the query string.
+2. A missing `GOOGLE_AI_API_KEY` throws a configuration error. The base stub does not run for Google chat, stream, complete, or embed.
+3. A request is refused before fetch when `GOOGLE_AI_MAX_OUTPUT_TOKENS` is unset or `request.maxTokens` exceeds it. This adapter does not set `costUsd` to 0. Missing `usageMetadata` sets `usageKnown` false and does not estimate tokens.
+4. The request body does not include a search or grounding tool. `groundingUsed` is false and `sourceUrls` is empty.
+5. `runPreservedGeminiPasses` keeps round 1 and round 2 as separate objects. The journey screen and the database do not call it. Wiring them is a later change.
+6. This ADR does not approve a live paid call, a Production deploy, or a PR merge. Anthropic, Azure, and Ollama keep their existing stub behavior.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Leave the Google stub until a key exists | No network code | A present key still looks like success |
+| Send `google_search` in the same change | Citations could appear | Search has a separate quota and price and was not implemented |
+| Point `getResearchProvider('gemini')` at this client | One id would look connected | That id is the OpenRouter research provider, and the screen does not call `execute()` |
+
+### Consequences
+
+**Positive:**
+
+- Tests can prove the HTTP request, auth failure, server error, timeout, and the two-pass body with an injected fetch.
+- A stub string is rejected as an analysis round.
+
+**Negative:**
+
+- The business-review screen still has `liveModelCall: false` on the paste handoff.
+- Dollar cost stays unknown. The static price table is not a bill.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. Live Gemini remains NOT RUN until a key and a paid call are both approved.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

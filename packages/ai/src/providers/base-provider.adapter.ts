@@ -25,6 +25,24 @@ export abstract class BaseProviderAdapter implements AIProviderPort {
     }
   }
 
+  /**
+   * Real HTTP adapters override this and `chat()`.
+   * When it returns true, the stub below must not run.
+   */
+  protected refusesStubResponse(): boolean {
+    return false;
+  }
+
+  private assertStubAllowed(): void {
+    if (this.refusesStubResponse()) {
+      throw new AIProviderError(
+        `${this.name} must not return a stub response.`,
+        this.id,
+        501,
+      );
+    }
+  }
+
   protected createResponse(
     request: ChatRequest,
     content: string,
@@ -48,6 +66,7 @@ export abstract class BaseProviderAdapter implements AIProviderPort {
   }
 
   async chat(request: ChatRequest): Promise<ChatResponse> {
+    this.assertStubAllowed();
     this.ensureConfigured();
     const start = Date.now();
     const lastUser = [...request.messages].reverse().find((m) => m.role === 'user');
@@ -65,6 +84,7 @@ export abstract class BaseProviderAdapter implements AIProviderPort {
   }
 
   async *stream(request: ChatRequest): AsyncIterable<StreamChunk> {
+    this.assertStubAllowed();
     this.ensureConfigured();
     const response = await this.chat(request);
     const id = response.id;
@@ -86,6 +106,7 @@ export abstract class BaseProviderAdapter implements AIProviderPort {
   }
 
   async complete(request: CompletionRequest): Promise<CompletionResponse> {
+    this.assertStubAllowed();
     this.ensureConfigured();
     const start = Date.now();
     const inputTokens = estimateTokens(request.prompt);
@@ -106,6 +127,7 @@ export abstract class BaseProviderAdapter implements AIProviderPort {
   }
 
   async embed(request: EmbeddingRequest): Promise<EmbeddingResponse> {
+    this.assertStubAllowed();
     this.ensureConfigured();
     const inputs = Array.isArray(request.input) ? request.input : [request.input];
     const start = Date.now();
