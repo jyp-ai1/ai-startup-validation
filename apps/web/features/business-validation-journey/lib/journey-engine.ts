@@ -1,6 +1,7 @@
 import { buildRedelivery } from './answer-redelivery';
 import { compareCustomerChange, compareFounderAnswer } from './judgment-development';
 import { planQuestions, structureBusinessPlan } from './plan-journey';
+import { openingShortIdeaJudgment, readLooseIntake, nextShortIdeaQuestion } from './short-idea-review';
 import { verificationActionFor } from './verification-action';
 import {
   claimLabel,
@@ -68,6 +69,7 @@ export function withCurrentQuestion(state: JourneyState): JourneyState {
     state.revisions,
     state.externalNotes ?? [],
     state.planCase,
+    state.source === 'founder_input' && !state.planCase,
   );
   return {
     ...state,
@@ -87,7 +89,17 @@ export function startFromBusinessPlan(input: {
 }): StartResult {
   const structured = structureBusinessPlan(input);
   if (!structured.intake || !structured.planCase) {
-    return { ok: false, missing: ['business', 'customer', 'problem'] };
+    const loose = readLooseIntake(input.text);
+    if (!loose) return { ok: false, missing: ['business', 'customer', 'problem'] };
+    const started = startJourney(loose, 'founder_input');
+    if (!started.ok || input.provenance !== 'test_fixture') return started;
+    return {
+      ok: true,
+      state: {
+        ...started.state,
+        judgmentText: `${started.state.judgmentText} 이 입력은 테스트 픽스처로 표시되었다. 실제 사업 증거가 아니다.`,
+      },
+    };
   }
   const source = input.source ?? (input.provenance === 'test_fixture' ? 'test_hypothesis' : 'founder_input');
   return {
@@ -119,7 +131,27 @@ export function startJourney(
   const normalized = normalizeIntake(intake);
   const missing = missingRequired(normalized);
   if (missing.length > 0) return { ok: false, missing };
-  return { ok: true, state: withRedelivery(null, finish(normalized, source, [], [], [], [], [])) };
+  const shortIdea = source === 'founder_input';
+  return {
+    ok: true,
+    state: withRedelivery(
+      null,
+      finish(
+        normalized,
+        source,
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        shortIdea ? openingShortIdeaJudgment(normalized) : JUDGMENT_TEXT,
+        shortIdea
+          ? '가격, 손실액, 고객 수는 입력에 없으면 만들지 않는다. 가장 큰 미확인은 최근 손실 사례다.'
+          : JUDGMENT_HOLD_REASON,
+      ),
+    ),
+  };
 }
 
 export function applyAnswer(
@@ -181,11 +213,11 @@ export function applyAnswer(
       state.planCase,
     ),
   );
-
+  const compared = compareFounderAnswer(state, next, answer);
   return {
-    state: compareFounderAnswer(state, next, answer),
+    state: compared,
     applied: true,
-    reason: reasonFor(classification.delta),
+    reason: compared.judgmentComparisons?.at(-1)?.reason ?? reasonFor(classification.delta),
   };
 }
 
@@ -368,7 +400,15 @@ function finish(
   const materialAnswers = answers.filter((answer) => answer.material);
   const materialRevisions = revisions.filter((revision) => revision.material);
   const asked = new Set(answers.map((answer) => answer.uncertaintyId));
-  const selected = selectNextQuestion(intake, asked, answers, revisions, externalNotes, planCase);
+  const selected = selectNextQuestion(
+    intake,
+    asked,
+    answers,
+    revisions,
+    externalNotes,
+    planCase,
+    source === 'founder_input' && !planCase,
+  );
 
   return {
     intake,
@@ -539,6 +579,7 @@ function selectNextQuestion(
   revisions: FieldRevision[],
   externalNotes: ExternalNote[],
   planCase: PlanCase | null = null,
+  shortIdea = false,
 ): { question: NextQuestion | null; repeatBlockedReason: string | null } {
   const scopeRefusal = [...answers].reverse().find((answer) => answer.uncertaintyId === 'u-customer-scope');
   if (scopeRefusal?.choiceId === 'does_not_apply' && !planCase) {
@@ -549,7 +590,7 @@ function selectNextQuestion(
     };
   }
   const lastPrompt = [...answers].reverse().find((answer) => answer.questionText)?.questionText ?? null;
-  const candidates = collectCandidates(intake, asked, answers, revisions, externalNotes, planCase);
+  const candidates = collectCandidates(intake, asked, answers, revisions, externalNotes, planCase, shortIdea);
   const skipped: string[] = [];
 
   for (const candidate of candidates) {
@@ -582,6 +623,7 @@ function collectCandidates(
   revisions: FieldRevision[],
   externalNotes: ExternalNote[],
   planCase: PlanCase | null,
+  shortIdea: boolean,
 ): NextQuestion[] {
   const candidates: NextQuestion[] = [];
   const customerRevision = [...revisions].reverse().find((revision) => revision.material && revision.field === 'customer');
@@ -591,9 +633,10 @@ function collectCandidates(
     candidates.push({
       uncertaintyId: 'u-customer-scope',
       hypothesisId: 'h-problem',
-      prompt: planCase
-        ? `「${intake.customer}」에게도 기존에 적은 문제가 같은지, 그 고객의 원문으로 확인할 수 있나?`
-        : `「${intake.customer}」에게도 주문과 배송이 나뉘어 누락되는 문제가 있는지, 그 고객의 원문으로 확인할 수 있나?`,
+      prompt:
+        planCase || shortIdea
+          ? `「${intake.customer}」에게도 기존에 적은 문제가 같은지, 그 고객의 원문으로 확인할 수 있나?`
+          : `「${intake.customer}」에게도 주문과 배송이 나뉘어 누락되는 문제가 있는지, 그 고객의 원문으로 확인할 수 있나?`,
       whyDifferent: `고객이 「${customerRevision.previous}」에서 「${customerRevision.next}」로 바뀌었다. 이전 고객의 문제 가설을 새 고객에게 옮기지 않는다. 이미 답한 근거 질문을 반복하지 않고, 새 고객에게 가설이 적용되는지만 묻는다.`,
       purpose: '새 고객의 문제를 이전 고객의 문제와 분리한다.',
       answerBranches: '해당하지 않으면 문제 가설의 적용 범위를 다시 연다. 원문이 있어도 검증된 사실로 올리지 않는다.',
@@ -627,6 +670,12 @@ function collectCandidates(
 
   if (planCase && planCase.profile !== 'unrecognized') {
     candidates.push(...planQuestions(planCase, asked, answers));
+    return candidates;
+  }
+
+  if (shortIdea) {
+    const next = nextShortIdeaQuestion(intake, asked, answers);
+    if (next) candidates.push(next);
     return candidates;
   }
 

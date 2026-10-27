@@ -1871,6 +1871,48 @@ The product path is a person using the free Gemini web page, then bringing the r
 
 ---
 
+## ADR-061: Short ideas get a specific hold, not a generic one
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** Short idea business review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+LMULM and RIDM excerpts already separate a document claim from an unverified forecast. A short founder note, such as the banchan delivery sample, received only the generic hold. The plan box also rejected text that was not one of those two excerpts.
+
+### Decision
+
+1. Do not change the LMULM or RIDM fixtures, and do not treat them as verified revenue.
+2. `founder_input` with business, customer, and problem and no plan case opens `openingShortIdeaJudgment`. The first question asks for one recent loss. Later questions separate the user from the buyer, then willingness to pay, then which stated problem costs the most. Missing prices, counts, and loss amounts stay missing.
+3. A note with `사업`, `대상` or `고객`, and `문제` or `핵심` can start that review. Text that still cannot be split is not a format rejection. The three fields remain the start.
+4. A real Gemini web reply is not created here. `webRoundtrip` stays `NOT_RUN` until a person pastes one.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Add banchan as a third plan profile | Reuses the excerpt engine | Forces a short note into a business-plan schema |
+| Call Gemini for every short note | Could write a custom paragraph | Paid call, and no web original would be stored |
+
+### Consequences
+
+**Positive:**
+
+- A three-field note names what was said and what is still unknown.
+- An answer either changes the judgment or says why it stayed.
+
+**Negative:**
+
+- The questions are rules over the entered words. They are not a Gemini web reply.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

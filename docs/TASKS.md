@@ -4,6 +4,13 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## 짧은 사업 아이디어 — 사업별 유보
+
+**상태:** `founder_input`의 사업·고객·문제만으로 최근 손실, 구매 결정권자, 지불 여지, 반복 비용을 묻는다. 없는 가격과 손실액은 만들지 않는다. LMULM·RIDM 발췌 규칙은 유지한다. 실 Gemini 웹 원문은 NOT RUN.  
+**Branch:** `cursor/short-idea-review-4b88`
+
+---
+
 ## 무료 Gemini 웹 — 사용자 붙여 넣기
 
 **상태:** 자동 회수 경로는 없다. ALABOM은 1차·2차 질의를 만들고, 사람이 붙여 넣은 원문과 URL을 세션에 저장해 다시 연다. 실 Gemini 웹 원문은 NOT RUN. 공식 API는 확장하지 않았다.  

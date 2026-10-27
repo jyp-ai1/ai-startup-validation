@@ -89,7 +89,10 @@ export function ValidationJourneyScreen() {
       provenance,
     });
     if (!result.ok) {
-      setPlanError('LMULM 또는 RIDM 사업계획서 문장과 출처가 있어야 구조화한다.');
+      setIntake((current) => ({ ...current, business: text.trim() || current.business }));
+      setPlanError(
+        '사업, 고객, 문제를 한 문서에서 구분하지 못했다. 아래 세 칸에 적으면 그 문장으로 검토를 시작한다. LMULM·RIDM이 아니라는 이유만으로 끝내지 않는다.',
+      );
       return;
     }
     setPlanError('');
@@ -106,7 +109,7 @@ export function ValidationJourneyScreen() {
     void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.validationJourneyStarted, {
       screen: '/business-validation',
       status: 'research_not_run',
-      category: result.state.planCase?.profile,
+      category: result.state.planCase?.profile ?? 'short_idea',
     });
   }
 
@@ -134,6 +137,7 @@ export function ValidationJourneyScreen() {
     void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.validationJourneyStarted, {
       screen: '/business-validation',
       status: 'research_not_run',
+      category: source === 'founder_input' ? 'short_idea' : source,
     });
   }
 

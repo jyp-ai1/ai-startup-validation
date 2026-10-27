@@ -247,7 +247,7 @@ describe('validation journey phase 1-2', () => {
   });
 
   it('records a named payer as a statement and still withholds the judgment', () => {
-    const state = started({ payer: '', revenue: '', evidence: '' }, 'founder_input');
+    const state = started({ payer: '', revenue: '', evidence: '' });
     const afterEvidence = answer(state, 'hypothesis').state;
     const afterScene = answer(afterEvidence, 'no_scene').state;
 
