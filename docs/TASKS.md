@@ -6,13 +6,13 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## Sprint AI-Discovery-01 — 검토 구조 발굴
 
-**상태:** 조사 기록까지. 웹 실험은 미실행. 적용 결정은 보류.  
+**상태:** BLOCKED. 자동 수집은 중단. 비로그인 Gemini 품질은 미검증이며 포기하지 않음.  
 **Branch:** `cursor/ai-discovery-01-4b88`  
-**제품 코드:** 변경 없음. API·웹 자동화·배포 없음.  
+**제품 코드:** 변경 없음. API·웹 자동화·확장·배포 없음.  
 **Evidence:** `docs/evidence/AI-DISCOVERY-01/`  
 **공통 입력:** `AD01-TEST-LUNCHBOX-01`  
-**Chrome Gemini:** `06-browser-execution-path.md`. 자동 수집은 약관상 부적합. 비로그인 웹 검색·출처는 미검증.  
-**다음:** 사람이 시크릿 Chrome에서 그 입력을 Gemini에 직접 넣기 전에는 수집 구현을 열지 않는다.
+**Chrome Gemini:** `06-browser-execution-path.md`는 자동 수집만 부적합. `07-manual-quality-hold.md`는 품질 6항이 모두 미검증.  
+**다음:** 사람이 시크릿 Chrome에서 같은 입력을 직접 넣고 출처가 있는 원문을 남기기 전에는 구현을 열지 않는다.
 
 ---
 
