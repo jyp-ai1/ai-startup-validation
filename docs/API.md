@@ -90,6 +90,7 @@ Server Actions will be documented here with:
 
 | Date | Change |
 |------|--------|
+| 2026-10-27 | `.env.example` names `GPT_API_KEY` for the AI PM review route. A live call is still not run. |
 | 2026-10-27 | `GET/POST /api/ai-pm-review`, feedback, and follow-up. Screen name is AI PM. |
 | 2026-10-06 | Funnel events `si_ai_pm_question_asked` / `si_ai_pm_answer_applied` for S.I.→AI PM bind (no new REST route) |
 | 2026-10-06 | Funnel event `si_judgment_viewed` when S.I. Review Surface renders (no new REST route) |
