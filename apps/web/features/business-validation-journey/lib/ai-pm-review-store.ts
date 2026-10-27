@@ -33,6 +33,20 @@ CREATE TABLE IF NOT EXISTS ai_pm_feedback (
 );
 `;
 
+/**
+ * Local sqlite is the test-environment record.
+ * On Vercel the function filesystem is read-only except ephemeral /tmp.
+ * A file under process.cwd()/.data is not kept across instances or redeploys.
+ * durable:false means this file is not the production database.
+ */
+export const AI_PM_REVIEW_STORAGE = {
+  kind: 'local_sqlite' as const,
+  durable: false as const,
+  productionDatabase: false as const,
+  pathEnv: 'AI_PM_REVIEW_DB_PATH',
+  defaultPath: '.data/ai-pm-reviews.sqlite',
+};
+
 export type AiPmReviewStore = {
   filePath: string;
   productionDatabase: false;

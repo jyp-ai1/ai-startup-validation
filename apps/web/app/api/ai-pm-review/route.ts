@@ -5,11 +5,12 @@ import { join } from 'node:path';
 import { getServerAuthUser } from '@/lib/auth/server-auth';
 import { extractDocumentText } from '@/lib/intake/extract-document-text';
 import {
+  readGptApiKey,
   reviewInputFromParts,
   runFirstReview,
   toAiPmReviewView,
 } from '@/features/business-validation-journey/lib/ai-pm-review';
-import { openAiPmReviewStore } from '@/features/business-validation-journey/lib/ai-pm-review-store';
+import { AI_PM_REVIEW_STORAGE, openAiPmReviewStore } from '@/features/business-validation-journey/lib/ai-pm-review-store';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -30,7 +31,7 @@ export async function GET() {
   try {
     const feedback = store.listFeedback(user.id);
     const reviews = store.listReviews(user.id).map((record) => toAiPmReviewView(record, feedback));
-    return Response.json({ reviews });
+    return Response.json({ reviews, storage: AI_PM_REVIEW_STORAGE });
   } finally {
     store.close();
   }
@@ -72,7 +73,7 @@ export async function POST(request: Request) {
   const parts = reviewInputFromParts({ typed, extracted, fileName });
   if (!parts.ok) return Response.json({ error: parts.error, review: null }, { status: 400 });
 
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  const apiKey = readGptApiKey();
   const store = openStore();
   try {
     const result = await runFirstReview({
@@ -83,11 +84,12 @@ export async function POST(request: Request) {
       fileName: parts.fileName,
       now: new Date().toISOString(),
       evidence: apiKey ? 'live_network' : 'not_run',
+      notRunReason: apiKey ? undefined : 'gpt_api_key_missing',
       chat: apiKey
         ? (chatRequest) => new OpenAIProviderAdapter({ apiKey }).chat(chatRequest)
         : undefined,
     });
-    return Response.json({ reused: !result.called, review: result.view });
+    return Response.json({ reused: !result.called, review: result.view, storage: AI_PM_REVIEW_STORAGE });
   } finally {
     store.close();
   }

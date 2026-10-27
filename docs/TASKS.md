@@ -6,10 +6,10 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 1차 검토와 피드백
 
-**상태:** 사용자 화면의 이름은 AI PM이다. 1차 검토 엔진은 서버의 OpenAI 어댑터 한 번이다. 같은 입력의 재열람과 객관식 피드백 저장은 호출 0회다. 추가 검증은 저장된 검토와 피드백만 보내고, 사업계획 원문은 버전마다 유지한다. 모델명·토큰·지연·오류는 저장소에만 둔다. 키 없는 실행은 원문을 만들지 않는다. Gemini는 이 루프에 넣지 않는다.  
+**상태:** 사용자 화면의 이름은 AI PM이다. 1차 검토 엔진은 서버의 OpenAI 어댑터이고, 이 경로의 키 이름은 `GPT_API_KEY`다. `OPENAI_API_KEY`는 이 경로를 열지 않는다. 같은 입력의 재열람과 객관식 피드백 저장은 호출 0회다. 추가 검증은 저장된 검토와 피드백만 보낸다. 이 실행 환경에는 `GPT_API_KEY`가 없어 실모델 원문은 NOT RUN이다.  
 **Branch:** `cursor/ai-pm-first-review-4b88`  
-**저장:** `.data/ai-pm-reviews.sqlite`. 프로덕션 DB가 아니다.  
-**Production 잠금:** `0b465226` 유지.
+**저장:** `.data/ai-pm-reviews.sqlite`. `storage.durable`은 false. Vercel 함수 파일시스템은 `/tmp`만 쓸 수 있고 그 공간은 재배포와 인스턴스 교체 뒤 남지 않는다. 프로덕션 DB가 아니다.  
+**Production 잠금:** `0b465226` 유지. 병합하지 않음.
 
 ---
 

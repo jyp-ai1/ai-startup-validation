@@ -405,7 +405,9 @@ export function AiPmReviewPanel() {
 }
 
 function statusLine(review: AiPmReviewView): string {
-  if (review.status === 'ready') return 'AI PM 1차 사업성 검토를 저장했습니다.';
+  if (review.status === 'ready') {
+    return 'AI PM 1차 사업성 검토를 이 실행 환경에 저장했습니다. 서버가 바뀌거나 다시 배포되면 이 파일은 남지 않을 수 있습니다.';
+  }
   if (review.status === 'unavailable') return '지금은 AI PM 검토 결과를 만들지 못했습니다. 입력은 여기에 남아 있습니다.';
   return '검토가 끝나기 전에 실패했습니다. 결과 원문은 없습니다.';
 }

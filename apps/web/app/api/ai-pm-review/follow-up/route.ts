@@ -3,8 +3,8 @@ import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { getServerAuthUser } from '@/lib/auth/server-auth';
-import { runFollowUpReview } from '@/features/business-validation-journey/lib/ai-pm-review';
-import { openAiPmReviewStore } from '@/features/business-validation-journey/lib/ai-pm-review-store';
+import { readGptApiKey, runFollowUpReview } from '@/features/business-validation-journey/lib/ai-pm-review';
+import { AI_PM_REVIEW_STORAGE, openAiPmReviewStore } from '@/features/business-validation-journey/lib/ai-pm-review-store';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const body = (await request.json()) as { reviewId?: string; supplement?: string };
   mkdirSync(join(process.cwd(), '.data'), { recursive: true });
   const store = openAiPmReviewStore(storePath());
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  const apiKey = readGptApiKey();
   try {
     const result = await runFollowUpReview({
       store,
@@ -28,12 +28,13 @@ export async function POST(request: Request) {
       supplement: body.supplement,
       now: new Date().toISOString(),
       evidence: apiKey ? 'live_network' : 'not_run',
+      notRunReason: apiKey ? undefined : 'gpt_api_key_missing',
       chat: apiKey
         ? (chatRequest) => new OpenAIProviderAdapter({ apiKey }).chat(chatRequest)
         : undefined,
     });
     if (!result.ok) return Response.json({ error: result.error, review: null }, { status: 400 });
-    return Response.json({ reused: !result.called, review: result.view });
+    return Response.json({ reused: !result.called, review: result.view, storage: AI_PM_REVIEW_STORAGE });
   } finally {
     store.close();
   }

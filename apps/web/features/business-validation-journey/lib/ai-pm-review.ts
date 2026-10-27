@@ -62,6 +62,12 @@ export function normalizeReviewText(text: string): string {
   return text.replace(/\r\n/g, '\n').replace(/[ \t]+\n/g, '\n').trim();
 }
 
+/** AI PM calls read this name only. OPENAI_API_KEY does not start a review. */
+export function readGptApiKey(env: Record<string, string | undefined> = process.env): string | null {
+  const value = env.GPT_API_KEY?.trim();
+  return value ? value : null;
+}
+
 export function reviewInputFromParts(input: {
   typed?: string;
   extracted?: string;
@@ -170,6 +176,7 @@ export async function runFirstReview(input: {
   now: string;
   chat?: ReviewChat;
   evidence: StoredReview['evidence'];
+  notRunReason?: string;
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const sha = sha256(input.text);
   const latest = input.store.latestForInput(input.userId, sha);
@@ -192,7 +199,7 @@ export async function runFirstReview(input: {
       status: 'not_run',
       evidence: 'not_run',
       callCount: 0,
-      error: 'engine_unconfigured',
+      error: input.notRunReason ?? 'engine_unconfigured',
     });
     input.store.insertReview(record);
     return { called: false, record, view: toAiPmReviewView(record, []) };
@@ -260,9 +267,10 @@ export async function runFollowUpReview(input: {
   now: string;
   chat?: ReviewChat;
   evidence: StoredReview['evidence'];
+  notRunReason?: string;
 }): Promise<
   | { ok: true; called: boolean; record: StoredReview; view: AiPmReviewView }
-  | { ok: false; error: 'review_missing' | 'feedback_required' | 'engine_unconfigured' }
+  | { ok: false; error: 'review_missing' | 'feedback_required' | 'engine_unconfigured' | 'gpt_api_key_missing' }
 > {
   const parent = input.store.readReview(input.userId, input.reviewId);
   if (!parent || parent.status !== 'succeeded' || !parent.sections) {
@@ -281,7 +289,7 @@ export async function runFollowUpReview(input: {
       view: toAiPmReviewView(existing, input.store.listFeedback(input.userId, existing.reviewId)),
     };
   }
-  if (!input.chat) return { ok: false, error: 'engine_unconfigured' };
+  if (!input.chat) return { ok: false, error: input.notRunReason === 'gpt_api_key_missing' ? 'gpt_api_key_missing' : 'engine_unconfigured' };
   const latest = input.store.latestForInput(input.userId, parent.inputSha);
   const finished = await finishCall({
     store: input.store,

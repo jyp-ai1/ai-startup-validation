@@ -1958,6 +1958,48 @@ The first business review needs one model call, a structured result, and a multi
 
 ---
 
+## ADR-063: AI PM reviews read GPT_API_KEY and local sqlite is not durable
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The first review route checked `OPENAI_API_KEY`. The key added for this path is named `GPT_API_KEY`. Treating those names as the same would hide a missing key. The review rows are in `.data/ai-pm-reviews.sqlite`. Vercel functions have a read-only filesystem except ephemeral `/tmp`, so that file does not survive a new instance or a redeploy.
+
+### Decision
+
+1. `readGptApiKey()` returns `GPT_API_KEY` only. A set `OPENAI_API_KEY` does not start `/api/ai-pm-review` or `/api/ai-pm-review/follow-up`.
+2. A missing `GPT_API_KEY` stores `not_run` with internal reason `gpt_api_key_missing` and no review text.
+3. API responses include `storage.durable: false`. The screen says the saved review can disappear when the server changes. This file is not the production database.
+4. No live model call is recorded until `GPT_API_KEY` is present in the process that runs the review. This ADR does not approve a merge or a Production deploy.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Fall back from `GPT_API_KEY` to `OPENAI_API_KEY` | A local key would run the call | The two names would stay confused |
+| Move the rows to `/tmp` on Vercel | Writes would be allowed | `/tmp` is still ephemeral and not shared across instances |
+
+### Consequences
+
+**Positive:**
+
+- A missing `GPT_API_KEY` stays visible as not run.
+- The screen no longer says the local file will still be there after a redeploy.
+
+**Negative:**
+
+- Founder reviews on Vercel are not retained until a production database is connected.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

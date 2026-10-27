@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildFollowUpRequest,
   parseFeedbackBody,
+  readGptApiKey,
   reviewInputFromParts,
   runFirstReview,
   runFollowUpReview,
@@ -323,5 +324,19 @@ describe('AI PM first review', () => {
     expect(screen).not.toContain('WebReviewPanel');
     expect(screen).toContain('AiPmReviewPanel');
     expect(screen).not.toContain('GPT API');
+  });
+
+  it('reads GPT_API_KEY and leaves OPENAI_API_KEY unused', () => {
+    expect(readGptApiKey({ GPT_API_KEY: ' present ', OPENAI_API_KEY: 'other' })).toBe('present');
+    expect(readGptApiKey({ OPENAI_API_KEY: 'other' })).toBeNull();
+    expect(readGptApiKey({})).toBeNull();
+    const reviewRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/route.ts', import.meta.url), 'utf8');
+    const followRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/follow-up/route.ts', import.meta.url), 'utf8');
+    expect(reviewRoute).toContain('readGptApiKey');
+    expect(followRoute).toContain('readGptApiKey');
+    expect(reviewRoute).not.toContain('OPENAI_API_KEY');
+    expect(followRoute).not.toContain('OPENAI_API_KEY');
+    const storeSource = readFileSync(new URL('../ai-pm-review-store.ts', import.meta.url), 'utf8');
+    expect(storeSource).toContain('durable: false');
   });
 });

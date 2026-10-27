@@ -63,7 +63,9 @@ Logged-in session required. Without a session the status is `401`.
 
 `POST /api/ai-pm-review` accepts JSON `{ text }` or multipart `text` plus `file` (txt, md, pdf, docx). Both become one normalized input. A stored ready review for that input is returned with `reused: true` and no model call.
 
-The server calls the OpenAI chat adapter only when `OPENAI_API_KEY` is set. The model id, token counts, latency, and error stay in the sqlite record. The JSON `review` object sent to the screen has sections, version, and feedback. It does not include the model id or token counts.
+The server calls the OpenAI chat adapter only when `GPT_API_KEY` is set. `OPENAI_API_KEY` does not start this route. The model id, token counts, latency, and error stay in the sqlite record. The JSON `review` object sent to the screen has sections, version, and feedback. It does not include the model id or token counts.
+
+`storage.durable` is `false`. The file is local sqlite. On Vercel the function filesystem is read-only except ephemeral `/tmp`, so `.data/ai-pm-reviews.sqlite` is not kept across instances or redeploys. It is not the production database.
 
 `POST /api/ai-pm-review/feedback` stores agreement, accuracy, revision areas, comment, and next action on that review version. It does not call a model. A comment is accepted when "other" is not selected.
 
