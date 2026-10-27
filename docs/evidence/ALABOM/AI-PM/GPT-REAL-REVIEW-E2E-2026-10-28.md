@@ -2,9 +2,26 @@
 
 판정: **BLOCKED**
 
-검증 대상 코드는 `19e8fccaed596540979de134bf6e32a981fa3586`이다. 이 문서를 저장하는 커밋은 증거 기록이며, 새 검증 SHA가 아니다. `ee5704c0` Preview는 사용하지 않았다. Production 잠금 `0b465226`과 PR #207 미병합은 유지했다. GPT 호출은 0회다.
+검증 대상 코드는 `19e8fccaed596540979de134bf6e32a981fa3586`이다. `a4f5e96e`와 이 문서의 이후 증거 커밋은 검증 SHA가 아니다. `ee5704c0` Preview는 사용하지 않았다. Production 잠금 `0b465226`과 PR #207 미병합은 유지했다. GPT 호출은 0회다.
 
-확인 시각: 2026-10-28 05:05 KST.
+## 인증 경로 전환 — 2026-10-28 05:16 KST
+
+인증 없는 브라우저로 Preview를 다시 열지 않았다. Vercel 보호 설정은 해제하지 않았다. 제품 코드는 수정하지 않았다.
+
+| 경로 | 판정 | 시각 | 결과 |
+|---|---|---|---|
+| 1. 이 런의 `vercel login` | **BLOCKED** | 2026-10-28 05:15 KST | `VERCEL_TOKEN` 없음. `vercel login --non-interactive`는 세션을 만들지 못하고 대기만 했다. 로그인은 끝내지 않았다. |
+| 2. CEO 브라우저 리뷰 후 Supabase 조회 | **BLOCKED** | 2026-10-28 05:15 KST | `ai_pm_reviews` HTTP 200, `content-range */0`, 행 0. 리뷰 ID 없음. |
+| 3. 두 경로 모두 불가 | **BLOCKED** | 2026-10-28 05:16 KST | 이 런에서는 인증을 만들 수 없다. 인증된 것으로 기록하지 않는다. |
+
+`/api/build-info` SHA, 모델 응답, `nextQuestion`, UI 일치는 경로 1·2가 열리기 전에는 확인하지 않는다.
+
+남은 인증 작업과 담당:
+
+1. 담당 CEO. 이미 Vercel에 로그인된 브라우저에서 `https://ai-startup-validation-qrexjkphr-jyp-ai1s-projects.vercel.app` 를 열고, SHA `19e8fccaed596540979de134bf6e32a981fa3586` 화면에서 주인집 AI PM 리뷰를 1회 실행한다.
+2. 담당 CTO. 그 실행 뒤에 `ai_pm_reviews`를 다시 읽어 리뷰 ID, `nextQuestion`, 저장·재조회를 기록한다. UI 일치와 새로고침은 그 브라우저 화면이 있어야 판정한다.
+
+## 이전 확인 — 2026-10-28 05:05 KST
 
 ## 1. Preview URL과 SHA
 
