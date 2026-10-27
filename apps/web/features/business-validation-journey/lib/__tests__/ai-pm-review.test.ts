@@ -8,8 +8,10 @@ import { describe, expect, it } from 'vitest';
 
 import { chooseReviewBackend, openSupabaseReviewStore, type AiPmDurablePort } from '../ai-pm-review-backend';
 import {
+  buildFirstReviewRequest,
   buildFollowUpRequest,
   parseFeedbackBody,
+  parseSections,
   readGptApiKey,
   reviewInputFromParts,
   runFirstReview,
@@ -37,6 +39,9 @@ function sections(): ReviewSections {
     uncertain: ['관광객 수요'],
     hypotheses: ['양조장 대표가 노출 비용을 낼 이유가 있는지'],
     judgment: '보류. 지불자와 수요가 확인되지 않았다.',
+    nextQuestion: '양조장 대표에게 노출 비용을 제안한 적이 있습니까?',
+    nextQuestionReason: '지불 후보의 실제 제안 여부가 보류 판단을 바꿉니다.',
+    answerHint: '제안한 적이 있으면 그 한 건을, 없으면 제안 전이라고 적습니다.',
   };
 }
 
@@ -325,6 +330,74 @@ describe('AI PM first review', () => {
     expect(screen).not.toContain('WebReviewPanel');
     expect(screen).toContain('AiPmReviewPanel');
     expect(screen).not.toContain('GPT API');
+    expect(panel).toContain('data-question-source="model-review"');
+    expect(panel).not.toContain('present-si-ai-pm-question');
+    expect(panel).not.toContain('가장 가까운 결제 후보에게 유료로 제안했거나');
+    const request = buildFirstReviewRequest(PLAN);
+    expect(request.messages.map((message) => message.content).join('\n')).not.toContain(
+      '가장 가까운 결제 후보에게 유료로 제안했거나',
+    );
+  });
+
+  it('keeps a model next question distinct from the fixed rule sentence', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const fixed =
+      '가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.';
+    const copied = { ...sections(), nextQuestion: fixed };
+    const rejected = await runFirstReview({
+      store,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat: async () => reply(JSON.stringify(copied)),
+      evidence: 'injected_http',
+    });
+    expect(parseSections(JSON.stringify(copied))).toBeNull();
+    expect(rejected.record.status).toBe('failed');
+    expect(rejected.view.questionSource).toBeNull();
+    expect(rejected.view.sections).toBeNull();
+    const withoutQuestion = { ...sections() } as Partial<ReturnType<typeof sections>>;
+    delete withoutQuestion.nextQuestion;
+    expect(parseSections(JSON.stringify(withoutQuestion))).toBeNull();
+
+    const accepted = await runFirstReview({
+      store,
+      userId: 'user-a',
+      text: '다른 양조장 메모. 수요와 가격은 아직 없다.',
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat: async () => reply(JSON.stringify(sections())),
+      evidence: 'injected_http',
+    });
+    expect(accepted.view.questionSource).toBe('model-review');
+    expect(accepted.view.sections?.nextQuestion).toContain('양조장 대표');
+    const answer = '제안한 적 없고, 받은 돈도 없습니다.';
+    const follow = await runFollowUpReview({
+      store,
+      userId: 'user-a',
+      reviewId: accepted.record.reviewId,
+      supplement: answer,
+      now: NOW,
+      chat: async (request) => {
+        const content = request.messages.map((message) => message.content).join('\n');
+        expect(content).toContain(accepted.view.sections?.nextQuestion);
+        expect(content).toContain(answer);
+        expect(content).not.toContain('UNIQUEPLANMARKER');
+        return reply(JSON.stringify(sections()));
+      },
+      evidence: 'injected_http',
+    });
+    expect(follow.ok).toBe(true);
+    if (follow.ok) {
+      expect(follow.called).toBe(true);
+      expect(follow.record.parentReviewId).toBe(accepted.record.reviewId);
+      expect(follow.record.inputText).toContain('다른 양조장 메모');
+      expect(follow.view.questionSource).toBe('model-review');
+    }
+    store.close();
   });
 
   it('stores no review sentences when GPT_API_KEY is absent', async () => {
@@ -347,6 +420,7 @@ describe('AI PM first review', () => {
     expect(missing.record.error).toBe('gpt_api_key_missing');
     expect(missing.view.status).toBe('unavailable');
     expect(missing.view.sections).toBeNull();
+    expect(missing.view.questionSource).toBeNull();
     expect(JSON.stringify(missing.view)).not.toContain('gpt_api_key_missing');
     const reopened = await runFirstReview({
       store,

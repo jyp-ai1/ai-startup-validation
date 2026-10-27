@@ -71,6 +71,7 @@ export function AiPmReviewPanel() {
   const [comment, setComment] = useState('');
   const [nextAction, setNextAction] = useState<NextAction | ''>('');
   const [supplement, setSupplement] = useState('');
+  const [verificationAnswer, setVerificationAnswer] = useState('');
 
   const active = reviews.find((review) => review.reviewId === activeId) ?? reviews.at(-1) ?? null;
 
@@ -167,7 +168,7 @@ export function AiPmReviewPanel() {
     }
   }
 
-  async function followUp() {
+  async function followUp(nextSupplement = supplement) {
     if (!active || pending) return;
     setPending(true);
     setMessage('');
@@ -175,7 +176,7 @@ export function AiPmReviewPanel() {
       const response = await fetch('/api/ai-pm-review/follow-up', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reviewId: active.reviewId, supplement }),
+        body: JSON.stringify({ reviewId: active.reviewId, supplement: nextSupplement }),
       });
       const body = (await response.json()) as LoadResponse;
       if (!response.ok || !body.review) {
@@ -283,6 +284,32 @@ export function AiPmReviewPanel() {
             <span className="font-medium">우선 검증할 가설. </span>
             {active.sections.hypotheses.join(' ')}
           </p>
+          {active.questionSource === 'model-review' ? (
+            <form
+              className="space-y-2 rounded-xl border border-border p-3"
+              data-testid="ai-pm-next-question"
+              data-question-source="model-review"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (!verificationAnswer.trim()) return;
+                void followUp(verificationAnswer.trim());
+              }}
+            >
+              <p className="font-medium">AI PM 검토가 고른 다음 검증</p>
+              <p data-testid="ai-pm-next-question-text">{active.sections.nextQuestion}</p>
+              <p data-testid="ai-pm-next-question-reason">{active.sections.nextQuestionReason}</p>
+              <Textarea
+                data-testid="ai-pm-verification-answer"
+                rows={3}
+                value={verificationAnswer}
+                onChange={(event) => setVerificationAnswer(event.target.value)}
+                placeholder={active.sections.answerHint}
+              />
+              <Button type="submit" data-testid="ai-pm-verification-submit" disabled={pending || !verificationAnswer.trim()}>
+                이 답으로 다음 검증
+              </Button>
+            </form>
+          ) : null}
         </div>
       ) : null}
 

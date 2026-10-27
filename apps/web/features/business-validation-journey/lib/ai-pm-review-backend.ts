@@ -26,7 +26,7 @@ export type AiPmDurablePort = {
   succeededChild: (
     userId: string,
     parentReviewId: string,
-    sourceFeedbackId: string,
+    sourceFeedbackId: string | null,
     supplementSha: string,
   ) => Promise<AiPmReviewRow | null>;
   listReviews: (userId: string) => Promise<AiPmReviewRow[]>;

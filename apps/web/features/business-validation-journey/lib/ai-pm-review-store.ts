@@ -74,7 +74,7 @@ export type AiPmReviewStore = {
   succeededChild: (
     userId: string,
     parentReviewId: string,
-    sourceFeedbackId: string,
+    sourceFeedbackId: string | null,
     supplementSha: string,
   ) => Promise<StoredReview | null>;
   listReviews: (userId: string) => Promise<StoredReview[]>;
@@ -121,6 +121,9 @@ export type ReviewSections = {
   uncertain: string[];
   hypotheses: string[];
   judgment: string;
+  nextQuestion: string;
+  nextQuestionReason: string;
+  answerHint: string;
 };
 
 export type Agreement = 'agree' | 'partial' | 'disagree' | 'need_info';
@@ -260,7 +263,7 @@ function succeededChild(
   db: Sql,
   userId: string,
   parentReviewId: string,
-  sourceFeedbackId: string,
+  sourceFeedbackId: string | null,
   supplementSha: string,
 ): StoredReview | null {
   const rows = db

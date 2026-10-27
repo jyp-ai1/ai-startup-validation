@@ -54,6 +54,8 @@ export type AiPmReviewView = {
   fileName: string | null;
   inputText: string;
   sections: ReviewSections | null;
+  /** Set only when nextQuestion was parsed from the review model payload. */
+  questionSource: 'model-review' | null;
   finishedAt: string;
   feedback: AiPmFeedbackView[];
 };
@@ -104,6 +106,8 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
     fileName: record.fileName,
     inputText: record.inputText,
     sections: record.sections,
+    questionSource:
+      record.status === 'succeeded' && record.sections?.nextQuestion ? 'model-review' : null,
     finishedAt: record.finishedAt,
     feedback: feedback
       .filter((item) => item.reviewId === record.reviewId)
@@ -130,7 +134,7 @@ export function buildFirstReviewRequest(text: string): ChatRequest {
       { role: 'system', content: reviewSystemPrompt() },
       {
         role: 'user',
-        content: `사업 입력:\n${text}\n\n키: customer, problem, market, revenueModel, execution, risks, uncertain, hypotheses, judgment.`,
+        content: `사업 입력:\n${text}\n\n키: customer, problem, market, revenueModel, execution, risks, uncertain, hypotheses, judgment, nextQuestion, nextQuestionReason, answerHint.`,
       },
     ],
   };
@@ -138,7 +142,7 @@ export function buildFirstReviewRequest(text: string): ChatRequest {
 
 export function buildFollowUpRequest(input: {
   sections: ReviewSections;
-  feedback: StoredFeedback;
+  feedback: StoredFeedback | null;
   supplement: string;
 }): ChatRequest {
   return {
@@ -153,13 +157,16 @@ export function buildFollowUpRequest(input: {
         content: [
           '이전 검토와 사용자 피드백, 그리고 아래에 적힌 추가 사실만 반영한다.',
           `이전 검토: ${JSON.stringify(input.sections)}`,
-          `피드백: ${JSON.stringify({
-            agreement: input.feedback.agreement,
-            accuracy: input.feedback.accuracy,
-            revisionAreas: input.feedback.revisionAreas,
-            comment: input.feedback.comment,
-            nextAction: input.feedback.nextAction,
-          })}`,
+          `이전 다음 질문: ${input.sections.nextQuestion}`,
+          input.feedback
+            ? `피드백: ${JSON.stringify({
+                agreement: input.feedback.agreement,
+                accuracy: input.feedback.accuracy,
+                revisionAreas: input.feedback.revisionAreas,
+                comment: input.feedback.comment,
+                nextAction: input.feedback.nextAction,
+              })}`
+            : '피드백: 없음',
           `추가 사실: ${input.supplement || '(없음)'}`,
         ].join('\n'),
       },
@@ -276,11 +283,16 @@ export async function runFollowUpReview(input: {
   if (!parent || parent.status !== 'succeeded' || !parent.sections) {
     return { ok: false, error: 'review_missing' };
   }
-  const feedback = (await input.store.listFeedback(input.userId, parent.reviewId)).at(-1);
-  if (!feedback) return { ok: false, error: 'feedback_required' };
+  const feedback = (await input.store.listFeedback(input.userId, parent.reviewId)).at(-1) ?? null;
   const supplement = normalizeReviewText(input.supplement ?? '').slice(0, 4000);
+  if (!feedback && !supplement) return { ok: false, error: 'feedback_required' };
   const supplementSha = sha256(supplement);
-  const existing = await input.store.succeededChild(input.userId, parent.reviewId, feedback.feedbackId, supplementSha);
+  const existing = await input.store.succeededChild(
+    input.userId,
+    parent.reviewId,
+    feedback?.feedbackId ?? null,
+    supplementSha,
+  );
   if (existing) {
     return {
       ok: true,
@@ -304,7 +316,7 @@ export async function runFollowUpReview(input: {
     sha: parent.inputSha,
     version: (latest?.version ?? parent.version) + 1,
     parentReviewId: parent.reviewId,
-    sourceFeedbackId: feedback.feedbackId,
+    sourceFeedbackId: feedback?.feedbackId ?? null,
     supplementSha,
     request: buildFollowUpRequest({ sections: parent.sections, feedback, supplement }),
     chat: input.chat,
@@ -320,6 +332,10 @@ function reviewSystemPrompt(): string {
     '확인하지 않은 내용은 uncertain에 적는다.',
     '우선 검증할 가설은 hypotheses에 적는다.',
     'judgment는 보류, 진행, 중단 중 하나와 이유 한 문장이다.',
+    'nextQuestion은 이 입력에서 판단을 바꾸려면 창업자가 답해야 하는 검증 질문 하나다.',
+    'nextQuestionReason은 그 질문을 고른 이유다.',
+    'answerHint는 답변에 어떤 사실을 적으면 되는지 한 문장이다.',
+    '질문 목록에서 문장을 복사하지 말고, 이 사업 입력에 맞게 새로 쓴다.',
     '모델 이름이나 공급사 이름을 쓰지 않는다.',
     'JSON 객체만 반환한다.',
   ].join(' ');
@@ -446,6 +462,10 @@ function baseRecord(input: {
   };
 }
 
+/** S.I. paid_conversion 고정 문구. 모델 JSON이 이 문장이면 검토 성공으로 받지 않는다. */
+const FIXED_RULE_QUESTION =
+  '가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.';
+
 export function parseSections(content: string): ReviewSections | null {
   const stripped = content.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
   try {
@@ -456,12 +476,30 @@ export function parseSections(content: string): ReviewSections | null {
     const revenueModel = textField(parsed.revenueModel);
     const execution = textField(parsed.execution);
     const judgment = textField(parsed.judgment);
+    const nextQuestion = textField(parsed.nextQuestion);
+    const nextQuestionReason = textField(parsed.nextQuestionReason);
+    const answerHint = textField(parsed.answerHint);
     const risks = stringList(parsed.risks);
     const uncertain = stringList(parsed.uncertain);
     const hypotheses = stringList(parsed.hypotheses);
     if (!customer || !problem || !market || !revenueModel || !execution || !judgment) return null;
     if (!risks || !uncertain || !hypotheses) return null;
-    return { customer, problem, market, revenueModel, execution, risks, uncertain, hypotheses, judgment };
+    if (!nextQuestion || !nextQuestionReason || !answerHint) return null;
+    if (nextQuestion === FIXED_RULE_QUESTION) return null;
+    return {
+      customer,
+      problem,
+      market,
+      revenueModel,
+      execution,
+      risks,
+      uncertain,
+      hypotheses,
+      judgment,
+      nextQuestion,
+      nextQuestionReason,
+      answerHint,
+    };
   } catch {
     return null;
   }

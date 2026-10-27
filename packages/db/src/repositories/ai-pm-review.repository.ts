@@ -142,20 +142,21 @@ export class SupabaseAiPmReviewRepository {
   async succeededChild(
     userId: string,
     parentReviewId: string,
-    sourceFeedbackId: string,
+    sourceFeedbackId: string | null,
     supplementSha: string,
   ): Promise<AiPmReviewRow | null> {
     const client = getServiceClient();
-    const { data, error } = await client
+    let query = client
       .from(REVIEWS)
       .select('*')
       .eq('user_id', userId)
       .eq('parent_review_id', parentReviewId)
-      .eq('source_feedback_id', sourceFeedbackId)
       .eq('supplement_sha', supplementSha)
-      .eq('status', 'succeeded')
-      .limit(1)
-      .maybeSingle();
+      .eq('status', 'succeeded');
+    query = sourceFeedbackId
+      ? query.eq('source_feedback_id', sourceFeedbackId)
+      : query.is('source_feedback_id', null);
+    const { data, error } = await query.limit(1).maybeSingle();
     assertNoError(error);
     return data ? toReview(data as ReviewSqlRow) : null;
   }
