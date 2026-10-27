@@ -49,9 +49,9 @@ function headerPick(headers) {
   return out;
 }
 
-async function request(url, options) {
+async function request(url, options, timeoutMs = CALL_TIMEOUT_MS) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), CALL_TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   const startedAt = new Date().toISOString();
   const t0 = Date.now();
   try {
@@ -110,11 +110,96 @@ export async function reloadRecord(fileUrl = OUT) {
       http: round.response?.http ?? null,
       storedHash: round.response?.sha256 ?? null,
       recomputedHash: sha256(raw),
-      match: Boolean(raw) && round.response?.sha256 === sha256(raw),
+      hashMatch: round.response?.sha256 === sha256(raw),
+      hasText: raw.length > 0 && round.response?.http === 200,
       chars: raw.length,
     };
   });
-  return { id: record.id, checks, ok: checks.length > 0 && checks.every((item) => item.match) };
+  return {
+    id: record.id,
+    checks,
+    ok: checks.length > 0 && checks.every((item) => item.hashMatch),
+  };
+}
+
+function freeModelIds(raw) {
+  try {
+    const parsed = JSON.parse(raw);
+    const list = Array.isArray(parsed?.data) ? parsed.data : [];
+    return list
+      .filter((model) => {
+        const id = String(model?.id ?? '');
+        const prompt = Number(model?.pricing?.prompt ?? 1);
+        const completion = Number(model?.pricing?.completion ?? 1);
+        return id.endsWith(':free') || id === 'openrouter/free' || (prompt === 0 && completion === 0);
+      })
+      .map((model) => String(model.id));
+  } catch {
+    return [];
+  }
+}
+
+function pack(name, prompt, response, sentBusinessText) {
+  const raw = response.http === 200 ? response.raw : clip(response.raw);
+  return {
+    name,
+    sentBusinessText,
+    prompt: sentBusinessText ? prompt : '(ping only; business text withheld)',
+    response: {
+      ...response,
+      raw,
+      sha256: sha256(raw),
+    },
+  };
+}
+
+async function appendDependentRounds(record) {
+  await sleep(GAP_MS);
+  const round1Prompt = reviewPrompt('이번이 1차 검토다.');
+  const round1 = await request(
+    'https://text.pollinations.ai/openai',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'openai',
+        messages: [{ role: 'user', content: round1Prompt }],
+        stream: false,
+      }),
+    },
+    110_000,
+  );
+  record.pollinations.rounds.push(pack('round-1-retry', round1Prompt, round1, true));
+  if (round1.http !== 200 || !round1.raw) {
+    return { round1Http: round1.http, round2Http: null, skippedRound2: true };
+  }
+
+  await sleep(GAP_MS);
+  const round2Prompt = reviewPrompt(
+    [
+      '이번이 2차 검토다. 아래 1차 원문을 읽고 질문을 조정한다.',
+      '1차 검토 원문:',
+      round1.raw,
+      '',
+      `창업자 추가 답변: ${ROUND2_ANSWER}`,
+      'questions는 1차 질문 중 이 답으로 닫힌 항목을 반복하지 않는다.',
+    ].join('\n'),
+  );
+  const round2 = await request(
+    'https://text.pollinations.ai/openai',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'openai',
+        messages: [{ role: 'user', content: round2Prompt }],
+        stream: false,
+      }),
+    },
+    110_000,
+  );
+  record.pollinations.rounds.push(pack('round-2-after-round-1', round2Prompt, round2, true));
+  return { round1Http: round1.http, round2Http: round2.http, skippedRound2: false };
 }
 
 async function main() {
@@ -122,6 +207,20 @@ async function main() {
     const result = await reloadRecord();
     console.log(JSON.stringify(result, null, 2));
     process.exit(result.ok ? 0 : 1);
+  }
+
+  if (process.argv.includes('--continue')) {
+    const record = JSON.parse(await readFile(OUT, 'utf8'));
+    const models = await request('https://openrouter.ai/api/v1/models', { method: 'GET' });
+    const ids = models.http === 200 ? freeModelIds(models.raw) : [];
+    record.noKeyProbes.openrouterFreeModelCount = ids.length;
+    record.noKeyProbes.openrouterFreeModelSample = ids.slice(0, 15);
+    const continued = await appendDependentRounds(record);
+    await writeFile(OUT, `${JSON.stringify(record, null, 2)}\n`);
+    const reloaded = await reloadRecord();
+    console.log(JSON.stringify({ continued, reload: reloaded }, null, 2));
+    if (!reloaded.ok) process.exit(1);
+    return;
   }
 
   const gemini = await request(
@@ -174,20 +273,6 @@ async function main() {
       stream: false,
     }),
   });
-
-  function pack(name, prompt, response, sentBusinessText) {
-    const raw = response.http === 200 ? response.raw : clip(response.raw);
-    return {
-      name,
-      sentBusinessText,
-      prompt: sentBusinessText ? prompt : '(ping only; business text withheld)',
-      response: {
-        ...response,
-        raw,
-        sha256: sha256(raw),
-      },
-    };
-  }
 
   const record = {
     id: 'juinjip-free-model-mvp-2026-10-27',
