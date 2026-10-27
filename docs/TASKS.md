@@ -4,9 +4,18 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Gemini E2E-01 — 질의 회수 경로
+
+**상태:** 공식 `generateContent` 회수·로컬 sqlite 저장·`/business-validation` 화면 연결까지 코드에 있다. 실 API 호출은 NOT RUN. 북마크와 확장은 Gemini 회신을 반환하지 않는다.  
+**Branch:** `cursor/gemini-e2e-01-4b88`  
+**저장:** `.data/gemini-rounds.sqlite`. 프로덕션 DB가 아니다. 롤백은 `DROP TABLE gemini_rounds` 후 파일 삭제.  
+**화면:** 로그인 없이는 원문 없이 `로그인 필요`를 표시한다. 승인·키·출력 한도가 없으면 `실호출 NOT RUN`을 저장한다.
+
+---
+
 ## Gemini generateContent HTTP
 
-**상태:** `GoogleProviderAdapter.chat`은 스텁을 반환하지 않고 공식 `generateContent` HTTP를 호출한다. 실 API 호출은 NOT RUN. 사업성 검토 화면과 DB는 이 경로를 호출하지 않는다.  
+**상태:** `GoogleProviderAdapter.chat`은 스텁을 반환하지 않고 공식 `generateContent` HTTP를 호출한다. 실 API 호출은 NOT RUN. 화면 연결은 위 Gemini E2E-01 절이다.  
 **Branch:** `cursor/gemini-generate-content-4b88`  
 **검색:** 구현하지 않음. `groundingUsed`는 false, `sourceUrls`는 빈 배열.  
 **실호출 조건:** `GOOGLE_AI_API_KEY`와 양의 정수 `GOOGLE_AI_MAX_OUTPUT_TOKENS`가 있고, 유료 호출이 별도로 승인된 경우에만. 이번 변경은 그 호출을 실행하지 않는다.

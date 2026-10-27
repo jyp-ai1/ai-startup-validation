@@ -31,6 +31,25 @@ GET /api/health
 
 ---
 
+### Gemini rounds
+
+```
+GET /api/gemini-rounds
+POST /api/gemini-rounds
+```
+
+Logged-in session required. Without a session the status is `401` and `content` is null.
+
+`POST` body: `executionId`, `round` (`1` or `2`), `business`, optional `customer`, `problem`, and for round 2 `feedback` plus `parentExecutionId`.
+
+The server calls `POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent` only when `GEMINI_LIVE_CALL_APPROVED=yes`, `GOOGLE_AI_API_KEY`, and `GOOGLE_AI_MAX_OUTPUT_TOKENS` are all set. Otherwise it stores `status: not_run`, `content: null`, and `liveCall: NOT_RUN`. It does not create a response text.
+
+Round text is stored in the local sqlite file `GEMINI_ROUND_DB_PATH` (default `.data/gemini-rounds.sqlite`). That file is not the production database. Rollback: `DROP TABLE gemini_rounds` and delete the file, including `-wal` and `-shm`.
+
+Search grounding is not requested. `sourceUrls` is empty and `sourceStatus` is `absent`.
+
+---
+
 ## Server Actions (Planned)
 
 Server Actions will be documented here with:

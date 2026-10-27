@@ -1782,6 +1782,52 @@ External models were not adopted as the judgment engine. The remaining question 
 
 ---
 
+## ADR-059: Gemini replies return through generateContent, not a bookmark
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** Gemini E2E-01  
+**Authors:** CTO (autonomous)
+
+### Context
+
+ALABOM needs a business question to leave, a reply to come back, and that reply to be readable again on the business-validation screen. The repository has URL bookmarks and an extension at `experiments/external-ai-roundtrip`. That extension refuses `gemini.google.com` and does not return a Gemini reply. No bookmarklet reads a Gemini response. Reading the Gemini page would be automated collection of a disallowed path.
+
+### Decision
+
+1. The execution path is the official `generateContent` client from ADR-058.
+2. `recoverGeminiRound` stores round 1 and round 2 in a local sqlite table `gemini_rounds`. The same execution id is not sent twice. A failed round 2 leaves round 1 in place. Empty text, auth failure, and timeout store `content: null`.
+3. A missing approval, key, or output ceiling stores `not_run` and does not call the network.
+4. The business-validation screen reads `/api/gemini-rounds` after login. Search sources stay absent.
+5. The sqlite file is not the production database. Rollback is `DROP TABLE gemini_rounds` and deletion of `GEMINI_ROUND_DB_PATH`.
+6. This ADR does not approve a paid call, a Production deploy, or a PR merge.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Reuse the extension message listener | A message path already exists | It calls pollinations and forbids Gemini hosts |
+| Bookmark the Gemini page | A person can open the page | Opening the page does not return the reply to ALABOM |
+| Store the reply on `ExternalNote` | The journey already lists notes | `liveModelCall` on that type is fixed to false and origin is `user_paste` |
+
+### Consequences
+
+**Positive:**
+
+- Injected HTTP tests store an original, reopen it, and build the second request from the first original plus feedback.
+- The screen has a place to show that original or an explicit empty failure.
+
+**Negative:**
+
+- No live Gemini original exists in this change. The screen cannot show one until a key, a ceiling, and a paid call are present.
+- The sqlite file does not follow a Vercel instance across machines.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #202 stays unmerged.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

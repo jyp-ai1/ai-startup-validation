@@ -15,6 +15,7 @@ import { attachFounderSource, SOURCE_HYPOTHESES, sourceHash } from '../lib/found
 import { applyAnswer, correctField, recordCounterClaim, replayStoredAnswer, startFromBusinessPlan, startJourney } from '../lib/journey-engine';
 import { blockersToClose, decisionSnapshot, LMULM_PLAN_FIXTURE, RIDM_PLAN_FIXTURE, withFixtureResult } from '../lib/plan-journey';
 import { renderVerificationDocument } from '../lib/verification-document';
+import { GeminiRoundPanel } from './gemini-round-panel';
 import { PlanRefinementPanel } from './plan-refinement-panel';
 import { WebReviewPanel } from './web-review-panel';
 import { contextRoleLabel, executionBadgeLabel } from '../lib/present-execution';
@@ -379,6 +380,7 @@ export function ValidationJourneyScreen() {
           </Button>
         </div>
       </form>
+      <GeminiRoundPanel business={intake.business} customer={intake.customer} problem={intake.problem} />
     </div>
   );
 }
@@ -949,6 +951,11 @@ function UnderstandingView({
       </section>
 
       <WebReviewPanel journey={journey} onJourneyChange={onJourneyChange} />
+      <GeminiRoundPanel
+        business={journey.intake.business}
+        customer={journey.intake.customer}
+        problem={journey.intake.problem}
+      />
 
       {question ? (
         <>
