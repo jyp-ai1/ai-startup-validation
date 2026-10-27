@@ -15,10 +15,8 @@ import { attachFounderSource, SOURCE_HYPOTHESES, sourceHash } from '../lib/found
 import { applyAnswer, correctField, recordCounterClaim, replayStoredAnswer, startFromBusinessPlan, startJourney } from '../lib/journey-engine';
 import { blockersToClose, decisionSnapshot, LMULM_PLAN_FIXTURE, RIDM_PLAN_FIXTURE, withFixtureResult } from '../lib/plan-journey';
 import { renderVerificationDocument } from '../lib/verification-document';
-import { FreeGeminiWebPanel } from './free-gemini-web-panel';
-import { GeminiRoundPanel } from './gemini-round-panel';
+import { AiPmReviewPanel } from './ai-pm-review-panel';
 import { PlanRefinementPanel } from './plan-refinement-panel';
-import { WebReviewPanel } from './web-review-panel';
 import { contextRoleLabel, executionBadgeLabel } from '../lib/present-execution';
 import { presentSingleDiagnosticAction } from '../lib/present-single-action';
 import { loadJourneyDraft, saveJourneyDraft } from '../lib/journey-session';
@@ -217,6 +215,7 @@ export function ValidationJourneyScreen() {
       <p className="mt-4 text-sm leading-relaxed text-muted-foreground" data-testid="prototype-note">
         {PROTOTYPE_NOTE}
       </p>
+      <AiPmReviewPanel />
 
       <form className="mt-8 space-y-4 rounded-xl border border-border p-4" onSubmit={onStartPlan} data-testid="plan-intake">
         <h2 className="text-lg font-medium">사업계획서로 시작</h2>
@@ -385,8 +384,6 @@ export function ValidationJourneyScreen() {
           </Button>
         </div>
       </form>
-      <FreeGeminiWebPanel business={intake.business} customer={intake.customer} problem={intake.problem} />
-      <GeminiRoundPanel business={intake.business} customer={intake.customer} problem={intake.problem} />
     </div>
   );
 }
@@ -725,7 +722,7 @@ function UnderstandingView({
               최종 판단: Hold. 테스트 답변은 시뮬레이션이며 매출이나 유료 고객의 증거가 아니다. Go와 Stop은 내리지 않는다.
             </p>
             <p data-testid="flow-boundary">
-              질문 분기는 규칙이다. GPT API를 호출하지 않았다. 붙여 넣은 GPT 1차 답변의 점수와 가정 시나리오 결론은 쓰지 않는다.
+              질문 분기는 규칙이다. 이 질문 흐름은 AI PM 검토 호출로 만들지 않았다. 붙여 넣은 답변의 점수와 가정 시나리오 결론은 쓰지 않는다.
             </p>
             <p data-testid="decision-support">핵심 근거: {decision.support.join(' ')}</p>
             <p data-testid="decision-counter">반대·공백: {decision.counter.join(' ')}</p>
@@ -831,7 +828,7 @@ function UnderstandingView({
         <p className="text-sm" data-testid="citation-check">
           출처 대조{' '}
           {citationTrace.citations
-            .map((item) => `${item.side === 'gemini' ? 'Gemini' : 'GPT'} ${sourceCheckLabel(item.sourceCheck)}`)
+            .map((item) => `${item.side === 'gemini' ? 'AI PM 기록' : 'AI PM 추가 기록'} ${sourceCheckLabel(item.sourceCheck)}`)
             .join(', ')}
           . {citationTrace.reason}
         </p>
@@ -956,17 +953,7 @@ function UnderstandingView({
         <p className="text-sm text-muted-foreground">실패 기준: {journey.nextAction.failureCriterion}</p>
       </section>
 
-      <WebReviewPanel journey={journey} onJourneyChange={onJourneyChange} />
-      <FreeGeminiWebPanel
-        business={journey.intake.business}
-        customer={journey.intake.customer}
-        problem={journey.intake.problem}
-      />
-      <GeminiRoundPanel
-        business={journey.intake.business}
-        customer={journey.intake.customer}
-        problem={journey.intake.problem}
-      />
+      <AiPmReviewPanel />
 
       {question ? (
         <>

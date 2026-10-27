@@ -4,6 +4,15 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## AI PM 1차 검토와 피드백
+
+**상태:** 사용자 화면의 이름은 AI PM이다. 1차 검토 엔진은 서버의 OpenAI 어댑터 한 번이다. 같은 입력의 재열람과 객관식 피드백 저장은 호출 0회다. 추가 검증은 저장된 검토와 피드백만 보내고, 사업계획 원문은 버전마다 유지한다. 모델명·토큰·지연·오류는 저장소에만 둔다. 키 없는 실행은 원문을 만들지 않는다. Gemini는 이 루프에 넣지 않는다.  
+**Branch:** `cursor/ai-pm-first-review-4b88`  
+**저장:** `.data/ai-pm-reviews.sqlite`. 프로덕션 DB가 아니다.  
+**Production 잠금:** `0b465226` 유지.
+
+---
+
 ## 짧은 사업 아이디어 — 사업별 유보
 
 **상태:** `founder_input`의 사업·고객·문제만으로 최근 손실, 구매 결정권자, 지불 여지, 반복 비용을 묻는다. 없는 가격과 손실액은 만들지 않는다. LMULM·RIDM 발췌 규칙은 유지한다. 실 Gemini 웹 원문은 NOT RUN.  

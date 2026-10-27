@@ -1913,6 +1913,51 @@ LMULM and RIDM excerpts already separate a document claim from an unverified for
 
 ---
 
+## ADR-062: The user-facing reviewer is AI PM
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The first business review needs one model call, a structured result, and a multiple-choice correction from the founder. Naming that step after a model vendor makes a later engine change look like a different product. Token counts and model ids are operating data, not part of the founder's decision.
+
+### Decision
+
+1. Screens, buttons, status lines, and review history say AI PM. The first review covers customer and payer, problem and solution, market evidence, revenue, execution, and risks, plus unknowns and the hypothesis to test next.
+2. The server adapter for this loop is OpenAI chat, one call for a new plan. Gemini is not called here.
+3. Submitting feedback stores agreement, factual accuracy, revision areas, a free comment, and the next action on that review version. The comment is allowed when "other" is not selected. Feedback does not call a model.
+4. Opening the same plan reads the stored review. A requested follow-up sends the stored sections, the feedback, and any new facts. The original plan text remains on every version.
+5. Model id, token counts, latency, and errors are stored on the sqlite row and omitted from the screen payload. A missing key stores `not_run` and no review text.
+6. The sqlite file is not the production database. Rollback is `DROP TABLE ai_pm_reviews`, `DROP TABLE ai_pm_feedback`, and deletion of `AI_PM_REVIEW_DB_PATH`.
+7. This ADR does not approve a Production deploy, a PR merge, or a Gemini comparison.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Show the model name on the result | Operators see which engine answered | A model change looks like a new product |
+| Call the model again for every feedback item | The next paragraph could mention the correction | Spends a call when the choice itself is the record |
+
+### Consequences
+
+**Positive:**
+
+- The same plan text from a file or a text box shares one stored review.
+- A later engine can read the old plan, review, and feedback without renaming the screen.
+
+**Negative:**
+
+- The founder's screen cannot show token cost. That comparison stays in the stored row.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
