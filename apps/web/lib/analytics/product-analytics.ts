@@ -82,6 +82,7 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   validationJourneyHandoffKept: 'validation_journey_handoff_kept',
   geminiRoundSubmitted: 'gemini_round_submitted',
   geminiRoundResultViewed: 'gemini_round_result_viewed',
+  freeGeminiWebPasteKept: 'free_gemini_web_paste_kept',
 } as const;
 
 export type ProductAnalyticsEvent =

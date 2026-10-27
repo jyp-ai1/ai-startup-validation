@@ -4,6 +4,14 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## 무료 Gemini 웹 — 사용자 붙여 넣기
+
+**상태:** 자동 회수 경로는 없다. ALABOM은 1차·2차 질의를 만들고, 사람이 붙여 넣은 원문과 URL을 세션에 저장해 다시 연다. 실 Gemini 웹 원문은 NOT RUN. 공식 API는 확장하지 않았다.  
+**Branch:** `cursor/free-gemini-web-4b88`  
+**PR #202·#203:** 병합하지 않음. Production 잠금 `0b465226`.
+
+---
+
 ## Gemini E2E-01 — 질의 회수 경로
 
 **상태:** 공식 `generateContent` 회수·로컬 sqlite 저장·`/business-validation` 화면 연결까지 코드에 있다. 실 API 호출은 NOT RUN. 북마크와 확장은 Gemini 회신을 반환하지 않는다.  

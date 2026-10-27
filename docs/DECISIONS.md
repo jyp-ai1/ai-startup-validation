@@ -1828,6 +1828,49 @@ ALABOM needs a business question to leave, a reply to come back, and that reply 
 
 ---
 
+## ADR-060: Free Gemini web text returns only by user paste
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** Free Gemini web roundtrip  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The product path is a person using the free Gemini web page, then bringing the reply back into ALABOM. PR #202 and PR #203 call the official generateContent API. That is a different path. The extension in `experiments/external-ai-roundtrip` refuses `gemini.google.com`. No bookmarklet returns a Gemini reply. Reading the Gemini page is not allowed.
+
+### Decision
+
+1. Do not merge PR #202 or PR #203. Do not add another generateContent feature. Do not delete the existing API code in this change.
+2. `acceptFreeGeminiWebPaste` stores a person-supplied original and http(s) URLs in session storage `alabom.freeGeminiWeb.v1`. An empty original is not stored. Round 2 includes the round 1 original and the feedback. `webRoundtrip` stays `NOT_RUN`. `verifiedFact` stays false. `apiCalled` stays false.
+3. The business screen shows that prompt and the saved paste. It does not open or read the Gemini page.
+4. A pasted fixture is not evidence of a free Gemini web reply.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Extend `/api/gemini-rounds` | One store | That route is the paid API path |
+| Drive the Gemini page | Could capture a reply | Disallowed automated collection |
+| Reuse only the journey handoff | Already on the understanding view | It does not keep source URLs or a separate round 2 prompt from the business form |
+
+### Consequences
+
+**Positive:**
+
+- A person can copy a prompt, paste a reply, reload the page, and copy a second prompt that contains the first reply.
+- Missing text and missing URLs stay visible as missing.
+
+**Negative:**
+
+- No free Gemini web original is in the repository. The completion criterion is not met.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

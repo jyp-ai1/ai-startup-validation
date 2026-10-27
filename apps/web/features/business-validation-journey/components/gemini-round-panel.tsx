@@ -96,9 +96,9 @@ export function GeminiRoundPanel({
 
   return (
     <section className="mt-8 space-y-3 rounded-xl border border-border p-4" data-testid="gemini-round-panel">
-      <h2 className="text-lg font-medium">Gemini 질의와 응답</h2>
+      <h2 className="text-lg font-medium">공식 Gemini API</h2>
       <p className="text-sm text-muted-foreground">
-        서버가 공식 Gemini API로 질의를 보내고 원문을 이 화면에 다시 엽니다. 검색 출처는 이 호출에 없습니다.
+        이 칸은 공식 API 경로다. 무료 Gemini 웹 회수가 아니며, 이번 목표에서 API 호출을 늘리지 않는다. 승인·키·출력 한도가 없으면 원문을 만들지 않는다.
       </p>
       <Button
         type="button"
