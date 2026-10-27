@@ -11,7 +11,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 **제품 코드:** 변경 없음. API·웹 자동화·배포 없음.  
 **Evidence:** `docs/evidence/AI-DISCOVERY-01/`  
 **공통 입력:** `AD01-TEST-LUNCHBOX-01`  
-**다음:** 사람이 그 입력을 ChatGPT 웹과 Gemini 웹에 직접 넣기 전에는 점수와 구현 범위를 비운다.
+**Chrome Gemini:** `06-browser-execution-path.md`. 자동 수집은 약관상 부적합. 비로그인 웹 검색·출처는 미검증.  
+**다음:** 사람이 시크릿 Chrome에서 그 입력을 Gemini에 직접 넣기 전에는 수집 구현을 열지 않는다.
 
 ---
 
