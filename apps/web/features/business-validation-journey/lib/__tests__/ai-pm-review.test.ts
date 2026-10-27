@@ -326,6 +326,79 @@ describe('AI PM first review', () => {
     expect(screen).not.toContain('GPT API');
   });
 
+  it('stores no review sentences when GPT_API_KEY is absent', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const missing = await runFirstReview({
+      store,
+      userId: 'user-missing',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      evidence: 'not_run',
+      notRunReason: 'gpt_api_key_missing',
+    });
+    expect(missing.called).toBe(false);
+    expect(missing.record.status).toBe('not_run');
+    expect(missing.record.callCount).toBe(0);
+    expect(missing.record.sections).toBeNull();
+    expect(missing.record.rawContent).toBeNull();
+    expect(missing.record.error).toBe('gpt_api_key_missing');
+    expect(missing.view.status).toBe('unavailable');
+    expect(missing.view.sections).toBeNull();
+    expect(JSON.stringify(missing.view)).not.toContain('gpt_api_key_missing');
+    const reopened = await runFirstReview({
+      store,
+      userId: 'user-missing',
+      text: PLAN,
+      origin: 'file',
+      fileName: 'plan.txt',
+      now: NOW,
+      evidence: 'not_run',
+      notRunReason: 'gpt_api_key_missing',
+    });
+    expect(reopened.called).toBe(false);
+    expect(reopened.record.reviewId).toBe(missing.record.reviewId);
+    expect(reopened.record.callCount).toBe(0);
+
+    const ready = await runFirstReview({
+      store,
+      userId: 'user-missing',
+      text: '두 번째 사업 메모. 가격과 고객 수는 없다.',
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      evidence: 'injected_http',
+      chat: async () => reply(JSON.stringify(sections())),
+    });
+    saveReviewFeedback({
+      store,
+      userId: 'user-missing',
+      now: NOW,
+      body: {
+        reviewId: ready.record.reviewId,
+        agreement: 'partial',
+        accuracy: 'mostly_accurate',
+        revisionAreas: ['payer'],
+        comment: '지불자를 다시 봐야 한다.',
+        nextAction: 'verify_hypotheses',
+      },
+    });
+    const follow = await runFollowUpReview({
+      store,
+      userId: 'user-missing',
+      reviewId: ready.record.reviewId,
+      supplement: '대표 인터뷰는 아직 없다.',
+      now: NOW,
+      evidence: 'not_run',
+      notRunReason: 'gpt_api_key_missing',
+    });
+    expect(follow.ok).toBe(false);
+    if (!follow.ok) expect(follow.error).toBe('gpt_api_key_missing');
+    expect(store.listReviews('user-missing').filter((record) => record.parentReviewId === ready.record.reviewId)).toHaveLength(0);
+    store.close();
+  });
+
   it('reads GPT_API_KEY and leaves OPENAI_API_KEY unused', () => {
     expect(readGptApiKey({ GPT_API_KEY: ' present ', OPENAI_API_KEY: 'other' })).toBe('present');
     expect(readGptApiKey({ OPENAI_API_KEY: 'other' })).toBeNull();

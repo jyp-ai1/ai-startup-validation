@@ -294,7 +294,6 @@ export async function runFollowUpReview(input: {
   const finished = await finishCall({
     store: input.store,
     input: {
-      store: input.store,
       userId: input.userId,
       text: parent.inputText,
       origin: parent.inputOrigin,

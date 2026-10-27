@@ -67,6 +67,8 @@ The server calls the OpenAI chat adapter only when `GPT_API_KEY` is set. `OPENAI
 
 `storage.durable` is `false`. The file is local sqlite. On Vercel the function filesystem is read-only except ephemeral `/tmp`, so `.data/ai-pm-reviews.sqlite` is not kept across instances or redeploys. It is not the production database.
 
+The durable tables are `public.ai_pm_reviews` and `public.ai_pm_feedback` in `packages/db/src/migration/023_ai_pm_reviews.sql`, in the existing Supabase project. That migration is not applied. The configured Supabase host had no public DNS record on 2026-10-27, so these routes still write the local file. `public.business_plans` is a different document and is not this store.
+
 `POST /api/ai-pm-review/feedback` stores agreement, accuracy, revision areas, comment, and next action on that review version. It does not call a model. A comment is accepted when "other" is not selected.
 
 `POST /api/ai-pm-review/follow-up` body: `reviewId`, optional `supplement`. It requires stored feedback. The prompt carries the previous sections, the feedback, and the supplement. The original plan text stays on the record and is not sent again. Repeating the same feedback and supplement returns the stored follow-up.
@@ -90,6 +92,7 @@ Server Actions will be documented here with:
 
 | Date | Change |
 |------|--------|
+| 2026-10-27 | Migration `023_ai_pm_reviews.sql` defines the durable review and feedback tables. It is not applied. |
 | 2026-10-27 | `.env.example` names `GPT_API_KEY` for the AI PM review route. A live call is still not run. |
 | 2026-10-27 | `GET/POST /api/ai-pm-review`, feedback, and follow-up. Screen name is AI PM. |
 | 2026-10-06 | Funnel events `si_ai_pm_question_asked` / `si_ai_pm_answer_applied` for S.I.→AI PM bind (no new REST route) |

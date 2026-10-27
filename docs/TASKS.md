@@ -6,13 +6,11 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 1차 검토와 피드백
 
-**상태:** 사용자 화면의 이름은 AI PM이다. 1차 검토 엔진은 서버의 OpenAI 어댑터이고, 이 경로의 키 이름은 `GPT_API_KEY`다. `OPENAI_API_KEY`는 이 경로를 열지 않는다. 같은 입력의 재열람과 객관식 피드백 저장은 호출 0회다. 추가 검증은 저장된 검토와 피드백만 보낸다. 실모델 원문·토큰·응답 시간은 NOT RUN이다.  
+**상태:** 사용자 화면의 이름은 AI PM이다. 1차 검토 엔진은 서버의 OpenAI 어댑터이고, 이 경로의 키 이름은 `GPT_API_KEY`다. `OPENAI_API_KEY`는 이 경로를 열지 않는다. 키가 없으면 `not_run`과 내부 사유 `gpt_api_key_missing`만 저장하고 검토 문장은 만들지 않는다. 실모델 원문·토큰·응답 시간은 NOT RUN이다.  
 **Branch:** `cursor/ai-pm-first-review-4b88`  
-**저장:** `.data/ai-pm-reviews.sqlite`. `storage.durable`은 false. Vercel 함수 파일시스템은 `/tmp`만 쓸 수 있고 그 공간은 재배포와 인스턴스 교체 뒤 남지 않는다. 프로덕션 DB가 아니다.  
+**저장:** 실행 경로는 `.data/ai-pm-reviews.sqlite`, `storage.durable` false. 영속 스키마는 기존 Supabase용 `packages/db/src/migration/023_ai_pm_reviews.sql`과 `SupabaseAiPmReviewRepository`. 023은 미적용이다. 설정된 Supabase 호스트는 공개 DNS 레코드가 없다. `business_plans`는 이 저장소가 아니다. 별도 데이터베이스는 추가하지 않는다.  
 **Production 잠금:** `0b465226` 유지. 병합하지 않음.  
-**P0 환경변수 확인 (2026-10-27 19:14 KST):** Vercel Production에 `GPT_API_KEY`가 있는지는 이 실행 환경에서 확인되지 않았다. `VERCEL_TOKEN`이 없고 Vercel API는 `missingToken` 403이다. GitHub Actions variables는 403이다. 주입된 비밀 이름은 Supabase 항목뿐이며 이 프로세스의 `GPT_API_KEY`는 비어 있다. 모델 호출은 하지 않았다.  
-**실행 중인 Production:** `GET /api/build-info` 커밋 `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`, `deployTime` `2026-10-27T10:12:18.041Z` (19:12 KST). 환경변수는 새 배포부터 적용된다. 이 배포의 코드는 `readGptApiKey()`를 타지 않는다. `GET /api/ai/health`의 `openaiConfigured: false`는 `OPENAI_API_KEY` 기준이다.  
-**이 브랜치 Preview:** `e8cf4d75` 배포 실패. 검사 주소 `dpl_2tT9wyZcUc7hvhpQ7q94igEFY644`. 로그와 배포 본문은 Vercel 인증 뒤에 있다.
+**Preview 실패 원인:** `pnpm --filter web build`가 `ai-pm-review.ts`의 `finishCall` 입력에 없는 `store` 필드로 타입 검사를 실패했다. Vercel 로그는 인증 없이 열리지 않았다. 같은 타입 오류가 `61cf5a38`, `e8cf4d75`(`dpl_2tT9wyZcUc7hvhpQ7q94igEFY644`), `68d29786` Preview를 막았다. 부모 `ef39e14e` Preview는 성공했다. Production `0b465226`에는 이 경로가 없다.
 
 ---
 

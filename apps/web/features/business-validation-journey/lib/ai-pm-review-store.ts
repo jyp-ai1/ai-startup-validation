@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS ai_pm_feedback (
  * On Vercel the function filesystem is read-only except ephemeral /tmp.
  * A file under process.cwd()/.data is not kept across instances or redeploys.
  * durable:false means this file is not the production database.
+ * The durable tables are migration 023_ai_pm_reviews.sql. That migration is not applied.
  */
 export const AI_PM_REVIEW_STORAGE = {
   kind: 'local_sqlite' as const,

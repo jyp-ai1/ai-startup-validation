@@ -2000,6 +2000,49 @@ The first review route checked `OPENAI_API_KEY`. The key added for this path is 
 
 ---
 
+## ADR-064: AI PM reviews belong in the existing Supabase project
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+`.data/ai-pm-reviews.sqlite` does not survive a Vercel redeploy. The product already has one Supabase project and migrations `001`–`022`. `public.business_plans` stores a project document with a fixed section list. It does not store a review version, the original plan text for that review, or multiple-choice feedback.
+
+On 2026-10-27 the configured `SUPABASE_URL` host had no public DNS record from this process or from 8.8.8.8 and 1.1.1.1. The migration could not be applied.
+
+### Decision
+
+1. Add `public.ai_pm_reviews` and `public.ai_pm_feedback` in `packages/db/src/migration/023_ai_pm_reviews.sql`. Service role writes. Row level security is on. There is no anon policy.
+2. `SupabaseAiPmReviewRepository` in `@repo/db` is the access path. Apps do not import the Supabase SDK.
+3. The review API keeps local sqlite, with `storage.durable: false`, until migration 023 is applied on a host that resolves. Production founder text is not written to that sqlite file as a durable record.
+4. No second database is added.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Reuse `business_plans` | Table already exists in the schema | A review version and feedback do not fit its section enum or project foreign key |
+| Add a new database host | Empty and available | The product already has Supabase, and the current host is the one to restore |
+
+### Consequences
+
+**Positive:**
+
+- The durable shape is in the repo and matches the sqlite columns.
+
+**Negative:**
+
+- Rows are not durable until the Supabase host resolves and 023 is applied.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #207 stays unmerged.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
