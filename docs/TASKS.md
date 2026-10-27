@@ -4,6 +4,18 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint AI-Discovery-01 — 검토 구조 발굴
+
+**상태:** BLOCKED. 자동 수집은 중단. 비로그인 Gemini 품질은 미검증이며 포기하지 않음.  
+**Branch:** `cursor/ai-discovery-01-4b88`  
+**제품 코드:** 변경 없음. API·웹 자동화·확장·배포 없음.  
+**Evidence:** `docs/evidence/AI-DISCOVERY-01/`  
+**공통 입력:** `AD01-TEST-LUNCHBOX-01`  
+**Chrome Gemini:** `06`은 자동 수집만 부적합. `07`은 품질 6항 미검증. `08-manual-quality-protocol.md`는 사람이 붙여 넣을 프롬프트와 기록 형식. `09`–`11`은 원문이 없어 만들지 않음.  
+**다음:** 1차·2차 원문이 `NOT PROVIDED`인 동안 구현을 열지 않는다.
+
+---
+
 ## 순수 규칙 엔진 — AC16·AC5와 S1–S6
 
 **CPO Gate:** 동결 · 규칙 엔진 추가 수정 중지 · 병합·Production 금지 · Production 잠금 `0b465226`  
