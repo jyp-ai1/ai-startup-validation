@@ -4,6 +4,15 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## 무료 모델 MVP 프로브 — 주인집
+
+**상태:** 키 없는 공식 호출은 Gemini API HTTP 403, OpenRouter HTTP 401이다. 주인집 문장은 그 두 곳으로 보내지 않았다. Pollinations 익명 `gpt-oss-20b`가 검토 원문 2건을 반환했다. 1차 재시도는 보류와 질문 3개를 냈고, 그 원문을 넣은 2차는 `finish_reason=length`로 본문이 비었다. 실험 JSON 해시는 다시 읽힌다. 제품 화면에는 연결하지 않았다. Gemini 웹은 열지 않았다.  
+**기록:** `experiments/free-model-mvp/juinjip-2026-10-27.json`  
+**Branch:** `cursor/free-model-mvp-probe-4b88`  
+**Production 잠금:** `0b465226` 유지. 병합하지 않음.
+
+---
+
 ## 짧은 사업 아이디어 — 사업별 유보
 
 **상태:** `founder_input`의 사업·고객·문제만으로 최근 손실, 구매 결정권자, 지불 여지, 반복 비용을 묻는다. 없는 가격과 손실액은 만들지 않는다. LMULM·RIDM 발췌 규칙은 유지한다. 실 Gemini 웹 원문은 NOT RUN.  
