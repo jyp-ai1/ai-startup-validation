@@ -4,6 +4,17 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint AI-Discovery-01 — 검토 구조 발굴
+
+**상태:** 조사 기록까지. 웹 실험은 미실행. 적용 결정은 보류.  
+**Branch:** `cursor/ai-discovery-01-4b88`  
+**제품 코드:** 변경 없음. API·웹 자동화·배포 없음.  
+**Evidence:** `docs/evidence/AI-DISCOVERY-01/`  
+**공통 입력:** `AD01-TEST-LUNCHBOX-01`  
+**다음:** 사람이 그 입력을 ChatGPT 웹과 Gemini 웹에 직접 넣기 전에는 점수와 구현 범위를 비운다.
+
+---
+
 ## 순수 규칙 엔진 — AC16·AC5와 S1–S6
 
 **CPO Gate:** 동결 · 규칙 엔진 추가 수정 중지 · 병합·Production 금지 · Production 잠금 `0b465226`  
