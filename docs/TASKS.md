@@ -11,8 +11,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 **제품 코드:** 변경 없음. API·웹 자동화·확장·배포 없음.  
 **Evidence:** `docs/evidence/AI-DISCOVERY-01/`  
 **공통 입력:** `AD01-TEST-LUNCHBOX-01`  
-**Chrome Gemini:** `06-browser-execution-path.md`는 자동 수집만 부적합. `07-manual-quality-hold.md`는 품질 6항이 모두 미검증.  
-**다음:** 사람이 시크릿 Chrome에서 같은 입력을 직접 넣고 출처가 있는 원문을 남기기 전에는 구현을 열지 않는다.
+**Chrome Gemini:** `06`은 자동 수집만 부적합. `07`은 품질 6항 미검증. `08-manual-quality-protocol.md`는 사람이 붙여 넣을 프롬프트와 기록 형식. `09`–`11`은 원문이 없어 만들지 않음.  
+**다음:** 1차·2차 원문이 `NOT PROVIDED`인 동안 구현을 열지 않는다.
 
 ---
 
