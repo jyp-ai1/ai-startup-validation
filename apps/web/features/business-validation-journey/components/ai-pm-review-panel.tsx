@@ -264,8 +264,16 @@ export function AiPmReviewPanel() {
 
       {active?.sections ? (
         <div className="space-y-3 text-sm" data-testid="ai-pm-result">
-          <h3 className="font-medium">검토 버전 {active.version}</h3>
+          <h3 className="font-medium">결론</h3>
           <p data-testid="ai-pm-judgment">{active.sections.judgment}</p>
+          <p>
+            <span className="font-medium">가장 큰 불확실성. </span>
+            {active.sections.uncertain[0]}
+          </p>
+          <details data-testid="ai-pm-result-details">
+            <summary className="cursor-pointer font-medium">상세 근거 보기</summary>
+            <div className="mt-3 space-y-3">
+              <p className="text-muted-foreground">검토 버전 {active.version}</p>
           {(Object.keys(SECTION_LABEL) as Array<keyof typeof SECTION_LABEL>).map((key) => (
             <p key={key}>
               <span className="font-medium">{SECTION_LABEL[key]}. </span>
@@ -284,6 +292,8 @@ export function AiPmReviewPanel() {
             <span className="font-medium">우선 검증할 가설. </span>
             {active.sections.hypotheses.join(' ')}
           </p>
+            </div>
+          </details>
           {active.questionSource === 'model-review' ? (
             <form
               className="space-y-2 rounded-xl border border-border p-3"
