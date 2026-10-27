@@ -4,8 +4,9 @@ import { assertNoError } from '../adapters/supabase/repositories/repository.util
 /**
  * Durable AI PM review rows in the existing Supabase project.
  * Migration: packages/db/src/migration/023_ai_pm_reviews.sql.
- * The web review route still uses local sqlite until that migration is applied.
+ * The review API uses this repository when the Supabase service role is configured.
  * record_json holds the plan text, review sections, and feedback. It must not hold an API key.
+ * deleteForUser removes that user's feedback and reviews. auth.users deletion also cascades.
  */
 
 const REVIEWS = 'ai_pm_reviews';
@@ -139,6 +140,7 @@ export class SupabaseAiPmReviewRepository {
   }
 
   async succeededChild(
+    userId: string,
     parentReviewId: string,
     sourceFeedbackId: string,
     supplementSha: string,
@@ -147,6 +149,7 @@ export class SupabaseAiPmReviewRepository {
     const { data, error } = await client
       .from(REVIEWS)
       .select('*')
+      .eq('user_id', userId)
       .eq('parent_review_id', parentReviewId)
       .eq('source_feedback_id', sourceFeedbackId)
       .eq('supplement_sha', supplementSha)
@@ -155,6 +158,14 @@ export class SupabaseAiPmReviewRepository {
       .maybeSingle();
     assertNoError(error);
     return data ? toReview(data as ReviewSqlRow) : null;
+  }
+
+  async deleteForUser(userId: string): Promise<void> {
+    const client = getServiceClient();
+    const feedback = await client.from(FEEDBACK).delete().eq('user_id', userId);
+    assertNoError(feedback.error);
+    const reviews = await client.from(REVIEWS).delete().eq('user_id', userId);
+    assertNoError(reviews.error);
   }
 
   async listReviews(userId: string): Promise<AiPmReviewRow[]> {

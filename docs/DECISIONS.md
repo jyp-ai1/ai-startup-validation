@@ -2017,8 +2017,9 @@ On 2026-10-27 the configured `SUPABASE_URL` host had no public DNS record from t
 
 1. Add `public.ai_pm_reviews` and `public.ai_pm_feedback` in `packages/db/src/migration/023_ai_pm_reviews.sql`. Service role writes. Row level security is on. There is no anon policy.
 2. `SupabaseAiPmReviewRepository` in `@repo/db` is the access path. Apps do not import the Supabase SDK.
-3. The review API keeps local sqlite, with `storage.durable: false`, until migration 023 is applied on a host that resolves. Production founder text is not written to that sqlite file as a durable record.
-4. No second database is added.
+3. `openReviewBackend()` uses `SupabaseAiPmReviewRepository` when `isSupabaseAdminConfigured()` is true. The success response then has `storage.durable: true`. When the service role is absent, the API uses local sqlite and `storage.durable: false`. A storage error returns `storage_unavailable` and `durable: false`. It does not describe that failure as a saved durable review.
+4. `user_id` references `auth.users` with `on delete cascade`. Deleting the account deletes that user's plan text, reviews, and feedback. Deleting a review deletes its feedback. Reads and writes include the session user id. No anon policy is added.
+5. No second database is added. Migration 023 is still not applied, because the configured host has no public DNS record.
 
 ### Pre-apply review (2026-10-27 20:15 KST)
 
@@ -2028,7 +2029,7 @@ Existing data: no current table is changed and no current row is updated or dele
 
 Rollback: `DROP TABLE public.ai_pm_feedback;` then `DROP TABLE public.ai_pm_reviews;`. Indexes drop with the tables. The review route does not write these tables yet, so dropping them does not change the running API.
 
-Persistence: rows in Supabase Postgres would survive a Vercel redeploy. The configured host still has no public DNS record, so 023 is not applied. `apps/web` review routes still call `openAiPmReviewStore` and do not call `SupabaseAiPmReviewRepository`. Applying the SQL alone would not make a redeploy keep the reviews. `.data/ai-pm-reviews.sqlite` remains `storage.durable: false`.
+Persistence: rows in Supabase Postgres survive a Vercel redeploy. The review API now calls `SupabaseAiPmReviewRepository` when the service role is configured. The configured host still has no public DNS record, so 023 is not applied and this process has not written a row. Until that write succeeds, durable storage is not secured. `.data/ai-pm-reviews.sqlite` remains `storage.durable: false`.
 
 ### Alternatives Considered
 

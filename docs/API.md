@@ -65,9 +65,9 @@ Logged-in session required. Without a session the status is `401`.
 
 The server calls the OpenAI chat adapter only when `GPT_API_KEY` is set. `OPENAI_API_KEY` does not start this route. The model id, token counts, latency, and error stay in the sqlite record. The JSON `review` object sent to the screen has sections, version, and feedback. It does not include the model id or token counts.
 
-`storage.durable` is `false`. The file is local sqlite. On Vercel the function filesystem is read-only except ephemeral `/tmp`, so `.data/ai-pm-reviews.sqlite` is not kept across instances or redeploys. It is not the production database.
+`openReviewBackend()` chooses the store. When the Supabase service role is configured, the routes use `SupabaseAiPmReviewRepository` and a successful response has `storage.durable: true`. When it is not configured, the routes use local sqlite and `storage.durable` is `false`. A thrown storage error returns `503` `storage_unavailable` with `durable: false` and no review text.
 
-The durable tables are `public.ai_pm_reviews` and `public.ai_pm_feedback` in `packages/db/src/migration/023_ai_pm_reviews.sql`, in the existing Supabase project. That migration is not applied. The configured Supabase host had no public DNS record on 2026-10-27, so these routes still write the local file. `public.business_plans` is a different document and is not this store.
+The durable tables are `public.ai_pm_reviews` and `public.ai_pm_feedback` in `packages/db/src/migration/023_ai_pm_reviews.sql`. `user_id` references `auth.users` and deletes that user's plan text, reviews, and feedback with the account. Feedback is deleted with its review. The migration is not applied. `public.business_plans` is a different document and is not this store. The local sqlite file is not kept across Vercel redeploys.
 
 `POST /api/ai-pm-review/feedback` stores agreement, accuracy, revision areas, comment, and next action on that review version. It does not call a model. A comment is accepted when "other" is not selected.
 
@@ -92,6 +92,7 @@ Server Actions will be documented here with:
 
 | Date | Change |
 |------|--------|
+| 2026-10-27 | AI PM routes use `SupabaseAiPmReviewRepository` when the service role is configured. `storage.durable` is true only for that path. Migration 023 is not applied. |
 | 2026-10-27 | Migration `023_ai_pm_reviews.sql` defines the durable review and feedback tables. It is not applied. |
 | 2026-10-27 | `.env.example` names `GPT_API_KEY` for the AI PM review route. A live call is still not run. |
 | 2026-10-27 | `GET/POST /api/ai-pm-review`, feedback, and follow-up. Screen name is AI PM. |

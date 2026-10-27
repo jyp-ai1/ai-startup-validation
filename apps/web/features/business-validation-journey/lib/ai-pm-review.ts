@@ -179,12 +179,12 @@ export async function runFirstReview(input: {
   notRunReason?: string;
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const sha = sha256(input.text);
-  const latest = input.store.latestForInput(input.userId, sha);
+  const latest = await input.store.latestForInput(input.userId, sha);
   if (latest?.status === 'succeeded' || (latest?.status === 'not_run' && !input.chat)) {
     return {
       called: false,
       record: latest,
-      view: toAiPmReviewView(latest, input.store.listFeedback(input.userId, latest.reviewId)),
+      view: toAiPmReviewView(latest, await input.store.listFeedback(input.userId, latest.reviewId)),
     };
   }
   const version = (latest?.version ?? 0) + 1;
@@ -201,7 +201,7 @@ export async function runFirstReview(input: {
       callCount: 0,
       error: input.notRunReason ?? 'engine_unconfigured',
     });
-    input.store.insertReview(record);
+    await input.store.insertReview(record);
     return { called: false, record, view: toAiPmReviewView(record, []) };
   }
   return finishCall({
@@ -237,15 +237,15 @@ export function parseFeedbackBody(body: unknown): { ok: true; value: Omit<Stored
   };
 }
 
-export function saveReviewFeedback(input: {
+export async function saveReviewFeedback(input: {
   store: AiPmReviewStore;
   userId: string;
   body: unknown;
   now: string;
-}): { ok: true; feedback: StoredFeedback; view: AiPmReviewView } | { ok: false; error: 'feedback_incomplete' | 'review_missing' } {
+}): Promise<{ ok: true; feedback: StoredFeedback; view: AiPmReviewView } | { ok: false; error: 'feedback_incomplete' | 'review_missing' }> {
   const parsed = parseFeedbackBody(input.body);
   if (!parsed.ok) return parsed;
-  const review = input.store.readReview(input.userId, parsed.value.reviewId);
+  const review = await input.store.readReview(input.userId, parsed.value.reviewId);
   if (!review || review.status !== 'succeeded') return { ok: false, error: 'review_missing' };
   const feedback: StoredFeedback = {
     ...parsed.value,
@@ -254,8 +254,8 @@ export function saveReviewFeedback(input: {
     submittedAt: input.now,
     modelCalls: 0,
   };
-  input.store.insertFeedback(feedback);
-  const saved = input.store.listFeedback(input.userId, review.reviewId);
+  await input.store.insertFeedback(feedback);
+  const saved = await input.store.listFeedback(input.userId, review.reviewId);
   return { ok: true, feedback, view: toAiPmReviewView(review, saved) };
 }
 
@@ -272,25 +272,25 @@ export async function runFollowUpReview(input: {
   | { ok: true; called: boolean; record: StoredReview; view: AiPmReviewView }
   | { ok: false; error: 'review_missing' | 'feedback_required' | 'engine_unconfigured' | 'gpt_api_key_missing' }
 > {
-  const parent = input.store.readReview(input.userId, input.reviewId);
+  const parent = await input.store.readReview(input.userId, input.reviewId);
   if (!parent || parent.status !== 'succeeded' || !parent.sections) {
     return { ok: false, error: 'review_missing' };
   }
-  const feedback = input.store.listFeedback(input.userId, parent.reviewId).at(-1);
+  const feedback = (await input.store.listFeedback(input.userId, parent.reviewId)).at(-1);
   if (!feedback) return { ok: false, error: 'feedback_required' };
   const supplement = normalizeReviewText(input.supplement ?? '').slice(0, 4000);
   const supplementSha = sha256(supplement);
-  const existing = input.store.succeededChild(parent.reviewId, feedback.feedbackId, supplementSha);
+  const existing = await input.store.succeededChild(input.userId, parent.reviewId, feedback.feedbackId, supplementSha);
   if (existing) {
     return {
       ok: true,
       called: false,
       record: existing,
-      view: toAiPmReviewView(existing, input.store.listFeedback(input.userId, existing.reviewId)),
+      view: toAiPmReviewView(existing, await input.store.listFeedback(input.userId, existing.reviewId)),
     };
   }
   if (!input.chat) return { ok: false, error: input.notRunReason === 'gpt_api_key_missing' ? 'gpt_api_key_missing' : 'engine_unconfigured' };
-  const latest = input.store.latestForInput(input.userId, parent.inputSha);
+  const latest = await input.store.latestForInput(input.userId, parent.inputSha);
   const finished = await finishCall({
     store: input.store,
     input: {
@@ -369,7 +369,7 @@ async function finishCall(input: {
       usageKnown,
       latencyMs: response.latencyMs ?? Date.now() - started,
     });
-    input.store.insertReview(record);
+    await input.store.insertReview(record);
     return { called: true, record, view: toAiPmReviewView(record, []) };
   } catch (error) {
     const record = baseRecord({
@@ -385,7 +385,7 @@ async function finishCall(input: {
       error: error instanceof Error ? error.message : 'review_failed',
       latencyMs: Date.now() - started,
     });
-    input.store.insertReview(record);
+    await input.store.insertReview(record);
     return { called: true, record, view: toAiPmReviewView(record, []) };
   }
 }

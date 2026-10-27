@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import type { ChatRequest, ChatResponse } from '@repo/ai';
 import { describe, expect, it } from 'vitest';
 
+import { chooseReviewBackend, openSupabaseReviewStore, type AiPmDurablePort } from '../ai-pm-review-backend';
 import {
   buildFollowUpRequest,
   parseFeedbackBody,
@@ -16,7 +17,7 @@ import {
   saveReviewFeedback,
   toAiPmReviewView,
 } from '../ai-pm-review';
-import { openAiPmReviewStore, type ReviewSections } from '../ai-pm-review-store';
+import { openAiPmReviewStore, type ReviewSections, type StoredFeedback, type StoredReview } from '../ai-pm-review-store';
 
 const NOW = '2026-10-27T09:30:00.000Z';
 const PLAN = 'UNIQUEPLANMARKER 영세 양조장의 온라인 노출을 연결하는 사업. 사용자는 관광객이고 비용은 양조장 대표가 낼 수 있다. 매출은 없다.';
@@ -118,7 +119,7 @@ describe('AI PM first review', () => {
       chat,
       evidence: 'injected_http',
     });
-    const saved = saveReviewFeedback({
+    const saved = await saveReviewFeedback({
       store,
       userId: 'user-a',
       now: NOW,
@@ -149,7 +150,7 @@ describe('AI PM first review', () => {
     expect(calls).toBe(1);
     expect(again.called).toBe(false);
     expect(again.view.feedback[0]?.revisionAreas).toEqual(['payer', 'evidence']);
-    const withoutOther = saveReviewFeedback({
+    const withoutOther = await saveReviewFeedback({
       store,
       userId: 'user-a',
       now: NOW,
@@ -184,7 +185,7 @@ describe('AI PM first review', () => {
       chat,
       evidence: 'injected_http',
     });
-    saveReviewFeedback({
+    await saveReviewFeedback({
       store,
       userId: 'user-a',
       now: NOW,
@@ -216,10 +217,10 @@ describe('AI PM first review', () => {
     expect(follow.record.inputText).toBe(PLAN);
     expect(follow.record.parentReviewId).toBe(first.record.reviewId);
     expect(follow.record.model).toBe('gpt-4o-mini-later');
-    const parent = store.readReview('user-a', first.record.reviewId);
+    const parent = await store.readReview('user-a', first.record.reviewId);
     expect(parent?.inputText).toBe(PLAN);
     expect(parent?.model).toBe('gpt-4o-mini');
-    expect(store.listFeedback('user-a', first.record.reviewId)).toHaveLength(1);
+    expect(await store.listFeedback('user-a', first.record.reviewId)).toHaveLength(1);
     const repeated = await runFollowUpReview({
       store,
       userId: 'user-a',
@@ -243,7 +244,7 @@ describe('AI PM first review', () => {
     });
     expect(replaced.called).toBe(false);
     expect(replaced.record.model).not.toBe('some-other-model');
-    expect(store.readReview('user-a', first.record.reviewId)?.sections?.judgment).toContain('보류');
+    expect((await store.readReview('user-a', first.record.reviewId))?.sections?.judgment).toContain('보류');
     store.close();
   });
 
@@ -291,7 +292,7 @@ describe('AI PM first review', () => {
     expect(unknownUsage.record.usageKnown).toBe(false);
     expect(unknownUsage.record.totalTokens).toBeNull();
     expect(parseFeedbackBody({ reviewId: 'x' }).ok).toBe(false);
-    expect(saveReviewFeedback({ store, userId: 'user-c', now: NOW, body: { reviewId: 'missing' } }).ok).toBe(false);
+    expect((await saveReviewFeedback({ store, userId: 'user-c', now: NOW, body: { reviewId: 'missing' } })).ok).toBe(false);
     const direct = buildFollowUpRequest({
       sections: sections(),
       feedback: {
@@ -371,7 +372,7 @@ describe('AI PM first review', () => {
       evidence: 'injected_http',
       chat: async () => reply(JSON.stringify(sections())),
     });
-    saveReviewFeedback({
+    await saveReviewFeedback({
       store,
       userId: 'user-missing',
       now: NOW,
@@ -395,7 +396,7 @@ describe('AI PM first review', () => {
     });
     expect(follow.ok).toBe(false);
     if (!follow.ok) expect(follow.error).toBe('gpt_api_key_missing');
-    expect(store.listReviews('user-missing').filter((record) => record.parentReviewId === ready.record.reviewId)).toHaveLength(0);
+    expect((await store.listReviews('user-missing')).filter((record) => record.parentReviewId === ready.record.reviewId)).toHaveLength(0);
     store.close();
   });
 
@@ -405,11 +406,202 @@ describe('AI PM first review', () => {
     expect(readGptApiKey({})).toBeNull();
     const reviewRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/route.ts', import.meta.url), 'utf8');
     const followRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/follow-up/route.ts', import.meta.url), 'utf8');
+    const feedbackRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/feedback/route.ts', import.meta.url), 'utf8');
     expect(reviewRoute).toContain('readGptApiKey');
     expect(followRoute).toContain('readGptApiKey');
     expect(reviewRoute).not.toContain('OPENAI_API_KEY');
     expect(followRoute).not.toContain('OPENAI_API_KEY');
     const storeSource = readFileSync(new URL('../ai-pm-review-store.ts', import.meta.url), 'utf8');
     expect(storeSource).toContain('durable: false');
+    const backendSource = readFileSync(new URL('../ai-pm-review-backend.ts', import.meta.url), 'utf8');
+    expect(backendSource).toContain('isSupabaseAdminConfigured');
+    expect(backendSource).toContain('openSupabaseReviewStore');
+    expect(reviewRoute).toContain('openReviewBackend');
+    expect(followRoute).toContain('openReviewBackend');
+    expect(feedbackRoute).toContain('openReviewBackend');
+    const migration = readFileSync(
+      new URL('../../../../../../packages/db/src/migration/023_ai_pm_reviews.sql', import.meta.url),
+      'utf8',
+    );
+    expect(migration).toContain('references auth.users (id) on delete cascade');
+    expect(migration).toContain('on delete cascade');
+    expect(migration.toLowerCase()).not.toContain('insert into');
+  });
+
+  it('hides another user and deletes the plan with the owner', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const saved = await runFirstReview({
+      store,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat: async () => reply(JSON.stringify(sections())),
+      evidence: 'injected_http',
+    });
+    await saveReviewFeedback({
+      store,
+      userId: 'user-a',
+      now: NOW,
+      body: {
+        reviewId: saved.record.reviewId,
+        agreement: 'partial',
+        accuracy: 'mostly_accurate',
+        revisionAreas: ['payer'],
+        comment: '지불자를 다시 본다.',
+        nextAction: 'hold',
+      },
+    });
+    expect(await store.readReview('user-b', saved.record.reviewId)).toBeNull();
+    expect(await store.listReviews('user-b')).toEqual([]);
+    expect(await store.listFeedback('user-b', saved.record.reviewId)).toEqual([]);
+    const foreign = await saveReviewFeedback({
+      store,
+      userId: 'user-b',
+      now: NOW,
+      body: {
+        reviewId: saved.record.reviewId,
+        agreement: 'agree',
+        accuracy: 'very_accurate',
+        revisionAreas: [],
+        comment: '',
+        nextAction: 'proceed',
+      },
+    });
+    expect(foreign.ok).toBe(false);
+    const follow = await runFollowUpReview({
+      store,
+      userId: 'user-b',
+      reviewId: saved.record.reviewId,
+      supplement: '다른 사용자의 추가 사실',
+      now: NOW,
+      chat: async () => reply(JSON.stringify(sections())),
+      evidence: 'injected_http',
+    });
+    expect(follow.ok).toBe(false);
+    await store.deleteOwnedRecords('user-a');
+    expect(await store.readReview('user-a', saved.record.reviewId)).toBeNull();
+    expect(await store.listFeedback('user-a')).toEqual([]);
+    expect(await store.listReviews('user-a')).toEqual([]);
+    store.close();
+  });
+
+  it('reports durable storage only for the Supabase repository', async () => {
+    let remote = 0;
+    const local = chooseReviewBackend({
+      adminConfigured: false,
+      openSqlite: () => openAiPmReviewStore(storePath()),
+      openSupabase: () => {
+        remote += 1;
+        return openSupabaseReviewStore(memoryPort());
+      },
+    });
+    expect(local.storage.durable).toBe(false);
+    expect(local.storage.productionDatabase).toBe(false);
+    expect(remote).toBe(0);
+    local.store.close();
+
+    const port = memoryPort();
+    const remoteBackend = chooseReviewBackend({
+      adminConfigured: true,
+      openSqlite: () => openAiPmReviewStore(storePath()),
+      openSupabase: () => {
+        remote += 1;
+        return openSupabaseReviewStore(port);
+      },
+    });
+    expect(remote).toBe(1);
+    expect(remoteBackend.storage.durable).toBe(true);
+    expect(remoteBackend.storage.kind).toBe('supabase');
+    const owner = '11111111-1111-1111-1111-111111111111';
+    const other = '22222222-2222-2222-2222-222222222222';
+    const saved = await runFirstReview({
+      store: remoteBackend.store,
+      userId: owner,
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      evidence: 'not_run',
+      notRunReason: 'gpt_api_key_missing',
+    });
+    expect(saved.view.status).toBe('unavailable');
+    expect(saved.record.sections).toBeNull();
+    expect(await remoteBackend.store.readReview(other, saved.record.reviewId)).toBeNull();
+    await remoteBackend.store.deleteOwnedRecords(owner);
+    expect(await remoteBackend.store.listReviews(owner)).toEqual([]);
+    expect(port.rows).toHaveLength(0);
   });
 });
+
+function memoryPort(): AiPmDurablePort & { rows: StoredReview[] } {
+  const reviews: StoredReview[] = [];
+  const feedback: StoredFeedback[] = [];
+  return {
+    rows: reviews,
+    insertReview: async (row) => {
+      const record = row.recordJson as StoredReview;
+      if (reviews.some((item) => item.userId === row.userId && item.reviewId === row.reviewId)) return { wrote: false };
+      reviews.push(record);
+      return { wrote: true };
+    },
+    insertFeedback: async (row) => {
+      feedback.push(row.recordJson as StoredFeedback);
+      return { wrote: true };
+    },
+    readReview: async (userId, reviewId) => {
+      const record = reviews.find((item) => item.userId === userId && item.reviewId === reviewId);
+      return record ? toRow(record) : null;
+    },
+    latestForInput: async (userId, inputSha) => {
+      const record = reviews.filter((item) => item.userId === userId && item.inputSha === inputSha).at(-1);
+      return record ? toRow(record) : null;
+    },
+    succeededChild: async (userId, parentReviewId, sourceFeedbackId, supplementSha) => {
+      const record = reviews.find(
+        (item) =>
+          item.userId === userId &&
+          item.parentReviewId === parentReviewId &&
+          item.sourceFeedbackId === sourceFeedbackId &&
+          item.supplementSha === supplementSha &&
+          item.status === 'succeeded',
+      );
+      return record ? toRow(record) : null;
+    },
+    listReviews: async (userId) => reviews.filter((item) => item.userId === userId).map(toRow),
+    listFeedback: async (userId, reviewId) =>
+      feedback
+        .filter((item) => item.userId === userId && (!reviewId || item.reviewId === reviewId))
+        .map((item) => ({
+          userId: item.userId,
+          feedbackId: item.feedbackId,
+          reviewId: item.reviewId,
+          recordJson: { ...item },
+          submittedAt: item.submittedAt,
+        })),
+    deleteForUser: async (userId) => {
+      for (let index = feedback.length - 1; index >= 0; index -= 1) {
+        if (feedback[index]?.userId === userId) feedback.splice(index, 1);
+      }
+      for (let index = reviews.length - 1; index >= 0; index -= 1) {
+        if (reviews[index]?.userId === userId) reviews.splice(index, 1);
+      }
+    },
+  };
+}
+
+function toRow(record: StoredReview) {
+  return {
+    userId: record.userId,
+    reviewId: record.reviewId,
+    inputSha: record.inputSha,
+    version: record.version,
+    parentReviewId: record.parentReviewId,
+    sourceFeedbackId: record.sourceFeedbackId,
+    supplementSha: record.supplementSha,
+    status: record.status,
+    recordJson: { ...record },
+    finishedAt: record.finishedAt,
+  };
+}

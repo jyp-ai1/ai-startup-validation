@@ -13,6 +13,7 @@ type LoadResponse = {
   reused?: boolean;
   review?: AiPmReviewView | null;
   reviews?: AiPmReviewView[];
+  storage?: { durable?: boolean };
 };
 
 const AGREEMENT: Array<{ value: Agreement; label: string }> = [
@@ -114,7 +115,7 @@ export function AiPmReviewPanel() {
         return;
       }
       remember(body.review);
-      setMessage(body.reused ? '저장된 검토를 다시 열었습니다.' : statusLine(body.review));
+      setMessage(body.reused ? '저장된 검토를 다시 열었습니다.' : statusLine(body.review, body.storage?.durable === true));
       void recordFunnelEvent(
         body.reused ? PRODUCT_ANALYTICS_EVENTS.aiPmReviewReopened : PRODUCT_ANALYTICS_EVENTS.aiPmReviewRequested,
         {
@@ -404,7 +405,10 @@ export function AiPmReviewPanel() {
   );
 }
 
-function statusLine(review: AiPmReviewView): string {
+function statusLine(review: AiPmReviewView, durable: boolean): string {
+  if (review.status === 'ready' && durable) {
+    return 'AI PM 1차 사업성 검토를 이 계정에 저장했습니다.';
+  }
   if (review.status === 'ready') {
     return 'AI PM 1차 사업성 검토를 이 실행 환경에 저장했습니다. 서버가 바뀌거나 다시 배포되면 이 파일은 남지 않을 수 있습니다.';
   }
@@ -417,6 +421,7 @@ function inputError(error?: string): string {
   if (error === 'too_long' || error === 'file_too_large') return '사업 내용이 너무 깁니다. 핵심 부분만 남겨 주세요.';
   if (error === 'unsupported') return '이 파일 형식은 읽지 못합니다. txt, md, pdf, docx를 사용해 주세요.';
   if (error === 'unreadable_file') return '파일에서 문장을 읽지 못했습니다. 내용을 직접 입력해 주세요.';
+  if (error === 'storage_unavailable') return '저장소에 연결하지 못했습니다. 검토 결과는 만들지 않았습니다.';
   return '검토를 시작하지 못했습니다.';
 }
 

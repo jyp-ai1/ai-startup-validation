@@ -1,39 +1,43 @@
 import { OpenAIProviderAdapter } from '@repo/ai';
-import { mkdirSync } from 'node:fs';
-import { join } from 'node:path';
 
 import { getServerAuthUser } from '@/lib/auth/server-auth';
 import { extractDocumentText } from '@/lib/intake/extract-document-text';
+import { openReviewBackend } from '@/features/business-validation-journey/lib/ai-pm-review-backend';
 import {
   readGptApiKey,
   reviewInputFromParts,
   runFirstReview,
   toAiPmReviewView,
 } from '@/features/business-validation-journey/lib/ai-pm-review';
-import { AI_PM_REVIEW_STORAGE, openAiPmReviewStore } from '@/features/business-validation-journey/lib/ai-pm-review-store';
+import type { ReviewStorageReport } from '@/features/business-validation-journey/lib/ai-pm-review-store';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-function storePath(): string {
-  return process.env.AI_PM_REVIEW_DB_PATH?.trim() || join(process.cwd(), '.data', 'ai-pm-reviews.sqlite');
-}
-
-function openStore() {
-  mkdirSync(join(process.cwd(), '.data'), { recursive: true });
-  return openAiPmReviewStore(storePath());
+function unavailable(storage: ReviewStorageReport) {
+  return Response.json(
+    {
+      error: 'storage_unavailable',
+      review: null,
+      reviews: [],
+      storage: { ...storage, durable: false, productionDatabase: false },
+    },
+    { status: 503 },
+  );
 }
 
 export async function GET() {
   const user = await getServerAuthUser();
   if (!user) return Response.json({ error: 'login_required', reviews: [] }, { status: 401 });
-  const store = openStore();
+  const backend = openReviewBackend();
   try {
-    const feedback = store.listFeedback(user.id);
-    const reviews = store.listReviews(user.id).map((record) => toAiPmReviewView(record, feedback));
-    return Response.json({ reviews, storage: AI_PM_REVIEW_STORAGE });
+    const feedback = await backend.store.listFeedback(user.id);
+    const reviews = (await backend.store.listReviews(user.id)).map((record) => toAiPmReviewView(record, feedback));
+    return Response.json({ reviews, storage: backend.storage });
+  } catch {
+    return unavailable(backend.storage);
   } finally {
-    store.close();
+    backend.store.close();
   }
 }
 
@@ -74,10 +78,10 @@ export async function POST(request: Request) {
   if (!parts.ok) return Response.json({ error: parts.error, review: null }, { status: 400 });
 
   const apiKey = readGptApiKey();
-  const store = openStore();
+  const backend = openReviewBackend();
   try {
     const result = await runFirstReview({
-      store,
+      store: backend.store,
       userId: user.id,
       text: parts.text,
       origin: parts.origin,
@@ -89,8 +93,10 @@ export async function POST(request: Request) {
         ? (chatRequest) => new OpenAIProviderAdapter({ apiKey }).chat(chatRequest)
         : undefined,
     });
-    return Response.json({ reused: !result.called, review: result.view, storage: AI_PM_REVIEW_STORAGE });
+    return Response.json({ reused: !result.called, review: result.view, storage: backend.storage });
+  } catch {
+    return unavailable(backend.storage);
   } finally {
-    store.close();
+    backend.store.close();
   }
 }

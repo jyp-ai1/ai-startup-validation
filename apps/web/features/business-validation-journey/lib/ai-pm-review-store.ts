@@ -44,20 +44,42 @@ export const AI_PM_REVIEW_STORAGE = {
   kind: 'local_sqlite' as const,
   durable: false as const,
   productionDatabase: false as const,
+  migration: null,
   pathEnv: 'AI_PM_REVIEW_DB_PATH',
   defaultPath: '.data/ai-pm-reviews.sqlite',
 };
 
+export type ReviewStorageReport = {
+  kind: 'local_sqlite' | 'supabase';
+  durable: boolean;
+  productionDatabase: boolean;
+  migration: '023_ai_pm_reviews.sql' | null;
+};
+
+export const SUPABASE_REVIEW_STORAGE: ReviewStorageReport = {
+  kind: 'supabase',
+  durable: true,
+  productionDatabase: true,
+  migration: '023_ai_pm_reviews.sql',
+};
+
 export type AiPmReviewStore = {
-  filePath: string;
-  productionDatabase: false;
-  insertReview: (record: StoredReview) => { wrote: boolean };
-  insertFeedback: (record: StoredFeedback) => { wrote: boolean };
-  readReview: (userId: string, reviewId: string) => StoredReview | null;
-  latestForInput: (userId: string, inputSha: string) => StoredReview | null;
-  succeededChild: (parentReviewId: string, sourceFeedbackId: string, supplementSha: string) => StoredReview | null;
-  listReviews: (userId: string) => StoredReview[];
-  listFeedback: (userId: string, reviewId?: string) => StoredFeedback[];
+  filePath: string | null;
+  durable: boolean;
+  productionDatabase: boolean;
+  insertReview: (record: StoredReview) => Promise<{ wrote: boolean }>;
+  insertFeedback: (record: StoredFeedback) => Promise<{ wrote: boolean }>;
+  readReview: (userId: string, reviewId: string) => Promise<StoredReview | null>;
+  latestForInput: (userId: string, inputSha: string) => Promise<StoredReview | null>;
+  succeededChild: (
+    userId: string,
+    parentReviewId: string,
+    sourceFeedbackId: string,
+    supplementSha: string,
+  ) => Promise<StoredReview | null>;
+  listReviews: (userId: string) => Promise<StoredReview[]>;
+  listFeedback: (userId: string, reviewId?: string) => Promise<StoredFeedback[]>;
+  deleteOwnedRecords: (userId: string) => Promise<void>;
   close: () => void;
 };
 
@@ -143,15 +165,20 @@ export function openAiPmReviewStore(filePath: string): AiPmReviewStore {
   protect(filePath);
   return {
     filePath,
+    durable: false,
     productionDatabase: false,
-    insertReview: (record) => insertReview(db, record),
-    insertFeedback: (record) => insertFeedback(db, record),
-    readReview: (userId, reviewId) => readReview(db, userId, reviewId),
-    latestForInput: (userId, inputSha) => latestForInput(db, userId, inputSha),
-    succeededChild: (parentReviewId, sourceFeedbackId, supplementSha) =>
-      succeededChild(db, parentReviewId, sourceFeedbackId, supplementSha),
-    listReviews: (userId) => listReviews(db, userId),
-    listFeedback: (userId, reviewId) => listFeedback(db, userId, reviewId),
+    insertReview: async (record) => insertReview(db, record),
+    insertFeedback: async (record) => insertFeedback(db, record),
+    readReview: async (userId, reviewId) => readReview(db, userId, reviewId),
+    latestForInput: async (userId, inputSha) => latestForInput(db, userId, inputSha),
+    succeededChild: async (userId, parentReviewId, sourceFeedbackId, supplementSha) =>
+      succeededChild(db, userId, parentReviewId, sourceFeedbackId, supplementSha),
+    listReviews: async (userId) => listReviews(db, userId),
+    listFeedback: async (userId, reviewId) => listFeedback(db, userId, reviewId),
+    deleteOwnedRecords: async (userId) => {
+      db.prepare('DELETE FROM ai_pm_feedback WHERE user_id = ?').run(userId);
+      db.prepare('DELETE FROM ai_pm_reviews WHERE user_id = ?').run(userId);
+    },
     close: () => {
       db.close();
       protect(filePath);
@@ -231,13 +258,14 @@ function latestForInput(db: Sql, userId: string, inputSha: string): StoredReview
 
 function succeededChild(
   db: Sql,
+  userId: string,
   parentReviewId: string,
   sourceFeedbackId: string,
   supplementSha: string,
 ): StoredReview | null {
   const rows = db
-    .prepare('SELECT record_json FROM ai_pm_reviews WHERE parent_review_id = ? AND status = ?')
-    .all(parentReviewId, 'succeeded') as Array<{ record_json: string }>;
+    .prepare('SELECT record_json FROM ai_pm_reviews WHERE user_id = ? AND parent_review_id = ? AND status = ?')
+    .all(userId, parentReviewId, 'succeeded') as Array<{ record_json: string }>;
   for (const row of rows) {
     const record = JSON.parse(row.record_json) as StoredReview;
     if (record.sourceFeedbackId === sourceFeedbackId && record.supplementSha === supplementSha) {
