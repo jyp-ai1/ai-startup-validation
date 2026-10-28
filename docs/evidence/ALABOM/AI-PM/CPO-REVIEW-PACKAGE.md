@@ -410,3 +410,40 @@ GitHub deployment `7377894051`의 URL `https://ai-startup-validation-2e70g1z8f-j
 | 5. 실패 행의 저장·재조회 | **PASS** — 위 두 ID. 모델 답변의 저장은 아님 |
 | 6. UI 일치와 후속 답변 | **BLOCKED** — 실패 행은 목록과 일치. 후속 검토는 실행하지 않음 |
 | 전체 | **BLOCKED** |
+
+## 16. 2026-10-28 15:31 KST 제공자와 429 본문
+
+새 검토 요청은 보내지 않았다. 키를 만들거나 읽지 않았다. 결제, 모델, Production 설정은 바꾸지 않았다.
+
+### 호출한 제공자와 endpoint
+
+검토 라우트는 `OpenAIProviderAdapter`만 만든다. 이 어댑터의 `chat()`은 `openAIChat()`만 호출한다. `openAIChat()`의 URL은 코드에 고정된 `https://api.openai.com/v1/chat/completions`다. base URL 설정은 없다. 요청 모델 필드는 `gpt-4o-mini`다.
+
+OpenRouter 호출은 다른 함수 `openRouterChat()`이고 URL은 `https://openrouter.ai/api/v1/chat/completions`다. 검토 라우트는 이 함수를 호출하지 않는다. OpenRouter 429의 저장 문장은 `OpenRouter rate limit exceeded`다. 저장된 문장은 그 문장이 아니다.
+
+`GPT_API_KEY`는 값의 형태로 제공자를 고르지 않는다. `readGptApiKey()`는 그 이름의 문자열이 비었는지만 본다. 비어 있지 않으면 위 OpenAI URL로 그 값을 `Authorization`에 실어 보낸다.
+
+### 기존 실패 행에 남은 것
+
+| review ID | finished_at (KST) | 저장된 error | provider request id | Retry-After | 원본 본문 |
+|---|---|---|---|---|---|
+| `db40d893-721c-4b54-8ece-3bb03863c443` | 15:07 | `OpenAI rate limit exceeded` | 없음 | 없음 | 없음 |
+| `f0f53d1a-2f8e-4dbc-bcfa-04e82b38e01c` | 15:10 | `OpenAI rate limit exceeded` | 없음 | 없음 | 없음 |
+
+이 문장은 `mapOpenAIError()`가 HTTP 429일 때만 만든다. 401이면 저장 문장은 `OpenAI API key invalid or missing`이다. 그 외 상태면 `OpenAI API error (상태코드)`다. 두 행의 문장이 429용 문장과 같으므로, `api.openai.com`이 HTTP 429를 반환한 호출이다.
+
+같은 함수는 429에서 응답 본문을 예외에 넣지 않는다. `openAIChat()`은 `Retry-After`와 `x-request-id`를 읽지 않는다. `finishCall()`이 저장하는 값은 `error.message`뿐이다. 그래서 제공자 오류 코드 `insufficient_quota`와 `rate_limit_exceeded`는 이 행에 남아 있지 않다. 모델 이름, `rawContent`, 사용량도 없다. 성공 응답의 `id`는 오류 응답에서 파싱되지 않는다.
+
+### 대시보드와의 관계
+
+OpenRouter 최근 1개월 사용량 `$0.00`, Requests `0`은 이 코드 경로와 모순되지 않는다. 검토 요청은 OpenRouter URL로 가지 않는다. 그 화면은 이번 429의 계정이 아니다.
+
+429의 세부 원인는 이 행만으로 확정되지 않는다. 결제 한도와 속도 제한은 둘 다 HTTP 429이고, 저장된 문장은 같다. 모델 없음은 보통 다른 상태 코드라 이번 문장과 다르다. 그 구분은 버려진 본문이 있어야 한다.
+
+| 항목 | 판정 |
+|---|---|
+| 실제 제공자와 endpoint | **확정** — OpenAI `https://api.openai.com/v1/chat/completions`, 모델 필드 `gpt-4o-mini` |
+| 원본 429의 오류 코드·메시지 | **없음** — 본문과 헤더가 저장되지 않음. 남은 문장은 어댑터가 만든 `OpenAI rate limit exceeded` |
+| 결제 한도 / 속도 제한 / 모델 접근 | **미확정** — 상태 429만 확정 |
+| 설정 변경 | **하지 않음** — OpenRouter 충전, OpenAI 결제 변경, 키 교체, 모델 변경 없음 |
+| 전체 | **BLOCKED** |
