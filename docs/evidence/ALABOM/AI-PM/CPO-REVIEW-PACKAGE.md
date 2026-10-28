@@ -706,3 +706,29 @@ QA 세션으로 연 결과, `data-result-source=model-review`, `data-step=result
 | 실행 SHA 화면 검증 | **없음** |
 | 후속 검토 게이트 | **BLOCKED** |
 | Production | **잠금 유지** — `0b465226516e1a4f3eb9ce2087f8bca2c2c091da` |
+
+## 26. 2026-10-28 23:45 KST 1차 검토 실행 경로
+
+범위는 ALABOM의 1차 최초 AI 사업성 검토다. 2차 후속 검토는 호출하지 않았고, 확인 상태 규칙을 바꾸지 않았다. 실패한 행을 성공으로 바꾸지 않았다.
+
+코드 경로는 다음이다. 워크스페이스 화면은 인증 사용자의 소유 프로젝트만 연다. 소유가 아니면 `/workspace`로 보낸다. 사업 본문이 8자 이상이고 데모 재생이 아니면 `AiPmReviewPanel`이 `POST /api/ai-pm-review`와 `GET /api/ai-pm-review`를 쓴다. 저장 테이블 `ai_pm_reviews`에는 워크스페이스 ID 열이 없다. 행은 `user_id`와 `input_sha`로 남고, 화면은 프로젝트 문서의 사업 설명과 그 해시를 맞춘다. 다른 사용자의 행은 조회 조건에 들어가지 않는다.
+
+이번 실행의 환경에는 `GPT_API_KEY`가 없다. 모델 호출은 하지 않았다. Preview `/api/build-info`는 인증 없이 HTTP 302였고, 실행 SHA는 읽지 못했다. 로컬 커밋 `a7dabe2f`는 실행 SHA가 아니다.
+
+저장된 1차 성공 행은 `0a13c604-9931-40c5-88a5-80f06687fd5a`, version 4, status `succeeded`다. 사용자 `37d541c8-fda7-4788-8ac2-1a449b00425c`. 프로젝트 `3a5fc4a0-2e90-45e6-8370-350beda67342`, 제목 `양조장 체험 연결`, `is_demo` false. 이 사용자의 프로젝트 170개 중 요약 해시 `41f6a59ed84d`는 이 프로젝트 하나다. 검토 행의 `input_sha`도 그 접두사다. 다른 사용자 `8b023d94-dd5f-4cad-bd7e-76b6fbdf0674`에게 같은 검토 ID와 같은 입력 해시는 0건이다.
+
+4버전은 2026-10-28 16:21 KST에 끝났다. provider `openai`, model `gpt-4o-mini-2024-07-18`, `callCount` 1, 토큰 228/175/403, evidence `live_network`. 문제, 고객, 해결, 수익, 검증지표가 비어 있지 않다. 후속 질문은 `어떤 방식으로 양조장과의 파트너십을 구축할 계획인가?`다. 이 호출은 이번 실행이 아니다.
+
+같은 입력의 최신 준비 행은 5버전 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`이다. 부모는 4버전이고 `source_feedback_id`는 없다. 화면 코드는 준비된 행 중 마지막을 고르므로, 화면을 열면 4버전이 아니라 5버전이 앞에 나온다. 5버전은 2차 호출의 저장 결과다. 6버전은 DB에서 `succeeded`이고, 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`의 `understanding_wrong`과 `core_missing` 때문에 조회 시 실패로 내린다. 7버전은 `failed`, error `revision_gate`다. 두 행 모두 덮어쓰지 않았다.
+
+| 테스트 | 판정 | 근거 |
+|---|---|---|
+| 1. 이번 실행의 실제 AI 응답 | **NOT RUN** | `GPT_API_KEY` 없음. 새 호출 없음 |
+| 2. DB 저장과 사용자·워크스페이스 연결 | **PASS** | 4버전이 위 사용자와 프로젝트 `3a5fc4a0`의 본문 해시에 연결. 워크스페이스 ID 열은 없음 |
+| 3. 새로고침·재인증 복원 | **NOT RUN** | 화면을 열지 않음 |
+| 4. 사용자·워크스페이스 격리의 HTTP 시도 | **NOT RUN** | DB에서는 다른 사용자 행 0건. 다른 계정으로 요청하지 않음 |
+| 5. 실패 화면 | **NOT RUN** | 실패 행은 DB에 남아 있다. 화면은 열지 않음 |
+| 실행 SHA | **NOT RUN** | `/api/build-info` HTTP 302, 본문 미확인 |
+| 1차 검토 게이트 | **BLOCKED** | 화면 복원과 이번 실행 SHA가 없음 |
+| Production | **잠금 유지** | `0b465226516e1a4f3eb9ce2087f8bca2c2c091da` |
+| PR #209 | **미병합** | 2차 후속 검토는 시작하지 않음 |
