@@ -2178,6 +2178,48 @@ The comparison in ADR-066 rejected stored follow-up `62b5588c-0d11-42c8-8fac-d24
 
 ---
 
+## ADR-068: Follow-up claims carry an explicit confirmation state
+
+**Status:** Accepted  
+**Date:** 2026-10-28  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+ADR-067 compares the sentence that states a claim. That comparison still rejects the stored follow-up, and the product gate stays blocked. The model output itself had no field for whether the problem, the customer, and the revenue claim are confirmed. A sentence label could stand in for that state.
+
+### Decision
+
+1. When `understanding_wrong` is set, the follow-up request names `confirmation.problem`, `confirmation.target_customer`, and `confirmation.business_model` as `unconfirmed`. The reply is stored with those three states. A missing value is `confirmation_unset`. A `confirmed` value is `confirmed_reuse`.
+2. The sentence check from ADR-067 stays. `confirmation: unconfirmed` does not approve a sentence that states the claim as a fact. Deleting the claim, wiping solution or validation text, or asking a partnership question still fails.
+3. A ready review that carries the three `unconfirmed` states shows each claim with the label `확인 전`. A failed comparison still returns no sections. The same feedback and empty supplement are not sent again. No model call is made for the stored failure in this decision.
+4. Model id and token limits stay `gpt-4o-mini`, 3000 input, 800 output.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Keep sentence text as the only state | No new response field | The output structure still cannot say which claim is unconfirmed |
+| Treat a `confirmation` value as sufficient | The field is easy to fill | A copied sentence would be approved as a fact |
+| Call the model in this change | Might store a new reply | The stored failure is not yet shaped for that call |
+
+### Consequences
+
+**Positive:**
+
+- Each of the three claims has a stored confirmation state, and the screen reads that state.
+
+**Negative:**
+
+- No live stored reply meets the state, the sentence, and the question together. The follow-up gate stays blocked.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #207, #208, and #209 stay unmerged. The last build-info SHA remains `ccca30c3e82d546c114bfe200c192d81df605a5a` until `/api/build-info` is read again.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

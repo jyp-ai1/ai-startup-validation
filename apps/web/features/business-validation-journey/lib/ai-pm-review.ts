@@ -515,6 +515,11 @@ function revisionPayload(sections: ReviewSections, marks: ReviewMark[]) {
               { field: 'target_customer', dependsOn: 'understanding_wrong', previousClaim: sections.customer, requiredState: 'unconfirmed' as const },
               { field: 'business_model', dependsOn: 'understanding_wrong', previousClaim: sections.revenueModel, requiredState: 'unconfirmed' as const },
             ],
+            confirmation: {
+              problem: 'unconfirmed' as const,
+              target_customer: 'unconfirmed' as const,
+              business_model: 'unconfirmed' as const,
+            },
           },
         }
       : {}),
@@ -544,11 +549,20 @@ export function assessFollowUpRevision(input: {
   const missing = marks.includes('core_missing');
   if (wrong) {
     const dependents = [
-      ['문제', input.previous.problem, input.next.problem],
-      ['고객', input.previous.customer, input.next.customer],
-      ['수익', input.previous.revenueModel, input.next.revenueModel],
+      ['문제', 'problem', input.previous.problem, input.next.problem],
+      ['고객', 'customer', input.previous.customer, input.next.customer],
+      ['수익', 'revenue', input.previous.revenueModel, input.next.revenueModel],
     ] as const;
-    for (const [label, claim, field] of dependents) {
+    for (const [label, key, claim, field] of dependents) {
+      const declared = input.next.claimConfirmation?.[key] ?? null;
+      if (declared !== 'unconfirmed') {
+        failures.push(declared === 'confirmed' ? 'confirmed_reuse' : 'confirmation_unset');
+        changes.push(
+          declared === 'confirmed'
+            ? `${label} 가설이 확정 상태로 저장되었습니다.`
+            : `${label} 가설의 확인 상태가 없습니다.`,
+        );
+      }
       const state = hypothesisState(claim, field);
       const judged = hypothesisState(claim, input.next.judgment);
       if (state === 'confirmed' || judged === 'confirmed') {
@@ -579,7 +593,7 @@ export function assessFollowUpRevision(input: {
   }
   const unique = [...new Set(failures)];
   if (unique.length === 0) {
-    if (wrong) changes.push('문제, 고객, 수익 가설은 확정된 사실에서 확인 전 상태로 옮겼습니다.');
+    if (wrong) changes.push('문제, 고객, 수익 가설의 확인 상태는 확인 전입니다.');
     if (missing) changes.push('다음 질문이 누락된 핵심을 묻습니다.');
     return { pass: true, summary: changes.join(' '), changes, failures: [] };
   }
@@ -646,8 +660,9 @@ function compact(text: string): string {
 function gatedFollowUpPrompt(): string {
   return [
     reviewSystemPrompt(),
-    'revision.reconfirm.hypotheses에서 requiredState가 unconfirmed인 주장만 확인 전으로 둔다.',
-    '그 주장을 확정된 사실로 쓰거나 지우지 않는다.',
+    '응답 JSON에 confirmation을 넣는다.',
+    'confirmation.problem, confirmation.target_customer, confirmation.business_model은 unconfirmed다.',
+    '그 세 문장은 확인 전이며 확정된 사실로 쓰지 않는다.',
     'doNotDeleteUnrelated이면 solution과 validation_metric을 비우지 않는다.',
     'requiredMeaning이 ask_what_core_is_missing이면 nextQuestion은 누락된 핵심이 무엇인지 묻는다.',
     '파트너십이나 계획 질문으로 바꾸지 않는다.',
@@ -807,6 +822,7 @@ function expandShortAnalysis(input: {
   business_model: string;
   validation_metric: string;
   nextQuestion: string;
+  claimConfirmation: ReviewSections['claimConfirmation'];
 }): ReviewSections {
   return {
     customer: input.target_customer,
@@ -821,6 +837,7 @@ function expandShortAnalysis(input: {
     nextQuestion: input.nextQuestion,
     nextQuestionReason: `확인할 지표는 ${input.validation_metric}`,
     answerHint: '확인된 사실만 적는다. 계획이면 계획이라고 적는다.',
+    claimConfirmation: input.claimConfirmation,
   };
 }
 
@@ -843,6 +860,7 @@ export function parseSections(content: string): ReviewSections | null {
         business_model: businessModel,
         validation_metric: validationMetric,
         nextQuestion: shortQuestion,
+        claimConfirmation: readConfirmation(parsed.confirmation),
       });
     }
     const customer = textField(parsed.customer);
@@ -873,10 +891,23 @@ export function parseSections(content: string): ReviewSections | null {
       nextQuestion,
       nextQuestionReason,
       answerHint,
+      claimConfirmation: readConfirmation(parsed.confirmation),
     };
   } catch {
     return null;
   }
+}
+
+const CONFIRMATION_STATES = ['unconfirmed', 'confirmed'] as const;
+
+function readConfirmation(value: unknown): ReviewSections['claimConfirmation'] {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const record = value as Record<string, unknown>;
+  return {
+    problem: oneOf(record.problem, CONFIRMATION_STATES),
+    customer: oneOf(record.target_customer, CONFIRMATION_STATES),
+    revenue: oneOf(record.business_model, CONFIRMATION_STATES),
+  };
 }
 
 function textField(value: unknown): string | null {

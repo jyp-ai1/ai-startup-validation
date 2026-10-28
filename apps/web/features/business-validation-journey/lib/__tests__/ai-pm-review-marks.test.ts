@@ -16,6 +16,7 @@ const sections = (): ReviewSections => ({
   nextQuestion: '누가 실제로 비용을 지불하는 사업인가요?',
   nextQuestionReason: '여행객 예약비와 양조장 마케팅비를 구분합니다.',
   answerHint: '확인된 사실만 적는다.',
+  claimConfirmation: null,
 });
 
 describe('ai pm review marks', () => {

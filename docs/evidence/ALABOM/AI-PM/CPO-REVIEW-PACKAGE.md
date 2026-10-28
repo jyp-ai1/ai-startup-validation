@@ -684,3 +684,25 @@ QA 세션으로 연 결과, `data-result-source=model-review`, `data-step=result
 | 회귀 15개 | **기록** — 실패 재현. 제품 통과가 아님 |
 | 후속 검토 게이트 | **BLOCKED** |
 | Production | **잠금 유지** — `0b465226516e1a4f3eb9ce2087f8bca2c2c091da` |
+
+## 25. 2026-10-28 23:25 KST 확인 상태 필드
+
+후속 검토 게이트는 **BLOCKED**다. 이 절은 모델 호출이 아니다. 7버전 `62b5588c-0d11-42c8-8fac-d24d25dc4f20`은 `failed`로 둔다. 6버전 `e31d62a4-0870-4cce-b655-9080a174ffc5`는 덮어쓰지 않는다. 같은 피드백과 빈 보충은 다시 보내지 않는다. 실패로 저장된 검토는 화면 섹션을 받지 않는다.
+
+`understanding_wrong`의 응답은 `confirmation.problem`, `confirmation.target_customer`, `confirmation.business_model`을 가진다. 요구 값은 `unconfirmed`다. 값이 없으면 `confirmation_unset`이다. 값이 `confirmed`이면 `confirmed_reuse`다. 값이 `unconfirmed`여도 그 가설을 담은 문장이 확정 사실이면 `confirmed_reuse`다. 문장 표식만 있고 `confirmation`이 없으면 통과하지 않는다.
+
+`core_missing`은 질문 의미로 본다. 파트너십 질문은 거절한다. 누락된 핵심을 묻는 질문과 세 상태 `unconfirmed`, 그리고 확인 전 문장이 함께 있을 때만 비교가 통과한다. 그 형태는 테스트 픽스처다. 저장된 모델 응답이 아니다.
+
+회귀는 검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`의 6버전 문장, 7버전 문장, 뒷문장 표식, 파트너십 질문, 가설 삭제, 상태 없는 재확인 문장, 확정 문장에 `unconfirmed`를 붙인 응답, `confirmed`로 저장한 응답을 거절한다. 실패 뷰의 JSON에는 거절된 고객 문장이 없다. 픽스처가 통과하면 화면 모델은 문제, 고객, 수익을 각각 `확인 전`으로 읽는다. `pnpm exec vitest run`으로 검토 파일과 표시 파일, 15개가 통과했다. 유효한 저장 응답은 0개다. 이 통과는 제품 완성이 아니다.
+
+인증된 작업 화면은 열지 않았다. 통과한 저장 행이 없어서 실행 SHA의 화면 검증은 없다. 마지막으로 `/api/build-info`로 읽은 실행 SHA는 `ccca30c3e82d546c114bfe200c192d81df605a5a`다. `a16537b6`은 그 전의 문장 비교 규칙이다. 이 절의 커밋도 실행 SHA가 아니다.
+
+| 항목 | 판정 |
+|---|---|
+| 추가 모델 호출 | **없음** |
+| 6버전 보존과 실패 행 미노출 | **유지** |
+| 확인 상태 필드 | **기록** — 픽스처에서만 `unconfirmed` |
+| 유효한 저장 응답 | **0** |
+| 실행 SHA 화면 검증 | **없음** |
+| 후속 검토 게이트 | **BLOCKED** |
+| Production | **잠금 유지** — `0b465226516e1a4f3eb9ce2087f8bca2c2c091da` |

@@ -85,10 +85,19 @@ export type AiPmReviewStore = {
 
 export type RevisionGateFailure =
   | 'confirmed_reuse'
+  | 'confirmation_unset'
   | 'discarded_interpretation'
   | 'missing_core_not_asked'
   | 'question_unchanged'
   | 'invented_core';
+
+export type ClaimConfirmationState = 'unconfirmed' | 'confirmed';
+
+export type ClaimConfirmation = {
+  problem: ClaimConfirmationState | null;
+  customer: ClaimConfirmationState | null;
+  revenue: ClaimConfirmationState | null;
+};
 
 export type RevisionGate = {
   pass: boolean;
@@ -140,6 +149,8 @@ export type ReviewSections = {
   nextQuestion: string;
   nextQuestionReason: string;
   answerHint: string;
+  /** Explicit confirmation for the problem, customer, and revenue claims. Null on a first review. */
+  claimConfirmation: ClaimConfirmation | null;
 };
 
 export type Agreement = 'agree' | 'partial' | 'disagree' | 'need_info';

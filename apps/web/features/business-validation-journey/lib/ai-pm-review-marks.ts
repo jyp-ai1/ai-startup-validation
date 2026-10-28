@@ -30,6 +30,33 @@ export const REVIEW_MARK_LABEL: Record<ReviewMark, string> = {
 /** A claim sentence is unconfirmed only when that same sentence uses one of these. */
 export const UNCONFIRMED_CLAIM = /재확인|미확인|확인 전|확정된 사실이 아니|확정하지 않|아직 확인/;
 
+const CLAIM_FIELD_LABEL = { problem: '문제', customer: '고객', revenue: '수익' } as const;
+const CLAIM_STATE_LABEL = { unconfirmed: '확인 전', confirmed: '확정' } as const;
+
+export function visibleClaimStates(sections: ReviewSections): Array<{
+  field: 'problem' | 'customer' | 'revenue';
+  label: string;
+  state: 'unconfirmed' | 'confirmed';
+  stateLabel: string;
+  text: string;
+}> | null {
+  const states = sections.claimConfirmation;
+  if (!states) return null;
+  const rows = [
+    { field: 'problem' as const, text: sections.problem, state: states.problem },
+    { field: 'customer' as const, text: sections.customer, state: states.customer },
+    { field: 'revenue' as const, text: sections.revenueModel, state: states.revenue },
+  ];
+  if (rows.some((row) => row.state !== 'unconfirmed' && row.state !== 'confirmed')) return null;
+  return rows.map((row) => ({
+    field: row.field,
+    label: CLAIM_FIELD_LABEL[row.field],
+    state: row.state,
+    stateLabel: CLAIM_STATE_LABEL[row.state],
+    text: row.text,
+  }));
+}
+
 export type ReviewReading = {
   source: 'model-review' | 'input-only';
   summary: string;

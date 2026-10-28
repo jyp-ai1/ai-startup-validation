@@ -15,7 +15,7 @@ import {
   readingFromSections,
   restoredMarks,
   reviseReading,
-  UNCONFIRMED_CLAIM,
+  visibleClaimStates,
   type ReviewMark,
 } from '../lib/ai-pm-review-marks';
 
@@ -68,12 +68,8 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
         .at(-1)?.revision ?? null
     );
   }, [reviews, text]);
-  const reconfirmReading = Boolean(
-    active?.sections &&
-      [active.sections.problem, active.sections.customer, active.sections.revenueModel].some((line) =>
-        UNCONFIRMED_CLAIM.test(line),
-      ),
-  );
+  const claimRows = active?.sections ? visibleClaimStates(active.sections) : null;
+  const reconfirmReading = Boolean(claimRows?.some((row) => row.state === 'unconfirmed'));
 
   useEffect(() => {
     setText((current) => (current.trim() ? current : initialText));
@@ -344,6 +340,17 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
           {active?.sections ? (
             <div className="space-y-3" data-testid="ai-pm-core">
               <p className="text-sm font-medium">{reconfirmReading ? '재확인할 해석' : '현재 확인된 핵심'}</p>
+              {claimRows ? (
+                <ul className="space-y-2" data-testid="ai-pm-claim-states">
+                  {claimRows.map((row) => (
+                    <li key={row.field} data-testid={`ai-pm-claim-${row.field}`}>
+                      <span className="font-medium">{row.label}. </span>
+                      <span data-testid={`ai-pm-claim-state-${row.field}`}>{row.stateLabel}</span>{' '}
+                      <span>{row.text}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
               <p>
                 <span className="font-medium">사업 아이디어. </span>
                 <span data-testid="ai-pm-idea">{active.sections.execution}</span>

@@ -26,6 +26,7 @@ import {
   saveReviewFeedback,
   toAiPmReviewView,
 } from '../ai-pm-review';
+import { visibleClaimStates } from '../ai-pm-review-marks';
 import { openAiPmReviewStore, type ReviewSections, type StoredFeedback, type StoredReview } from '../ai-pm-review-store';
 
 const NOW = '2026-10-27T09:30:00.000Z';
@@ -49,6 +50,7 @@ function sections(): ReviewSections {
     nextQuestion: '양조장 대표에게 노출 비용을 제안한 적이 있습니까?',
     nextQuestionReason: '지불 후보의 실제 제안 여부가 보류 판단을 바꿉니다.',
     answerHint: '제안한 적이 있으면 그 한 건을, 없으면 제안 전이라고 적습니다.',
+    claimConfirmation: null,
   };
 }
 
@@ -371,6 +373,7 @@ describe('AI PM first review', () => {
         reconfirm: {
           action: string;
           hypotheses: Array<{ field: string; requiredState: string; previousClaim: string }>;
+          confirmation: { problem: string; target_customer: string; business_model: string };
         };
         askFounder: { action: string; requiredMeaning: string; rejectMeaning: string; previousQuestion: string };
       };
@@ -386,6 +389,11 @@ describe('AI PM first review', () => {
       'business_model',
     ]);
     expect(correctedPayload.revision.reconfirm.hypotheses.every((item) => item.requiredState === 'unconfirmed')).toBe(true);
+    expect(correctedPayload.revision.reconfirm.confirmation).toEqual({
+      problem: 'unconfirmed',
+      target_customer: 'unconfirmed',
+      business_model: 'unconfirmed',
+    });
     expect(correctedPayload.revision.askFounder.action).toBe('ask_missing_core');
     expect(correctedPayload.revision.askFounder.requiredMeaning).toBe('ask_what_core_is_missing');
     expect(correctedPayload.revision.askFounder.rejectMeaning).toBe('partnership_or_plan_substitute');
@@ -403,7 +411,9 @@ describe('AI PM first review', () => {
     const feedbackRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/feedback/route.ts', import.meta.url), 'utf8');
     const screen = readFileSync(new URL('../../components/validation-journey-screen.tsx', import.meta.url), 'utf8');
     expect(panel.toLowerCase()).not.toMatch(/gpt|gemini|openai|token/);
-    expect(panel).toContain('UNCONFIRMED_CLAIM');
+    expect(panel).toContain('visibleClaimStates');
+    expect(panel).toContain('data-testid="ai-pm-claim-states"');
+    expect(panel).toContain("review.status === 'ready'");
     expect(feedbackRoute).not.toMatch(/OpenAIProviderAdapter|@repo\/ai|gemini|\.chat\(/i);
     expect(screen).not.toContain('GeminiRoundPanel');
     expect(screen).not.toContain('FreeGeminiWebPanel');
@@ -728,7 +738,7 @@ describe('AI PM first review', () => {
     });
     expect(blocked.pass).toBe(false);
     expect(blocked.failures).toEqual(
-      expect.arrayContaining(['confirmed_reuse', 'question_unchanged', 'missing_core_not_asked']),
+      expect.arrayContaining(['confirmation_unset', 'confirmed_reuse', 'question_unchanged', 'missing_core_not_asked']),
     );
     expect(blocked.changes.join(' ')).toContain('고객 가설이 확정 사실로 남았습니다');
     expect(blocked.changes.join(' ')).toContain('수익 가설이 확정 사실로 남았습니다');
@@ -750,7 +760,8 @@ describe('AI PM first review', () => {
       marks: ['understanding_wrong', 'core_missing'],
     });
     expect(partial.pass).toBe(false);
-    expect(partial.failures).toEqual(['confirmed_reuse', 'missing_core_not_asked']);
+    expect(partial.failures).toEqual(['confirmation_unset', 'confirmed_reuse', 'missing_core_not_asked']);
+    expect(visibleClaimStates(versionSeven)).toBeNull();
     expect(partial.changes.join(' ')).toContain('고객 가설이 확정 사실로 남았습니다');
     expect(partial.changes.join(' ')).toContain('수익 가설이 확정 사실로 남았습니다');
     expect(partial.changes.join(' ')).not.toContain('문제 가설이 확정 사실로 남았습니다');
@@ -799,7 +810,7 @@ describe('AI PM first review', () => {
     expect(wiped.pass).toBe(false);
     expect(wiped.failures).toContain('discarded_interpretation');
     const wrap = (text: string) => `재확인 대상: ${text} 이 해석은 확정된 사실이 아니다.`;
-    const passed = assessFollowUpRevision({
+    const unlabeled = assessFollowUpRevision({
       previous,
       next: parseSections(
         JSON.stringify({
@@ -813,9 +824,77 @@ describe('AI PM first review', () => {
       )!,
       marks: ['understanding_wrong', 'core_missing'],
     });
+    expect(unlabeled.pass).toBe(false);
+    expect(unlabeled.failures).toEqual(['confirmation_unset']);
+    const confirmation = {
+      problem: 'unconfirmed',
+      target_customer: 'unconfirmed',
+      business_model: 'unconfirmed',
+    };
+    const statedAsFact = assessFollowUpRevision({
+      previous,
+      next: parseSections(
+        JSON.stringify({
+          problem: previous.problem,
+          target_customer: previous.customer,
+          solution: previous.execution,
+          business_model: previous.revenueModel,
+          validation_metric: previous.market,
+          nextQuestion: '이 검토에서 빠진 핵심은 무엇입니까?',
+          confirmation,
+        }),
+      )!,
+      marks: ['understanding_wrong', 'core_missing'],
+    });
+    expect(statedAsFact.pass).toBe(false);
+    expect(statedAsFact.failures).toContain('confirmed_reuse');
+    expect(statedAsFact.failures).not.toContain('confirmation_unset');
+    const declaredConfirmed = assessFollowUpRevision({
+      previous,
+      next: parseSections(
+        JSON.stringify({
+          problem: wrap(previous.problem),
+          target_customer: wrap(previous.customer),
+          solution: previous.execution,
+          business_model: wrap(previous.revenueModel),
+          validation_metric: previous.market,
+          nextQuestion: '이 검토에서 빠진 핵심은 무엇입니까?',
+          confirmation: {
+            problem: 'confirmed',
+            target_customer: 'confirmed',
+            business_model: 'confirmed',
+          },
+        }),
+      )!,
+      marks: ['understanding_wrong', 'core_missing'],
+    });
+    expect(declaredConfirmed.pass).toBe(false);
+    expect(declaredConfirmed.failures).toEqual(['confirmed_reuse']);
+    const structured = parseSections(
+      JSON.stringify({
+        problem: wrap(previous.problem),
+        target_customer: wrap(previous.customer),
+        solution: previous.execution,
+        business_model: wrap(previous.revenueModel),
+        validation_metric: previous.market,
+        nextQuestion: '이 검토에서 빠진 핵심은 무엇입니까?',
+        confirmation,
+      }),
+    );
+    expect(structured?.claimConfirmation).toEqual({
+      problem: 'unconfirmed',
+      customer: 'unconfirmed',
+      revenue: 'unconfirmed',
+    });
+    const passed = assessFollowUpRevision({
+      previous,
+      next: structured!,
+      marks: ['understanding_wrong', 'core_missing'],
+    });
     expect(passed.pass).toBe(true);
     expect(passed.changes.join(' ')).toContain('확인 전');
     expect(passed.changes.join(' ')).toContain('누락된 핵심');
+    expect(visibleClaimStates(structured!)?.map((row) => row.stateLabel)).toEqual(['확인 전', '확인 전', '확인 전']);
 
     const store = openAiPmReviewStore(storePath());
     const parent = await runFirstReview({
@@ -869,7 +948,10 @@ describe('AI PM first review', () => {
         const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
           originalInput?: string;
           revision?: {
-            reconfirm?: { hypotheses?: Array<{ requiredState?: string }> };
+            reconfirm?: {
+              hypotheses?: Array<{ requiredState?: string }>;
+              confirmation?: { problem?: string; target_customer?: string; business_model?: string };
+            };
             askFounder?: { previousQuestion?: string; requiredMeaning?: string };
           };
           previousReview?: { judgment?: string };
@@ -880,6 +962,11 @@ describe('AI PM first review', () => {
         expect(payload.feedback?.marks).toEqual(['understanding_wrong', 'core_missing']);
         expect(payload.revision?.reconfirm?.hypotheses).toHaveLength(3);
         expect(payload.revision?.reconfirm?.hypotheses?.every((item) => item.requiredState === 'unconfirmed')).toBe(true);
+        expect(payload.revision?.reconfirm?.confirmation).toEqual({
+          problem: 'unconfirmed',
+          target_customer: 'unconfirmed',
+          business_model: 'unconfirmed',
+        });
         expect(payload.revision?.askFounder?.requiredMeaning).toBe('ask_what_core_is_missing');
         expect(payload.revision?.askFounder?.previousQuestion).toBe(previous.nextQuestion);
         expect(request.model).toBe('gpt-4o-mini');
@@ -897,6 +984,7 @@ describe('AI PM first review', () => {
     expect(rejected.record.sections?.customer).toBe(failed.customer);
     expect(rejected.view.status).toBe('failed');
     expect(rejected.view.sections).toBeNull();
+    expect(JSON.stringify(rejected.view)).not.toContain(failed.customer);
     expect(rejected.view.revision?.summary).toBe(rejected.record.revisionGate?.summary);
     const again = await runFollowUpReview({
       store,
@@ -945,6 +1033,11 @@ describe('AI PM first review', () => {
       business_model: wrap(previous.revenueModel),
       validation_metric: previous.market,
       nextQuestion: '이 검토에서 빠진 핵심은 무엇입니까?',
+      confirmation: {
+        problem: 'unconfirmed',
+        target_customer: 'unconfirmed',
+        business_model: 'unconfirmed',
+      },
     });
     const kept = await runFollowUpReview({
       store,
@@ -963,6 +1056,16 @@ describe('AI PM first review', () => {
     expect(kept.view.sections?.nextQuestion).toBe('이 검토에서 빠진 핵심은 무엇입니까?');
     expect(kept.view.sections?.problem).toContain('재확인 대상:');
     expect(kept.view.sections?.problem).toContain('확정된 사실이 아니다');
+    expect(kept.view.sections?.claimConfirmation).toEqual({
+      problem: 'unconfirmed',
+      customer: 'unconfirmed',
+      revenue: 'unconfirmed',
+    });
+    expect(visibleClaimStates(kept.view.sections!)?.map((row) => `${row.label} ${row.stateLabel}`)).toEqual([
+      '문제 확인 전',
+      '고객 확인 전',
+      '수익 확인 전',
+    ]);
     const reread = presentReview(
       kept.record,
       await store.listFeedback('user-pass'),
