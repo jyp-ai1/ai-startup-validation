@@ -5,8 +5,8 @@ import {
   openReviewChat,
   readGptApiKey,
   reviewInputFromParts,
+  presentReview,
   runFirstReview,
-  toAiPmReviewView,
 } from '@/features/business-validation-journey/lib/ai-pm-review';
 import type { ReviewStorageReport } from '@/features/business-validation-journey/lib/ai-pm-review-store';
 
@@ -31,7 +31,8 @@ export async function GET() {
   const backend = openReviewBackend();
   try {
     const feedback = await backend.store.listFeedback(user.id);
-    const reviews = (await backend.store.listReviews(user.id)).map((record) => toAiPmReviewView(record, feedback));
+    const records = await backend.store.listReviews(user.id);
+    const reviews = records.map((record) => presentReview(record, feedback, records));
     return Response.json({ reviews, storage: backend.storage });
   } catch {
     return unavailable(backend.storage);

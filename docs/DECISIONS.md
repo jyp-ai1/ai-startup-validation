@@ -2095,6 +2095,48 @@ The Preview workspace showed the rule-engine hold, the same source text, and the
 
 ---
 
+## ADR-066: A follow-up that ignores founder marks is not a ready review
+
+**Status:** Accepted  
+**Date:** 2026-10-28  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+A stored follow-up sent `understanding_wrong` and `core_missing` as extra sentences. The model kept the customer, the revenue hypothesis, and the previous question. Explaining the rule in the prompt did not change the stored judgment.
+
+### Decision
+
+1. The follow-up user message is one JSON object with separate `originalInput`, `previousReview`, `feedback`, `supplement`, and `revision` fields. Mark text is not folded into a single instruction paragraph.
+2. `understanding_wrong` requires the previous problem, customer, and revenue text to remain and to be labeled for reconfirmation. Deleting that text is not acceptance. Repeating it as a confirmed fact is not acceptance.
+3. `core_missing` requires `nextQuestion` to differ from the previous question and to ask what core is missing. The follow-up does not fill that gap with a new claim.
+4. The application compares those fields before it accepts the follow-up. A failed comparison is stored with the model text and the comparison, is not a ready review, and is not sent to the model again for the same feedback and supplement. An older succeeded follow-up with no comparison is judged on read and does not block one later call.
+5. Model id and token limits stay `gpt-4o-mini`, 3000 input, 800 output.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Add stronger prompt sentences only | No comparison code | The stored failure already had those sentences |
+| Delete every marked field | The old sentence is gone | The interpretation is discarded instead of reconfirmed |
+
+### Consequences
+
+**Positive:**
+
+- A founder can reopen the same comparison result that was stored.
+
+**Negative:**
+
+- A model reply that paraphrases the reconfirmation, instead of keeping the previous sentence with the required label, is not accepted.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #207, #208, and #209 stay unmerged.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

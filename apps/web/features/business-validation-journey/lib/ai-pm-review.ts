@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 
 import { googleChat, OpenAIProviderAdapter, type ChatRequest, type ChatResponse } from '@repo/ai';
 
-import { feedbackFromMarks, normalizeMarks, readingFromSections, reviseReading } from './ai-pm-review-marks';
+import { feedbackFromMarks, normalizeMarks } from './ai-pm-review-marks';
 import type {
   Accuracy,
   Agreement,
@@ -11,6 +11,7 @@ import type {
   ReviewMark,
   ReviewSections,
   RevisionArea,
+  RevisionGate,
   StoredFeedback,
   StoredReview,
 } from './ai-pm-review-store';
@@ -63,6 +64,7 @@ export type AiPmReviewView = {
   questionSource: 'model-review' | null;
   finishedAt: string;
   feedback: AiPmFeedbackView[];
+  revision: { pass: boolean; summary: string; changes: string[] } | null;
 };
 
 export function normalizeReviewText(text: string): string {
@@ -210,17 +212,18 @@ export function reviewInputFromParts(input: {
 }
 
 export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[]): AiPmReviewView {
+  const blocked = record.revisionGate?.pass === false;
+  const ready = record.status === 'succeeded' && !blocked;
   return {
     reviewId: record.reviewId,
     version: record.version,
     parentReviewId: record.parentReviewId,
-    status: record.status === 'succeeded' ? 'ready' : record.status === 'not_run' ? 'unavailable' : 'failed',
+    status: ready ? 'ready' : record.status === 'not_run' ? 'unavailable' : 'failed',
     inputOrigin: record.inputOrigin,
     fileName: record.fileName,
     inputText: record.inputText,
-    sections: record.sections,
-    questionSource:
-      record.status === 'succeeded' && record.sections?.nextQuestion ? 'model-review' : null,
+    sections: blocked ? null : record.sections,
+    questionSource: ready && record.sections?.nextQuestion ? 'model-review' : null,
     finishedAt: record.finishedAt,
     feedback: feedback
       .filter((item) => item.reviewId === record.reviewId)
@@ -235,7 +238,31 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
         marks: normalizeMarks(item.marks),
         submittedAt: item.submittedAt,
       })),
+    revision: record.revisionGate
+      ? { pass: record.revisionGate.pass, summary: record.revisionGate.summary, changes: record.revisionGate.changes }
+      : null,
   };
+}
+
+/** Older succeeded follow-ups have no stored gate. Compare them on read and keep the row unchanged. */
+export function presentReview(record: StoredReview, feedback: StoredFeedback[], records: StoredReview[]): AiPmReviewView {
+  const source = feedback.find((item) => item.feedbackId === record.sourceFeedbackId) ?? null;
+  const marks = normalizeMarks(source?.marks);
+  const parent = records.find((item) => item.reviewId === record.parentReviewId) ?? null;
+  if (
+    !record.revisionGate &&
+    record.status === 'succeeded' &&
+    needsRevisionGate(marks) &&
+    parent?.sections &&
+    record.sections
+  ) {
+    const revisionGate = assessFollowUpRevision({ previous: parent.sections, next: record.sections, marks });
+    return toAiPmReviewView(
+      { ...record, revisionGate, status: revisionGate.pass ? record.status : 'failed' },
+      feedback,
+    );
+  }
+  return toAiPmReviewView(record, feedback);
 }
 
 export function buildFirstReviewRequest(text: string): ChatRequest {
@@ -255,38 +282,45 @@ export function buildFirstReviewRequest(text: string): ChatRequest {
 }
 
 export function buildFollowUpRequest(input: {
+  originalInput: string;
   sections: ReviewSections;
   feedback: StoredFeedback | null;
   supplement: string;
 }): ChatRequest {
+  const marks = normalizeMarks(input.feedback?.marks);
+  const revision = revisionPayload(input.sections, marks);
+  const payload = {
+    ...(revision ? { revision } : {}),
+    feedback: input.feedback
+      ? {
+          agreement: input.feedback.agreement,
+          accuracy: input.feedback.accuracy,
+          revisionAreas: input.feedback.revisionAreas,
+          comment: input.feedback.comment,
+          nextAction: input.feedback.nextAction,
+          marks,
+        }
+      : null,
+    previousReview: {
+      problem: input.sections.problem,
+      target_customer: input.sections.customer,
+      solution: input.sections.execution,
+      business_model: input.sections.revenueModel,
+      validation_metric: input.sections.market,
+      judgment: input.sections.judgment,
+      nextQuestion: input.sections.nextQuestion,
+    },
+    originalInput: input.originalInput,
+    supplement: input.supplement,
+  };
   return {
     model: AI_PM_REVIEW_MODEL,
     temperature: 0.2,
     maxTokens: AI_PM_REVIEW_MAX_TOKENS,
     responseFormat: { type: 'json_object' },
     messages: fitReviewMessages([
-      { role: 'system', content: reviewSystemPrompt() },
-      {
-        role: 'user',
-        content: [
-          '이전 검토와 사용자 피드백, 그리고 아래에 적힌 추가 사실만 반영한다.',
-          `이전 검토: ${JSON.stringify(input.sections)}`,
-          `이전 다음 질문: ${input.sections.nextQuestion}`,
-          input.feedback
-            ? `피드백: ${JSON.stringify({
-                agreement: input.feedback.agreement,
-                accuracy: input.feedback.accuracy,
-                revisionAreas: input.feedback.revisionAreas,
-                comment: input.feedback.comment,
-                nextAction: input.feedback.nextAction,
-                marks: normalizeMarks(input.feedback.marks),
-              })}`
-            : '피드백: 없음',
-          revisedUnderstanding(input.sections, input.feedback, input.supplement),
-          `추가 사실: ${input.supplement || '(없음)'}`,
-          '키: problem, target_customer, solution, business_model, validation_metric, nextQuestion.',
-        ].join('\n'),
-      },
+      { role: 'system', content: revision ? gatedFollowUpPrompt() : reviewSystemPrompt() },
+      { role: 'user', content: JSON.stringify(payload) },
     ]),
   };
 }
@@ -409,18 +443,22 @@ export async function runFollowUpReview(input: {
   const supplement = normalizeReviewText(input.supplement ?? '').slice(0, 4000);
   if (!feedback && !supplement) return { ok: false, error: 'feedback_required' };
   const supplementSha = sha256(supplement);
-  const existing = await input.store.succeededChild(
-    input.userId,
-    parent.reviewId,
-    feedback?.feedbackId ?? null,
-    supplementSha,
-  );
-  if (existing) {
+  const marks = normalizeMarks(feedback?.marks);
+  const sourceFeedbackId = feedback?.feedbackId ?? null;
+  const prior = (await input.store.listReviews(input.userId))
+    .filter(
+      (record) =>
+        record.parentReviewId === parent.reviewId &&
+        record.sourceFeedbackId === sourceFeedbackId &&
+        record.supplementSha === supplementSha,
+    )
+    .at(-1);
+  if (prior && reuseFollowUp(prior, marks)) {
     return {
       ok: true,
       called: false,
-      record: existing,
-      view: toAiPmReviewView(existing, await input.store.listFeedback(input.userId, existing.reviewId)),
+      record: prior,
+      view: toAiPmReviewView(prior, await input.store.listFeedback(input.userId, prior.reviewId)),
     };
   }
   if (!input.chat) return { ok: false, error: input.notRunReason === 'gpt_api_key_missing' ? 'gpt_api_key_missing' : 'engine_unconfigured' };
@@ -438,24 +476,166 @@ export async function runFollowUpReview(input: {
     sha: parent.inputSha,
     version: (latest?.version ?? parent.version) + 1,
     parentReviewId: parent.reviewId,
-    sourceFeedbackId: feedback?.feedbackId ?? null,
+    sourceFeedbackId,
     supplementSha,
-    request: buildFollowUpRequest({ sections: parent.sections, feedback, supplement }),
+    request: buildFollowUpRequest({
+      originalInput: parent.inputText,
+      sections: parent.sections,
+      feedback,
+      supplement,
+    }),
     chat: input.chat,
+    gate: needsRevisionGate(marks) ? { previous: parent.sections, marks } : null,
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
 }
 
-function revisedUnderstanding(sections: ReviewSections, feedback: StoredFeedback | null, supplement: string): string {
-  const marks = normalizeMarks(feedback?.marks);
-  if (marks.length === 0) return '수정된 사업 이해: 없음';
-  const revised = reviseReading(readingFromSections(sections), marks, supplement);
+const RECONFIRM_PREFIX = '재확인 대상: ';
+const RECONFIRM_SUFFIX = ' 이 해석은 확정된 사실이 아니다.';
+
+export function needsRevisionGate(marks: ReviewMark[]): boolean {
+  return marks.includes('understanding_wrong') || marks.includes('core_missing');
+}
+
+function reuseFollowUp(record: StoredReview, marks: ReviewMark[]): boolean {
+  if (!needsRevisionGate(marks)) return record.status === 'succeeded';
+  return record.revisionGate?.pass === true || record.revisionGate?.pass === false;
+}
+
+function revisionPayload(sections: ReviewSections, marks: ReviewMark[]) {
+  if (!needsRevisionGate(marks)) return null;
+  const wrong = marks.includes('understanding_wrong');
+  const missing = marks.includes('core_missing');
+  return {
+    ...(wrong
+      ? {
+          reconfirm: {
+            action: 'reconfirm' as const,
+            doNotTreatAsConfirmedFact: true,
+            doNotDelete: true,
+            prefix: RECONFIRM_PREFIX,
+            suffix: RECONFIRM_SUFFIX,
+            fields: [
+              { key: 'problem', previous: sections.problem },
+              { key: 'target_customer', previous: sections.customer },
+              { key: 'business_model', previous: sections.revenueModel },
+            ],
+          },
+        }
+      : {}),
+    ...(missing
+      ? {
+          askFounder: {
+            action: 'ask_founder' as const,
+            doNotInvent: true,
+            previousQuestion: sections.nextQuestion,
+            nextQuestionMustInclude: '빠진 핵심',
+          },
+        }
+      : {}),
+  };
+}
+
+export function assessFollowUpRevision(input: {
+  previous: ReviewSections;
+  next: ReviewSections;
+  marks: ReviewMark[];
+}): RevisionGate {
+  const marks = normalizeMarks(input.marks);
+  const failures: RevisionGate['failures'] = [];
+  const wrong = marks.includes('understanding_wrong');
+  const missing = marks.includes('core_missing');
+  if (wrong) {
+    const fields = [
+      [input.previous.problem, input.next.problem],
+      [input.previous.customer, input.next.customer],
+      [input.previous.revenueModel, input.next.revenueModel],
+      [input.previous.judgment, input.next.judgment],
+    ] as const;
+    for (const [previous, next] of fields) {
+      const verdict = understandingVerdict(previous, next);
+      if (verdict === 'copied' || verdict === 'restated') failures.push('confirmed_reuse');
+      if (verdict === 'discarded') failures.push('discarded_interpretation');
+    }
+    for (const [previous, next] of [
+      [input.previous.problem, input.next.problem],
+      [input.previous.customer, input.next.customer],
+      [input.previous.revenueModel, input.next.revenueModel],
+    ] as const) {
+      if (novelLength(next, previous) > 24) failures.push('invented_core');
+    }
+  }
+  if (missing) {
+    if (compact(input.previous.nextQuestion) === compact(input.next.nextQuestion)) failures.push('question_unchanged');
+    if (!input.next.nextQuestion.includes('빠진 핵심') || !/[?？까]$/.test(input.next.nextQuestion.trim())) {
+      failures.push('missing_core_not_asked');
+    }
+    for (const [previous, next] of [
+      [input.previous.execution, input.next.execution],
+      [input.previous.market, input.next.market],
+    ] as const) {
+      if (compact(previous) !== compact(next) && novelLength(next, previous) > 24) failures.push('invented_core');
+    }
+  }
+  const unique = [...new Set(failures)];
+  const changes: string[] = [];
+  if (unique.length === 0) {
+    if (wrong) changes.push('문제, 고객, 수익 가설은 확정된 사실에서 재확인 대상으로 옮겼습니다.');
+    if (missing) changes.push('다음 질문이 빠진 핵심을 묻습니다.');
+    return { pass: true, summary: changes.join(' '), changes, failures: [] };
+  }
+  if (unique.includes('confirmed_reuse')) changes.push('표시한 오해가 확정된 사실로 다시 남았습니다.');
+  if (unique.includes('discarded_interpretation')) changes.push('오류로 표시한 해석을 재확인하지 않고 지웠습니다.');
+  if (unique.includes('question_unchanged')) changes.push('다음 질문이 이전 질문과 같습니다.');
+  if (unique.includes('missing_core_not_asked')) changes.push('다음 질문이 빠진 핵심을 묻지 않습니다.');
+  if (unique.includes('invented_core')) changes.push('빠진 핵심을 입력에 없는 내용으로 채웠습니다.');
+  return { pass: false, summary: `${changes.join(' ')} 이 후속 검토는 반영하지 않았습니다.`, changes, failures: unique };
+}
+
+function understandingVerdict(previous: string, next: string): 'reconfirmed' | 'copied' | 'restated' | 'discarded' {
+  const prev = compact(previous);
+  const nxt = compact(next);
+  if (!prev) return 'reconfirmed';
+  if (nxt === prev) return 'copied';
+  const marked = next.includes(RECONFIRM_PREFIX) && next.includes('확정된 사실이 아니다');
+  const kept = sharesClause(prev, nxt);
+  if (marked && kept) return 'reconfirmed';
+  if (kept) return 'restated';
+  return 'discarded';
+}
+
+function sharesClause(previous: string, next: string): boolean {
+  if (!previous) return true;
+  if (next.includes(previous)) return true;
+  const size = 12;
+  if (previous.length < size) return next.includes(previous);
+  for (let index = 0; index + size <= previous.length; index += 4) {
+    if (next.includes(previous.slice(index, index + size))) return true;
+  }
+  return false;
+}
+
+function novelLength(next: string, previous: string): number {
+  let text = compact(next).split(compact(previous)).join('');
+  for (const piece of ['재확인대상:', '재확인대상', '이해석은확정된사실이아니다', '확정된사실이아니다']) {
+    text = text.split(piece).join('');
+  }
+  return [...text].filter((char) => /\p{L}|\p{N}/u.test(char)).length;
+}
+
+function compact(text: string): string {
+  return text.replace(/\s+/g, '').trim();
+}
+
+function gatedFollowUpPrompt(): string {
   return [
-    '수정된 사업 이해:',
-    ...revised.notes,
-    '오류로 표시된 이전 문장은 확인된 사실로 반복하지 않는다.',
-    '빠진 핵심은 입력에 없으면 만들지 않고 다음 질문으로 받는다.',
-  ].join('\n');
+    reviewSystemPrompt(),
+    '사용자 JSON의 revision 필드를 따른다.',
+    'reconfirm이 있으면 각 previous 문장을 prefix와 suffix로 감싸 같은 키에 넣는다.',
+    '그 문장을 지우거나 확정된 사실로 반복하지 않는다.',
+    'askFounder가 있으면 nextQuestion은 previousQuestion과 다르고 빠진 핵심을 묻는다.',
+    '빠진 내용을 다른 키에 채우지 않는다.',
+  ].join(' ');
 }
 
 function reviewSystemPrompt(): string {
@@ -487,11 +667,17 @@ async function finishCall(input: {
   supplementSha: string | null;
   request: ChatRequest;
   chat: ReviewChat;
+  gate?: { previous: ReviewSections; marks: ReviewMark[] } | null;
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const started = Date.now();
   try {
     const response = await input.chat(input.request);
     const sections = parseSections(response.content);
+    const revisionGate =
+      sections && input.gate && needsRevisionGate(input.gate.marks)
+        ? assessFollowUpRevision({ previous: input.gate.previous, next: sections, marks: input.gate.marks })
+        : null;
+    const accepted = Boolean(sections) && revisionGate?.pass !== false;
     const usageKnown = response.usageKnown === true;
     const record = baseRecord({
       input: input.input,
@@ -500,13 +686,14 @@ async function finishCall(input: {
       parentReviewId: input.parentReviewId,
       sourceFeedbackId: input.sourceFeedbackId,
       supplementSha: input.supplementSha,
-      status: sections ? 'succeeded' : 'failed',
+      status: accepted ? 'succeeded' : 'failed',
       evidence: input.input.evidence,
       callCount: 1,
-      error: sections ? null : 'unstructured_response',
+      error: sections ? (revisionGate && !revisionGate.pass ? 'revision_gate' : null) : 'unstructured_response',
       provider: response.provider === 'google' ? 'google' : response.provider === 'openai' ? 'openai' : null,
       model: response.model,
       sections,
+      revisionGate,
       rawContent: response.content,
       promptTokens: usageKnown ? response.usage.inputTokens : null,
       completionTokens: usageKnown ? response.usage.outputTokens : null,
@@ -555,6 +742,7 @@ function baseRecord(input: {
   provider?: StoredReview['provider'];
   model?: string | null;
   sections?: ReviewSections | null;
+  revisionGate?: RevisionGate | null;
   rawContent?: string | null;
   promptTokens?: number | null;
   completionTokens?: number | null;
@@ -578,6 +766,7 @@ function baseRecord(input: {
     provider: input.provider ?? null,
     model: input.model ?? null,
     sections: input.sections ?? null,
+    revisionGate: input.revisionGate ?? null,
     rawContent: input.rawContent ?? null,
     promptTokens: input.promptTokens ?? null,
     completionTokens: input.completionTokens ?? null,

@@ -55,6 +55,24 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
   const reading = active?.sections ? readingFromSections(active.sections) : readingFromInput(text);
   const revised = reviseReading(reading, viewMarks, founderFact);
   const modelQuestion = Boolean(active?.questionSource === 'model-review' && !marks.includes('question_unfit'));
+  const revisionForText = useMemo(() => {
+    const needle = businessBodyForReviewMatch(text);
+    return (
+      reviews
+        .filter(
+          (review) =>
+            review.revision &&
+            (!needle || businessBodyForReviewMatch(review.inputText) === needle),
+        )
+        .at(-1)?.revision ?? null
+    );
+  }, [reviews, text]);
+  const reconfirmReading = Boolean(
+    active?.sections &&
+      [active.sections.problem, active.sections.customer, active.sections.revenueModel, active.sections.judgment].some((line) =>
+        line.includes('재확인 대상:'),
+      ),
+  );
 
   useEffect(() => {
     setText((current) => (current.trim() ? current : initialText));
@@ -88,6 +106,15 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
       });
     }
   }, [active, text]);
+
+  useEffect(() => {
+    if (!revisionForText) return;
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.aiPmRevisionViewed, {
+      screen: '/business-validation',
+      status: revisionForText.pass ? 'pass' : 'blocked',
+      category: 'revision-gate',
+    });
+  }, [revisionForText]);
 
   async function loadReviews() {
     const response = await fetch('/api/ai-pm-review');
@@ -222,7 +249,10 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
       setFounderFact('');
       setAnswer('');
       setStep('result');
-      setMessage(body.reused ? '저장된 추가 검증을 다시 열었습니다.' : '추가 검증 결과를 저장했습니다.');
+      setMessage(
+        body.review.revision?.summary ??
+          (body.reused ? '저장된 추가 검증을 다시 열었습니다.' : '추가 검증 결과를 저장했습니다.'),
+      );
     } catch {
       setMessage('추가 검증이 끝나기 전에 실패했습니다.');
     } finally {
@@ -279,6 +309,12 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
         </p>
       ) : null}
 
+      {revisionForText ? (
+        <p className="text-sm" data-testid="ai-pm-revision-gate">
+          {revisionForText.summary}
+        </p>
+      ) : null}
+
       {active?.status === 'failed' ? (
         <p className="text-sm">검토가 끝나기 전에 실패했습니다. 결과 원문은 없습니다.</p>
       ) : null}
@@ -306,7 +342,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
           ) : null}
           {active?.sections ? (
             <div className="space-y-3" data-testid="ai-pm-core">
-              <p className="text-sm font-medium">현재 확인된 핵심</p>
+              <p className="text-sm font-medium">{reconfirmReading ? '재확인할 해석' : '현재 확인된 핵심'}</p>
               <p>
                 <span className="font-medium">사업 아이디어. </span>
                 <span data-testid="ai-pm-idea">{active.sections.execution}</span>

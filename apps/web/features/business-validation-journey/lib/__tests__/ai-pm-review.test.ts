@@ -11,12 +11,14 @@ import {
   AI_PM_GEMINI_FALLBACK_MODEL,
   AI_PM_REVIEW_INPUT_TOKEN_BUDGET,
   AI_PM_REVIEW_MAX_TOKENS,
+  assessFollowUpRevision,
   buildFirstReviewRequest,
   buildFollowUpRequest,
   callReviewWithQuotaSwitch,
   estimateReviewTokens,
   parseFeedbackBody,
   parseSections,
+  presentReview,
   readGptApiKey,
   reviewInputFromParts,
   runFirstReview,
@@ -221,9 +223,19 @@ describe('AI PM first review', () => {
     if (!follow.ok) return;
     expect(follow.called).toBe(true);
     expect(seen).toHaveLength(2);
-    const followText = seen[1]?.messages.map((message) => message.content).join('\n') ?? '';
-    expect(followText).not.toContain('UNIQUEPLANMARKER');
-    expect(followText).toContain('양조장 대표');
+    const followUser = seen[1]?.messages.find((message) => message.role === 'user')?.content ?? '';
+    const followPayload = JSON.parse(followUser) as {
+      originalInput: string;
+      previousReview: { nextQuestion: string };
+      feedback: { comment: string };
+      supplement: string;
+      revision?: unknown;
+    };
+    expect(followPayload.originalInput).toBe(PLAN);
+    expect(followPayload.previousReview.nextQuestion).toContain('양조장 대표');
+    expect(followPayload.feedback.comment).toContain('양조장 수');
+    expect(followPayload.supplement).toContain('인터뷰');
+    expect(followPayload.revision).toBeUndefined();
     expect(follow.record.inputText).toBe(PLAN);
     expect(follow.record.parentReviewId).toBe(first.record.reviewId);
     expect(follow.record.model).toBe('gpt-4o-mini-later');
@@ -314,6 +326,7 @@ describe('AI PM first review', () => {
     }
     expect((await saveReviewFeedback({ store, userId: 'user-c', now: NOW, body: { reviewId: 'missing' } })).ok).toBe(false);
     const direct = buildFollowUpRequest({
+      originalInput: '원문에는 표식이 없다.',
       sections: sections(),
       feedback: {
         feedbackId: 'fb',
@@ -332,6 +345,7 @@ describe('AI PM first review', () => {
     });
     expect(direct.messages.some((message) => message.content.includes('UNIQUEPLANMARKER'))).toBe(false);
     const corrected = buildFollowUpRequest({
+      originalInput: '원문에는 표식이 없다.',
       sections: sections(),
       feedback: {
         feedbackId: 'fb-marks',
@@ -349,11 +363,31 @@ describe('AI PM first review', () => {
       supplement: '',
     });
     const correctedUser = corrected.messages.find((message) => message.role === 'user')?.content ?? '';
-    expect(correctedUser).toContain('understanding_wrong');
-    expect(correctedUser).toContain('core_missing');
-    expect(correctedUser).toContain('오류로 표시');
-    expect(correctedUser).toContain('빠진 핵심');
+    const correctedPayload = JSON.parse(correctedUser) as {
+      originalInput: string;
+      previousReview: { problem: string; nextQuestion: string };
+      feedback: { marks: string[] };
+      revision: {
+        reconfirm: { action: string; fields: Array<{ key: string; previous: string }> };
+        askFounder: { action: string; previousQuestion: string };
+      };
+      supplement: string;
+    };
+    expect(correctedPayload.originalInput).toBe('원문에는 표식이 없다.');
+    expect(correctedPayload.previousReview.problem).toBe(sections().problem);
+    expect(correctedPayload.feedback.marks).toEqual(['understanding_wrong', 'core_missing']);
+    expect(correctedPayload.revision.reconfirm.action).toBe('reconfirm');
+    expect(correctedPayload.revision.reconfirm.fields.map((field) => field.key)).toEqual([
+      'problem',
+      'target_customer',
+      'business_model',
+    ]);
+    expect(correctedPayload.revision.askFounder.action).toBe('ask_founder');
+    expect(correctedPayload.revision.askFounder.previousQuestion).toBe(sections().nextQuestion);
+    expect(correctedPayload.supplement).toBe('');
+    expect(correctedUser).not.toContain('수정된 사업 이해:');
     expect(correctedUser).not.toContain('UNIQUEPLANMARKER');
+    expect(estimateReviewTokens(corrected.messages.map((message) => message.content).join('\n'))).toBeLessThan(3_000);
     expect(toAiPmReviewView(unknownUsage.record, []).status).toBe('ready');
     store.close();
   });
@@ -654,6 +688,208 @@ describe('AI PM first review', () => {
     expect(await store.readReview('user-a', saved.record.reviewId)).toBeNull();
     expect(await store.listFeedback('user-a')).toEqual([]);
     expect(await store.listReviews('user-a')).toEqual([]);
+    store.close();
+  });
+
+  it('rejects the stored wrong-and-missing follow-up and keeps a reconfirming one', async () => {
+    const original =
+      '다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.';
+    const previousRaw = JSON.stringify({
+      problem: '관광객들이 개인별 다양한 경험을 중시하지만, 전통주 체험을 제공하는 양조장에 대한 정보와 접근성이 부족하다.',
+      target_customer: '전통주를 좋아하는 내국인 및 외국인 관광객.',
+      solution: '양조장 체험 프로그램을 제공하고, 이를 통해 관광객이 직접 전통주를 만들고 즐길 수 있도록 안내하며, 주변 관광명소도 함께 소개하는 서비스.',
+      business_model: '양조장 체험 프로그램 참가비 및 온라인 마케팅 지원을 통한 수익 창출.',
+      validation_metric: '프로그램 참가자 수 및 고객 만족도 조사 결과.',
+      nextQuestion: '양조장 두 곳에 안내 비용을 제안한 적이 없는데, 어떻게 파트너십을 구축할 계획인가?',
+    });
+    const failedRaw = JSON.stringify({
+      problem: '관광객들이 전통주 체험을 제공하는 양조장에 대한 정보와 접근성이 부족하다.',
+      target_customer: '전통주를 좋아하는 내국인 및 외국인 관광객.',
+      solution: '양조장 체험 프로그램을 제공하고, 이를 통해 관광객이 직접 전통주를 만들고 즐길 수 있도록 안내하며, 주변 관광명소도 함께 소개하는 서비스.',
+      business_model: '양조장 체험 프로그램 참가비 및 온라인 마케팅 지원을 통한 수익 창출.',
+      validation_metric: '프로그램 참가자 수 및 고객 만족도 조사 결과.',
+      nextQuestion: '양조장 두 곳에 안내 비용을 제안한 적이 없는데, 어떻게 파트너십을 구축할 계획인가?',
+    });
+    const previous = parseSections(previousRaw);
+    const failed = parseSections(failedRaw);
+    expect(previous && failed).toBeTruthy();
+    if (!previous || !failed) return;
+    const blocked = assessFollowUpRevision({
+      previous,
+      next: failed,
+      marks: ['understanding_wrong', 'core_missing'],
+    });
+    expect(blocked.pass).toBe(false);
+    expect(blocked.failures).toEqual(
+      expect.arrayContaining(['confirmed_reuse', 'question_unchanged', 'missing_core_not_asked']),
+    );
+    const wrap = (text: string) => `재확인 대상: ${text} 이 해석은 확정된 사실이 아니다.`;
+    const passed = assessFollowUpRevision({
+      previous,
+      next: parseSections(
+        JSON.stringify({
+          problem: wrap(previous.problem),
+          target_customer: wrap(previous.customer),
+          solution: previous.execution,
+          business_model: wrap(previous.revenueModel),
+          validation_metric: previous.market,
+          nextQuestion: '이 검토에서 빠진 핵심은 무엇입니까?',
+        }),
+      )!,
+      marks: ['understanding_wrong', 'core_missing'],
+    });
+    expect(passed.pass).toBe(true);
+    expect(passed.changes.join(' ')).toContain('재확인 대상');
+    expect(passed.changes.join(' ')).toContain('빠진 핵심');
+
+    const store = openAiPmReviewStore(storePath());
+    const parent = await runFirstReview({
+      store,
+      userId: 'user-gate',
+      text: original,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      evidence: 'injected_http',
+      chat: async () => reply(previousRaw),
+    });
+    const saved = await saveReviewFeedback({
+      store,
+      userId: 'user-gate',
+      now: NOW,
+      body: { reviewId: parent.record.reviewId, marks: ['understanding_wrong', 'core_missing'] },
+    });
+    expect(saved.ok).toBe(true);
+    if (!saved.ok) return;
+    const ungated: StoredReview = {
+      ...parent.record,
+      reviewId: 'stored-v6',
+      version: 2,
+      parentReviewId: parent.record.reviewId,
+      sourceFeedbackId: saved.feedback.feedbackId,
+      supplementSha: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      sections: failed,
+      rawContent: failedRaw,
+      revisionGate: null,
+      status: 'succeeded',
+    };
+    await store.insertReview(ungated);
+    const shown = presentReview(ungated, [saved.feedback], [parent.record, ungated]);
+    expect(shown.status).toBe('failed');
+    expect(shown.sections).toBeNull();
+    expect(shown.revision?.pass).toBe(false);
+    expect(shown.revision?.summary).toContain('반영하지 않았습니다');
+    expect(JSON.stringify(shown)).not.toContain('revision_gate');
+
+    let calls = 0;
+    const rejected = await runFollowUpReview({
+      store,
+      userId: 'user-gate',
+      reviewId: parent.record.reviewId,
+      supplement: '',
+      now: NOW,
+      evidence: 'injected_http',
+      chat: async (request) => {
+        calls += 1;
+        const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+          originalInput?: string;
+          revision?: { reconfirm?: { fields?: unknown[] }; askFounder?: { previousQuestion?: string } };
+          previousReview?: { judgment?: string };
+          feedback?: { marks?: string[] };
+        };
+        expect(payload.originalInput).toBe(original);
+        expect(payload.previousReview?.judgment).toBe(previous.judgment);
+        expect(payload.feedback?.marks).toEqual(['understanding_wrong', 'core_missing']);
+        expect(payload.revision?.reconfirm?.fields).toHaveLength(3);
+        expect(payload.revision?.askFounder?.previousQuestion).toBe(previous.nextQuestion);
+        expect(request.model).toBe('gpt-4o-mini');
+        expect(request.maxTokens).toBe(800);
+        return reply(failedRaw);
+      },
+    });
+    expect(calls).toBe(1);
+    expect(rejected.ok).toBe(true);
+    if (!rejected.ok) return;
+    expect(rejected.called).toBe(true);
+    expect(rejected.record.status).toBe('failed');
+    expect(rejected.record.callCount).toBe(1);
+    expect(rejected.record.revisionGate?.pass).toBe(false);
+    expect(rejected.record.sections?.customer).toBe(failed.customer);
+    expect(rejected.view.status).toBe('failed');
+    expect(rejected.view.sections).toBeNull();
+    expect(rejected.view.revision?.summary).toBe(rejected.record.revisionGate?.summary);
+    const again = await runFollowUpReview({
+      store,
+      userId: 'user-gate',
+      reviewId: parent.record.reviewId,
+      supplement: '',
+      now: NOW,
+      evidence: 'injected_http',
+      chat: async () => {
+        calls += 1;
+        return reply(failedRaw);
+      },
+    });
+    expect(calls).toBe(1);
+    expect(again.ok && again.called).toBe(false);
+    if (again.ok) expect(again.record.reviewId).toBe(rejected.record.reviewId);
+
+    const accepted = await runFollowUpReview({
+      store,
+      userId: 'user-pass',
+      reviewId: 'missing',
+      now: NOW,
+      evidence: 'injected_http',
+    });
+    expect(accepted.ok).toBe(false);
+    const passingParent = await runFirstReview({
+      store,
+      userId: 'user-pass',
+      text: original,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      evidence: 'injected_http',
+      chat: async () => reply(previousRaw),
+    });
+    await saveReviewFeedback({
+      store,
+      userId: 'user-pass',
+      now: NOW,
+      body: { reviewId: passingParent.record.reviewId, marks: ['understanding_wrong', 'core_missing'] },
+    });
+    const passingRaw = JSON.stringify({
+      problem: wrap(previous.problem),
+      target_customer: wrap(previous.customer),
+      solution: previous.execution,
+      business_model: wrap(previous.revenueModel),
+      validation_metric: previous.market,
+      nextQuestion: '이 검토에서 빠진 핵심은 무엇입니까?',
+    });
+    const kept = await runFollowUpReview({
+      store,
+      userId: 'user-pass',
+      reviewId: passingParent.record.reviewId,
+      supplement: '',
+      now: NOW,
+      evidence: 'injected_http',
+      chat: async () => reply(passingRaw),
+    });
+    expect(kept.ok).toBe(true);
+    if (!kept.ok) return;
+    expect(kept.record.status).toBe('succeeded');
+    expect(kept.record.revisionGate?.pass).toBe(true);
+    expect(kept.view.questionSource).toBe('model-review');
+    expect(kept.view.sections?.nextQuestion).toBe('이 검토에서 빠진 핵심은 무엇입니까?');
+    expect(kept.view.sections?.problem).toContain('재확인 대상:');
+    expect(kept.view.sections?.problem).toContain('확정된 사실이 아니다');
+    const reread = presentReview(
+      kept.record,
+      await store.listFeedback('user-pass'),
+      await store.listReviews('user-pass'),
+    );
+    expect(reread.revision).toEqual(kept.view.revision);
+    expect(reread.sections).toEqual(kept.view.sections);
     store.close();
   });
 

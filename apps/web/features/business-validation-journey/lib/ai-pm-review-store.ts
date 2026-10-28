@@ -83,6 +83,20 @@ export type AiPmReviewStore = {
   close: () => void;
 };
 
+export type RevisionGateFailure =
+  | 'confirmed_reuse'
+  | 'discarded_interpretation'
+  | 'missing_core_not_asked'
+  | 'question_unchanged'
+  | 'invented_core';
+
+export type RevisionGate = {
+  pass: boolean;
+  summary: string;
+  changes: string[];
+  failures: RevisionGateFailure[];
+};
+
 export type StoredReview = {
   reviewId: string;
   userId: string;
@@ -100,6 +114,8 @@ export type StoredReview = {
   model: string | null;
   sections: ReviewSections | null;
   rawContent: string | null;
+  /** Set when a follow-up was compared with the previous review. Absent on older rows. */
+  revisionGate?: RevisionGate | null;
   promptTokens: number | null;
   completionTokens: number | null;
   totalTokens: number | null;
