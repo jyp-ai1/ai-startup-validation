@@ -2,11 +2,13 @@ import { createHash, randomUUID } from 'node:crypto';
 
 import { googleChat, OpenAIProviderAdapter, type ChatRequest, type ChatResponse } from '@repo/ai';
 
+import { feedbackFromMarks, normalizeMarks } from './ai-pm-review-marks';
 import type {
   Accuracy,
   Agreement,
   AiPmReviewStore,
   NextAction,
+  ReviewMark,
   ReviewSections,
   RevisionArea,
   StoredFeedback,
@@ -44,6 +46,7 @@ export type AiPmFeedbackView = {
   revisionAreas: RevisionArea[];
   comment: string;
   nextAction: NextAction;
+  marks: ReviewMark[];
   submittedAt: string;
 };
 
@@ -229,6 +232,7 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
         revisionAreas: item.revisionAreas,
         comment: item.comment,
         nextAction: item.nextAction,
+        marks: normalizeMarks(item.marks),
         submittedAt: item.submittedAt,
       })),
   };
@@ -275,6 +279,7 @@ export function buildFollowUpRequest(input: {
                 revisionAreas: input.feedback.revisionAreas,
                 comment: input.feedback.comment,
                 nextAction: input.feedback.nextAction,
+                marks: normalizeMarks(input.feedback.marks),
               })}`
             : '피드백: 없음',
           `추가 사실: ${input.supplement || '(없음)'}`,
@@ -346,12 +351,17 @@ export function parseFeedbackBody(body: unknown): { ok: true; value: Omit<Stored
     ? [...new Set(source.revisionAreas.filter((item): item is RevisionArea => AREAS.includes(item as RevisionArea)))]
     : null;
   const comment = typeof source.comment === 'string' ? source.comment.trim().slice(0, 4000) : '';
+  const marks = normalizeMarks(source.marks);
+  if (reviewId && marks.length > 0) {
+    const derived = feedbackFromMarks(marks, comment);
+    return { ok: true, value: { reviewId, ...derived } };
+  }
   if (!reviewId || !agreement || !accuracy || !nextAction || !revisionAreas) {
     return { ok: false, error: 'feedback_incomplete' };
   }
   return {
     ok: true,
-    value: { reviewId, agreement, accuracy, revisionAreas, comment, nextAction },
+    value: { reviewId, agreement, accuracy, revisionAreas, comment, nextAction, marks: [] },
   };
 }
 

@@ -69,7 +69,7 @@ The server calls the OpenAI chat adapter only when `GPT_API_KEY` is set. `OPENAI
 
 The durable tables are `public.ai_pm_reviews` and `public.ai_pm_feedback` in `packages/db/src/migration/023_ai_pm_reviews.sql`. `user_id` references `auth.users` and deletes that user's plan text, reviews, and feedback with the account. Feedback is deleted with its review. `public.business_plans` is a different document and is not this store. The local sqlite file is not kept across Vercel redeploys. A sqlite write is not a durable success.
 
-`POST /api/ai-pm-review/feedback` stores agreement, accuracy, revision areas, comment, and next action on that review version. It does not call a model. A comment is accepted when "other" is not selected.
+`POST /api/ai-pm-review/feedback` stores the founder's marks on that review version and does not call a model. `marks` may be any of `understanding_accurate`, `understanding_wrong`, `core_missing`, `unnecessary`, `evidence_unclear`, and `question_unfit`. The server maps those marks onto agreement, accuracy, revision areas, and the next action. A body that already has agreement, accuracy, revision areas, and next action is still accepted. Feedback save does not start a follow-up call.
 
 `POST /api/ai-pm-review/follow-up` body: `reviewId`, optional `supplement`. A non-empty supplement is the founder's answer to `nextQuestion` and can run without stored feedback. An empty supplement still requires feedback. The prompt carries the previous sections, that next question, the feedback when present, and the supplement. The original plan text stays on the record and is not sent again. Repeating the same feedback and supplement returns the stored follow-up.
 

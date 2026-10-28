@@ -145,6 +145,14 @@ export type NextAction =
   | 'proceed'
   | 'hold';
 
+export type ReviewMark =
+  | 'understanding_accurate'
+  | 'understanding_wrong'
+  | 'core_missing'
+  | 'unnecessary'
+  | 'evidence_unclear'
+  | 'question_unfit';
+
 export type StoredFeedback = {
   feedbackId: string;
   reviewId: string;
@@ -154,6 +162,7 @@ export type StoredFeedback = {
   revisionAreas: RevisionArea[];
   comment: string;
   nextAction: NextAction;
+  marks: ReviewMark[];
   submittedAt: string;
   modelCalls: 0;
 };

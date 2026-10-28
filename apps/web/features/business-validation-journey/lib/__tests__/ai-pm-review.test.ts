@@ -302,6 +302,16 @@ describe('AI PM first review', () => {
     expect(unknownUsage.record.usageKnown).toBe(false);
     expect(unknownUsage.record.totalTokens).toBeNull();
     expect(parseFeedbackBody({ reviewId: 'x' }).ok).toBe(false);
+    const marked = parseFeedbackBody({
+      reviewId: 'rv',
+      marks: ['understanding_wrong', 'core_missing', 'understanding_wrong'],
+    });
+    expect(marked.ok).toBe(true);
+    if (marked.ok) {
+      expect(marked.value.agreement).toBe('disagree');
+      expect(marked.value.marks).toEqual(['understanding_wrong', 'core_missing']);
+      expect(marked.value.comment).toContain('사업 이해가 틀림');
+    }
     expect((await saveReviewFeedback({ store, userId: 'user-c', now: NOW, body: { reviewId: 'missing' } })).ok).toBe(false);
     const direct = buildFollowUpRequest({
       sections: sections(),
@@ -314,6 +324,7 @@ describe('AI PM first review', () => {
         revisionAreas: [],
         comment: '',
         nextAction: 'design_interviews',
+        marks: [],
         submittedAt: NOW,
         modelCalls: 0,
       },
@@ -343,6 +354,7 @@ describe('AI PM first review', () => {
     );
     expect(workspace).toContain('AiPmReviewPanel');
     expect(workspace).toContain('initialText={siInputText}');
+    expect(workspace).toContain('!demoSamplePlayback && siInputText.length >= 8');
     expect(panel).toContain("fetch('/api/ai-pm-review'");
     expect(screen).not.toContain('GPT API');
     expect(panel).toContain('data-question-source="model-review"');

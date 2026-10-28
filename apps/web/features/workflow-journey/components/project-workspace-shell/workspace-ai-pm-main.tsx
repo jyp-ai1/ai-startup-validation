@@ -829,6 +829,14 @@ export function WorkspaceAiPmMain({
     );
   }
 
+  if (!demoSamplePlayback && siInputText.length >= 8) {
+    return (
+      <div className={cn('mx-auto max-w-[720px] space-y-4 py-2', className)}>
+        <AiPmReviewPanel initialText={siInputText} />
+      </div>
+    );
+  }
+
   const flowBody = (
     <div className="space-y-6">
       {siInputText.length >= 8 ? <AiPmReviewPanel initialText={siInputText} /> : null}

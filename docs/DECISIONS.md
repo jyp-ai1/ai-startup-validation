@@ -2054,6 +2054,47 @@ Persistence: rows in Supabase Postgres survive a Vercel redeploy. The review API
 
 ---
 
+## ADR-065: The workspace review is one flow, and rule output is not the model result
+
+**Status:** Accepted  
+**Date:** 2026-10-28  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The Preview workspace showed the rule-engine hold, the same source text, and the unconfirmed items in several blocks. That screen can be read as a model review. A stored server call does not prove the visible screen made a new call.
+
+### Decision
+
+1. When a founder document is present and the screen is not the scripted sample playback, the workspace column is only the AI PM review flow: result, feedback, revised judgment, next check.
+2. A ready review whose input matches the document is labeled as the model review. Input with no matching review is labeled as the source text and does not invent a hypothesis or show the rule question.
+3. Feedback marks are `understanding_accurate`, `understanding_wrong`, `core_missing`, `unnecessary`, `evidence_unclear`, and `question_unfit`. Saving them does not call a model. A logged-in save is attached to that review. A logged-out save stays in the browser and says so.
+4. The revised screen applies those marks in product code. The model follow-up remains the existing one-call path and is not sent by the feedback save.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Add the new blocks under the rule judgment | Less removal | The screen still reads as a model review |
+| Call the model again to rewrite the judgment after each mark | The next text would be a new model result | The requested change is the product flow, not more calls |
+
+### Consequences
+
+**Positive:**
+
+- The founder sees one next action, and a rule judgment is not labeled as the model review.
+
+**Negative:**
+
+- Scripted sample playback still uses the earlier workspace. A document screen no longer shows the understanding cards beside the review.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #207 stays unmerged.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
