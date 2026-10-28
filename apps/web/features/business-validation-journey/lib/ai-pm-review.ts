@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 
-import type { ChatRequest, ChatResponse } from '@repo/ai';
+import { googleChat, OpenAIProviderAdapter, type ChatRequest, type ChatResponse } from '@repo/ai';
 
 import type {
   Accuracy,
@@ -14,7 +14,9 @@ import type {
 } from './ai-pm-review-store';
 
 export const AI_PM_REVIEW_MODEL = 'gpt-4o-mini';
-export const AI_PM_REVIEW_MAX_TOKENS = 900;
+export const AI_PM_GEMINI_FALLBACK_MODEL = 'gemini-3.1-flash-lite';
+export const AI_PM_REVIEW_MAX_TOKENS = 800;
+export const AI_PM_REVIEW_INPUT_TOKEN_BUDGET = 3_000;
 export const AI_PM_REVIEW_INPUT_LIMIT = 24_000;
 
 const AGREEMENTS = ['agree', 'partial', 'disagree', 'need_info'] as const;
@@ -68,6 +70,114 @@ export function normalizeReviewText(text: string): string {
 export function readGptApiKey(env: Record<string, string | undefined> = process.env): string | null {
   const value = env.GPT_API_KEY?.trim();
   return value ? value : null;
+}
+
+/** Gemini fallback reads this name only. The value is never returned to the client. */
+export function readGoogleReviewKey(env: Record<string, string | undefined> = process.env): string | null {
+  const value = env.GOOGLE_AI_API_KEY?.trim();
+  return value ? value : null;
+}
+
+/** Over-counts Hangul so the request stays inside the input budget. */
+export function estimateReviewTokens(text: string): number {
+  let tokens = 0;
+  for (const char of text) {
+    const code = char.codePointAt(0) ?? 0;
+    tokens += code > 127 ? 2 : 0.25;
+  }
+  return Math.ceil(tokens);
+}
+
+export function clampReviewText(text: string, budget: number): string {
+  if (budget <= 0) return '';
+  if (estimateReviewTokens(text) <= budget) return text;
+  let low = 0;
+  let high = text.length;
+  while (low < high) {
+    const mid = Math.ceil((low + high) / 2);
+    if (estimateReviewTokens(text.slice(0, mid)) <= budget) low = mid;
+    else high = mid - 1;
+  }
+  return text.slice(0, low);
+}
+
+function fitReviewMessages(messages: ChatRequest['messages']): ChatRequest['messages'] {
+  const systemTokens = estimateReviewTokens(
+    messages
+      .filter((message) => message.role !== 'user')
+      .map((message) => message.content)
+      .join('\n'),
+  );
+  const room = AI_PM_REVIEW_INPUT_TOKEN_BUDGET - systemTokens;
+  let remaining = room;
+  return messages.map((message) => {
+    if (message.role !== 'user') return message;
+    const content = clampReviewText(message.content, remaining);
+    remaining -= estimateReviewTokens(content);
+    return { ...message, content };
+  });
+}
+
+export function isProviderQuotaError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  return /(?:^|\s)code=(?:credit_balance_exhausted|insufficient_quota)(?:\s|$)/.test(error.message)
+    || /(?:^|\s)type=insufficient_quota(?:\s|$)/.test(error.message);
+}
+
+/** One OpenAI call. A quota error may switch once. No retry loop. */
+export async function callReviewWithQuotaSwitch(input: {
+  request: ChatRequest;
+  openAI: ReviewChat;
+  gemini?: ReviewChat;
+}): Promise<ChatResponse> {
+  try {
+    return await input.openAI(input.request);
+  } catch (error) {
+    if (!isProviderQuotaError(error)) throw error;
+    if (!input.gemini) {
+      const message = error instanceof Error ? error.message : 'quota';
+      throw new Error(`${message} fallback=google_key_missing`);
+    }
+    try {
+      return await input.gemini({
+        ...input.request,
+        model: AI_PM_GEMINI_FALLBACK_MODEL,
+        maxTokens: AI_PM_REVIEW_MAX_TOKENS,
+      });
+    } catch (fallbackError) {
+      const first = error instanceof Error ? error.message : 'quota';
+      const second = fallbackError instanceof Error ? fallbackError.message : 'fallback_failed';
+      throw new Error(`${first} fallback=${second}`.slice(0, 700));
+    }
+  }
+}
+
+export function openReviewChat(env: Record<string, string | undefined> = process.env): ReviewChat | undefined {
+  const openAIKey = readGptApiKey(env);
+  if (!openAIKey) return undefined;
+  const googleKey = readGoogleReviewKey(env);
+  let openAICalls = 0;
+  let geminiCalls = 0;
+  return (request) =>
+    callReviewWithQuotaSwitch({
+      request,
+      openAI: async (chatRequest) => {
+        if (openAICalls >= 1) throw new Error('review_retry_blocked');
+        openAICalls += 1;
+        return new OpenAIProviderAdapter({ apiKey: openAIKey }).chat(chatRequest);
+      },
+      gemini: googleKey
+        ? async (chatRequest) => {
+            if (geminiCalls >= 1) throw new Error('review_retry_blocked');
+            geminiCalls += 1;
+            return googleChat({
+              apiKey: googleKey,
+              request: chatRequest,
+              maxOutputTokensCeiling: AI_PM_REVIEW_MAX_TOKENS,
+            });
+          }
+        : undefined,
+    });
 }
 
 export function reviewInputFromParts(input: {
@@ -130,13 +240,13 @@ export function buildFirstReviewRequest(text: string): ChatRequest {
     temperature: 0.2,
     maxTokens: AI_PM_REVIEW_MAX_TOKENS,
     responseFormat: { type: 'json_object' },
-    messages: [
+    messages: fitReviewMessages([
       { role: 'system', content: reviewSystemPrompt() },
       {
         role: 'user',
-        content: `사업 입력:\n${text}\n\n키: customer, problem, market, revenueModel, execution, risks, uncertain, hypotheses, judgment, nextQuestion, nextQuestionReason, answerHint.`,
+        content: `사업 입력:\n${text}\n\n키: problem, target_customer, solution, business_model, validation_metric, nextQuestion.`,
       },
-    ],
+    ]),
   };
 }
 
@@ -150,7 +260,7 @@ export function buildFollowUpRequest(input: {
     temperature: 0.2,
     maxTokens: AI_PM_REVIEW_MAX_TOKENS,
     responseFormat: { type: 'json_object' },
-    messages: [
+    messages: fitReviewMessages([
       { role: 'system', content: reviewSystemPrompt() },
       {
         role: 'user',
@@ -168,9 +278,10 @@ export function buildFollowUpRequest(input: {
               })}`
             : '피드백: 없음',
           `추가 사실: ${input.supplement || '(없음)'}`,
+          '키: problem, target_customer, solution, business_model, validation_metric, nextQuestion.',
         ].join('\n'),
       },
-    ],
+    ]),
   };
 }
 
@@ -327,17 +438,12 @@ export async function runFollowUpReview(input: {
 function reviewSystemPrompt(): string {
   return [
     '당신은 ALABOM의 AI PM이다.',
-    '고객과 지불자, 문제와 해결책, 시장 근거, 수익모델, 실행 가능성, 주요 위험을 구분한다.',
-    '입력에 없는 가격, 고객 수, 매출, 시장 규모는 만들지 않는다.',
-    '확인하지 않은 내용은 uncertain에 적는다.',
-    '우선 검증할 가설은 hypotheses에 적는다.',
-    'judgment는 보류, 진행, 중단 중 하나와 이유 한 문장이다.',
-    'nextQuestion은 이 입력에서 판단을 바꾸려면 창업자가 답해야 하는 검증 질문 하나다.',
-    'nextQuestionReason은 그 질문을 고른 이유다.',
-    'answerHint는 답변에 어떤 사실을 적으면 되는지 한 문장이다.',
-    '질문 목록에서 문장을 복사하지 말고, 이 사업 입력에 맞게 새로 쓴다.',
-    '모델 이름이나 공급사 이름을 쓰지 않는다.',
+    '입력에 없는 가격, 인원, 매출, 시장 규모는 만들지 않는다.',
     'JSON 객체만 반환한다.',
+    '키는 problem, target_customer, solution, business_model, validation_metric, nextQuestion 이다.',
+    'nextQuestion은 이 입력에서 창업자가 답해야 판단이 바뀌는 질문 하나다.',
+    '질문 목록의 문장을 복사하지 않는다.',
+    '모델 이름이나 공급사 이름은 쓰지 않는다.',
   ].join(' ');
 }
 
@@ -375,7 +481,7 @@ async function finishCall(input: {
       evidence: input.input.evidence,
       callCount: 1,
       error: sections ? null : 'unstructured_response',
-      provider: 'openai',
+      provider: response.provider === 'google' ? 'google' : response.provider === 'openai' ? 'openai' : null,
       model: response.model,
       sections,
       rawContent: response.content,
@@ -466,12 +572,52 @@ function baseRecord(input: {
 const FIXED_RULE_QUESTION =
   '가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.';
 
+function expandShortAnalysis(input: {
+  problem: string;
+  target_customer: string;
+  solution: string;
+  business_model: string;
+  validation_metric: string;
+  nextQuestion: string;
+}): ReviewSections {
+  return {
+    customer: input.target_customer,
+    problem: input.problem,
+    market: input.validation_metric,
+    revenueModel: input.business_model,
+    execution: input.solution,
+    risks: ['가격, 인원, 매출은 입력에 없으면 적지 않는다.'],
+    uncertain: [input.validation_metric],
+    hypotheses: [input.validation_metric],
+    judgment: `${input.problem} 고객은 ${input.target_customer}. 수익 가설은 ${input.business_model}.`,
+    nextQuestion: input.nextQuestion,
+    nextQuestionReason: `확인할 지표는 ${input.validation_metric}`,
+    answerHint: '확인된 사실만 적는다. 계획이면 계획이라고 적는다.',
+  };
+}
+
 export function parseSections(content: string): ReviewSections | null {
   const stripped = content.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
   try {
     const parsed = JSON.parse(stripped) as Record<string, unknown>;
-    const customer = textField(parsed.customer);
     const problem = textField(parsed.problem);
+    const targetCustomer = textField(parsed.target_customer);
+    const solution = textField(parsed.solution);
+    const businessModel = textField(parsed.business_model);
+    const validationMetric = textField(parsed.validation_metric);
+    const shortQuestion = textField(parsed.nextQuestion);
+    if (problem && targetCustomer && solution && businessModel && validationMetric && shortQuestion) {
+      if (shortQuestion === FIXED_RULE_QUESTION) return null;
+      return expandShortAnalysis({
+        problem,
+        target_customer: targetCustomer,
+        solution,
+        business_model: businessModel,
+        validation_metric: validationMetric,
+        nextQuestion: shortQuestion,
+      });
+    }
+    const customer = textField(parsed.customer);
     const market = textField(parsed.market);
     const revenueModel = textField(parsed.revenueModel);
     const execution = textField(parsed.execution);

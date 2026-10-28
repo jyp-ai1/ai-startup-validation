@@ -55,11 +55,11 @@ type AiPmReviewPanelProps = {
 };
 
 const SECTION_LABEL = {
-  customer: '고객과 지불자',
-  problem: '문제와 해결책',
-  market: '시장 근거',
-  revenueModel: '수익모델',
-  execution: '실행 가능성',
+  customer: '핵심 고객',
+  problem: '해결할 문제',
+  market: '검증 지표',
+  revenueModel: '수익 가설',
+  execution: '제안하는 해결책',
 } as const;
 
 export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {

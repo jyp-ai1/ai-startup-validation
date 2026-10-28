@@ -96,7 +96,7 @@ export type StoredReview = {
   fileName: string | null;
   status: 'succeeded' | 'failed' | 'not_run';
   evidence: 'live_network' | 'injected_http' | 'not_run';
-  provider: 'openai' | null;
+  provider: 'openai' | 'google' | null;
   model: string | null;
   sections: ReviewSections | null;
   rawContent: string | null;

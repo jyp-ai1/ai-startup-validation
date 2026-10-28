@@ -1,9 +1,8 @@
-import { OpenAIProviderAdapter } from '@repo/ai';
-
 import { getServerAuthUser } from '@/lib/auth/server-auth';
 import { extractDocumentText } from '@/lib/intake/extract-document-text';
 import { openReviewBackend } from '@/features/business-validation-journey/lib/ai-pm-review-backend';
 import {
+  openReviewChat,
   readGptApiKey,
   reviewInputFromParts,
   runFirstReview,
@@ -89,9 +88,7 @@ export async function POST(request: Request) {
       now: new Date().toISOString(),
       evidence: apiKey ? 'live_network' : 'not_run',
       notRunReason: apiKey ? undefined : 'gpt_api_key_missing',
-      chat: apiKey
-        ? (chatRequest) => new OpenAIProviderAdapter({ apiKey }).chat(chatRequest)
-        : undefined,
+      chat: apiKey ? openReviewChat() : undefined,
     });
     return Response.json({ reused: !result.called, review: result.view, storage: backend.storage });
   } catch {

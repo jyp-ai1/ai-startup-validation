@@ -61,7 +61,7 @@ POST /api/ai-pm-review/follow-up
 
 Logged-in session required. Without a session the status is `401`.
 
-`POST /api/ai-pm-review` accepts JSON `{ text }` or multipart `text` plus `file` (txt, md, pdf, docx). Both become one normalized input. A stored ready review for that input is returned with `reused: true` and no model call.
+`POST /api/ai-pm-review` accepts JSON `{ text }` or multipart `text` plus `file` (txt, md, pdf, docx). Both become one normalized input. A stored ready review for that input is returned with `reused: true` and no model call. The model request keeps the existing OpenAI path and `gpt-4o-mini`, with an input budget of 3,000 estimated tokens and an output cap of 800 tokens. The model returns `problem`, `target_customer`, `solution`, `business_model`, `validation_metric`, and `nextQuestion`. ALABOM maps that object into the stored review sections. A credit or quota error (`credit_balance_exhausted` or `insufficient_quota`) switches once to `gemini-3.1-flash-lite` when `GOOGLE_AI_API_KEY` is set. There is no retry loop. Other failures stay on the first provider.
 
 The server calls the OpenAI chat adapter only when `GPT_API_KEY` is set. `OPENAI_API_KEY` does not start this route. The model id, token counts, latency, and error stay on the review record. The JSON `review` object sent to the screen has sections, version, feedback, and `questionSource`. It does not include the model id or token counts. A ready review includes `nextQuestion`, `nextQuestionReason`, and `answerHint` parsed from the model JSON. `questionSource` is `model-review` only in that case. The fixed S.I. paid-conversion sentence is rejected and is not shown as this review. Missing `GPT_API_KEY` stores `unavailable` with no sections.
 
