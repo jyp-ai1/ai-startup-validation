@@ -42,14 +42,18 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
   const [pending, setPending] = useState(false);
   const [step, setStep] = useState<Step>('result');
   const [marks, setMarks] = useState<ReviewMark[]>([]);
+  const [marksTouched, setMarksTouched] = useState(false);
   const [answer, setAnswer] = useState('');
   const [founderFact, setFounderFact] = useState('');
   const [savedWhere, setSavedWhere] = useState<'account' | 'browser' | ''>('');
   const restoredKey = useRef('');
 
   const active = useMemo(() => matchReview(reviews, text), [reviews, text]);
+  const accountRestored = useMemo(() => restoredMarks(active?.feedback ?? [], null), [active]);
+  const viewMarks = marksTouched || marks.length > 0 ? marks : accountRestored.marks;
+  const viewWhere = marksTouched || marks.length > 0 ? savedWhere : savedWhere || accountRestored.where;
   const reading = active?.sections ? readingFromSections(active.sections) : readingFromInput(text);
-  const revised = reviseReading(reading, marks, founderFact);
+  const revised = reviseReading(reading, viewMarks, founderFact);
   const modelQuestion = Boolean(active?.questionSource === 'model-review' && !marks.includes('question_unfit'));
 
   useEffect(() => {
@@ -66,7 +70,8 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
   }, []);
 
   useEffect(() => {
-    const key = `${active?.reviewId ?? 'none'}:${text}`;
+    const latestFeedback = active?.feedback?.at(-1)?.feedbackId ?? 'none';
+    const key = `${active?.reviewId ?? 'none'}:${latestFeedback}:${text}`;
     if (restoredKey.current === key) return;
     restoredKey.current = key;
     const restored = restoredMarks(active?.feedback ?? [], readLocal(text));
@@ -122,6 +127,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
       remember(body.review);
       setStep('result');
       setMarks([]);
+      setMarksTouched(true);
       setFounderFact('');
       setSavedWhere('');
       setMessage(body.reused ? '저장된 검토를 다시 열었습니다.' : statusLine(body.review));
@@ -141,7 +147,8 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
   }
 
   async function submitFeedback() {
-    if (pending || marks.length === 0) return;
+    const selected = viewMarks;
+    if (pending || selected.length === 0) return;
     setPending(true);
     setMessage('');
     try {
@@ -150,7 +157,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
         const response = await fetch('/api/ai-pm-review/feedback', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ reviewId: active.reviewId, marks }),
+          body: JSON.stringify({ reviewId: active.reviewId, marks: selected }),
         });
         const body = (await response.json()) as LoadResponse;
         if (response.ok && body.review) {
@@ -164,17 +171,19 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
         }
       }
       if (where === 'browser') {
-        writeLocal(text, marks, founderFact);
+        writeLocal(text, selected, founderFact);
         setMessage('이 브라우저에 저장했습니다. 계정에는 저장되지 않았습니다.');
       } else {
         setMessage('이 검토 버전에 저장했습니다. 모델 호출은 없습니다.');
       }
+      setMarks(selected);
+      setMarksTouched(true);
       setSavedWhere(where);
       setStep('revised');
       void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.aiPmFeedbackStored, {
         screen: '/business-validation',
         status: 'stored',
-        category: marks[0],
+        category: selected[0],
       });
       void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.aiPmRevisionViewed, {
         screen: '/business-validation',
@@ -209,6 +218,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
       }
       remember(body.review);
       setMarks([]);
+      setMarksTouched(true);
       setFounderFact('');
       setAnswer('');
       setStep('result');
@@ -226,14 +236,20 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
   }
 
   function toggleMark(mark: ReviewMark) {
-    setMarks((current) => (current.includes(mark) ? current.filter((item) => item !== mark) : [...current, mark]));
+    setMarksTouched(true);
+    setMarks((current) => {
+      const base = current.length > 0 ? current : viewMarks;
+      return base.includes(mark) ? base.filter((item) => item !== mark) : [...base, mark];
+    });
   }
 
   function reflectLocalAnswer() {
     const fact = answer.trim();
     if (!fact) return;
     setFounderFact(fact);
-    writeLocal(text, marks, fact);
+    setMarks(viewMarks);
+    setMarksTouched(true);
+    writeLocal(text, viewMarks, fact);
     setSavedWhere('browser');
     setStep('reflected');
     setMessage('이 답을 다음 검증 정리에 반영했습니다. 모델 호출은 없습니다.');
@@ -278,7 +294,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
               placeholder="사업 내용을 입력합니다."
             />
           ) : null}
-          {marks.length > 0 ? <SavedRevision notes={revised.notes} where={savedWhere} /> : null}
+          {viewMarks.length > 0 ? <SavedRevision notes={revised.notes} where={viewWhere} /> : null}
           {reading.summary ? (
             <div className="space-y-1">
               <p className="text-xs font-medium text-muted-foreground">한 줄 요약</p>
@@ -341,14 +357,14 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
                   type="checkbox"
                   name="ai-pm-mark"
                   value={mark}
-                  checked={marks.includes(mark)}
+                  checked={viewMarks.includes(mark)}
                   onChange={() => toggleMark(mark)}
                 />{' '}
                 {REVIEW_MARK_LABEL[mark]}
               </label>
             ))}
           </fieldset>
-          <Button type="submit" data-testid="ai-pm-feedback-submit" disabled={pending || marks.length === 0}>
+          <Button type="submit" data-testid="ai-pm-feedback-submit" disabled={pending || viewMarks.length === 0}>
             피드백 저장
           </Button>
         </form>
@@ -363,7 +379,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
             </p>
           ))}
           <p className="text-xs text-muted-foreground">
-            {savedWhere === 'account' ? '계정에 저장된 선택입니다.' : '이 브라우저에 남은 선택입니다.'}
+            {viewWhere === 'account' ? '계정에 저장된 선택입니다.' : '이 브라우저에 남은 선택입니다.'}
           </p>
           <p data-testid="ai-pm-summary">{revised.summary}</p>
           {revised.showIdea ? <p data-testid="ai-pm-idea">{revised.idea}</p> : null}
