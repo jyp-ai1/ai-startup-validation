@@ -108,6 +108,7 @@ import {
 import { type ConversationFactKey } from '../../lib/business-understanding/conversation-memory';
 
 import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
+import { AiPmReviewPanel } from '@/features/business-validation-journey/components/ai-pm-review-panel';
 import { SiAiPmBindSurface } from '@/features/strategic-intelligence/components/si-ai-pm-bind-surface';
 import { SiReviewSurface } from '@/features/strategic-intelligence/components/si-review-surface';
 import { resolveSiJourneyIntegration } from '@/features/strategic-intelligence/lib/resolve-si-journey-integration';
@@ -830,6 +831,7 @@ export function WorkspaceAiPmMain({
 
   const flowBody = (
     <div className="space-y-6">
+      {siInputText.length >= 8 ? <AiPmReviewPanel initialText={siInputText} /> : null}
       {siJudgment && !isPostReview ? (
         <div data-testid="si-journey-block" data-si-source="business-input">
           <SiReviewSurface judgment={siJudgment} projectId={projectId} sourceText={siInputText} />

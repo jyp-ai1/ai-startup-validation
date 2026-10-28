@@ -329,6 +329,16 @@ describe('AI PM first review', () => {
     expect(screen).not.toContain('FreeGeminiWebPanel');
     expect(screen).not.toContain('WebReviewPanel');
     expect(screen).toContain('AiPmReviewPanel');
+    const workspace = readFileSync(
+      new URL(
+        '../../../workflow-journey/components/project-workspace-shell/workspace-ai-pm-main.tsx',
+        import.meta.url,
+      ),
+      'utf8',
+    );
+    expect(workspace).toContain('AiPmReviewPanel');
+    expect(workspace).toContain('initialText={siInputText}');
+    expect(panel).toContain("fetch('/api/ai-pm-review'");
     expect(screen).not.toContain('GPT API');
     expect(panel).toContain('data-question-source="model-review"');
     expect(panel).not.toContain('present-si-ai-pm-question');

@@ -256,3 +256,17 @@ CEO Chrome의 Preview 로그인은 이 런의 브라우저가 아니다. 리뷰 
 | UI와 모델 응답 일치 | **미검증** |
 | 후속 갱신 | **미검증** |
 | 전체 | **BLOCKED** |
+
+## 12. 2026-10-28 11:53 KST 워크스페이스 연결
+
+워크스페이스 본문에 `AiPmReviewPanel`을 넣었다. 입력 원문이 8자 이상이면 그 원문을 패널의 초기 글로 둔다. 패널의 `AI PM 1차 검토`는 `POST /api/ai-pm-review`를 호출한다. 모델이 만든 `nextQuestion`만 `questionSource: model-review`일 때 표시한다. 규칙 카드 `SiReviewSurface`와 `이 답으로 판단 갱신`은 그대로 규칙 경로다.
+
+이 연결은 로컬 단위 테스트 10건으로 소스 포함을 확인했다. 로그인된 Preview에서 버튼을 누르지 않았다. `ai_pm_reviews`에 새 행을 만들지 않았다. 리뷰 ID, 모델 응답, 재조회, 화면 일치, 후속 갱신은 없다. `4ddf8a29`와 이번 연결은 앱 JSON의 SHA로 확인하지 않았다. Preview 서버의 `GPT_API_KEY`는 미검증이다.
+
+| 항목 | 판정 |
+|---|---|
+| 워크스페이스에서 리뷰 API를 호출하는 버튼 | 코드에 연결. Preview 실행은 **미검증** |
+| 실제 GPT 응답 / `nextQuestion` | **미검증** |
+| 저장·재조회 | **FAIL** — 이번 연결로 만든 행 없음 |
+| UI와 후속 갱신 | **미검증** |
+| 전체 | **BLOCKED** |
