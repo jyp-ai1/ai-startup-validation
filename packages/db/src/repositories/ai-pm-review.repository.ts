@@ -15,6 +15,7 @@ const FEEDBACK = 'ai_pm_feedback';
 export type AiPmReviewRow = {
   userId: string;
   reviewId: string;
+  projectId: string | null;
   inputSha: string;
   version: number;
   parentReviewId: string | null;
@@ -36,6 +37,7 @@ export type AiPmFeedbackRow = {
 type ReviewSqlRow = {
   user_id: string;
   review_id: string;
+  project_id: string | null;
   input_sha: string;
   version: number;
   parent_review_id: string | null;
@@ -58,6 +60,7 @@ function toReview(row: ReviewSqlRow): AiPmReviewRow {
   return {
     userId: row.user_id,
     reviewId: row.review_id,
+    projectId: row.project_id,
     inputSha: row.input_sha,
     version: row.version,
     parentReviewId: row.parent_review_id,
@@ -85,6 +88,7 @@ export class SupabaseAiPmReviewRepository {
     const { error } = await client.from(REVIEWS).insert({
       user_id: row.userId,
       review_id: row.reviewId,
+      project_id: row.projectId,
       input_sha: row.inputSha,
       version: row.version,
       parent_review_id: row.parentReviewId,
@@ -125,12 +129,13 @@ export class SupabaseAiPmReviewRepository {
     return data ? toReview(data as ReviewSqlRow) : null;
   }
 
-  async latestForInput(userId: string, inputSha: string): Promise<AiPmReviewRow | null> {
+  async latestForInput(userId: string, inputSha: string, projectId: string): Promise<AiPmReviewRow | null> {
     const client = getServiceClient();
     const { data, error } = await client
       .from(REVIEWS)
       .select('*')
       .eq('user_id', userId)
+      .eq('project_id', projectId)
       .eq('input_sha', inputSha)
       .order('version', { ascending: false })
       .limit(1)
@@ -161,6 +166,32 @@ export class SupabaseAiPmReviewRepository {
     return data ? toReview(data as ReviewSqlRow) : null;
   }
 
+  async assignProjectIfUnset(userId: string, reviewId: string, projectId: string): Promise<boolean> {
+    const client = getServiceClient();
+    const { data, error } = await client
+      .from(REVIEWS)
+      .update({ project_id: projectId })
+      .eq('user_id', userId)
+      .eq('review_id', reviewId)
+      .is('project_id', null)
+      .select('review_id');
+    assertNoError(error);
+    return Array.isArray(data) && data.length === 1;
+  }
+
+  async deleteForProject(userId: string, projectId: string): Promise<void> {
+    const client = getServiceClient();
+    const reviews = await client.from(REVIEWS).select('review_id').eq('user_id', userId).eq('project_id', projectId);
+    assertNoError(reviews.error);
+    const ids = ((reviews.data ?? []) as Array<{ review_id: string }>).map((row) => row.review_id);
+    if (ids.length > 0) {
+      const feedback = await client.from(FEEDBACK).delete().eq('user_id', userId).in('review_id', ids);
+      assertNoError(feedback.error);
+    }
+    const deleted = await client.from(REVIEWS).delete().eq('user_id', userId).eq('project_id', projectId);
+    assertNoError(deleted.error);
+  }
+
   async deleteForUser(userId: string): Promise<void> {
     const client = getServiceClient();
     const feedback = await client.from(FEEDBACK).delete().eq('user_id', userId);
@@ -169,12 +200,13 @@ export class SupabaseAiPmReviewRepository {
     assertNoError(reviews.error);
   }
 
-  async listReviews(userId: string): Promise<AiPmReviewRow[]> {
+  async listReviews(userId: string, projectId: string): Promise<AiPmReviewRow[]> {
     const client = getServiceClient();
     const { data, error } = await client
       .from(REVIEWS)
       .select('*')
       .eq('user_id', userId)
+      .eq('project_id', projectId)
       .order('finished_at', { ascending: true })
       .order('version', { ascending: true });
     assertNoError(error);

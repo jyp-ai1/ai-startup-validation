@@ -53,6 +53,7 @@ export type AiPmFeedbackView = {
 
 export type AiPmReviewView = {
   reviewId: string;
+  projectId: string | null;
   version: number;
   parentReviewId: string | null;
   status: 'ready' | 'unavailable' | 'failed';
@@ -216,6 +217,7 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
   const ready = record.status === 'succeeded' && !blocked;
   return {
     reviewId: record.reviewId,
+    projectId: record.projectId,
     version: record.version,
     parentReviewId: record.parentReviewId,
     status: ready ? 'ready' : record.status === 'not_run' ? 'unavailable' : 'failed',
@@ -328,6 +330,7 @@ export function buildFollowUpRequest(input: {
 export async function runFirstReview(input: {
   store: AiPmReviewStore;
   userId: string;
+  projectId: string;
   text: string;
   origin: StoredReview['inputOrigin'];
   fileName: string | null;
@@ -337,7 +340,7 @@ export async function runFirstReview(input: {
   notRunReason?: string;
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const sha = sha256(input.text);
-  const latest = await input.store.latestForInput(input.userId, sha);
+  const latest = await input.store.latestForInput(input.userId, sha, input.projectId);
   if (latest?.status === 'succeeded' || (latest?.status === 'not_run' && !input.chat)) {
     return {
       called: false,
@@ -403,13 +406,16 @@ export function parseFeedbackBody(body: unknown): { ok: true; value: Omit<Stored
 export async function saveReviewFeedback(input: {
   store: AiPmReviewStore;
   userId: string;
+  projectId: string;
   body: unknown;
   now: string;
 }): Promise<{ ok: true; feedback: StoredFeedback; view: AiPmReviewView } | { ok: false; error: 'feedback_incomplete' | 'review_missing' }> {
   const parsed = parseFeedbackBody(input.body);
   if (!parsed.ok) return parsed;
   const review = await input.store.readReview(input.userId, parsed.value.reviewId);
-  if (!review || review.status !== 'succeeded') return { ok: false, error: 'review_missing' };
+  if (!review || review.status !== 'succeeded' || review.projectId !== input.projectId) {
+    return { ok: false, error: 'review_missing' };
+  }
   const feedback: StoredFeedback = {
     ...parsed.value,
     feedbackId: randomUUID(),
@@ -425,6 +431,7 @@ export async function saveReviewFeedback(input: {
 export async function runFollowUpReview(input: {
   store: AiPmReviewStore;
   userId: string;
+  projectId: string;
   reviewId: string;
   supplement?: string;
   now: string;
@@ -436,7 +443,7 @@ export async function runFollowUpReview(input: {
   | { ok: false; error: 'review_missing' | 'feedback_required' | 'engine_unconfigured' | 'gpt_api_key_missing' }
 > {
   const parent = await input.store.readReview(input.userId, input.reviewId);
-  if (!parent || parent.status !== 'succeeded' || !parent.sections) {
+  if (!parent || parent.projectId !== input.projectId || parent.status !== 'succeeded' || !parent.sections) {
     return { ok: false, error: 'review_missing' };
   }
   const feedback = (await input.store.listFeedback(input.userId, parent.reviewId)).at(-1) ?? null;
@@ -445,7 +452,7 @@ export async function runFollowUpReview(input: {
   const supplementSha = sha256(supplement);
   const marks = normalizeMarks(feedback?.marks);
   const sourceFeedbackId = feedback?.feedbackId ?? null;
-  const prior = (await input.store.listReviews(input.userId))
+  const prior = (await input.store.listReviews(input.userId, input.projectId))
     .filter(
       (record) =>
         record.parentReviewId === parent.reviewId &&
@@ -462,11 +469,12 @@ export async function runFollowUpReview(input: {
     };
   }
   if (!input.chat) return { ok: false, error: input.notRunReason === 'gpt_api_key_missing' ? 'gpt_api_key_missing' : 'engine_unconfigured' };
-  const latest = await input.store.latestForInput(input.userId, parent.inputSha);
+  const latest = await input.store.latestForInput(input.userId, parent.inputSha, input.projectId);
   const finished = await finishCall({
     store: input.store,
     input: {
       userId: input.userId,
+      projectId: input.projectId,
       text: parent.inputText,
       origin: parent.inputOrigin,
       fileName: parent.fileName,
@@ -685,6 +693,7 @@ async function finishCall(input: {
   store: AiPmReviewStore;
   input: {
     userId: string;
+    projectId: string;
     text: string;
     origin: StoredReview['inputOrigin'];
     fileName: string | null;
@@ -756,6 +765,7 @@ async function finishCall(input: {
 function baseRecord(input: {
   input: {
     userId: string;
+    projectId: string;
     text: string;
     origin: StoredReview['inputOrigin'];
     fileName: string | null;
@@ -784,6 +794,7 @@ function baseRecord(input: {
   return {
     reviewId: randomUUID(),
     userId: input.input.userId,
+    projectId: input.input.projectId,
     version: input.version,
     parentReviewId: input.parentReviewId,
     sourceFeedbackId: input.sourceFeedbackId,

@@ -2220,6 +2220,50 @@ ADR-067 compares the sentence that states a claim. That comparison still rejects
 
 ---
 
+## ADR-069: A review belongs to one workspace
+
+**Status:** Accepted  
+**Date:** 2026-10-29  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+`ai_pm_reviews` was stored by `user_id` and `input_sha`. Two workspaces owned by the same user, with the same business text, opened one review. Account isolation did not cover that case. The app's project delete sets `deleted_at`. It does not remove the `startup_projects` row.
+
+### Decision
+
+1. Lookup, reuse, and insert for a workspace use `user_id`, `project_id`, and `input_sha`. `project_id` alone is not access. The server checks that the session user owns the project. Another user's project id is rejected for read and write.
+2. `project_id` is a nullable uuid with no default. An INSERT that lists only the columns from migration 023 still succeeds. Migration `024_ai_pm_review_project.sql` adds the column and `on delete cascade`.
+3. An existing row is attached only when exactly one owned project has that input hash. Zero or several matches stay null and are not shown on a workspace.
+4. Soft delete leaves the review on that project. It does not appear in another workspace. Hard delete of the project row deletes its reviews, and the review foreign key deletes their feedback. Null rows stay unattached.
+5. The follow-up route requires the same project as the parent review and does not run when the project does not match. This decision does not send a follow-up call.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Leave the body hash as the workspace key | No migration | The same text shares one review |
+| Set null reviews to a guessed project | Every old row would show somewhere | A wrong link hides or moves a stored review |
+| `ON DELETE SET NULL` | The text would remain after a hard delete | The review would be an unattached copy of a deleted workspace |
+
+### Consequences
+
+**Positive:**
+
+- Create, reuse, lookup, and restore stay on the current workspace.
+
+**Negative:**
+
+- A second workspace with the same text makes its own model call.
+- Rows that match no project, or more than one, stay hidden until a single owner is known.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #209 stays unmerged. The second follow-up review is not started.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

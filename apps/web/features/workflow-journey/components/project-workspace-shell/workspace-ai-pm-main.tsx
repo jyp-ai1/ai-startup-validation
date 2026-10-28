@@ -832,14 +832,14 @@ export function WorkspaceAiPmMain({
   if (!demoSamplePlayback && siInputText.length >= 8) {
     return (
       <div className={cn('mx-auto max-w-[720px] space-y-4 py-2', className)}>
-        <AiPmReviewPanel initialText={siInputText} />
+        <AiPmReviewPanel initialText={siInputText} projectId={projectId} />
       </div>
     );
   }
 
   const flowBody = (
     <div className="space-y-6">
-      {siInputText.length >= 8 ? <AiPmReviewPanel initialText={siInputText} /> : null}
+      {siInputText.length >= 8 ? <AiPmReviewPanel initialText={siInputText} projectId={projectId} /> : null}
       {siJudgment && !isPostReview ? (
         <div data-testid="si-journey-block" data-si-source="business-input">
           <SiReviewSurface judgment={siJudgment} projectId={projectId} sourceText={siInputText} />

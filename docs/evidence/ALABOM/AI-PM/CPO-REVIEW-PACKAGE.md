@@ -765,3 +765,31 @@ QA 세션으로 연 결과, `data-result-source=model-review`, `data-step=result
 | 1차 검토 게이트 | **CPO 검수 전** | CTO가 완료를 선언하지 않음 |
 | Production | **잠금 유지** | `0b465226516e1a4f3eb9ce2087f8bca2c2c091da` |
 | PR #209 | **미병합** | 2차 후속 검토는 시작하지 않음 |
+
+## 28. 2026-10-29 08:40 KST 워크스페이스 귀속
+
+워크스페이스별 독립 저장은 FAIL이다. 이 절은 그 수정의 준비다. 공유 데이터베이스에는 `024_ai_pm_review_project.sql`을 적용하지 못했다. 이 환경에는 Postgres 접속 정보가 없다. Preview에서 두 워크스페이스를 나란히 실행한 증거는 없다.
+
+조회, 재사용, 저장은 `user_id + project_id + input_sha`다. `project_id`만으로 권한을 보지 않는다. 세션 사용자가 소유하지 않은 프로젝트는 읽기와 쓰기 모두 `403 project_forbidden`이다. 프로젝트 ID가 없으면 `400`이다. 화면은 현재 워크스페이스의 프로젝트 ID를 보낸다.
+
+기존 행은 소유 프로젝트의 본문 해시가 정확히 하나일 때만 연결한다. 없거나 둘 이상이면 `project_id`는 null이고 워크스페이스에 붙지 않는다. 이 연결은 아직 실행하지 않았다.
+
+`project_id`는 nullable이고 기본값이 없다. 마이그레이션 023의 열만 나열한 INSERT는 로컬 sqlite에서 `project_id` null로 성공했다. Production SHA `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`에는 `ai_pm_reviews` 저장소가 없다. 공유 Postgres에서 그 INSERT를 다시 실행하지는 못했다.
+
+같은 본문의 두 워크스페이스 분리는 로컬 저장 테스트에서 확인했다. 한쪽 검토와 피드백은 다른 쪽에 보이지 않고, 다른 프로젝트의 검토 ID로 피드백이나 후속 호출을 열면 모델 호출 전에 거절된다. 이 테스트는 Preview 실행이 아니다.
+
+프로젝트 삭제는 둘로 나눈다. 앱의 삭제는 `deleted_at`만 기록한다. 검토는 그 프로젝트에 남고 다른 워크스페이스에는 열리지 않는다. `startup_projects` 행을 실제로 지우면 `on delete cascade`로 그 검토가 지워지고, 검토 외래 키로 피드백이 지워진다. `project_id`가 null인 행은 어느 삭제에도 다른 워크스페이스로 붙지 않는다.
+
+`pnpm exec vitest run`으로 검토 파일과 표시 파일, 19개가 통과했다. `next build` 타입 검사도 통과했다. 2차 후속 검토 모델 호출은 하지 않았다. 이 커밋이 Preview에 올라가면 조회가 `project_id`를 사용한다. 열이 없으면 그 조회는 저장 오류가 된다.
+
+| 항목 | 판정 |
+|---|---|
+| 코드의 조회·재사용 범위 | **기록** — `user_id + project_id + input_sha` |
+| 타인 프로젝트 거부 | **기록** — 서버에서 소유 확인. Preview HTTP는 미실행 |
+| 기존 행을 하나만 연결 | **기록** — 함수 테스트. 공유 DB 갱신은 미실행 |
+| 023 INSERT 호환 | **부분** — sqlite에서 null 저장. 공유 Postgres는 미실행 |
+| 같은 본문 두 워크스페이스 | **NOT RUN** — Preview에서 만들지 않음 |
+| 삭제 정책 | **기록** — 소프트 삭제는 행을 유지. 하드 삭제는 cascade |
+| 공유 DB 마이그레이션 | **미적용** |
+| 1차 전체 게이트 | **미완료** |
+| Production / PR #209 | **잠금, 미병합** |

@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { DatabaseSync } from 'node:sqlite';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -27,6 +28,7 @@ import {
   toAiPmReviewView,
 } from '../ai-pm-review';
 import { visibleClaimStates } from '../ai-pm-review-marks';
+import { projectLinksForUnscopedReviews } from '../ai-pm-review-project';
 import { openAiPmReviewStore, type ReviewSections, type StoredFeedback, type StoredReview } from '../ai-pm-review-store';
 
 const NOW = '2026-10-27T09:30:00.000Z';
@@ -80,6 +82,7 @@ describe('AI PM first review', () => {
       return reply(JSON.stringify(sections()));
     };
     const first = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       text: typed.ok ? typed.text : '',
@@ -90,6 +93,7 @@ describe('AI PM first review', () => {
       evidence: 'injected_http',
     });
     const second = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       text: file.ok ? file.text : '',
@@ -124,6 +128,7 @@ describe('AI PM first review', () => {
       return reply(JSON.stringify(sections()));
     };
     const review = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       text: PLAN,
@@ -134,6 +139,7 @@ describe('AI PM first review', () => {
       evidence: 'injected_http',
     });
     const saved = await saveReviewFeedback({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       now: NOW,
@@ -152,6 +158,7 @@ describe('AI PM first review', () => {
     expect(saved.feedback.comment).toContain('지불자');
     expect(saved.view.feedback).toHaveLength(1);
     const again = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       text: PLAN,
@@ -165,6 +172,7 @@ describe('AI PM first review', () => {
     expect(again.called).toBe(false);
     expect(again.view.feedback[0]?.revisionAreas).toEqual(['payer', 'evidence']);
     const withoutOther = await saveReviewFeedback({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       now: NOW,
@@ -190,6 +198,7 @@ describe('AI PM first review', () => {
       return reply(JSON.stringify(sections()), { model: seen.length === 1 ? 'gpt-4o-mini' : 'gpt-4o-mini-later' });
     };
     const first = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       text: PLAN,
@@ -200,6 +209,7 @@ describe('AI PM first review', () => {
       evidence: 'injected_http',
     });
     await saveReviewFeedback({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       now: NOW,
@@ -213,6 +223,7 @@ describe('AI PM first review', () => {
       },
     });
     const follow = await runFollowUpReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       reviewId: first.record.reviewId,
@@ -246,6 +257,7 @@ describe('AI PM first review', () => {
     expect(parent?.model).toBe('gpt-4o-mini');
     expect(await store.listFeedback('user-a', first.record.reviewId)).toHaveLength(1);
     const repeated = await runFollowUpReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       reviewId: first.record.reviewId,
@@ -257,6 +269,7 @@ describe('AI PM first review', () => {
     expect(repeated.ok && repeated.called).toBe(false);
     expect(seen).toHaveLength(2);
     const replaced = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       text: PLAN,
@@ -275,6 +288,7 @@ describe('AI PM first review', () => {
   it('hides engine names, token counts, and errors from the user view', async () => {
     const store = openAiPmReviewStore(storePath());
     const failed = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       text: '짧은 사업 메모입니다. 고객은 아직 없습니다.',
@@ -290,6 +304,7 @@ describe('AI PM first review', () => {
     expect(failed.record.callCount).toBe(1);
     expect(JSON.stringify(failed.view).toLowerCase()).not.toMatch(/openai|gemini|\bgpt\b|token/);
     const quiet = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-b',
       text: '다른 사업 메모입니다. 문제는 재고입니다.',
@@ -304,6 +319,7 @@ describe('AI PM first review', () => {
     expect(quiet.view.status).toBe('unavailable');
     expect(JSON.stringify(quiet.view)).not.toContain('engine_unconfigured');
     const unknownUsage = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-c',
       text: '세 번째 사업 메모입니다. 가격은 없습니다.',
@@ -326,7 +342,9 @@ describe('AI PM first review', () => {
       expect(marked.value.marks).toEqual(['understanding_wrong', 'core_missing']);
       expect(marked.value.comment).toContain('사업 이해가 틀림');
     }
-    expect((await saveReviewFeedback({ store, userId: 'user-c', now: NOW, body: { reviewId: 'missing' } })).ok).toBe(false);
+    expect(
+      (await saveReviewFeedback({ store, userId: 'user-c', projectId: 'project-test', now: NOW, body: { reviewId: 'missing' } })).ok,
+    ).toBe(false);
     const direct = buildFollowUpRequest({
       originalInput: '원문에는 표식이 없다.',
       sections: sections(),
@@ -427,6 +445,7 @@ describe('AI PM first review', () => {
       'utf8',
     );
     expect(workspace).toContain('AiPmReviewPanel');
+    expect(workspace).toContain('projectId={projectId}');
     expect(workspace).toContain('initialText={siInputText}');
     expect(workspace).toContain('!demoSamplePlayback && siInputText.length >= 8');
     expect(panel).toContain("fetch('/api/ai-pm-review'");
@@ -449,6 +468,7 @@ describe('AI PM first review', () => {
       '가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.';
     const copied = { ...sections(), nextQuestion: fixed };
     const rejected = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       text: PLAN,
@@ -467,6 +487,7 @@ describe('AI PM first review', () => {
     expect(parseSections(JSON.stringify(withoutQuestion))).toBeNull();
 
     const accepted = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       text: '다른 양조장 메모. 수요와 가격은 아직 없다.',
@@ -480,6 +501,7 @@ describe('AI PM first review', () => {
     expect(accepted.view.sections?.nextQuestion).toContain('양조장 대표');
     const answer = '제안한 적 없고, 받은 돈도 없습니다.';
     const follow = await runFollowUpReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       reviewId: accepted.record.reviewId,
@@ -507,6 +529,7 @@ describe('AI PM first review', () => {
   it('stores no review sentences when GPT_API_KEY is absent', async () => {
     const store = openAiPmReviewStore(storePath());
     const missing = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-missing',
       text: PLAN,
@@ -527,6 +550,7 @@ describe('AI PM first review', () => {
     expect(missing.view.questionSource).toBeNull();
     expect(JSON.stringify(missing.view)).not.toContain('gpt_api_key_missing');
     const reopened = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-missing',
       text: PLAN,
@@ -541,6 +565,7 @@ describe('AI PM first review', () => {
     expect(reopened.record.callCount).toBe(0);
 
     const ready = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-missing',
       text: '두 번째 사업 메모. 가격과 고객 수는 없다.',
@@ -551,6 +576,7 @@ describe('AI PM first review', () => {
       chat: async () => reply(JSON.stringify(sections())),
     });
     await saveReviewFeedback({
+      projectId: 'project-test',
       store,
       userId: 'user-missing',
       now: NOW,
@@ -564,6 +590,7 @@ describe('AI PM first review', () => {
       },
     });
     const follow = await runFollowUpReview({
+      projectId: 'project-test',
       store,
       userId: 'user-missing',
       reviewId: ready.record.reviewId,
@@ -574,7 +601,9 @@ describe('AI PM first review', () => {
     });
     expect(follow.ok).toBe(false);
     if (!follow.ok) expect(follow.error).toBe('gpt_api_key_missing');
-    expect((await store.listReviews('user-missing')).filter((record) => record.parentReviewId === ready.record.reviewId)).toHaveLength(0);
+    expect(
+      (await store.listReviews('user-missing', 'project-test')).filter((record) => record.parentReviewId === ready.record.reviewId),
+    ).toHaveLength(0);
     store.close();
   });
 
@@ -655,6 +684,7 @@ describe('AI PM first review', () => {
   it('hides another user and deletes the plan with the owner', async () => {
     const store = openAiPmReviewStore(storePath());
     const saved = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       text: PLAN,
@@ -665,6 +695,7 @@ describe('AI PM first review', () => {
       evidence: 'injected_http',
     });
     await saveReviewFeedback({
+      projectId: 'project-test',
       store,
       userId: 'user-a',
       now: NOW,
@@ -678,9 +709,10 @@ describe('AI PM first review', () => {
       },
     });
     expect(await store.readReview('user-b', saved.record.reviewId)).toBeNull();
-    expect(await store.listReviews('user-b')).toEqual([]);
+    expect(await store.listReviews('user-b', 'project-test')).toEqual([]);
     expect(await store.listFeedback('user-b', saved.record.reviewId)).toEqual([]);
     const foreign = await saveReviewFeedback({
+      projectId: 'project-test',
       store,
       userId: 'user-b',
       now: NOW,
@@ -695,6 +727,7 @@ describe('AI PM first review', () => {
     });
     expect(foreign.ok).toBe(false);
     const follow = await runFollowUpReview({
+      projectId: 'project-test',
       store,
       userId: 'user-b',
       reviewId: saved.record.reviewId,
@@ -707,7 +740,7 @@ describe('AI PM first review', () => {
     await store.deleteOwnedRecords('user-a');
     expect(await store.readReview('user-a', saved.record.reviewId)).toBeNull();
     expect(await store.listFeedback('user-a')).toEqual([]);
-    expect(await store.listReviews('user-a')).toEqual([]);
+    expect(await store.listReviews('user-a', 'project-test')).toEqual([]);
     store.close();
   });
 
@@ -901,6 +934,7 @@ describe('AI PM first review', () => {
 
     const store = openAiPmReviewStore(storePath());
     const parent = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-gate',
       text: original,
@@ -911,6 +945,7 @@ describe('AI PM first review', () => {
       chat: async () => reply(previousRaw),
     });
     const saved = await saveReviewFeedback({
+      projectId: 'project-test',
       store,
       userId: 'user-gate',
       now: NOW,
@@ -940,6 +975,7 @@ describe('AI PM first review', () => {
 
     let calls = 0;
     const rejected = await runFollowUpReview({
+      projectId: 'project-test',
       store,
       userId: 'user-gate',
       reviewId: parent.record.reviewId,
@@ -990,6 +1026,7 @@ describe('AI PM first review', () => {
     expect(JSON.stringify(rejected.view)).not.toContain(failed.customer);
     expect(rejected.view.revision?.summary).toBe(rejected.record.revisionGate?.summary);
     const again = await runFollowUpReview({
+      projectId: 'project-test',
       store,
       userId: 'user-gate',
       reviewId: parent.record.reviewId,
@@ -1006,6 +1043,7 @@ describe('AI PM first review', () => {
     if (again.ok) expect(again.record.reviewId).toBe(rejected.record.reviewId);
 
     const accepted = await runFollowUpReview({
+      projectId: 'project-test',
       store,
       userId: 'user-pass',
       reviewId: 'missing',
@@ -1014,6 +1052,7 @@ describe('AI PM first review', () => {
     });
     expect(accepted.ok).toBe(false);
     const passingParent = await runFirstReview({
+      projectId: 'project-test',
       store,
       userId: 'user-pass',
       text: original,
@@ -1024,6 +1063,7 @@ describe('AI PM first review', () => {
       chat: async () => reply(previousRaw),
     });
     await saveReviewFeedback({
+      projectId: 'project-test',
       store,
       userId: 'user-pass',
       now: NOW,
@@ -1043,6 +1083,7 @@ describe('AI PM first review', () => {
       },
     });
     const kept = await runFollowUpReview({
+      projectId: 'project-test',
       store,
       userId: 'user-pass',
       reviewId: passingParent.record.reviewId,
@@ -1072,7 +1113,7 @@ describe('AI PM first review', () => {
     const reread = presentReview(
       kept.record,
       await store.listFeedback('user-pass'),
-      await store.listReviews('user-pass'),
+      await store.listReviews('user-pass', 'project-test'),
     );
     expect(reread.revision).toEqual(kept.view.revision);
     expect(reread.sections).toEqual(kept.view.sections);
@@ -1109,6 +1150,7 @@ describe('AI PM first review', () => {
     const owner = '11111111-1111-1111-1111-111111111111';
     const other = '22222222-2222-2222-2222-222222222222';
     const saved = await runFirstReview({
+      projectId: 'project-test',
       store: remoteBackend.store,
       userId: owner,
       text: PLAN,
@@ -1122,8 +1164,127 @@ describe('AI PM first review', () => {
     expect(saved.record.sections).toBeNull();
     expect(await remoteBackend.store.readReview(other, saved.record.reviewId)).toBeNull();
     await remoteBackend.store.deleteOwnedRecords(owner);
-    expect(await remoteBackend.store.listReviews(owner)).toEqual([]);
+    expect(await remoteBackend.store.listReviews(owner, 'project-test')).toEqual([]);
     expect(port.rows).toHaveLength(0);
+  });
+});
+
+describe('workspace review scope', () => {
+  it('links a stored review only when one owned project has that body', () => {
+    expect(
+      projectLinksForUnscopedReviews(
+        [
+          { reviewId: 'shared', inputSha: 'sha', projectId: null },
+          { reviewId: 'only', inputSha: 'other', projectId: null },
+          { reviewId: 'kept', inputSha: 'only', projectId: 'already' },
+        ],
+        [
+          { projectId: 'p1', inputSha: 'sha' },
+          { projectId: 'p2', inputSha: 'sha' },
+          { projectId: 'p3', inputSha: 'other' },
+        ],
+      ),
+    ).toEqual([{ reviewId: 'only', projectId: 'p3' }]);
+  });
+
+  it('keeps the same text on two workspaces apart and removes one project with its feedback', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const chat = async () => reply(JSON.stringify(sections()));
+    const shared = '같은 본문을 두 워크스페이스에 둔다. 결과는 섞이면 안 된다.';
+    const first = await runFirstReview({
+      store,
+      userId: 'user-a',
+      projectId: 'project-a',
+      text: shared,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    const second = await runFirstReview({
+      store,
+      userId: 'user-a',
+      projectId: 'project-b',
+      text: shared,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(first.called).toBe(true);
+    expect(second.called).toBe(true);
+    expect(second.record.reviewId).not.toBe(first.record.reviewId);
+    expect((await store.listReviews('user-a', 'project-b')).map((review) => review.reviewId)).toEqual([
+      second.record.reviewId,
+    ]);
+    const saved = await saveReviewFeedback({
+      store,
+      userId: 'user-a',
+      projectId: 'project-a',
+      now: NOW,
+      body: { reviewId: first.record.reviewId, marks: ['understanding_accurate'] },
+    });
+    expect(saved.ok).toBe(true);
+    const crossed = await saveReviewFeedback({
+      store,
+      userId: 'user-a',
+      projectId: 'project-b',
+      now: NOW,
+      body: { reviewId: first.record.reviewId, marks: ['core_missing'] },
+    });
+    expect(crossed.ok).toBe(false);
+    expect(await store.listFeedback('user-a', second.record.reviewId)).toEqual([]);
+    const blocked = await runFollowUpReview({
+      store,
+      userId: 'user-a',
+      projectId: 'project-b',
+      reviewId: first.record.reviewId,
+      supplement: '다른 공간',
+      now: NOW,
+      evidence: 'injected_http',
+      chat: async () => {
+        throw new Error('must not call');
+      },
+    });
+    expect(blocked.ok).toBe(false);
+    await store.deleteForProject('user-a', 'project-a');
+    expect(await store.readReview('user-a', first.record.reviewId)).toBeNull();
+    expect(await store.listFeedback('user-a', first.record.reviewId)).toEqual([]);
+    expect((await store.readReview('user-a', second.record.reviewId))?.reviewId).toBe(second.record.reviewId);
+    store.close();
+  });
+
+  it('accepts the previous insert shape with a null project', () => {
+    const path = storePath();
+    const store = openAiPmReviewStore(path);
+    store.close();
+    const db = new DatabaseSync(path);
+    db.prepare(
+      `INSERT INTO ai_pm_reviews
+        (user_id, review_id, input_sha, version, parent_review_id, status, record_json, finished_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).run('user-a', 'legacy', 'sha', 1, null, 'not_run', '{}', NOW);
+    const row = db.prepare('SELECT project_id FROM ai_pm_reviews WHERE review_id = ?').get('legacy') as {
+      project_id: string | null;
+    };
+    expect(row.project_id).toBeNull();
+    db.close();
+  });
+
+  it('declares a nullable project column that is removed with the project row', () => {
+    const sql = readFileSync(
+      new URL('../../../../../../packages/db/src/migration/024_ai_pm_review_project.sql', import.meta.url),
+      'utf8',
+    );
+    const alter = sql
+      .split('\n')
+      .find((line) => line.includes('add column'));
+    expect(alter).toContain('project_id uuid');
+    expect(alter?.toLowerCase()).not.toContain('default');
+    expect(alter?.toLowerCase()).not.toContain('not null');
+    expect(sql).toContain('on delete cascade');
   });
 });
 
@@ -1146,8 +1307,10 @@ function memoryPort(): AiPmDurablePort & { rows: StoredReview[] } {
       const record = reviews.find((item) => item.userId === userId && item.reviewId === reviewId);
       return record ? toRow(record) : null;
     },
-    latestForInput: async (userId, inputSha) => {
-      const record = reviews.filter((item) => item.userId === userId && item.inputSha === inputSha).at(-1);
+    latestForInput: async (userId, inputSha, projectId) => {
+      const record = reviews
+        .filter((item) => item.userId === userId && item.projectId === projectId && item.inputSha === inputSha)
+        .at(-1);
       return record ? toRow(record) : null;
     },
     succeededChild: async (userId, parentReviewId, sourceFeedbackId, supplementSha) => {
@@ -1161,7 +1324,19 @@ function memoryPort(): AiPmDurablePort & { rows: StoredReview[] } {
       );
       return record ? toRow(record) : null;
     },
-    listReviews: async (userId) => reviews.filter((item) => item.userId === userId).map(toRow),
+    listReviews: async (userId, projectId) =>
+      reviews.filter((item) => item.userId === userId && item.projectId === projectId).map(toRow),
+    deleteForProject: async (userId, projectId) => {
+      const ids = new Set(
+        reviews.filter((item) => item.userId === userId && item.projectId === projectId).map((item) => item.reviewId),
+      );
+      for (let index = feedback.length - 1; index >= 0; index -= 1) {
+        if (feedback[index]?.userId === userId && ids.has(feedback[index]?.reviewId ?? '')) feedback.splice(index, 1);
+      }
+      for (let index = reviews.length - 1; index >= 0; index -= 1) {
+        if (reviews[index]?.userId === userId && reviews[index]?.projectId === projectId) reviews.splice(index, 1);
+      }
+    },
     listFeedback: async (userId, reviewId) =>
       feedback
         .filter((item) => item.userId === userId && (!reviewId || item.reviewId === reviewId))
@@ -1187,6 +1362,7 @@ function toRow(record: StoredReview) {
   return {
     userId: record.userId,
     reviewId: record.reviewId,
+    projectId: record.projectId,
     inputSha: record.inputSha,
     version: record.version,
     parentReviewId: record.parentReviewId,

@@ -1,4 +1,5 @@
 import { getServerAuthUser } from '@/lib/auth/server-auth';
+import { requireOwnedProject } from '@/features/business-validation-journey/lib/ai-pm-review-access';
 import { openReviewBackend } from '@/features/business-validation-journey/lib/ai-pm-review-backend';
 import { openReviewChat, readGptApiKey, runFollowUpReview } from '@/features/business-validation-journey/lib/ai-pm-review';
 
@@ -8,13 +9,16 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: Request) {
   const user = await getServerAuthUser();
   if (!user) return Response.json({ error: 'login_required', review: null }, { status: 401 });
-  const body = (await request.json()) as { reviewId?: string; supplement?: string };
+  const body = (await request.json()) as { reviewId?: string; supplement?: string; projectId?: string };
+  const access = await requireOwnedProject(user.id, body.projectId);
+  if (!access.ok) return Response.json({ error: access.error, review: null }, { status: access.status });
   const backend = openReviewBackend();
   const apiKey = readGptApiKey();
   try {
     const result = await runFollowUpReview({
       store: backend.store,
       userId: user.id,
+      projectId: access.projectId,
       reviewId: body.reviewId?.trim() ?? '',
       supplement: body.supplement,
       now: new Date().toISOString(),

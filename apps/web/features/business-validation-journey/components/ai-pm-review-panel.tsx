@@ -31,11 +31,12 @@ type Step = 'result' | 'feedback' | 'revised' | 'question' | 'reflected';
 
 type AiPmReviewPanelProps = {
   initialText?: string;
+  projectId?: string;
 };
 
 const LOCAL_PREFIX = 'll-ai-pm-marks:';
 
-export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
+export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReviewPanelProps) {
   const [text, setText] = useState(initialText);
   const [reviews, setReviews] = useState<AiPmReviewView[]>([]);
   const [auth, setAuth] = useState<'unknown' | 'in' | 'out'>('unknown');
@@ -49,7 +50,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
   const [savedWhere, setSavedWhere] = useState<'account' | 'browser' | ''>('');
   const restoredKey = useRef('');
 
-  const active = useMemo(() => matchReview(reviews, text), [reviews, text]);
+  const active = useMemo(() => matchReview(reviews, text, projectId), [reviews, text, projectId]);
   const accountRestored = useMemo(() => restoredMarks(active?.feedback ?? [], null), [active]);
   const viewMarks = marksTouched || marks.length > 0 ? marks : accountRestored.marks;
   const viewWhere = marksTouched || marks.length > 0 ? savedWhere : savedWhere || accountRestored.where;
@@ -62,12 +63,13 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
       reviews
         .filter(
           (review) =>
+            review.projectId === projectId &&
             review.revision &&
             (!needle || businessBodyForReviewMatch(review.inputText) === needle),
         )
         .at(-1) ?? null
     );
-  }, [reviews, text]);
+  }, [reviews, text, projectId]);
   const revisionForText =
     revisionReview?.revision && (!active || revisionReview.finishedAt >= active.finishedAt)
       ? revisionReview.revision
@@ -81,6 +83,9 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
 
   useEffect(() => {
     void loadReviews();
+  }, [projectId]);
+
+  useEffect(() => {
     void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.aiPmSingleFlowViewed, {
       screen: '/business-validation',
       status: 'viewed',
@@ -118,7 +123,12 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
   }, [revisionForText]);
 
   async function loadReviews() {
-    const response = await fetch('/api/ai-pm-review');
+    if (!projectId) {
+      setAuth('in');
+      setReviews([]);
+      return;
+    }
+    const response = await fetch(`/api/ai-pm-review?projectId=${encodeURIComponent(projectId)}`);
     const body = (await response.json()) as LoadResponse;
     if (response.status === 401) {
       setAuth('out');
@@ -130,7 +140,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
   }
 
   async function startReview() {
-    if (pending || text.trim().length < 8) return;
+    if (pending || !projectId || text.trim().length < 8) return;
     setPending(true);
     setMessage('');
     void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.aiPmReviewRequested, {
@@ -140,6 +150,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
     });
     try {
       const form = new FormData();
+      form.set('projectId', projectId);
       form.set('text', text);
       const response = await fetch('/api/ai-pm-review', { method: 'POST', body: form });
       const body = (await response.json()) as LoadResponse;
@@ -185,7 +196,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
         const response = await fetch('/api/ai-pm-review/feedback', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ reviewId: active.reviewId, marks: selected }),
+          body: JSON.stringify({ projectId, reviewId: active.reviewId, marks: selected }),
         });
         const body = (await response.json()) as LoadResponse;
         if (response.ok && body.review) {
@@ -377,7 +388,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
             </p>
           )}
           {needsModelCall ? (
-            <Button type="button" data-testid="ai-pm-submit" disabled={pending || text.trim().length < 8} onClick={() => void startReview()}>
+            <Button type="button" data-testid="ai-pm-submit" disabled={pending || !projectId || text.trim().length < 8} onClick={() => void startReview()}>
               AI PM 1차 검토
             </Button>
           ) : (
@@ -519,8 +530,15 @@ function SavedRevision({ notes, where }: { notes: string[]; where: 'account' | '
   );
 }
 
-function matchReview(reviews: AiPmReviewView[], text: string): AiPmReviewView | null {
-  const ready = reviews.filter((review) => review.status === 'ready' && review.sections && review.questionSource === 'model-review');
+function matchReview(reviews: AiPmReviewView[], text: string, projectId: string): AiPmReviewView | null {
+  if (!projectId) return null;
+  const ready = reviews.filter(
+    (review) =>
+      review.projectId === projectId &&
+      review.status === 'ready' &&
+      review.sections &&
+      review.questionSource === 'model-review',
+  );
   const needle = businessBodyForReviewMatch(text);
   if (!needle) return ready.at(-1) ?? null;
   return ready.filter((review) => businessBodyForReviewMatch(review.inputText) === needle).at(-1) ?? null;

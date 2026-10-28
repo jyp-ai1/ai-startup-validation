@@ -22,14 +22,15 @@ export type AiPmDurablePort = {
   insertReview: (row: AiPmReviewRow) => Promise<{ wrote: boolean }>;
   insertFeedback: (row: AiPmFeedbackRow) => Promise<{ wrote: boolean }>;
   readReview: (userId: string, reviewId: string) => Promise<AiPmReviewRow | null>;
-  latestForInput: (userId: string, inputSha: string) => Promise<AiPmReviewRow | null>;
+  latestForInput: (userId: string, inputSha: string, projectId: string) => Promise<AiPmReviewRow | null>;
   succeededChild: (
     userId: string,
     parentReviewId: string,
     sourceFeedbackId: string | null,
     supplementSha: string,
   ) => Promise<AiPmReviewRow | null>;
-  listReviews: (userId: string) => Promise<AiPmReviewRow[]>;
+  listReviews: (userId: string, projectId: string) => Promise<AiPmReviewRow[]>;
+  deleteForProject: (userId: string, projectId: string) => Promise<void>;
   listFeedback: (userId: string, reviewId?: string) => Promise<AiPmFeedbackRow[]>;
   deleteForUser: (userId: string) => Promise<void>;
 };
@@ -63,11 +64,12 @@ export function openSupabaseReviewStore(port: AiPmDurablePort): AiPmReviewStore 
     insertReview: (record) => port.insertReview(toReviewRow(record)),
     insertFeedback: (record) => port.insertFeedback(toFeedbackRow(record)),
     readReview: async (userId, reviewId) => asReview(userId, await port.readReview(userId, reviewId)),
-    latestForInput: async (userId, inputSha) => asReview(userId, await port.latestForInput(userId, inputSha)),
+    latestForInput: async (userId, inputSha, projectId) =>
+      asReview(userId, await port.latestForInput(userId, inputSha, projectId)),
     succeededChild: async (userId, parentReviewId, sourceFeedbackId, supplementSha) =>
       asReview(userId, await port.succeededChild(userId, parentReviewId, sourceFeedbackId, supplementSha)),
-    listReviews: async (userId) =>
-      (await port.listReviews(userId)).flatMap((row) => {
+    listReviews: async (userId, projectId) =>
+      (await port.listReviews(userId, projectId)).flatMap((row) => {
         const record = asReview(userId, row);
         return record ? [record] : [];
       }),
@@ -77,6 +79,7 @@ export function openSupabaseReviewStore(port: AiPmDurablePort): AiPmReviewStore 
         return record ? [record] : [];
       }),
     deleteOwnedRecords: (userId) => port.deleteForUser(userId),
+    deleteForProject: (userId, projectId) => port.deleteForProject(userId, projectId),
     close: () => undefined,
   };
 }
@@ -85,6 +88,7 @@ function toReviewRow(record: StoredReview): AiPmReviewRow {
   return {
     userId: record.userId,
     reviewId: record.reviewId,
+    projectId: record.projectId,
     inputSha: record.inputSha,
     version: record.version,
     parentReviewId: record.parentReviewId,
@@ -110,7 +114,7 @@ function asReview(userId: string, row: AiPmReviewRow | null): StoredReview | nul
   if (!row || row.userId !== userId) return null;
   const record = row.recordJson as StoredReview;
   if (record.userId !== userId || record.reviewId !== row.reviewId) return null;
-  return record;
+  return { ...record, projectId: row.projectId };
 }
 
 function asFeedback(userId: string, row: AiPmFeedbackRow): StoredFeedback | null {
