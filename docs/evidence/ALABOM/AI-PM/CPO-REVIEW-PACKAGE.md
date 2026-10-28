@@ -300,3 +300,67 @@ GitHub deployment `7375920672`의 URL `https://ai-startup-validation-krb3t6jz8-j
 | 전체 | **BLOCKED** |
 
 첫 실패는 2단계다. 이 요청에는 Vercel 우회만 있었고 Supabase 세션 쿠키는 없었다. 2026-10-28 14:06 KST에 `ai_pm_reviews`는 `content-range */0`이다. 재조회할 리뷰 ID가 없다. Preview 서버의 `GPT_API_KEY`는 이 401보다 앞에서 읽히지 않으므로 미검증이다. 이 문서 커밋이 만드는 다음 Preview는 build-info로 SHA를 다시 읽기 전에는 검증 대상이 아니다. 읽은 실행 대상은 위 URL과 `c23e37c7a887f856e1e8747a93fa0e093abc7390`이다.
+
+## 14. 2026-10-28 14:20 KST Production 화면의 데이터 경로
+
+CEO가 로그인한 뒤 본 `주인집 13` 화면은 제품 UI가 렌더된 증거다. 이 절은 그 화면이 검토 API 응답인지, 저장된 모델 결과인지, 규칙 결과인지 코드와 저장 데이터로 가른다. UI는 수정하지 않았다. Production은 배포하지 않았다. 브라우저 네트워크 탭은 이 런에서 캡처하지 않았다. 키와 쿠키는 적지 않는다.
+
+### 실행 중인 Production
+
+2026-10-28 14:19 KST `GET https://alabom.vercel.app/api/build-info`는 HTTP 200 JSON이다. `data.commit`은 `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`, `data.branch`는 `main`이다. 잠금 SHA와 같다. JSON의 `deployTime`은 요청 시각으로 채워질 수 있으므로 배포 시각으로 쓰지 않는다. `data.environment`는 `NODE_ENV`다.
+
+같은 호스트 `GET /api/ai-pm-review`는 HTTP 404다. 잠금 SHA의 트리에 `apps/web/app/api/ai-pm-review/route.ts`가 없다. `AI PM 1차 검토` 문자열과 `AiPmReviewPanel`도 없다.
+
+화면에 남은 문장 `질문 엔진이 고른 다음 질문이 아닙니다.`는 잠금 SHA의 `si-ai-pm-bind-surface.tsx`에 있다. 그 카드의 버튼은 `이 답으로 판단 갱신`이고, 제출은 `applySiFounderAnswer()`다. 이 함수는 문서 문자열에 답을 붙인 뒤 `resolveSiJourneyIntegration()`을 다시 계산한다. `workspace-ai-pm-main.tsx`에는 `fetch(`가 없다. 최신 Preview 소스의 같은 카드 문구는 `모델이 만든 질문이 아닙니다.`라서, 이번 화면 문구는 Production 잠금 코드와 맞다.
+
+| 항목 | 판정 |
+|---|---|
+| Production 워크스페이스 접근 | **PASS** — 로그인 후 화면은 CEO 확인. 실행 SHA는 위 JSON |
+| 그 화면의 `POST /api/ai-pm-review` | **없음** — 라우트 404, 버튼과 `fetch`가 잠금 SHA에 없음. 네트워크 탭은 미캡처 |
+| 그 화면이 보여주는 질문 | 규칙 질문. `present-si-ai-pm-question.ts`의 `paid_conversion` 고정 문장 |
+| 모델 호출 | **미검증** — 이 화면의 코드 경로는 모델 함수에 들어가지 않음 |
+| Preview 서버 `GPT_API_KEY` | **미검증** |
+
+### 주인집 13 저장 데이터
+
+프로젝트 id `e341ba90-a16c-4213-9888-3a2e4d59f727`, 상태 DRAFT, `updated_at` `2026-10-28T05:17:45.081Z`(14:17 KST).
+
+| 저장 위치 | 길이 | `…` 포함 |
+|---|---|---|
+| `summary` | 186 | 없음. `onboarding_context.sprint12.description`과 같다 |
+| `onboarding_context.v2Workspace.documentText` | 210 | 없음. `v2Demo.pastedContent`와 같다 |
+| `problem`, `solution`, `target_customer`, `business_model` | null | 해당 없음 |
+
+`v2Workspace.reviewCount`는 0, `aiPmLoop.turns`는 0건이다. `ai_pm_reviews`는 이 시각 `content-range */0`이다. 재조회할 리뷰 ID가 없다. 화면은 저장된 모델 검토가 아니다.
+
+### 화면 결함 — 별도 기록, 이번 절에서 수정하지 않음
+
+원문 잘림은 저장된 글에서 생기지 않는다. `summary`와 `documentText`에 `…`가 없다. `…`를 만드는 표시 코드는 잠금 SHA 안에 있다.
+
+- `build-shared-understanding.ts`의 `truncate()`는 48자를 넘기면 `…`를 붙인다. 사업·고객 라벨이 이 함수를 탄다.
+- `analyze-strategic-intelligence.ts`의 `clip()`은 140자에서 `…`를 붙인다.
+- `clipSentence()`는 160자에서 `…`를 붙일 수 있고, 그 결과가 `shortDescription`이다.
+- `WorkspaceExpandableText`에 `preview=""`가 넘어가면 본문은 빈 칸이고 `전체 사업내용 보기`로만 원문이 열린다. 이 prop은 요약 레일, 이해 카드의 사업 원문, 현재 이해 블록에 있다.
+
+고객 문장과 미확인이 같이 나오는 기준은 `mapCustomerField()`다. 고객 언급이 2건 이상이면 값은 비우고 상태는 `needs_confirmation`이며, `missingLine`은 `실제 서비스를 사용하는 사람과 결제하는 사람이 누구인지는 문서에서 확인하지 못했습니다.`다. `collectUnconfirmedLines()`는 고객 상태가 `document`가 아니면 그 문장을 미확인 목록에 넣는다. 구조화 컬럼이 null인 것과 별개로, 문서에서 뽑은 표현과 미확인 문장이 한 카드에 같이 그려진다.
+
+규칙 질문과 모델 질문은 이 화면에서 분리되어 있지 않다. 카드 제목은 `AI PM · S.I.가 지정한 검증`이고, 질문은 규칙 엔진의 고정 문장이다. 모델 실패를 규칙 결과로 대체한 기록이 아니다. 모델 호출 자체가 이 SHA에 없다.
+
+| 결함 | 판정 |
+|---|---|
+| 원문 잘림 | **FAIL** — 저장 글에는 `…`가 없고, 표시 코드가 `…`를 만든다 |
+| 이해 문장과 미확인의 불일치 | **FAIL** — 고객 언급이 있어도 상태가 `document`가 아니면 미확인 문장을 같이 표시 |
+| S.I. 질문과 AI PM 표시의 혼합 | **FAIL** — 잠금 SHA 워크스페이스는 규칙 카드만 그린다 |
+| 모델 실패를 AI 결과로 표시 | 해당 없음 — 모델 경로가 없음 |
+
+### 최신 Preview
+
+GitHub deployment `7377685089`는 2026-10-28 14:09 KST에 성공했고 SHA는 `9e4541fde9c1b96f5316feaa8cd28963a25ee832`, URL은 `https://ai-startup-validation-97daf7npb-jyp-ai1s-projects.vercel.app`이다. 이 커밋은 증거 문서만 추가한다. 같은 URL의 `GET /api/build-info`는 HTTP 200 `text/html`이다. 앱 JSON이 아니므로 이 SHA를 실행 SHA로 확정하지 않는다. 이전에 앱 JSON으로 읽은 Preview는 `krb3t6jz8`의 `c23e37c7a887f856e1e8747a93fa0e093abc7390`이다. 그 호스트의 버튼 클릭은 아직 관찰하지 않았다.
+
+| 단계 | 판정 |
+|---|---|
+| A. Production 화면의 API | **규칙 경로** — 검토 API 응답이 아님 |
+| B. 로그인된 Preview의 모델 호출 | **미검증** |
+| C. 동일 리뷰 ID의 저장·재조회·후속 | **미검증** — 리뷰 0건 |
+| D. 화면 결함 | **FAIL** — 위 세 항목. 수정하지 않음 |
+| 전체 | **BLOCKED** |
