@@ -2,6 +2,10 @@
 
 판정: **BLOCKED**
 
+2026-10-28 10:02 KST. 새 VM에서 `VERCEL_AUTOMATION_BYPASS_SECRET`은 있었고 길이는 32였다. 값은 적지 않는다. Preview `/api/build-info`는 앱 JSON HTTP 200이었고, SHA는 응답 `data.commit`에서 읽었다. `/api/ai-pm-review`는 앱 HTTP 401 `login_required`였다. 모델 호출은 없었다. 리뷰 id는 없다. Supabase 저장·재조회와 화면 일치는 실패다. CPO 독립 검토와 CEO 최종 검토는 요청하지 않는다. Production 잠금 `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`와 PR #207 미병합은 유지했다. 배포와 Deployment Protection은 바꾸지 않았다. Production 호스트는 호출하지 않았다.
+
+이번 판정의 근거는 8절이다. 1~7절은 그 이전 실행 기록이다.
+
 2026-10-28 08:42 KST. 비교 분석은 시작하지 않았다. 모델 호출은 0건이다. 인증 없는 Preview 재요청은 하지 않았다. CEO 최종 확인은 요청하지 않는다. Production 잠금 `0b465226`과 PR #207 미병합은 유지했다.
 
 세 의존성을 따로 기록한다. 원문이 디스크에 있어도, Preview 인증이 되어도, `GPT_API_KEY`가 없으면 검증은 시작되지 않는다.
@@ -122,4 +126,56 @@ CPO 검토 요청 조건은 충족되지 않았다. PASS가 아니다.
 
 ## 7. CTO 판정
 
-BLOCKED. 자동화 인증은 Vercel 프로젝트 설정으로 보고됐고, 이 실행 환경의 요청에는 연결되지 않았다. 원문 저장과 설정 추가는 호출 증거가 아니다.
+BLOCKED. 자동화 인증은 Vercel 프로젝트 설정으로 보고됐고, 이 실행 환경의 요청에는 연결되지 않았다. 원문 저장과 설정 추가는 호출 증거가 아니다. 이 절은 09:20 KST 실행 기록이다. 10:02 KST 새 VM 결과는 8절이다.
+
+## 8. 2026-10-28 10:02 KST 새 VM 검증
+
+부모 실행 `bc-e981acef-6442-4642-bef1-b0217b624b88`은 우회 비밀이 생기기 전에 부팅된 런이라 재사용하지 않았다. 이 절은 그 이후의 새 VM에서 직접 읽은 결과다. 기억해 둔 SHA를 검증 SHA로 쓰지 않았다.
+
+확인 시각은 2026-10-28 10:02 KST다. `/api/build-info` 응답의 `deployTime`은 `2026-10-28T01:01:34.261Z`였다. 그 필드는 `VERCEL_DEPLOYMENT_CREATED_AT`가 없으면 요청 시각으로 채워지므로, 배포 생성 시각으로 쓰지 않는다.
+
+### 대상 Preview
+
+GitHub deployments에서 `cursor/ai-pm-first-review-4b88`의 최신 성공 Preview를 골랐다. 더 새로운 성공 Preview는 없었다.
+
+| 항목 | 값 |
+|---|---|
+| Preview URL | `https://ai-startup-validation-cwym6wyfb-jyp-ai1s-projects.vercel.app` |
+| GitHub deployment id | `7373862187` |
+| GitHub environment | Preview |
+| deployment status | success, `2026-10-28T00:28:12Z` (09:28 KST) |
+| status id | `20776236741` |
+| Vercel deployment id | `H43atu1gu3YMqf7Ziox2P5q1rtbd` |
+| inspector | `https://vercel.com/jyp-ai1s-projects/ai-startup-validation/H43atu1gu3YMqf7Ziox2P5q1rtbd` |
+
+이 URL은 Preview다. `alabom.vercel.app`과 `ai-startup-validation-tau.vercel.app`은 호출하지 않았다. 새 Preview는 만들지 않았다. build-info 인증 요청이 앱 JSON으로 성공했기 때문이다.
+
+### 단계 결과
+
+| 단계 | 판정 | 근거 |
+|---|---|---|
+| 1. 이 프로세스의 우회 비밀 | **PASS** | `VERCEL_AUTOMATION_BYPASS_SECRET` PRESENT, 트림 길이 32. 값 없음 |
+| 1. 이 프로세스의 `GPT_API_KEY` | 기록만 | ABSENT, 길이 0. 리뷰 호출은 Preview 서버에서 이루어지므로 이 부재만으로 1단계를 실패로 두지 않음. `OPENAI_API_KEY`로 대체하지 않음 |
+| 3. `GET /api/build-info` | 앱 JSON | HTTP 200, `content-type: application/json`. 로그인 HTML 아님. `{"error":"Protected by Vercel Authentication"}` 아님. 앱 사용자 세션은 필요 없다 |
+| 3. 확인된 SHA | 응답에서 읽음 | `data.commit` = `fb8efdab28615f2da2dbd4bd41bd875f3c4fcc7d`. `data.branch` = `cursor/ai-pm-first-review-4b88`. JSON `environment`는 `NODE_ENV` 값 `production`이며 GitHub environment Preview와 다르다 |
+| 4. `POST /api/ai-pm-review` | 앱 401에서 정지 | HTTP 401, `application/json`, 본문 `{"error":"login_required","review":null}`. Vercel 보호 401이 아니다. `getServerAuthUser()`가 세션 없음으로 반환한 앱 401이다. GPT 호출 아님 |
+| 4. 실제 GPT 호출 | 하지 않음 | 라우트는 세션 확인 다음에만 `readGptApiKey()`와 `runFirstReview()`에 도달한다. 이유는 `login_required`. 서비스 롤로 세션을 만들지 않았다. 쿠키를 붙이지 않았다 |
+| 4. 리뷰 id | 없음 | `review`는 null |
+| 4. `nextQuestion` | 없음 | 고정 규칙 문장도 오지 않았다 |
+| 5. Supabase 저장 및 재조회 | **FAIL** | API가 행을 만들지 않았다. 서비스 롤로 `ai_pm_reviews`에 넣지 않았고, 없는 id를 다시 읽지 않았다 |
+| 6. UI와 저장된 응답 일치 | **FAIL** | 앱 세션이 없다. 4·5가 통과하지 않아 화면을 성공으로 열지 않았다. Vercel 로그인 화면과 빈 데모는 일치가 아니다 |
+
+사업 문단은 라우트에 한 번 보냈다. 응답에 검토 문장, `questionSource`, `storage.durable`은 없었다.
+
+### 이번 실행의 판정 줄
+
+- 새 실행에서 환경변수 확인: **PASS** (우회 비밀 PRESENT, 길이 32. 로컬 `GPT_API_KEY` ABSENT, 길이 0. 값 없음)
+- `/api/build-info`: HTTP 200 / 확인된 SHA `fb8efdab28615f2da2dbd4bd41bd875f3c4fcc7d`
+- Preview URL `https://ai-startup-validation-cwym6wyfb-jyp-ai1s-projects.vercel.app` / deployment id `7373862187` (Vercel `H43atu1gu3YMqf7Ziox2P5q1rtbd`)
+- `/api/ai-pm-review`: HTTP 401 / 실제 GPT 호출 없음. 이유: `login_required`
+- `nextQuestion`: 없음
+- Supabase 저장 및 재조회: **FAIL**
+- UI와 저장된 응답 일치: **FAIL**
+- 최종 판정: **BLOCKED**
+
+CPO 독립 검토는 위 항목이 모두 PASS일 때만 요청한다. 이번 실행은 그 조건에 닿지 못했다. CEO 최종 검토를 요청하지 않는다.
