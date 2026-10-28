@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Textarea } from '@repo/ui';
 
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
+import { businessBodyForReviewMatch } from '@/lib/project/parse-intake-seed';
 import type { AiPmReviewView } from '../lib/ai-pm-review';
 import {
   REVIEW_MARK_LABEL,
@@ -450,9 +451,9 @@ function SavedRevision({ notes, where }: { notes: string[]; where: 'account' | '
 
 function matchReview(reviews: AiPmReviewView[], text: string): AiPmReviewView | null {
   const ready = reviews.filter((review) => review.status === 'ready' && review.sections && review.questionSource === 'model-review');
-  const needle = text.replace(/\s+/g, ' ').trim();
+  const needle = businessBodyForReviewMatch(text);
   if (!needle) return ready.at(-1) ?? null;
-  return ready.filter((review) => review.inputText.replace(/\s+/g, ' ').trim() === needle).at(-1) ?? null;
+  return ready.filter((review) => businessBodyForReviewMatch(review.inputText) === needle).at(-1) ?? null;
 }
 
 function readLocal(text: string): { marks: ReviewMark[]; fact: string } | null {

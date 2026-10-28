@@ -44,6 +44,13 @@ export function parseIntakeSeedDocument(text: string): ParsedIntakeSeed {
   return { projectTitle, businessDescription, businessOneLinerCandidate };
 }
 
+/** Text used to attach a stored review. The intake wrapper is not part of the review input. */
+export function businessBodyForReviewMatch(text: string): string {
+  const parsed = parseIntakeSeedDocument(text).businessDescription?.replace(/\s+/g, ' ').trim() ?? '';
+  if (parsed.length >= 8) return parsed;
+  return text.replace(/\s+/g, ' ').trim();
+}
+
 /** True when line is project metadata, not business substance. */
 export function isProjectMetadataLine(line: string): boolean {
   const t = line.trim();

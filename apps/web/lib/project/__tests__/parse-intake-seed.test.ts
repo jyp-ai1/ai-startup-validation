@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { parseIntakeSeedDocument } from '../parse-intake-seed';
+import { businessBodyForReviewMatch, parseIntakeSeedDocument } from '../parse-intake-seed';
 
 describe('parseIntakeSeedDocument (FIX-10)', () => {
   it('separates project title from business description', () => {
@@ -15,5 +15,13 @@ describe('parseIntakeSeedDocument (FIX-10)', () => {
     expect(parsed.projectTitle).toBe('주인집1');
     expect(parsed.businessDescription).toMatch(/영세한 양조장/);
     expect(parsed.businessOneLinerCandidate).not.toBe('주인집1');
+  });
+
+  it('matches a stored review to the business body inside the project document', () => {
+    const body = '다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 양조장 체험을 안내한다.';
+    const document = ['프로젝트 이름: 주인집 13', '', '사업 설명:', body].join('\n');
+    expect(businessBodyForReviewMatch(document)).toBe(body);
+    expect(businessBodyForReviewMatch(body)).toBe(body);
+    expect(businessBodyForReviewMatch(document)).toBe(businessBodyForReviewMatch(body));
   });
 });
