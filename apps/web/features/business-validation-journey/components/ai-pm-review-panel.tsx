@@ -15,6 +15,7 @@ import {
   readingFromSections,
   restoredMarks,
   reviseReading,
+  UNCONFIRMED_CLAIM,
   type ReviewMark,
 } from '../lib/ai-pm-review-marks';
 
@@ -69,8 +70,8 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
   }, [reviews, text]);
   const reconfirmReading = Boolean(
     active?.sections &&
-      [active.sections.problem, active.sections.customer, active.sections.revenueModel, active.sections.judgment].some((line) =>
-        line.includes('재확인 대상:'),
+      [active.sections.problem, active.sections.customer, active.sections.revenueModel].some((line) =>
+        UNCONFIRMED_CLAIM.test(line),
       ),
   );
 

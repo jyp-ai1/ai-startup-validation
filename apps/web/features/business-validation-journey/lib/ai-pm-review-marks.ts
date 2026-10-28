@@ -27,6 +27,9 @@ export const REVIEW_MARK_LABEL: Record<ReviewMark, string> = {
   question_unfit: '다음 질문이 적절하지 않음',
 };
 
+/** A claim sentence is unconfirmed only when that same sentence uses one of these. */
+export const UNCONFIRMED_CLAIM = /재확인|미확인|확인 전|확정된 사실이 아니|확정하지 않|아직 확인/;
+
 export type ReviewReading = {
   source: 'model-review' | 'input-only';
   summary: string;

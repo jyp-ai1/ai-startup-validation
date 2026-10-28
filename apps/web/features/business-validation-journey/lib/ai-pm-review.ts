@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 
 import { googleChat, OpenAIProviderAdapter, type ChatRequest, type ChatResponse } from '@repo/ai';
 
-import { feedbackFromMarks, normalizeMarks } from './ai-pm-review-marks';
+import { feedbackFromMarks, normalizeMarks, UNCONFIRMED_CLAIM } from './ai-pm-review-marks';
 import type {
   Accuracy,
   Agreement,
@@ -490,9 +490,6 @@ export async function runFollowUpReview(input: {
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
 }
 
-const RECONFIRM_PREFIX = '재확인 대상: ';
-const RECONFIRM_SUFFIX = ' 이 해석은 확정된 사실이 아니다.';
-
 export function needsRevisionGate(marks: ReviewMark[]): boolean {
   return marks.includes('understanding_wrong') || marks.includes('core_missing');
 }
@@ -510,15 +507,13 @@ function revisionPayload(sections: ReviewSections, marks: ReviewMark[]) {
     ...(wrong
       ? {
           reconfirm: {
-            action: 'reconfirm' as const,
-            doNotTreatAsConfirmedFact: true,
-            doNotDelete: true,
-            prefix: RECONFIRM_PREFIX,
-            suffix: RECONFIRM_SUFFIX,
-            fields: [
-              { key: 'problem', previous: sections.problem },
-              { key: 'target_customer', previous: sections.customer },
-              { key: 'business_model', previous: sections.revenueModel },
+            action: 'mark_unconfirmed' as const,
+            scope: 'dependent_hypotheses' as const,
+            doNotDeleteUnrelated: true,
+            hypotheses: [
+              { field: 'problem', dependsOn: 'understanding_wrong', previousClaim: sections.problem, requiredState: 'unconfirmed' as const },
+              { field: 'target_customer', dependsOn: 'understanding_wrong', previousClaim: sections.customer, requiredState: 'unconfirmed' as const },
+              { field: 'business_model', dependsOn: 'understanding_wrong', previousClaim: sections.revenueModel, requiredState: 'unconfirmed' as const },
             ],
           },
         }
@@ -526,10 +521,11 @@ function revisionPayload(sections: ReviewSections, marks: ReviewMark[]) {
     ...(missing
       ? {
           askFounder: {
-            action: 'ask_founder' as const,
+            action: 'ask_missing_core' as const,
             doNotInvent: true,
             previousQuestion: sections.nextQuestion,
-            nextQuestionMustInclude: '빠진 핵심',
+            requiredMeaning: 'ask_what_core_is_missing' as const,
+            rejectMeaning: 'partnership_or_plan_substitute' as const,
           },
         }
       : {}),
@@ -543,33 +539,37 @@ export function assessFollowUpRevision(input: {
 }): RevisionGate {
   const marks = normalizeMarks(input.marks);
   const failures: RevisionGate['failures'] = [];
+  const changes: string[] = [];
   const wrong = marks.includes('understanding_wrong');
   const missing = marks.includes('core_missing');
   if (wrong) {
-    const fields = [
-      [input.previous.problem, input.next.problem],
-      [input.previous.customer, input.next.customer],
-      [input.previous.revenueModel, input.next.revenueModel],
-      [input.previous.judgment, input.next.judgment],
+    const dependents = [
+      ['문제', input.previous.problem, input.next.problem],
+      ['고객', input.previous.customer, input.next.customer],
+      ['수익', input.previous.revenueModel, input.next.revenueModel],
     ] as const;
-    for (const [previous, next] of fields) {
-      const verdict = understandingVerdict(previous, next);
-      if (verdict === 'copied' || verdict === 'restated') failures.push('confirmed_reuse');
-      if (verdict === 'discarded') failures.push('discarded_interpretation');
+    for (const [label, claim, field] of dependents) {
+      const state = hypothesisState(claim, field);
+      const judged = hypothesisState(claim, input.next.judgment);
+      if (state === 'confirmed' || judged === 'confirmed') {
+        failures.push('confirmed_reuse');
+        changes.push(`${label} 가설이 확정 사실로 남았습니다.`);
+      }
+      if (state === 'absent') {
+        failures.push('discarded_interpretation');
+        changes.push(`${label} 가설을 확인 전으로 두지 않고 지웠습니다.`);
+      }
+      if (state === 'unconfirmed' && novelLength(field, claim) > 24) failures.push('invented_core');
     }
-    for (const [previous, next] of [
-      [input.previous.problem, input.next.problem],
-      [input.previous.customer, input.next.customer],
-      [input.previous.revenueModel, input.next.revenueModel],
-    ] as const) {
-      if (novelLength(next, previous) > 24) failures.push('invented_core');
+    if (wiped(input.previous.execution, input.next.execution) || wiped(input.previous.market, input.next.market)) {
+      failures.push('discarded_interpretation');
+      changes.push('오류 표시와 무관한 항목까지 지웠습니다.');
     }
   }
   if (missing) {
-    if (compact(input.previous.nextQuestion) === compact(input.next.nextQuestion)) failures.push('question_unchanged');
-    if (!input.next.nextQuestion.includes('빠진 핵심') || !/[?？까]$/.test(input.next.nextQuestion.trim())) {
-      failures.push('missing_core_not_asked');
-    }
+    const meaning = missingCoreQuestion(input.next.nextQuestion, input.previous.nextQuestion);
+    if (meaning === 'unchanged') failures.push('question_unchanged');
+    if (meaning !== 'asks') failures.push('missing_core_not_asked');
     for (const [previous, next] of [
       [input.previous.execution, input.next.execution],
       [input.previous.market, input.next.market],
@@ -578,30 +578,46 @@ export function assessFollowUpRevision(input: {
     }
   }
   const unique = [...new Set(failures)];
-  const changes: string[] = [];
   if (unique.length === 0) {
-    if (wrong) changes.push('문제, 고객, 수익 가설은 확정된 사실에서 재확인 대상으로 옮겼습니다.');
-    if (missing) changes.push('다음 질문이 빠진 핵심을 묻습니다.');
+    if (wrong) changes.push('문제, 고객, 수익 가설은 확정된 사실에서 확인 전 상태로 옮겼습니다.');
+    if (missing) changes.push('다음 질문이 누락된 핵심을 묻습니다.');
     return { pass: true, summary: changes.join(' '), changes, failures: [] };
   }
-  if (unique.includes('confirmed_reuse')) changes.push('표시한 오해가 확정된 사실로 다시 남았습니다.');
-  if (unique.includes('discarded_interpretation')) changes.push('오류로 표시한 해석을 재확인하지 않고 지웠습니다.');
   if (unique.includes('question_unchanged')) changes.push('다음 질문이 이전 질문과 같습니다.');
-  if (unique.includes('missing_core_not_asked')) changes.push('다음 질문이 빠진 핵심을 묻지 않습니다.');
+  if (unique.includes('missing_core_not_asked')) changes.push('다음 질문이 누락된 핵심을 묻지 않습니다.');
   if (unique.includes('invented_core')) changes.push('빠진 핵심을 입력에 없는 내용으로 채웠습니다.');
   return { pass: false, summary: `${changes.join(' ')} 이 후속 검토는 반영하지 않았습니다.`, changes, failures: unique };
 }
 
-function understandingVerdict(previous: string, next: string): 'reconfirmed' | 'copied' | 'restated' | 'discarded' {
-  const prev = compact(previous);
-  const nxt = compact(next);
-  if (!prev) return 'reconfirmed';
-  if (nxt === prev) return 'copied';
-  const marked = next.includes(RECONFIRM_PREFIX) && next.includes('확정된 사실이 아니다');
-  const kept = sharesClause(prev, nxt);
-  if (marked && kept) return 'reconfirmed';
-  if (kept) return 'restated';
-  return 'discarded';
+function hypothesisState(claim: string, text: string): 'unconfirmed' | 'confirmed' | 'absent' {
+  const claimCompact = compact(claim);
+  const textCompact = compact(text);
+  if (!claimCompact) return 'unconfirmed';
+  if (!sharesClause(claimCompact, textCompact)) return 'absent';
+  if (textCompact === claimCompact) return 'confirmed';
+  const stating = sentencesOf(text).filter((sentence) => compact(sentence).includes(claimCompact));
+  if (stating.length === 0 || stating.some((sentence) => !UNCONFIRMED_CLAIM.test(sentence))) return 'confirmed';
+  return 'unconfirmed';
+}
+
+function sentencesOf(text: string): string[] {
+  return text
+    .split(/[\n]+|(?<=[.!?？])/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function missingCoreQuestion(question: string, previous: string): 'unchanged' | 'asks' | 'substitute' {
+  const asked = question.trim();
+  if (compact(asked) === compact(previous)) return 'unchanged';
+  const asksWhat = /빠진 핵심은 무엇|누락된 핵심은 무엇|어떤 핵심이 빠|무엇이 빠|어떤 내용이 빠/.test(asked);
+  const planSubstitute = /파트너십|제휴|어떻게 구축|어떤 방식|구체화|계획인가/.test(asked);
+  if (!asksWhat || planSubstitute || !/[?？까]$/.test(asked)) return 'substitute';
+  return 'asks';
+}
+
+function wiped(previous: string, next: string): boolean {
+  return compact(previous).length > 12 && compact(next).length < 8;
 }
 
 function sharesClause(previous: string, next: string): boolean {
@@ -630,11 +646,11 @@ function compact(text: string): string {
 function gatedFollowUpPrompt(): string {
   return [
     reviewSystemPrompt(),
-    '사용자 JSON의 revision 필드를 따른다.',
-    'reconfirm이 있으면 각 previous 문장을 prefix와 suffix로 감싸 같은 키에 넣는다.',
-    '그 문장을 지우거나 확정된 사실로 반복하지 않는다.',
-    'askFounder가 있으면 nextQuestion은 previousQuestion과 다르고 빠진 핵심을 묻는다.',
-    '빠진 내용을 다른 키에 채우지 않는다.',
+    'revision.reconfirm.hypotheses에서 requiredState가 unconfirmed인 주장만 확인 전으로 둔다.',
+    '그 주장을 확정된 사실로 쓰거나 지우지 않는다.',
+    'doNotDeleteUnrelated이면 solution과 validation_metric을 비우지 않는다.',
+    'requiredMeaning이 ask_what_core_is_missing이면 nextQuestion은 누락된 핵심이 무엇인지 묻는다.',
+    '파트너십이나 계획 질문으로 바꾸지 않는다.',
   ].join(' ');
 }
 

@@ -2137,6 +2137,47 @@ A stored follow-up sent `understanding_wrong` and `core_missing` as extra senten
 
 ---
 
+## ADR-067: A follow-up claim is judged by the sentence that states it
+
+**Status:** Accepted  
+**Date:** 2026-10-28  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The comparison in ADR-066 rejected stored follow-up `62b5588c-0d11-42c8-8fac-d24d25dc4f20`. That rejection was correct, and the row stays failed. The acceptance rule still treated a label as enough. The model wrapped the problem and left the customer and revenue sentences as confirmed facts. The next question changed into a partnership plan. A marker in a different sentence, or the words `빠진 핵심` inside that plan, is not a revised judgment.
+
+### Decision
+
+1. `understanding_wrong` classifies the problem, customer, and revenue claims that depend on the marked interpretation as `requiredState` `unconfirmed`. A claim is unconfirmed only when every sentence that contains that claim marks it unsettled. An exact copy is confirmed. A later sentence that adds a marker does not change the earlier sentence. Deleting the claim is not acceptance. Solution and validation text are not deletion targets, and wiping them is not acceptance.
+2. `core_missing` requires `nextQuestion` to ask what core is missing. A partnership, alliance, or plan question is `missing_core_not_asked` even when it inserts a missing-core phrase. The same question as before is also `question_unchanged`.
+3. The application approves a stored follow-up only when those field states and that question meaning pass. This feedback and empty supplement already have a failed judgment, so the model is not called again. Model id and token limits stay `gpt-4o-mini`, 3000 input, 800 output.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Keep the required prefix and suffix | The previous regression already knew that shape | A label on one field left the other claims confirmed |
+| Call the model again with a longer prompt | Might produce a new reply | The stored reply already failed, and another call was not the missing rule |
+| Delete every hypothesis | The confirmed sentences disappear | Unrelated items and the interpretation itself are discarded |
+
+### Consequences
+
+**Positive:**
+
+- The stored failure shape, a marker in a later sentence, and a partnership question are rejected by the same comparison.
+
+**Negative:**
+
+- The product follow-up stays blocked. No stored model reply yet puts the three claims in an unconfirmed sentence and asks the missing core.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #207, #208, and #209 stay unmerged. The commit that records this decision is not a verified runtime until `/api/build-info` is read again.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
