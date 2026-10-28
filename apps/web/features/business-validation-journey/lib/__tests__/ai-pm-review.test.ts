@@ -331,6 +331,29 @@ describe('AI PM first review', () => {
       supplement: '',
     });
     expect(direct.messages.some((message) => message.content.includes('UNIQUEPLANMARKER'))).toBe(false);
+    const corrected = buildFollowUpRequest({
+      sections: sections(),
+      feedback: {
+        feedbackId: 'fb-marks',
+        reviewId: 'rv',
+        userId: 'user-c',
+        agreement: 'disagree',
+        accuracy: 'misstated',
+        revisionAreas: ['problem'],
+        comment: '사업 이해가 틀림, 핵심 내용이 빠짐',
+        nextAction: 'verify_hypotheses',
+        marks: ['understanding_wrong', 'core_missing'],
+        submittedAt: NOW,
+        modelCalls: 0,
+      },
+      supplement: '',
+    });
+    const correctedUser = corrected.messages.find((message) => message.role === 'user')?.content ?? '';
+    expect(correctedUser).toContain('understanding_wrong');
+    expect(correctedUser).toContain('core_missing');
+    expect(correctedUser).toContain('오류로 표시');
+    expect(correctedUser).toContain('빠진 핵심');
+    expect(correctedUser).not.toContain('UNIQUEPLANMARKER');
     expect(toAiPmReviewView(unknownUsage.record, []).status).toBe('ready');
     store.close();
   });

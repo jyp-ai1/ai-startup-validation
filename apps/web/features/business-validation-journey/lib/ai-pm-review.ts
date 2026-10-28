@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 
 import { googleChat, OpenAIProviderAdapter, type ChatRequest, type ChatResponse } from '@repo/ai';
 
-import { feedbackFromMarks, normalizeMarks } from './ai-pm-review-marks';
+import { feedbackFromMarks, normalizeMarks, readingFromSections, reviseReading } from './ai-pm-review-marks';
 import type {
   Accuracy,
   Agreement,
@@ -282,6 +282,7 @@ export function buildFollowUpRequest(input: {
                 marks: normalizeMarks(input.feedback.marks),
               })}`
             : '피드백: 없음',
+          revisedUnderstanding(input.sections, input.feedback, input.supplement),
           `추가 사실: ${input.supplement || '(없음)'}`,
           '키: problem, target_customer, solution, business_model, validation_metric, nextQuestion.',
         ].join('\n'),
@@ -443,6 +444,18 @@ export async function runFollowUpReview(input: {
     chat: input.chat,
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
+}
+
+function revisedUnderstanding(sections: ReviewSections, feedback: StoredFeedback | null, supplement: string): string {
+  const marks = normalizeMarks(feedback?.marks);
+  if (marks.length === 0) return '수정된 사업 이해: 없음';
+  const revised = reviseReading(readingFromSections(sections), marks, supplement);
+  return [
+    '수정된 사업 이해:',
+    ...revised.notes,
+    '오류로 표시된 이전 문장은 확인된 사실로 반복하지 않는다.',
+    '빠진 핵심은 입력에 없으면 만들지 않고 다음 질문으로 받는다.',
+  ].join('\n');
 }
 
 function reviewSystemPrompt(): string {
