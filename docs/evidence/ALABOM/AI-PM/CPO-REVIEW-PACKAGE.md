@@ -521,3 +521,36 @@ OpenRouter 최근 1개월 사용량 `$0.00`, Requests `0`은 이 코드 경로�
 | 다음 질문 | **PASS** — 저장 행의 질문. 답 제출은 누르지 않음 |
 | QA 세션으로 주인집 13 | **열리지 않음** — `project_not_owned` 로 `/workspace` 이동 |
 | 이 커밋의 Preview SHA | **아직 아님** — 푸시 뒤 `/api/build-info` 를 다시 읽기 전 |
+
+## 20. 2026-10-28 18:26 KST Preview SHA와 저장 피드백
+
+`8382703667f1502442beeb72a0fe061ec59abb71`의 Preview는 배포되지 않았다. Vercel 상태 시각 2026-10-28 17:21 KST, 배포 `dpl_28e9sczgrsrGHqn81MbUB7gtG3EU`, 상태 failure. 로컬 `next build`는 `ai-pm-review-panel.tsx`가 `ReviewMark`를 가져오지만 그 모듈이 타입을 내보내지 않아 실패했다. 그 커밋을 실행 SHA로 두지 않는다.
+
+수정 커밋 `677dda3857cf045adc3af2f43c68f30c3ec996eb`은 타입을 내보내고, 같은 검토를 다시 열 때 계정에 저장된 마지막 선택값을 수정 화면에 되돌린다. 모델 호출은 없다. GitHub Vercel 상태는 2026-10-28 18:16 KST에 완료였다.
+
+실행 URL: `https://ai-startup-validation-git-cursor-ai-pm-62f67e-jyp-ai1s-projects.vercel.app`
+
+`/api/build-info`는 우회 헤더로 HTTP 200 `application/json`이었다. 헤더 값은 적지 않는다. `commit`은 `677dda3857cf045adc3af2f43c68f30c3ec996eb`, `branch`는 `cursor/ai-pm-single-flow-4b88`이다. 응답의 `environment` 값 `production`은 `NODE_ENV`다. `deployTime` 필드는 `2026-10-28T09:19:57.504Z`(18:19 KST)이고, `VERCEL_DEPLOYMENT_CREATED_AT`가 없으면 요청 시각이다. `83827036`과 일치하지 않는다.
+
+세션은 QA magic-link `cto-qa@launchlens.dev`다. CEO Google 로그인이 아니다. 모델 검토 POST와 후속 POST는 호출하지 않았다. `AI PM 1차 검토`와 `이 답으로 다음 검증`은 누르지 않았다.
+
+QA 사용자 프로젝트 169개의 붙여넣은 내용, 워크스페이스 문서, 요약을 저장 검토 입력(sha256 앞 12자 `41f6a59ed84d`, 정규화 길이 186)과 비교했다. 일치하는 필드는 없다. 연 프로젝트는 `33dc7045-6a8d-48ca-940e-2ba499b1027a`, 제목 가사 도우미 중개. HTTP 200. `data-result-source=input-only`, `data-step=result`. 저장 질문 `양조장 두 곳에 안내 비용을 제안한 적이 없는데`는 화면에 없었다. 양조장 검토는 붙지 않았다. 주인집 13 `e341ba90-a16c-4213-9888-3a2e4d59f727`은 열지 않았다.
+
+저장 검토가 보이는 경로는 데모 문서 주입이다. URL `/workspace?demo=guided&sample=custom&fresh=1`, 프로젝트 id `demo-my-qa-preview-3b13`. 세션 저장소에 저장 검토 입력 186자를 넣었다. 소유 프로젝트가 아니다. 로드 후 `data-result-source=model-review`, `data-step=result`. 이전 계정 선택 `evidence_unclear`를 해제하고 `understanding_wrong`, `core_missing`을 저장했다.
+
+저장 직후 `data-step=revised`. 화면에 `오류로 표시`, `빠진 핵심`, `이 검토 버전에 저장했습니다. 모델 호출은 없습니다.`가 있었다. 같은 URL을 다시 열고 문서를 다시 넣은 뒤 `data-result-source=model-review`, `data-step=result`. 두 문장이 남아 있었고 메시지는 `저장된 피드백을 다시 열었습니다. 모델 호출은 없습니다.`였다.
+
+`GET /api/ai-pm-review` HTTP 200. 검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`, status `ready`. 새 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`, 시각 2026-10-28 18:26 KST, marks `understanding_wrong`, `core_missing`. 저장 행 `modelCalls` 0. 이전 행 `61e5a6ff-fd88-4a8f-bff1-f532e4e1ab8b`, `e9957bb1-92d2-4d31-92f1-cc2289bfc9eb`는 `evidence_unclear`로 남아 있다.
+
+이후 모델 검토가 이 수정을 유지하는지는 확인하지 않았다. 모델 호출을 하지 않았다. 같은 검토를 다시 열 때 선택과 수정 문장이 남는 것까지만 확인했다.
+
+Production 잠금 `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`와 PR #207, #208, #209 미병합은 유지했다. Production 호스트는 호출하지 않았다.
+
+| 항목 | 판정 |
+|---|---|
+| `83827036`과 `/api/build-info` 일치 | **FAIL** — 그 커밋은 배포 실패. 실행 SHA는 `677dda38` |
+| 실행 Preview SHA | **PASS** — URL 위, commit `677dda3857cf045adc3af2f43c68f30c3ec996eb` |
+| 소유 프로젝트에 저장 검토 연결 | **BLOCKED** — 일치 문서 없음. 가사 도우미 중개는 입력 원문 |
+| 틀림·핵심 누락 저장, 재조회, 다시 열기 | **PASS** — 데모 문서 주입. 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`, `modelCalls` 0 |
+| 이후 모델 검토가 수정을 유지 | **하지 않음** — 모델 호출 없음 |
+| Production 배포 | **잠금 유지** |
