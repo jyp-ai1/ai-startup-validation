@@ -4,6 +4,18 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## AI PM 1차 검토와 피드백
+
+**상태:** 사용자 화면의 이름은 AI PM이다. 1차 검토 엔진은 서버의 OpenAI 어댑터이고, 이 경로의 키 이름은 `GPT_API_KEY`다. `OPENAI_API_KEY`는 이 경로를 열지 않는다. 키가 없으면 `not_run`과 내부 사유 `gpt_api_key_missing`만 저장하고 검토 문장은 만들지 않는다. 실모델 원문·토큰·응답 시간은 NOT RUN이다.  
+**Branch:** `cursor/ai-pm-first-review-4b88`  
+**저장:** 서비스 롤이 있으면 검토 API는 `SupabaseAiPmReviewRepository`를 쓰고 성공 응답의 `storage.durable`은 true다. 없으면 sqlite이고 `durable`은 false다. 저장 실패는 `storage_unavailable`이며 성공으로 보고하지 않는다. 023은 미적용이다. 설정된 Supabase 호스트는 공개 DNS 레코드가 없다. `user_id`는 `auth.users` 삭제가 원문·검토·피드백을 함께 지우도록 `on delete cascade`다. 다른 사용자 행은 조회·피드백·추가 검증에서 막는다. `business_plans`는 이 저장소가 아니다.  
+**Production 잠금:** `0b465226` 유지. 병합하지 않음.  
+**Preview:** `1b83d861` 배포는 2026-10-27 20:09 KST에 완료됐다. 주소 `https://ai-startup-validation-2n84mh03x-jyp-ai1s-projects.vercel.app` 는 Vercel Authentication이 켜져 있다. 이 실행 환경에는 Vercel 토큰, 자동화 우회 비밀, 브라우저 세션이 없다. 보호 설정은 유지했고 두 API는 호출하지 않았다. Preview의 `GPT_API_KEY`는 미확인이고 실 GPT 응답은 없다.  
+**023 적용 전 검토 (2026-10-27 20:15 KST):** 새 테이블 두 개뿐이며 기존 표와 기존 행은 바꾸지 않는다. 롤백은 `ai_pm_feedback`, `ai_pm_reviews` 순서로 DROP 한다. 라우트는 아직 sqlite만 쓴다. 호스트 DNS가 없고 023이 미적용이므로 재배포 뒤 보존은 미확보다.  
+**Production:** 잠금 `0b465226` 유지. `deployTime` `2026-10-27T11:15:23.965Z` (20:15 KST). 이 커밋에는 AI PM 검토 경로가 없다.
+
+---
+
 ## 짧은 사업 아이디어 — 사업별 유보
 
 **상태:** `founder_input`의 사업·고객·문제만으로 최근 손실, 구매 결정권자, 지불 여지, 반복 비용을 묻는다. 없는 가격과 손실액은 만들지 않는다. LMULM·RIDM 발췌 규칙은 유지한다. 실 Gemini 웹 원문은 NOT RUN.  

@@ -83,6 +83,9 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   geminiRoundSubmitted: 'gemini_round_submitted',
   geminiRoundResultViewed: 'gemini_round_result_viewed',
   freeGeminiWebPasteKept: 'free_gemini_web_paste_kept',
+  aiPmReviewRequested: 'ai_pm_review_requested',
+  aiPmReviewReopened: 'ai_pm_review_reopened',
+  aiPmFeedbackStored: 'ai_pm_feedback_stored',
 } as const;
 
 export type ProductAnalyticsEvent =

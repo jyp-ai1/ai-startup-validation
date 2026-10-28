@@ -34,6 +34,7 @@ export function SiAiPmBindSurface({
   return (
     <section
       data-testid="si-ai-pm-bind-surface"
+      data-question-source="rule"
       data-si-ask-kind={question.kind}
       className={cn(
         'space-y-4 rounded-2xl border border-border/70 bg-card px-6 py-5 sm:px-7',
@@ -42,9 +43,9 @@ export function SiAiPmBindSurface({
     >
       <header className="space-y-1">
         <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
-          AI PM · S.I.가 지정한 검증
+          규칙으로 고른 확인 질문
         </p>
-        <p className="text-xs text-muted-foreground">질문 엔진이 고른 다음 질문이 아닙니다.</p>
+        <p className="text-xs text-muted-foreground">모델이 만든 질문이 아닙니다. 한 가지만 답하면 판단이 다시 계산됩니다.</p>
       </header>
 
       <p data-testid="si-ai-pm-question" className="text-[15px] font-medium leading-relaxed">

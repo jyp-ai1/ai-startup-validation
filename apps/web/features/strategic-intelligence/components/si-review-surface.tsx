@@ -60,19 +60,35 @@ export function SiReviewSurface({ judgment, projectId, className }: SiReviewSurf
       )}
     >
       <header className="space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">S.I. 사업성 판단</p>
-        <p className="text-xs text-muted-foreground">{SI_STAGE_LABELS[judgment.stageId]} · 점수 없음</p>
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">결론</p>
+        <p className="text-xs text-muted-foreground">규칙 엔진이 계산한 판단입니다. 모델 응답이 아닙니다.</p>
       </header>
 
-      <Section testId="si-current-judgment" label="현재 사업성 판단">
+      <Section testId="si-current-judgment" label="지금 진행할 가치가 있는가">
         <p data-testid="si-verdict-label" className="text-[17px] font-semibold leading-snug">
-          현재 판단: {SI_VERDICT_LABELS[judgment.verdictId]}
+          {SI_VERDICT_LABELS[judgment.verdictId]}
         </p>
         <p data-testid="si-judgment-prose" className="text-sm leading-relaxed">
           {judgment.judgment}
         </p>
       </Section>
 
+      <Section testId="si-critical-unknown" label="가장 큰 불확실성">
+        <p className="text-sm font-medium leading-relaxed">{judgment.criticalUnknown}</p>
+      </Section>
+
+      <Section testId="si-decision-evidence" label="이 결론을 바꿀 증거">
+        <p className="text-sm leading-relaxed">{judgment.decisionChangingEvidence}</p>
+      </Section>
+
+      <Section testId="si-validation-priority" label="지금 검증할 한 가지">
+        <p className="text-sm font-medium leading-relaxed">{judgment.validationPriority}</p>
+      </Section>
+
+      <details className="rounded-xl border border-border px-4 py-3" data-testid="si-review-details">
+        <summary className="cursor-pointer text-sm font-medium">상세 근거 보기</summary>
+        <div className="mt-4 space-y-6">
+          <p className="text-xs text-muted-foreground">{SI_STAGE_LABELS[judgment.stageId]} · 점수 없음</p>
       <Section testId="si-why-possible" label="왜 가능한가">
         <p className="text-sm leading-relaxed">{judgment.whyPossible}</p>
       </Section>
@@ -117,17 +133,8 @@ export function SiReviewSurface({ judgment, projectId, className }: SiReviewSurf
         </Section>
       </div>
 
-      <Section testId="si-critical-unknown" label="가장 중요한 미검증 가정">
-        <p className="text-sm font-medium leading-relaxed">{judgment.criticalUnknown}</p>
-      </Section>
-
-      <Section testId="si-decision-evidence" label="이 판단을 바꿀 증거">
-        <p className="text-sm leading-relaxed">{judgment.decisionChangingEvidence}</p>
-      </Section>
-
-      <Section testId="si-validation-priority" label="다음에 검증해야 할 1개">
-        <p className="text-sm font-medium leading-relaxed">{judgment.validationPriority}</p>
-      </Section>
+        </div>
+      </details>
     </article>
   );
 }

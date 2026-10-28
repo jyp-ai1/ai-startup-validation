@@ -1913,6 +1913,147 @@ LMULM and RIDM excerpts already separate a document claim from an unverified for
 
 ---
 
+## ADR-062: The user-facing reviewer is AI PM
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The first business review needs one model call, a structured result, and a multiple-choice correction from the founder. Naming that step after a model vendor makes a later engine change look like a different product. Token counts and model ids are operating data, not part of the founder's decision.
+
+### Decision
+
+1. Screens, buttons, status lines, and review history say AI PM. The first review covers customer and payer, problem and solution, market evidence, revenue, execution, and risks, plus unknowns and the hypothesis to test next.
+2. The server adapter for this loop is OpenAI chat, one call for a new plan. Gemini is not called here.
+3. Submitting feedback stores agreement, factual accuracy, revision areas, a free comment, and the next action on that review version. The comment is allowed when "other" is not selected. Feedback does not call a model.
+4. Opening the same plan reads the stored review. A requested follow-up sends the stored sections, the feedback, and any new facts. The original plan text remains on every version.
+5. Model id, token counts, latency, and errors are stored on the sqlite row and omitted from the screen payload. A missing key stores `not_run` and no review text.
+6. The sqlite file is not the production database. Rollback is `DROP TABLE ai_pm_reviews`, `DROP TABLE ai_pm_feedback`, and deletion of `AI_PM_REVIEW_DB_PATH`.
+7. This ADR does not approve a Production deploy, a PR merge, or a Gemini comparison.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Show the model name on the result | Operators see which engine answered | A model change looks like a new product |
+| Call the model again for every feedback item | The next paragraph could mention the correction | Spends a call when the choice itself is the record |
+
+### Consequences
+
+**Positive:**
+
+- The same plan text from a file or a text box shares one stored review.
+- A later engine can read the old plan, review, and feedback without renaming the screen.
+
+**Negative:**
+
+- The founder's screen cannot show token cost. That comparison stays in the stored row.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
+## ADR-063: AI PM reviews read GPT_API_KEY and local sqlite is not durable
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The first review route checked `OPENAI_API_KEY`. The key added for this path is named `GPT_API_KEY`. Treating those names as the same would hide a missing key. The review rows are in `.data/ai-pm-reviews.sqlite`. Vercel functions have a read-only filesystem except ephemeral `/tmp`, so that file does not survive a new instance or a redeploy.
+
+### Decision
+
+1. `readGptApiKey()` returns `GPT_API_KEY` only. A set `OPENAI_API_KEY` does not start `/api/ai-pm-review` or `/api/ai-pm-review/follow-up`.
+2. A missing `GPT_API_KEY` stores `not_run` with internal reason `gpt_api_key_missing` and no review text.
+3. API responses include `storage.durable: false`. The screen says the saved review can disappear when the server changes. This file is not the production database.
+4. No live model call is recorded until `GPT_API_KEY` is present in the process that runs the review. This ADR does not approve a merge or a Production deploy.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Fall back from `GPT_API_KEY` to `OPENAI_API_KEY` | A local key would run the call | The two names would stay confused |
+| Move the rows to `/tmp` on Vercel | Writes would be allowed | `/tmp` is still ephemeral and not shared across instances |
+
+### Consequences
+
+**Positive:**
+
+- A missing `GPT_API_KEY` stays visible as not run.
+- The screen no longer says the local file will still be there after a redeploy.
+
+**Negative:**
+
+- Founder reviews on Vercel are not retained until a production database is connected.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
+## ADR-064: AI PM reviews belong in the existing Supabase project
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+`.data/ai-pm-reviews.sqlite` does not survive a Vercel redeploy. The product already has one Supabase project and migrations `001`–`022`. `public.business_plans` stores a project document with a fixed section list. It does not store a review version, the original plan text for that review, or multiple-choice feedback.
+
+On 2026-10-27 the configured `SUPABASE_URL` host had no public DNS record from this process or from 8.8.8.8 and 1.1.1.1. The migration could not be applied.
+
+### Decision
+
+1. Add `public.ai_pm_reviews` and `public.ai_pm_feedback` in `packages/db/src/migration/023_ai_pm_reviews.sql`. Service role writes. Row level security is on. There is no anon policy.
+2. `SupabaseAiPmReviewRepository` in `@repo/db` is the access path. Apps do not import the Supabase SDK.
+3. `openReviewBackend()` uses `SupabaseAiPmReviewRepository` when `isSupabaseAdminConfigured()` is true. The success response then has `storage.durable: true`. When the service role is absent, the API uses local sqlite and `storage.durable: false`. A storage error returns `storage_unavailable` and `durable: false`. It does not describe that failure as a saved durable review.
+4. `user_id` references `auth.users` with `on delete cascade`. Deleting the account deletes that user's plan text, reviews, and feedback. Deleting a review deletes its feedback. Reads and writes include the session user id. No anon policy is added.
+5. No second database is added. Migration 023 is still not applied, because the configured host has no public DNS record.
+
+### Pre-apply review (2026-10-27 20:15 KST)
+
+Schema: two new tables only. `001`–`022` are not altered. There is no seed insert. `user_id` is text and does not reference `auth.users`, so deleting a user does not delete the plan text. Feedback rows do not reference `ai_pm_reviews`. `record_json` stores the plan, the review sections, the feedback, and token counts. The stored review type has no API key field. Row level security is on and there is no anon policy, matching `analytics_events`.
+
+Existing data: no current table is changed and no current row is updated or deleted. `business_plans` stays a project document.
+
+Rollback: `DROP TABLE public.ai_pm_feedback;` then `DROP TABLE public.ai_pm_reviews;`. Indexes drop with the tables. The review route does not write these tables yet, so dropping them does not change the running API.
+
+Persistence: rows in Supabase Postgres survive a Vercel redeploy. The review API now calls `SupabaseAiPmReviewRepository` when the service role is configured. The configured host still has no public DNS record, so 023 is not applied and this process has not written a row. Until that write succeeds, durable storage is not secured. `.data/ai-pm-reviews.sqlite` remains `storage.durable: false`.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Reuse `business_plans` | Table already exists in the schema | A review version and feedback do not fit its section enum or project foreign key |
+| Add a new database host | Empty and available | The product already has Supabase, and the current host is the one to restore |
+
+### Consequences
+
+**Positive:**
+
+- The durable shape is in the repo and matches the sqlite columns.
+
+**Negative:**
+
+- Rows are not durable until the Supabase host resolves and 023 is applied.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #207 stays unmerged.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

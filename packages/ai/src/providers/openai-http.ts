@@ -121,6 +121,7 @@ export async function openAIChat(apiKey: string, request: ChatRequest): Promise<
     content,
     finishReason: mapFinishReason(data.choices?.[0]?.finish_reason),
     usage: normalizeUsage(data.usage, content, inputText),
+    usageKnown: Boolean(data.usage?.total_tokens),
     latencyMs: Date.now() - start,
   };
 }
