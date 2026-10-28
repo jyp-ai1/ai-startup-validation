@@ -582,3 +582,49 @@ QA 세션으로 연 결과, `data-result-source=model-review`, `data-step=result
 | 저장 피드백 복원과 새로고침 | **PASS** — `understanding_wrong`, `core_missing`, `modelCalls` 0 |
 | 수정 반영 후속 모델 검토 | **미검증** |
 | Production | **잠금 유지** |
+
+## 22. 2026-10-28 19:10 KST 후속 검토 1회
+
+기준선은 소유 프로젝트 연결 게이트의 Preview SHA `f0a2a935e9fca08bf40f534d70b897e0f5ef526c`, 프로젝트 `3a5fc4a0-2e90-45e6-8370-350beda67342`, 검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`, 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`다. 그 피드백의 marks는 `understanding_wrong`, `core_missing`이고 `modelCalls`는 0이다. 댓글은 `사업 이해가 틀림, 핵심 내용이 빠짐`이다. 대표가 적은 대체 사실은 없다.
+
+`f0a2a935`의 후속 요청에는 선택값과 매핑된 동의 필드가 있고, 수정 화면 문장 `오류로 표시`와 `빠진 핵심`은 없다. 그 문장을 요청에 넣는 커밋은 `6b485ac396c5306177ced9050bc8ef0894ca9094`다. GitHub 커밋 status `Vercel`은 success, 설명은 `Deployment has completed`, 시각은 2026-10-28 19:09 KST다. 대상은 `https://vercel.com/jyp-ai1s-projects/ai-startup-validation/24ViCL6V6aCscPf2oWCzL6Spxa3A`다. PR #209의 Vercel 댓글 `updated_at`도 같은 시각이고 `nextCommitStatus`는 `DEPLOYED`다. Preview 별칭은 `https://ai-startup-validation-git-cursor-ai-pm-62f67e-jyp-ai1s-projects.vercel.app`다.
+
+이 환경에서 인증 없는 `GET /api/build-info`는 HTTP 401 `Protected by Vercel Authentication`이다. 앱 JSON의 commit 필드는 이번 기록에서 다시 읽지 않았다. 저장 행의 `finished_at`은 배포 완료 기록보다 뒤다.
+
+후속 행은 `e31d62a4-0870-4cce-b655-9080a174ffc5`다. 부모는 5버전 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`이고, 5버전의 자식은 이 행 하나다. `source_feedback_id`는 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`다. `supplement_sha`는 `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`이고, 이는 빈 문자열의 sha256이다. status `succeeded`. evidence `live_network`. error는 없다. provider `openai`. model `gpt-4o-mini-2024-07-18`. `callCount` 1. prompt 659, completion 175, total 834. `finished_at` `2026-10-28T10:10:21.693Z`(19:10 KST). 사용자 앞 8자는 `37d541c8`다. 검토 행에는 프로젝트 ID가 없다. 입력 sha 앞 12자는 `41f6a59ed84d`다. 두 번째 후속 행은 없다. 와이어 HTTP 본문은 행에 저장되지 않는다.
+
+요청 입력은 그 커밋의 `buildFollowUpRequest`를 저장된 5버전 섹션과 위 피드백, 빈 supplement에 적용한 재구성이다. 시스템 문장은 `당신은 ALABOM의 AI PM이다. 입력에 없는 가격, 인원, 매출, 시장 규모는 만들지 않는다. JSON 객체만 반환한다. 키는 problem, target_customer, solution, business_model, validation_metric, nextQuestion 이다. nextQuestion은 이 입력에서 창업자가 답해야 판단이 바뀌는 질문 하나다. 질문 목록의 문장을 복사하지 않는다. 모델 이름이나 공급사 이름은 쓰지 않는다.`다. 사용자 문장은 이전 검토 JSON, 이전 다음 질문, 피드백 JSON, 아래 수정 문장, `추가 사실: (없음)`, 키 목록이다. 원문 사업 계획 전문은 들어가지 않는다. 수정 문장은 다음이다.
+
+```text
+수정된 사업 이해:
+사업 이해는 오류로 표시되었습니다. 이 문장을 확인된 사실로 두지 않습니다.
+빠진 핵심은 다음 검증에서 받습니다.
+오류로 표시된 이전 문장은 확인된 사실로 반복하지 않는다.
+빠진 핵심은 입력에 없으면 만들지 않고 다음 질문으로 받는다.
+```
+
+피드백 JSON의 marks는 `understanding_wrong`, `core_missing`이다. agreement `disagree`, accuracy `misstated`, revisionAreas `problem`, nextAction `verify_hypotheses`. 입력 예산 3000 안에서 OpenAI prompt 토큰은 659라 사용자 문장이 잘렸을 근거는 없다.
+
+모델 응답 `rawContent`는 다음이고, `nextQuestion`은 그 안에 있다.
+
+```json
+{"problem":"관광객들이 전통주 체험을 제공하는 양조장에 대한 정보와 접근성이 부족하다.","target_customer":"전통주를 좋아하는 내국인 및 외국인 관광객.","solution":"양조장 체험 프로그램을 제공하고, 이를 통해 관광객이 직접 전통주를 만들고 즐길 수 있도록 안내하며, 주변 관광명소도 함께 소개하는 서비스.","business_model":"양조장 체험 프로그램 참가비 및 온라인 마케팅 지원을 통한 수익 창출.","validation_metric":"프로그램 참가자 수 및 고객 만족도 조사 결과.","nextQuestion":"양조장 두 곳에 안내 비용을 제안한 적이 없는데, 어떻게 파트너십을 구축할 계획인가?"}
+```
+
+5버전 판단은 개인별 경험, 양조장 정보와 접근성 부족, 같은 고객, 참가비와 온라인 마케팅 수익이다. 5버전 다음 질문은 `양조장 두 곳에 안내 비용을 제안한 적이 없는데, 어떻게 파트너십을 구축할 계획인가?`다.
+
+6버전 problem과 judgment에서는 `개인별 다양한 경험을 중시하지만`이 빠졌다. 접근성 부족, 고객, 수익 가설, execution, market, nextQuestion, nextQuestionReason은 5버전과 같다. 오류로 표시된 이해를 확인된 사실에서 빼지 않았다. 빠진 핵심을 묻는 질문으로 바뀌지 않았다. 화면에 선택값이 남아 있는 것으로 통과로 두지 않는다.
+
+같은 사용자가 같은 입력을 여러 프로젝트에 저장하는 회귀는 이 기록에 없다.
+
+| 항목 | 판정 |
+|---|---|
+| 기준선 SHA `f0a2a935` | **고정** — 소유 프로젝트 연결 게이트의 실행 SHA |
+| 수정 문장을 넣은 커밋의 배포 기록 | **기록** — `6b485ac3`, Vercel 완료 19:09 KST. 이번 턴의 `/api/build-info` JSON은 401이라 미확인 |
+| 수정 문장이 요청 재구성에 포함 | **PASS** — 위 네 문장과 marks. 와이어 원문은 행에 없음 |
+| 호출 1회, 모델과 토큰 | **PASS** — `gpt-4o-mini-2024-07-18`, 659/175/834, `callCount` 1, 자식 행 1개 |
+| 프로젝트 ID | **기록** — `3a5fc4a0-2e90-45e6-8370-350beda67342`. 검토 행 자체에는 없음 |
+| 잘못 이해한 내용이 수정됨 | **FAIL** — 접근성 부족, 고객, 수익 가설이 판단으로 남음 |
+| 누락된 핵심이 보완됨 | **FAIL** — 다음 질문이 5버전과 같음 |
+| 후속 검토 게이트 | **BLOCKED** |
+| Production | **잠금 유지** |
