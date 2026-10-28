@@ -554,3 +554,31 @@ Production 잠금 `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`와 PR #207, #208, #
 | 틀림·핵심 누락 저장, 재조회, 다시 열기 | **PASS** — 데모 문서 주입. 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`, `modelCalls` 0 |
 | 이후 모델 검토가 수정을 유지 | **하지 않음** — 모델 호출 없음 |
 | Production 배포 | **잠금 유지** |
+
+## 21. 2026-10-28 18:56 KST 소유 프로젝트와 저장 검토
+
+검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`에는 프로젝트 ID 컬럼이 없다. `ai_pm_reviews`의 연결 키는 `user_id`와 `input_sha`다. `record_json` 키에도 project가 없다. `input_origin`은 `typed`다. `input_sha`는 `41f6a59ed84d6dc63e791c4043668ac7e80eed269a42dd28de36865ef87dee47`이고, 정규화한 입력 길이는 186이다. 같은 입력의 검토 1~5버전은 모두 사용자 `37d541c8-fda7-4788-8ac2-1a449b00425c`다. 이 사용자는 QA magic-link `cto-qa@launchlens.dev`다. 피드백 세 행도 같은 사용자다.
+
+프로젝트 전체는 230개다. `summary`가 그 입력과 같은 프로젝트는 9개다. 주인집4, 주인집5, 주인집 6, 주인집 7, 주인집10, 주인집11 `e719bc33-e35b-40d9-9494-167e603a338e`, 주인집12, 주인집 13 `e341ba90-a16c-4213-9888-3a2e4d59f727`, 주인집 14. 소유자는 `8b023d94-dd5f-4cad-bd7e-76b6fbdf0674`다. Google 로그인 계정이고 QA 계정이 아니다. 문서 ID는 따로 없다. 문서 문자열은 `onboarding_context.v2Demo.pastedContent`와 `onboarding_context.v2Workspace.documentText`다.
+
+주인집 13의 요약은 검토 입력과 같다. 화면이 읽는 문서는 `프로젝트 이름: 주인집 13`과 `사업 설명:`이 앞에 붙은 210자다. 그 사업 설명 본문은 검토 입력과 같다. 원문 전체를 그대로 비교하면 끊긴다. 본문을 비교하면 같다. 검토 사용자와 프로젝트 소유자가 다르므로 QA 세션은 이 프로젝트를 열 수 없다. 이 검토 행을 Google 계정으로 옮기지 않았다.
+
+검토 사용자 소유의 프로젝트 `3a5fc4a0-2e90-45e6-8370-350beda67342`, 제목 양조장 체험 연결을 2026-10-28 18:43 KST에 저장했다. `is_demo`는 false다. 문서 형태는 주인집 13과 같다. 원문 sha256 앞 12자는 `61f7f83ac891`이고, 사업 설명 본문 sha256 앞 12자는 `41f6a59ed84d`다. 세션 저장소에 문서를 넣지 않았다.
+
+화면 비교는 사업 설명 본문을 쓴다. 실행 URL은 `https://ai-startup-validation-git-cursor-ai-pm-62f67e-jyp-ai1s-projects.vercel.app/workspace?project=3a5fc4a0-2e90-45e6-8370-350beda67342`다. `/api/build-info`는 HTTP 200 JSON이고 commit은 `f0a2a935e9fca08bf40f534d70b897e0f5ef526c`, branch는 `cursor/ai-pm-single-flow-4b88`이다. GitHub Vercel 완료 시각은 2026-10-28 18:56 KST다. `d6fd03b4`에서는 첫 화면의 수정 문장이 새로고침 뒤에 사라졌다. 그 SHA를 최종 실행으로 두지 않는다.
+
+QA 세션으로 연 결과, `data-result-source=model-review`, `data-step=result`. `오류로 표시`와 `빠진 핵심`이 보였고 메시지는 `저장된 피드백을 다시 열었습니다. 모델 호출은 없습니다.`였다. 같은 URL을 한 번 새로고침한 뒤에도 두 문장이 남았다. `AI PM 1차 검토`와 `이 답으로 다음 검증`은 누르지 않았다. 모델 호출은 없다.
+
+`GET /api/ai-pm-review`는 검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`, status `ready`다. 최신 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`, marks `understanding_wrong`, `core_missing`, 저장 행 `modelCalls` 0.
+
+이후 모델 검토가 이 수정을 유지하는지는 호출하지 않아 미검증이다. Production 잠금과 PR #207, #208, #209 미병합은 유지했다. `83827036`은 배포된 SHA가 아니다.
+
+| 항목 | 판정 |
+|---|---|
+| 검토 행의 연결 키 | **기록** — 프로젝트 ID 없음. 사용자 `37d541c8-fda7-4788-8ac2-1a449b00425c`, 입력 sha `41f6a59ed84d` |
+| 주인집 문서 본문 | **같음** — 소유자 `8b023d94-dd5f-4cad-bd7e-76b6fbdf0674`. 화면 원문은 제목 줄이 붙어 다름 |
+| 실행 SHA | **PASS** — `f0a2a935e9fca08bf40f534d70b897e0f5ef526c` |
+| 소유 프로젝트에서 저장 검토 | **PASS** — `3a5fc4a0-2e90-45e6-8370-350beda67342`, `model-review` |
+| 저장 피드백 복원과 새로고침 | **PASS** — `understanding_wrong`, `core_missing`, `modelCalls` 0 |
+| 수정 반영 후속 모델 검토 | **미검증** |
+| Production | **잠금 유지** |
