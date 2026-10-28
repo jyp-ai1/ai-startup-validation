@@ -110,7 +110,7 @@ Vercel 프로젝트에 Protection Bypass for Automation이 추가됐다는 보�
 | 단계 | 결과 |
 |---|---|
 | 비밀이 목록에 있는지, `VERCEL_AUTOMATION_BYPASS_SECRET` 시스템 환경변수로 지정됐는지 | 이 런에서는 확인하지 못했다. `https://vercel.com/jyp-ai1s-projects/ai-startup-validation/settings/deployment-protection` 은 로그인 화면으로 이동했다. HTTP 200, 최종 경로 `/login` |
-| Preview 재배포 | 환경변수 지정이 확인되기 전에는 적용 배포로 보지 않는다. 08:45 KST Preview는 `7e27e461`, URL `https://ai-startup-validation-h2jmgyi08-jyp-ai1s-projects.vercel.app`, GitHub deployment `7373232579`다. 이 기록 커밋의 push는 Git 연동으로 새 Preview를 만든다. 그 배포는 시스템 환경변수 지정을 확인한 재배포가 아니다. 어느 URL이든 `/api/build-info`는 비밀값 없이 호출하지 않는다 |
+| Preview 재배포 | 환경변수 지정은 확인하지 못했다. 08:45 KST Preview는 `7e27e461`, `https://ai-startup-validation-h2jmgyi08-jyp-ai1s-projects.vercel.app`, deployment `7373232579`다. 09:24 KST에 `eddc879b`의 Git 연동 Preview가 성공했다. URL `https://ai-startup-validation-pkwsdiksc-jyp-ai1s-projects.vercel.app`, deployment `7373812046`, inspector `https://vercel.com/jyp-ai1s-projects/ai-startup-validation/7wGopZng7hAr7EvBuDm918HMQLxQ`. 이 배포는 시스템 환경변수 지정을 확인한 재배포가 아니다. `/api/build-info`는 호출하지 않았다. `eddc879b`는 검증 SHA가 아니다 |
 | `x-vercel-protection-bypass` 적용 | 하지 않았다. 비밀값이 이 프로세스에 없다. 값의 길이, 앞자리, 로그를 남기지 않는다 |
 | 앱 JSON과 SHA | 없음. 로그인 HTML이 다시 나왔다는 뜻이 아니라, 요청 자체가 없다 |
 
