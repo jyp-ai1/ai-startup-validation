@@ -56,7 +56,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
   const reading = active?.sections ? readingFromSections(active.sections) : readingFromInput(text);
   const revised = reviseReading(reading, viewMarks, founderFact);
   const modelQuestion = Boolean(active?.questionSource === 'model-review' && !marks.includes('question_unfit'));
-  const revisionForText = useMemo(() => {
+  const revisionReview = useMemo(() => {
     const needle = businessBodyForReviewMatch(text);
     return (
       reviews
@@ -65,9 +65,13 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
             review.revision &&
             (!needle || businessBodyForReviewMatch(review.inputText) === needle),
         )
-        .at(-1)?.revision ?? null
+        .at(-1) ?? null
     );
   }, [reviews, text]);
+  const revisionForText =
+    revisionReview?.revision && (!active || revisionReview.finishedAt >= active.finishedAt)
+      ? revisionReview.revision
+      : null;
   const claimRows = active?.sections ? visibleClaimStates(active.sections) : null;
   const reconfirmReading = Boolean(claimRows?.some((row) => row.state === 'unconfirmed'));
 
@@ -360,6 +364,12 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
                 <span data-testid="ai-pm-hypothesis">{active.sections.uncertain[0]}</span>
               </p>
               <p className="text-xs text-muted-foreground">미확인 가설은 확인된 사실이 아닙니다.</p>
+              {modelQuestion && active.sections.nextQuestion ? (
+                <div data-question-source="model-review">
+                  <p className="text-sm font-medium">다음에 확인할 질문</p>
+                  <p data-testid="ai-pm-next-question-text">{active.sections.nextQuestion}</p>
+                </div>
+              ) : null}
             </div>
           ) : (
             <p className="text-sm text-muted-foreground" data-testid="ai-pm-core">

@@ -432,6 +432,9 @@ describe('AI PM first review', () => {
     expect(panel).toContain("fetch('/api/ai-pm-review'");
     expect(screen).not.toContain('GPT API');
     expect(panel).toContain('data-question-source="model-review"');
+    const resultBlock = panel.slice(panel.indexOf('data-testid="ai-pm-result"'), panel.indexOf("step === 'question'"));
+    expect(resultBlock).toContain('data-testid="ai-pm-next-question-text"');
+    expect(panel).toContain('revisionReview.finishedAt >= active.finishedAt');
     expect(panel).not.toContain('present-si-ai-pm-question');
     expect(panel).not.toContain('가장 가까운 결제 후보에게 유료로 제안했거나');
     const request = buildFirstReviewRequest(PLAN);
