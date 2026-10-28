@@ -476,3 +476,29 @@ OpenRouter 최근 1개월 사용량 `$0.00`, Requests `0`은 이 코드 경로�
 | 후속 답변 | **실행하지 않음** — 부모가 성공이 아님 |
 | 결제·키·모델·Production | **변경하지 않음** |
 | 전체 | **BLOCKED** |
+
+## 18. 2026-10-28 16:21 KST 짧은 검토 1회와 후속 1회
+
+입력 예산은 추정 3,000토큰, 출력 상한은 800토큰이다. 모델에게 요청하는 키는 `problem`, `target_customer`, `solution`, `business_model`, `validation_metric`, `nextQuestion`이다. 크레딧 소진 또는 `insufficient_quota`일 때만 `gemini-3.1-flash-lite`로 한 번 넘긴다. 자동 재시도는 없다. 이번 두 호출은 그 분기를 타지 않았다. 제공자는 `openai`, 응답 모델은 `gpt-4o-mini-2024-07-18`이다.
+
+배포 `7379509147` URL `https://ai-startup-validation-4o6uo061l-jyp-ai1s-projects.vercel.app`의 `GET /api/build-info`는 HTTP 200 JSON이다. `data.commit`은 `75769c20c1939a048a5d9a75140928fef00b42c4`이다. 그 확인 뒤에 1차 검토 1회, 성공 뒤에 후속 1회를 보냈다.
+
+| 구분 | review ID | 시각 (KST) | 토큰 입력/출력/합 | `nextQuestion` |
+|---|---|---|---|---|
+| 1차 | `0a13c604-9931-40c5-88a5-80f06687fd5a` | 16:21:46 | 228 / 175 / 403 | 어떤 방식으로 양조장과의 파트너십을 구축할 계획인가? |
+| 후속 | `8602a92e-0fbd-4d93-a005-9c9f18410ac6` | 16:21:52 | 531 / 184 / 715 | 양조장 두 곳에 안내 비용을 제안한 적이 없는데, 어떻게 파트너십을 구축할 계획인가? |
+
+두 행 모두 `status` succeeded, `evidence` `live_network`, `callCount` 1, `usageKnown` true, `storage.durable` true다. `questionSource`는 `model-review`이고, 각 `nextQuestion` 문장은 그 행의 `rawContent` 안에 있다. 고정 규칙 문장과 같지 않다. 후속 행의 부모는 1차 ID이고, 질문은 1차 질문과 다르다. 후속 질문에는 제출한 답 `양조장 두 곳에 안내 비용을 제안한 적은 없다`가 반영되어 있다. 목록 API의 두 질문도 저장 행과 같다. 이 목록이 화면이 읽는 응답이다. 이 런에서 브라우저 화면은 열지 않았다.
+
+세션은 e2e magic-link 사용자다. Production은 호출하지 않았다.
+
+| 항목 | 판정 |
+|---|---|
+| Preview URL과 SHA | **PASS** |
+| OpenAI 1회, 출력 800 이내 | **PASS** — 전환 없음 |
+| 모델 `nextQuestion`이 원응답 안에 있음 | **PASS** |
+| 저장·재조회 | **PASS** — 위 두 ID |
+| 목록 응답과 저장 질문 일치 | **PASS** |
+| 후속 답변으로 질문이 바뀜 | **PASS** |
+| 브라우저에서 연 화면 | **없음** |
+| 전체 데이터 경로 | **기록함** |
