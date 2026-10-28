@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button, Textarea } from '@repo/ui';
 
@@ -12,6 +12,7 @@ import {
   inputFingerprint,
   readingFromInput,
   readingFromSections,
+  restoredMarks,
   reviseReading,
   type ReviewMark,
 } from '../lib/ai-pm-review-marks';
@@ -43,6 +44,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
   const [answer, setAnswer] = useState('');
   const [founderFact, setFounderFact] = useState('');
   const [savedWhere, setSavedWhere] = useState<'account' | 'browser' | ''>('');
+  const restoredKey = useRef('');
 
   const active = useMemo(() => matchReview(reviews, text), [reviews, text]);
   const reading = active?.sections ? readingFromSections(active.sections) : readingFromInput(text);
@@ -63,13 +65,23 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
   }, []);
 
   useEffect(() => {
-    const stored = readLocal(text);
-    if (stored) {
-      setMarks(stored.marks);
-      setFounderFact(stored.fact);
-      setSavedWhere('browser');
+    const key = `${active?.reviewId ?? 'none'}:${text}`;
+    if (restoredKey.current === key) return;
+    restoredKey.current = key;
+    const restored = restoredMarks(active?.feedback ?? [], readLocal(text));
+    if (restored.marks.length === 0 && !restored.fact) return;
+    setMarks(restored.marks);
+    if (restored.fact) setFounderFact(restored.fact);
+    if (restored.where) setSavedWhere(restored.where);
+    if (restored.where === 'account') {
+      setMessage('저장된 피드백을 다시 열었습니다. 모델 호출은 없습니다.');
+      void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.aiPmReviewReopened, {
+        screen: '/business-validation',
+        status: 'stored',
+        category: 'saved-marks',
+      });
     }
-  }, [text]);
+  }, [active, text]);
 
   async function loadReviews() {
     const response = await fetch('/api/ai-pm-review');
@@ -265,6 +277,7 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
               placeholder="사업 내용을 입력합니다."
             />
           ) : null}
+          {marks.length > 0 ? <SavedRevision notes={revised.notes} where={savedWhere} /> : null}
           {reading.summary ? (
             <div className="space-y-1">
               <p className="text-xs font-medium text-muted-foreground">한 줄 요약</p>
@@ -348,13 +361,13 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
               {note}
             </p>
           ))}
+          <p className="text-xs text-muted-foreground">
+            {savedWhere === 'account' ? '계정에 저장된 선택입니다.' : '이 브라우저에 남은 선택입니다.'}
+          </p>
           <p data-testid="ai-pm-summary">{revised.summary}</p>
           {revised.showIdea ? <p data-testid="ai-pm-idea">{revised.idea}</p> : null}
           {revised.hypothesis ? <p data-testid="ai-pm-hypothesis">{revised.hypothesis}</p> : null}
           {revised.founderFact ? <p data-testid="ai-pm-reflected-answer">{revised.founderFact}</p> : null}
-          <p className="text-xs text-muted-foreground">
-            {savedWhere === 'account' ? '계정에 저장된 선택입니다.' : '이 브라우저에 남은 선택입니다.'}
-          </p>
           {step === 'revised' ? (
             <Button type="button" data-testid="ai-pm-next-step" disabled={pending} onClick={() => setStep('question')}>
               다음 검증
@@ -415,6 +428,23 @@ export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
         )
       ) : null}
     </section>
+  );
+}
+
+function SavedRevision({ notes, where }: { notes: string[]; where: 'account' | 'browser' | '' }) {
+  if (notes.length === 0) return null;
+  return (
+    <div className="space-y-2" data-testid="ai-pm-revised">
+      <p className="text-sm font-medium">수정된 판단</p>
+      {notes.map((note) => (
+        <p key={note} className="text-sm">
+          {note}
+        </p>
+      ))}
+      <p className="text-xs text-muted-foreground">
+        {where === 'account' ? '계정에 저장된 선택입니다.' : '이 브라우저에 남은 선택입니다.'}
+      </p>
+    </div>
   );
 }
 

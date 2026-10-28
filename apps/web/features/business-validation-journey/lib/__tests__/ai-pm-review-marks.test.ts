@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { readingFromInput, readingFromSections, reviseReading } from '../ai-pm-review-marks';
+import { readingFromInput, readingFromSections, restoredMarks, reviseReading } from '../ai-pm-review-marks';
 import type { ReviewSections } from '../ai-pm-review-store';
 
 const sections = (): ReviewSections => ({
@@ -37,5 +37,27 @@ describe('ai pm review marks', () => {
     expect(revised.founderFact).toContain('여행객 예약비');
     expect(revised.showIdea).toBe(true);
     expect(reviseReading(reading, ['unnecessary']).showIdea).toBe(false);
+  });
+
+  it('reopens the latest stored correction and keeps a browser selection ahead of it', () => {
+    const account = restoredMarks(
+      [
+        { marks: ['evidence_unclear'], submittedAt: '2026-10-28T08:15:19.600Z' },
+        { marks: ['understanding_wrong', 'core_missing'], submittedAt: '2026-10-28T09:00:00.000Z' },
+      ],
+      null,
+    );
+    expect(account.where).toBe('account');
+    expect(account.marks).toEqual(['understanding_wrong', 'core_missing']);
+    const revised = reviseReading(readingFromSections(sections()), account.marks);
+    expect(revised.notes.some((note) => note.includes('오류로 표시'))).toBe(true);
+    expect(revised.notes.some((note) => note.includes('빠진 핵심'))).toBe(true);
+
+    const browser = restoredMarks(
+      [{ marks: ['evidence_unclear'], submittedAt: '2026-10-28T08:15:19.600Z' }],
+      { marks: ['core_missing'], fact: '' },
+    );
+    expect(browser.where).toBe('browser');
+    expect(browser.marks).toEqual(['core_missing']);
   });
 });

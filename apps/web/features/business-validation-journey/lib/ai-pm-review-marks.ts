@@ -7,6 +7,8 @@ import type {
   RevisionArea,
 } from './ai-pm-review-store';
 
+export type { ReviewMark };
+
 export const REVIEW_MARKS = [
   'understanding_accurate',
   'understanding_wrong',
@@ -128,6 +130,19 @@ export function feedbackFromMarks(marks: ReviewMark[], comment = ''): {
     comment: note.slice(0, 4000),
     marks,
   };
+}
+
+export function restoredMarks(
+  feedback: { marks: ReviewMark[]; submittedAt: string }[],
+  local: { marks: ReviewMark[]; fact: string } | null,
+): { marks: ReviewMark[]; where: 'account' | 'browser' | ''; fact: string } {
+  if (local && local.marks.length > 0) {
+    return { marks: normalizeMarks(local.marks), where: 'browser', fact: local.fact };
+  }
+  const latest = [...feedback].sort((left, right) => left.submittedAt.localeCompare(right.submittedAt)).at(-1);
+  const marks = latest ? normalizeMarks(latest.marks) : [];
+  if (marks.length > 0) return { marks, where: 'account', fact: local?.fact ?? '' };
+  return { marks: [], where: '', fact: local?.fact ?? '' };
 }
 
 export function reviseReading(reading: ReviewReading, marks: ReviewMark[], founderFact = ''): RevisedReading {
