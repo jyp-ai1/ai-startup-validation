@@ -447,3 +447,32 @@ OpenRouter 최근 1개월 사용량 `$0.00`, Requests `0`은 이 코드 경로�
 | 결제 한도 / 속도 제한 / 모델 접근 | **미확정** — 상태 429만 확정 |
 | 설정 변경 | **하지 않음** — OpenRouter 충전, OpenAI 결제 변경, 키 교체, 모델 변경 없음 |
 | 전체 | **BLOCKED** |
+
+## 17. 2026-10-28 15:46 KST 429 코드 한 건
+
+기존 실패 행 `db40d893-721c-4b54-8ece-3bb03863c443`와 `f0f53d1a-2f8e-4dbc-bcfa-04e82b38e01c`는 덮어쓰지 않았다. 어댑터는 429 본문의 `error.code`, `error.type`, 180자 이내의 `error.message`, `x-request-id`, `Retry-After`, rate-limit 헤더만 저장 문장에 붙인다. 키와 요청 본문은 그 문장에 넣지 않는다. 사용자 화면의 실패 문구는 기존과 같이 `검토가 끝나기 전에 실패했습니다. 결과 원문은 없습니다.`다. 진단 문장은 화면 JSON에 나가지 않는다.
+
+배포 `7378996575` URL `https://ai-startup-validation-bou5x1z8x-jyp-ai1s-projects.vercel.app`의 `GET /api/build-info`는 HTTP 200 JSON이다. `data.commit`은 `2ec6694a143c5902b961916e7314d336b6273ee8`, `data.branch`는 `cursor/preview-login-gate-4b88`이다. 이 SHA에 진단 어댑터가 들어 있다. 검토 요청은 그 확인 뒤 1회만 보냈다. 재시도는 없다.
+
+새 행 `973cd265-0a1f-4a4b-a92d-6d8acdd4dfb2`, version 3, `finished_at` `2026-10-28T06:46:55Z`(15:46 KST). HTTP 200, 경과 2480ms, `callCount` 1, `evidence` `live_network`, `latencyMs` 1526, `storage.durable` true. `questionSource`는 null, `nextQuestion`은 null, `rawContent`는 없다.
+
+저장된 error:
+
+`OpenAI rate limit exceeded provider_http=429 code=credit_balance_exhausted type=insufficient_quota message=You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/. request_id=req_7e7fc878f6f6482595f9097aa2045dd4`
+
+`retry_after`와 `x-ratelimit-*`는 이 문장에 없다. 응답에 그 헤더가 없었거나 허용 형식이 아니었다. `x-request-id`는 `req_7e7fc878f6f6482595f9097aa2045dd4`다.
+
+이 코드는 할당량·결제 쪽이다. `type`은 `insufficient_quota`, `code`는 `credit_balance_exhausted`다. 제공자 메시지는 남은 크레딧이 없다고 말한다. 속도 제한으로 보지 않는다. 잔액의 숫자와 조직 화면은 이 한 건으로 열지 않았다. 후속 검토는 보내지 않았다. 목록 API에는 이 ID가 있고 `nextQuestion`은 저장 행과 같이 비어 있다.
+
+| 항목 | 판정 |
+|---|---|
+| Preview URL과 SHA | **PASS** — 위 URL, `2ec6694a143c5902b961916e7314d336b6273ee8` |
+| 진단 어댑터가 검토 경로에서 호출됨 | **PASS** — 저장 문장에 `provider_http=429`와 `code`가 있음 |
+| 429 원인 | **확정** — `credit_balance_exhausted` / `insufficient_quota` |
+| `x-request-id` | **있음** — `req_7e7fc878f6f6482595f9097aa2045dd4` |
+| `Retry-After` | **없음** |
+| 모델 분석과 `nextQuestion` | **FAIL** — 원응답 없음 |
+| 실패 행 저장·재조회 | **PASS** — 새 ID. 성공 결과의 저장은 아님 |
+| 후속 답변 | **실행하지 않음** — 부모가 성공이 아님 |
+| 결제·키·모델·Production | **변경하지 않음** |
+| 전체 | **BLOCKED** |
