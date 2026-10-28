@@ -1,8 +1,6 @@
-import { OpenAIProviderAdapter } from '@repo/ai';
-
 import { getServerAuthUser } from '@/lib/auth/server-auth';
 import { openReviewBackend } from '@/features/business-validation-journey/lib/ai-pm-review-backend';
-import { readGptApiKey, runFollowUpReview } from '@/features/business-validation-journey/lib/ai-pm-review';
+import { openReviewChat, readGptApiKey, runFollowUpReview } from '@/features/business-validation-journey/lib/ai-pm-review';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,9 +20,7 @@ export async function POST(request: Request) {
       now: new Date().toISOString(),
       evidence: apiKey ? 'live_network' : 'not_run',
       notRunReason: apiKey ? undefined : 'gpt_api_key_missing',
-      chat: apiKey
-        ? (chatRequest) => new OpenAIProviderAdapter({ apiKey }).chat(chatRequest)
-        : undefined,
+      chat: apiKey ? openReviewChat() : undefined,
     });
     if (!result.ok) return Response.json({ error: result.error, review: null, storage: backend.storage }, { status: 400 });
     return Response.json({ reused: !result.called, review: result.view, storage: backend.storage });

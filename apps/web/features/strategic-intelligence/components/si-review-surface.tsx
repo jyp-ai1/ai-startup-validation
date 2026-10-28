@@ -11,8 +11,19 @@ import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/pro
 type SiReviewSurfaceProps = {
   judgment: SiStrategicJudgment;
   projectId?: string;
+  sourceText?: string | null;
   className?: string;
 };
+
+function judgmentWithoutRepeatedUnknown(judgment: string, criticalUnknown: string): string {
+  const unknown = criticalUnknown.trim();
+  if (!unknown || !judgment.includes(unknown)) return judgment;
+  return judgment
+    .replace(unknown, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s+([.。])/g, '$1')
+    .trim();
+}
 
 const EVIDENCE_CLASS_LABEL: Record<SiEvidenceClass, string> = {
   FACT: 'FACT',
@@ -40,7 +51,7 @@ function Section({
   );
 }
 
-export function SiReviewSurface({ judgment, projectId, className }: SiReviewSurfaceProps) {
+export function SiReviewSurface({ judgment, projectId, sourceText, className }: SiReviewSurfaceProps) {
   useEffect(() => {
     void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.siJudgmentViewed, {
       project_id: projectId,
@@ -64,12 +75,22 @@ export function SiReviewSurface({ judgment, projectId, className }: SiReviewSurf
         <p className="text-xs text-muted-foreground">규칙 엔진이 계산한 판단입니다. 모델 응답이 아닙니다.</p>
       </header>
 
+      {sourceText?.trim() ? (
+        <section data-testid="si-source-document" className="space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">입력된 사업 내용</p>
+          <p className="whitespace-pre-wrap text-sm leading-relaxed">{sourceText.trim()}</p>
+          <p className="text-xs text-muted-foreground">
+            이 문장은 입력 원문입니다. 아래 문장은 그 원문을 규칙으로 읽은 추론이며, 확인된 결제·시장 사실이 아닙니다.
+          </p>
+        </section>
+      ) : null}
+
       <Section testId="si-current-judgment" label="지금 진행할 가치가 있는가">
         <p data-testid="si-verdict-label" className="text-[17px] font-semibold leading-snug">
           {SI_VERDICT_LABELS[judgment.verdictId]}
         </p>
         <p data-testid="si-judgment-prose" className="text-sm leading-relaxed">
-          {judgment.judgment}
+          {judgmentWithoutRepeatedUnknown(judgment.judgment, judgment.criticalUnknown)}
         </p>
       </Section>
 

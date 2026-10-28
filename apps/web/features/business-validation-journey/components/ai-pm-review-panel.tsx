@@ -50,16 +50,20 @@ const NEXT: Array<{ value: NextAction; label: string }> = [
   { value: 'hold', label: '사업 아이디어 보류 또는 중단 검토' },
 ];
 
+type AiPmReviewPanelProps = {
+  initialText?: string;
+};
+
 const SECTION_LABEL = {
-  customer: '고객과 지불자',
-  problem: '문제와 해결책',
-  market: '시장 근거',
-  revenueModel: '수익모델',
-  execution: '실행 가능성',
+  customer: '핵심 고객',
+  problem: '해결할 문제',
+  market: '검증 지표',
+  revenueModel: '수익 가설',
+  execution: '제안하는 해결책',
 } as const;
 
-export function AiPmReviewPanel() {
-  const [text, setText] = useState('');
+export function AiPmReviewPanel({ initialText = '' }: AiPmReviewPanelProps) {
+  const [text, setText] = useState(initialText);
   const [file, setFile] = useState<File | null>(null);
   const [reviews, setReviews] = useState<AiPmReviewView[]>([]);
   const [activeId, setActiveId] = useState('');
@@ -78,6 +82,10 @@ export function AiPmReviewPanel() {
   useEffect(() => {
     void loadReviews();
   }, []);
+
+  useEffect(() => {
+    setText((current) => (current.trim() ? current : initialText));
+  }, [initialText]);
 
   async function loadReviews() {
     const response = await fetch('/api/ai-pm-review');

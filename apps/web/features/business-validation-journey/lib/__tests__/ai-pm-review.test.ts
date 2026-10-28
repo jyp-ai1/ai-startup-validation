@@ -8,8 +8,13 @@ import { describe, expect, it } from 'vitest';
 
 import { chooseReviewBackend, openSupabaseReviewStore, type AiPmDurablePort } from '../ai-pm-review-backend';
 import {
+  AI_PM_GEMINI_FALLBACK_MODEL,
+  AI_PM_REVIEW_INPUT_TOKEN_BUDGET,
+  AI_PM_REVIEW_MAX_TOKENS,
   buildFirstReviewRequest,
   buildFollowUpRequest,
+  callReviewWithQuotaSwitch,
+  estimateReviewTokens,
   parseFeedbackBody,
   parseSections,
   readGptApiKey,
@@ -329,6 +334,16 @@ describe('AI PM first review', () => {
     expect(screen).not.toContain('FreeGeminiWebPanel');
     expect(screen).not.toContain('WebReviewPanel');
     expect(screen).toContain('AiPmReviewPanel');
+    const workspace = readFileSync(
+      new URL(
+        '../../../workflow-journey/components/project-workspace-shell/workspace-ai-pm-main.tsx',
+        import.meta.url,
+      ),
+      'utf8',
+    );
+    expect(workspace).toContain('AiPmReviewPanel');
+    expect(workspace).toContain('initialText={siInputText}');
+    expect(panel).toContain("fetch('/api/ai-pm-review'");
     expect(screen).not.toContain('GPT API');
     expect(panel).toContain('data-question-source="model-review"');
     expect(panel).not.toContain('present-si-ai-pm-question');
@@ -472,6 +487,52 @@ describe('AI PM first review', () => {
     if (!follow.ok) expect(follow.error).toBe('gpt_api_key_missing');
     expect((await store.listReviews('user-missing')).filter((record) => record.parentReviewId === ready.record.reviewId)).toHaveLength(0);
     store.close();
+  });
+
+  it('caps the review request and switches once after a quota error', async () => {
+    const request = buildFirstReviewRequest(`${'가'.repeat(20_000)} UNIQUEPLANMARKER`);
+    const joined = request.messages.map((message) => message.content).join('\n');
+    expect(request.maxTokens).toBe(AI_PM_REVIEW_MAX_TOKENS);
+    expect(request.maxTokens).toBe(800);
+    expect(estimateReviewTokens(joined)).toBeLessThanOrEqual(AI_PM_REVIEW_INPUT_TOKEN_BUDGET);
+    expect(joined).toContain('problem, target_customer, solution, business_model, validation_metric, nextQuestion');
+    expect(joined).not.toContain('UNIQUEPLANMARKER');
+    const short = {
+      problem: '노출이 약하다.',
+      target_customer: '양조장 대표',
+      solution: '체험 안내를 지원한다.',
+      business_model: '대표가 안내 비용을 내는 가설이다.',
+      validation_metric: '안내를 제안한 양조장 수',
+      nextQuestion: '양조장 대표에게 안내 비용을 제안한 적이 있습니까?',
+    };
+    const expanded = parseSections(JSON.stringify(short));
+    expect(expanded?.nextQuestion).toBe(short.nextQuestion);
+    expect(expanded?.customer).toBe(short.target_customer);
+    expect(expanded?.execution).toBe(short.solution);
+    const calls: string[] = [];
+    const switched = await callReviewWithQuotaSwitch({
+      request,
+      openAI: async () => {
+        calls.push('openai');
+        throw new Error('OpenAI rate limit exceeded provider_http=429 code=credit_balance_exhausted type=insufficient_quota');
+      },
+      gemini: async (chatRequest) => {
+        calls.push(chatRequest.model);
+        return reply(JSON.stringify(short), { provider: 'google', model: AI_PM_GEMINI_FALLBACK_MODEL });
+      },
+    });
+    expect(calls).toEqual(['openai', AI_PM_GEMINI_FALLBACK_MODEL]);
+    expect(switched.provider).toBe('google');
+    const rateLimited = callReviewWithQuotaSwitch({
+      request,
+      openAI: async () => {
+        throw new Error('OpenAI rate limit exceeded provider_http=429 code=rate_limit_exceeded type=tokens');
+      },
+      gemini: async () => {
+        throw new Error('gemini should not run');
+      },
+    });
+    await expect(rateLimited).rejects.toThrow(/rate_limit_exceeded/);
   });
 
   it('reads GPT_API_KEY and leaves OPENAI_API_KEY unused', () => {
