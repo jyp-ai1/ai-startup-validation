@@ -234,3 +234,25 @@ Preview 서버의 `GPT_API_KEY`는 미검증이다. 이 런에는 Vercel API 자
 | 저장 데이터 | 행 0 |
 | 화면 | 열지 않음 |
 | 전체 | **BLOCKED** |
+
+## 11. 2026-10-28 11:40 KST 화면 경로 추적
+
+CEO Chrome의 Preview 로그인은 이 런의 브라우저가 아니다. 리뷰 API를 다시 호출하지 않았다. 서비스 롤로 검토 행을 만들지 않았다. 쿠키와 키 값은 적지 않는다.
+
+`ai_pm_reviews`는 이 시각에도 `content-range */0`이다. 리뷰 ID가 없다. `startup_projects`의 `주인집12`(`1fcce0f7-d827-4e44-9c0a-490639b38c54`)는 2026-10-28 11:32 KST에 갱신됐고, 요약 길이는 `주인집11`과 같은 186자다. 요약에 전통주·양조가 있다. `problem`, `solution`, `target_customer`, `business_model`은 비어 있다. 프로젝트 제목은 규칙 판단의 입력이 아니다.
+
+워크스페이스가 보여주는 판단은 `analyzeStrategicIntelligence()`의 규칙 결과다. 화면 컴포넌트는 `SiReviewSurface`와 `SiAiPmBindSurface`다. 버튼 `이 답으로 판단 갱신`은 `applySiFounderAnswer()`로 같은 규칙 계산을 다시 한다. 이 경로는 `POST /api/ai-pm-review`를 호출하지 않는다. `readGptApiKey()`와 모델 호출은 그 POST 핸들러 안에서만, 앱 세션 다음에 있다. `/business-validation`의 `AiPmReviewPanel`만 그 POST를 보낸다. 저장된 리뷰가 0건이므로 그 POST의 성공 응답은 없다.
+
+고정 질문은 `present-si-ai-pm-question.ts`의 `paid_conversion` 문장이다. 화면 문구는 `모델이 만든 질문이 아닙니다`이고 `data-question-source="rule"`이다. 이 질문을 GPT 응답으로 기록하지 않는다. Preview 서버의 `GPT_API_KEY`는 여전히 미검증이다.
+
+같은 시각의 코드 수정은 표시만 바꾼다. 입력 원문을 접힌 빈 칸에 두지 않고, 규칙 판단 문단이 같은 불확실성 문장을 한 번 더 보여 주지 않게 한다. 이 수정은 아직 Preview에서 다시 읽지 않았다. `fb8efdab28615f2da2dbd4bd41bd875f3c4fcc7d`가 앱 JSON으로 확인된 빌드 SHA다. 이 절의 커밋은 그 SHA가 아니다.
+
+| 항목 | 판정 |
+|---|---|
+| 규칙 화면과 GPT 경로의 구분 | 코드와 빈 `ai_pm_reviews`로 구분됨 |
+| 실제 GPT 호출 | **미검증** |
+| `nextQuestion` | **미검증** |
+| 저장·재조회 | **FAIL** — 리뷰 0건 |
+| UI와 모델 응답 일치 | **미검증** |
+| 후속 갱신 | **미검증** |
+| 전체 | **BLOCKED** |

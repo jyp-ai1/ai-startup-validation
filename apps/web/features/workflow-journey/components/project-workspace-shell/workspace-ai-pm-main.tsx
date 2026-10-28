@@ -832,7 +832,7 @@ export function WorkspaceAiPmMain({
     <div className="space-y-6">
       {siJudgment && !isPostReview ? (
         <div data-testid="si-journey-block" data-si-source="business-input">
-          <SiReviewSurface judgment={siJudgment} projectId={projectId} />
+          <SiReviewSurface judgment={siJudgment} projectId={projectId} sourceText={siInputText} />
           {siBindView?.question ? (
             <SiAiPmBindSurface
               question={siBindView.question}

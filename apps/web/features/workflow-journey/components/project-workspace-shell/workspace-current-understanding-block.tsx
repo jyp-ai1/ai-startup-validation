@@ -41,7 +41,6 @@ export function WorkspaceCurrentUnderstandingBlock({
           </p>
           <WorkspaceExpandableText
             text={summary.fullDescription}
-            preview=""
             toggleLabel="사업내용 보기"
             testId="source-document-text"
             className="mt-2 text-muted-foreground"
