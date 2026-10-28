@@ -47,14 +47,24 @@ export function visibleClaimStates(sections: ReviewSections): Array<{
     { field: 'customer' as const, text: sections.customer, state: states.customer },
     { field: 'revenue' as const, text: sections.revenueModel, state: states.revenue },
   ];
-  if (rows.some((row) => row.state !== 'unconfirmed' && row.state !== 'confirmed')) return null;
-  return rows.map((row) => ({
-    field: row.field,
-    label: CLAIM_FIELD_LABEL[row.field],
-    state: row.state,
-    stateLabel: CLAIM_STATE_LABEL[row.state],
-    text: row.text,
-  }));
+  const visible: Array<{
+    field: 'problem' | 'customer' | 'revenue';
+    label: string;
+    state: 'unconfirmed' | 'confirmed';
+    stateLabel: string;
+    text: string;
+  }> = [];
+  for (const row of rows) {
+    if (row.state !== 'unconfirmed' && row.state !== 'confirmed') return null;
+    visible.push({
+      field: row.field,
+      label: CLAIM_FIELD_LABEL[row.field],
+      state: row.state,
+      stateLabel: CLAIM_STATE_LABEL[row.state],
+      text: row.text,
+    });
+  }
+  return visible;
 }
 
 export type ReviewReading = {
