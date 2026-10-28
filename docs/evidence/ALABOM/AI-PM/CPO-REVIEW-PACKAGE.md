@@ -628,3 +628,35 @@ QA 세션으로 연 결과, `data-result-source=model-review`, `data-step=result
 | 누락된 핵심이 보완됨 | **FAIL** — 다음 질문이 5버전과 같음 |
 | 후속 검토 게이트 | **BLOCKED** |
 | Production | **잠금 유지** |
+
+## 23. 2026-10-28 19:45 KST 비교 게이트와 후속 1회
+
+`understanding_wrong`은 문제, 고객, 수익 문장을 지우지 않고 재확인 대상으로 남긴다. 그 문장을 확정된 사실로 반복하면 통과하지 않는다. `core_missing`은 다음 질문이 이전 질문과 다르고 `빠진 핵심`을 묻게 한다. 그 공백을 새 주장으로 채우면 통과하지 않는다. 요청은 `originalInput`, `previousReview`, `feedback`, `supplement`, `revision`을 한 JSON의 별도 필드로 보낸다. 모델은 `gpt-4o-mini`, 입력 3000, 출력 800이다.
+
+회귀 테스트는 검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`의 문장과 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`의 두 표시를 쓴다. 6버전 응답은 `confirmed_reuse`, `question_unchanged`, `missing_core_not_asked`로 거절된다. 재확인 문구와 `이 검토에서 빠진 핵심은 무엇입니까?`는 통과한다. 거절된 응답은 같은 피드백과 빈 보충으로 다시 호출되지 않는다. `pnpm exec vitest run`으로 이 파일과 표시 파일, 15개가 통과했다.
+
+실행 SHA는 `ccca30c3e82d546c114bfe200c192d81df605a5a`다. `/api/build-info`는 HTTP 200 JSON, commit 그 값, branch `cursor/ai-pm-single-flow-4b88`이다. 그 다음에 `POST /api/ai-pm-review/follow-up` 1회. 본문은 `reviewId` `8602a92e-0fbd-4d93-a005-9c9f18410ac6`, `supplement` 빈 문자열. HTTP 200. `reused` false. 응답 `revision.pass` false. `sections`는 null이다.
+
+저장 행 `62b5588c-0d11-42c8-8fac-d24d25dc4f20`. version 7. status `failed`. 부모 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`. `source_feedback_id` `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`. `finished_at` `2026-10-28T10:45:41.6+00:00`(19:45 KST). provider `openai`. model `gpt-4o-mini-2024-07-18`. `callCount` 1. prompt 797, completion 192, total 989. error `revision_gate`. 5버전의 자식은 6버전과 이 7버전, 둘이다. 6버전 행은 그대로다.
+
+모델 응답 `rawContent`는 다음이다.
+
+```json
+{"problem":"재확인 대상: 관광객들이 개인별 다양한 경험을 중시하지만, 전통주 체험을 제공하는 양조장에 대한 정보와 접근성이 부족하다. 이 해석은 확정된 사실이 아니다.","target_customer":"전통주를 좋아하는 내국인 및 외국인 관광객.","solution":"양조장 체험 프로그램을 제공하고, 이를 통해 관광객이 직접 전통주를 만들고 즐길 수 있도록 안내하며, 주변 관광명소도 함께 소개하는 서비스.","business_model":"양조장 체험 프로그램 참가비 및 온라인 마케팅 지원을 통한 수익 창출.","validation_metric":"프로그램 참가자 수 및 고객 만족도 조사 결과.","nextQuestion":"어떤 방식으로 양조장과의 파트너십을 구체화할 계획인가?"}
+```
+
+문제 문장은 재확인 대상으로 남았다. 고객과 수익 가설은 5버전과 같은 확정 문장이다. 다음 질문은 5버전과 다르지만 `빠진 핵심`을 묻지 않는다. 비교 결과 `failures`는 `confirmed_reuse`, `missing_core_not_asked`다. 저장 요약은 `표시한 오해가 확정된 사실로 다시 남았습니다. 다음 질문이 빠진 핵심을 묻지 않습니다. 이 후속 검토는 반영하지 않았습니다.` HTTP `revision.summary`와 같다. 이 행은 준비된 검토가 아니다. 추가 호출은 하지 않았다.
+
+프로젝트 `3a5fc4a0-2e90-45e6-8370-350beda67342`. 검토 행에는 프로젝트 ID가 없다.
+
+| 항목 | 판정 |
+|---|---|
+| 실행 SHA | **기록** — `ccca30c3e82d546c114bfe200c192d81df605a5a`, build-info HTTP 200 |
+| 구조화된 요청과 비교 게이트 | **기록** — 거절된 응답은 준비된 검토가 아님 |
+| 회귀 테스트 | **PASS** — 6버전 문장 거절, 재확인 형태 통과, 재호출 없음. 테스트 15개 |
+| 후속 호출 1회 | **PASS** — `62b5588c-0d11-42c8-8fac-d24d25dc4f20`, `gpt-4o-mini-2024-07-18`, 797/192/989, `callCount` 1 |
+| 잘못 이해한 내용을 확정 사실로 반복하지 않음 | **FAIL** — 고객, 수익 가설이 5버전과 같음 |
+| 빠진 핵심을 다음 질문이 확인 | **FAIL** — `어떤 방식으로 양조장과의 파트너십을 구체화할 계획인가?` |
+| 저장 근거와 응답 일치 | **기록** — 행의 `revisionGate.summary`와 HTTP `revision.summary`가 같음 |
+| 후속 검토 게이트 | **BLOCKED** |
+| Production | **잠금 유지** |
