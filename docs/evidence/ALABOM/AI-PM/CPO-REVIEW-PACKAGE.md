@@ -179,3 +179,40 @@ GitHub deployments에서 `cursor/ai-pm-first-review-4b88`의 최신 성공 Previ
 - 최종 판정: **BLOCKED**
 
 CPO 독립 검토는 위 항목이 모두 PASS일 때만 요청한다. 이번 실행은 그 조건에 닿지 못했다. CEO 최종 검토를 요청하지 않는다.
+
+## 9. 2026-10-28 10:21 KST 키 위치와 로그인 경로
+
+CPO 판정은 BLOCKED다. 이번 절은 우회 인증을 다시 호출하지 않았고, 서비스 롤로 검토 행을 만들지 않았다. 실행하지 않은 항목은 PASS로 두지 않는다. Production 잠금과 PR #207 미병합은 유지했다.
+
+### 키
+
+10:21 KST에 이 VM의 비밀 이름 목록은 `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`뿐이다. `GPT_API_KEY`는 그 목록에 없다. 이 프로세스에서도 ABSENT다. `OPENAI_API_KEY`로 대체하지 않는다.
+
+`readGptApiKey()`는 리뷰 요청을 처리하는 Next 서버의 `GPT_API_KEY`만 읽는다. 그 서버는 Preview 함수다. Cloud Agent 비밀 목록에 키를 넣는 것은 그 함수의 환경변수가 아니다. 8절의 `login_required`는 `readGptApiKey()`보다 앞에서 반환되므로, `fb8efdab` Preview 함수 안에 키가 있는지는 **미검증**이다. 서버 키 없음으로 기록하지 않는다.
+
+이 프로세스에는 키 값이 없어 Runtime Secret을 추가하지 못했다. 값을 채팅, 로그, 커밋에 넣지 않았다. 목록에 키가 없는 상태에서 새 Agent를 띄우면 같은 목록을 받으므로, 그 확인 실행은 시작하지 않았다.
+
+### 앱 세션
+
+`getServerAuthUser()`는 Supabase `auth.getUser()`가 성공한 경우에만 사용자를 반환한다. 쿠키 이름은 `sb-`로 시작하고 `auth-token`을 포함한다. 데모 게스트와 `WORKSPACE_MODE=demo`는 이 세션이 아니다. 서비스 롤로 사용자를 만들거나 세션을 발급하지 않았다.
+
+로그인은 `/auth/login`의 Google OAuth이고, 완료 경로는 `/auth/callback`이다. 쿠키는 그 요청의 호스트에 묶인다. Production 호스트에서 만든 쿠키는 이 Preview 호스트로 전달되지 않는다. Vercel 우회 헤더는 이 쿠키를 만들지 않는다.
+
+이 VM으로 브라우저 세션을 넘기는 안전한 저장소는 없다. 쿠키를 채팅, 증거 문서, Runtime Secret에 복사하는 방식은 쓰지 않는다. 세션 값을 받지 않고 검증하는 경로는 하나다. Preview 호스트에서 Google 로그인한 브라우저가 그 호스트의 리뷰 API를 호출하고, 그 다음 이 쪽은 `ai_pm_reviews`를 읽기만 한다. 그 호출은 이번 절에서 실행하지 않았다.
+
+### 실행하지 않은 검증
+
+| 항목 | 판정 | 근거 |
+|---|---|---|
+| Preview 빌드 식별 | 8절 유지 | 이번 절에서 build-info를 다시 호출하지 않음. SHA `fb8efdab28615f2da2dbd4bd41bd875f3c4fcc7d` |
+| Vercel 자동화 인증 | 8절 유지 | 우회 헤더를 다시 보내지 않음 |
+| 앱 로그인 | **BLOCKED** | 세션 쿠키가 이 런에 없음. 인증을 우회하지 않음 |
+| Preview 서버의 GPT 호출 | **미검증** | 라우트가 세션 확인 전에 모델을 호출하지 않음. 서버 환경의 키 존재는 응답으로 확인하지 않음 |
+| Cloud Agent의 `GPT_API_KEY` | **ABSENT** | 비밀 이름 목록에 없음. 새 실행으로 재확인하지 않음 |
+| `nextQuestion` | **미검증** | 모델 응답 없음 |
+| Supabase 저장·재조회 | **FAIL** | 2026-10-28 10:21 KST `ai_pm_reviews` `content-range */0`. 행을 넣지 않음 |
+| UI 일치 | **미검증** | 비교할 저장 결과가 없음 |
+| 후속 답변 갱신 | **미검증** | 첫 검토가 없음 |
+| 전체 | **BLOCKED** | 실모델 E2E 미완료 |
+
+CPO 독립 검토를 통과 요청으로 올리지 않는다. CEO 최종 검토를 요청하지 않는다.
