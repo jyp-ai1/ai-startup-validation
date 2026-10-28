@@ -364,3 +364,49 @@ GitHub deployment `7377685089`는 2026-10-28 14:09 KST에 성공했고 SHA는 `9
 | C. 동일 리뷰 ID의 저장·재조회·후속 | **미검증** — 리뷰 0건 |
 | D. 화면 결함 | **FAIL** — 위 세 항목. 수정하지 않음 |
 | 전체 | **BLOCKED** |
+
+## 15. 2026-10-28 15:10 KST 최신 Preview에서 모델 호출까지
+
+14절의 Production 화면은 다시 열지 않았다. UI와 북마클릿은 넣지 않았다. Production은 배포하지 않았다. 키, 쿠키, 토큰은 적지 않는다.
+
+### 실행 SHA
+
+GitHub deployment `7377894051`의 URL `https://ai-startup-validation-2e70g1z8f-jyp-ai1s-projects.vercel.app`에 우회 헤더로 `GET /api/build-info`를 보냈다. HTTP 200 `application/json`.
+
+| 항목 | 결과 |
+|---|---|
+| `data.commit` | `18ce422926388c49c713e7340b40208cb4c83d04` |
+| `data.branch` | `cursor/preview-login-gate-4b88` |
+| `data.environment` | `production`. 이것은 `NODE_ENV`다 |
+| 보호 페이지 | 우회 헤더가 있는 런타임에서는 JSON이다. 헤더가 없던 이전 읽기는 HTML이었다 |
+
+이 SHA는 14절 이후의 증거 문서 커밋이다. 검토 버튼 코드는 그 이전 `c23e37c7`에 들어 있고 이 커밋의 조상이다.
+
+### 인증 후 검토 요청
+
+세션은 e2e 헬퍼와 같은 magic-link 사용자 `cto-qa@launchlens.dev`다. `generate_link` HTTP 200, `verify` HTTP 200. 그 쿠키로 `GET /api/ai-pm-review`는 HTTP 200이었다. 앱 세션 검사를 통과했다.
+
+버튼과 같은 `multipart` 필드 `text`로 `POST /api/ai-pm-review`를 두 번 보냈다. 두 번째 호출은 25초 뒤 1회다. 세 번째는 보내지 않았다.
+
+| 호출 | review ID | HTTP | 경과 | 저장 상태 | evidence | callCount | latencyMs | 오류 |
+|---|---|---|---|---|---|---|---|---|
+| 1 | `db40d893-721c-4b54-8ece-3bb03863c443` | 200 | 2218ms | failed, version 1, durable true | `live_network` | 1 | 1279 | `OpenAI rate limit exceeded` |
+| 2 | `f0f53d1a-2f8e-4dbc-bcfa-04e82b38e01c` | 200 | 1164ms | failed, version 2, durable true | `live_network` | 1 | 387 | `OpenAI rate limit exceeded` |
+
+`questionSource`는 null, `nextQuestion`은 null, `rawContent` 길이는 null, `model`은 null이다. 요청에 넣은 모델 이름은 코드의 `gpt-4o-mini`다. 응답 본문이 오기 전에 예외가 나서 저장 레코드의 `model`은 비어 있다. 어댑터 `mapOpenAIError`는 HTTP 429만 이 문장으로 바꾸고 응답 본문은 버린다. 그래서 저장 오류만으로는 분당 한도와 결제 한도를 나누지 못한다.
+
+키가 없으면 상태는 `not_run`, `callCount` 0, 오류 `gpt_api_key_missing`이다. 이번 두 건은 그 경로가 아니다. Preview 서버는 `GPT_API_KEY`를 읽고 모델 API를 호출했고, 제공자가 429를 반환했다.
+
+같은 ID로 REST 재조회가 되었다. `GET /api/ai-pm-review` 목록에 첫 ID가 있고, 두 번째 호출 뒤 목록 재확인은 두 번째 실행에서 실패로 끝났다. 화면이 읽는 목록 API와 저장 행의 `nextQuestion`은 둘 다 비어 있어 서로 같다. 모델 질문이 화면에 나올 응답은 없다.
+
+후속 `POST /api/ai-pm-review/follow-up`은 보내지 않았다. 부모 상태가 `succeeded`가 아니면 그 라우트는 `review_missing`이다.
+
+| 단계 | 판정 |
+|---|---|
+| 1. 최신 Preview URL과 실행 SHA | **PASS** |
+| 2. 인증 후 검토 핸들러 진입 | **PASS** — magic-link 세션, GET 200, POST가 키 읽기와 모델 호출까지 진행 |
+| 3. 모델 API 호출 | **FAIL** — 두 번 모두 제공자 HTTP 429 |
+| 4. 모델 원응답과 `nextQuestion` | **FAIL** — 원응답 없음 |
+| 5. 실패 행의 저장·재조회 | **PASS** — 위 두 ID. 모델 답변의 저장은 아님 |
+| 6. UI 일치와 후속 답변 | **BLOCKED** — 실패 행은 목록과 일치. 후속 검토는 실행하지 않음 |
+| 전체 | **BLOCKED** |
