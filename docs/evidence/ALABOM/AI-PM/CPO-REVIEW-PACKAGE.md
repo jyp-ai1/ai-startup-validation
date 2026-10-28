@@ -15,6 +15,7 @@
 | 다른 데스크톱 실행 런 | 08:30 KST | ALABOM2, ALABOM3에는 이번 비교 원문이 없다 |
 | 08:40 KST 메시지 원문 저장 | 08:42 KST | 파일 3개. Gemini 파일은 사업 입력과 동일. 모델 미전달 |
 | `GPT_API_KEY`, Vercel 자격 | 08:42 KST | 여전히 없음. Preview 비인증 재요청 없음 |
+| 자동화 우회 비밀의 실행 환경 주입 | 09:20 KST | 이 런의 주입 목록에 없음. 설정 화면은 로그인으로 이동. `/api/build-info` 요청 없음 |
 
 전체 경로(모델 호출 → 비교 분석 → 저장 → 재조회 → 화면 일치)는 시작 전에 끊겨 있다. `c22ffacb`는 화면 커밋이며 이 경로의 증거가 아니다.
 
@@ -99,8 +100,21 @@ CEO가 본 화면은 성공이 아니다. 고정 질문이 앞에 있고, 사업
 | # | 의존성 | 08:42 KST | 원인 | 필요한 권한 |
 |---|---|---|---|---|
 | 1 | 비교 원문을 이 런에서 읽기 | 부분 | GPT 원문은 `gpt-supplied.md`에 있다. Gemini로 적힌 파일은 사업 입력과 같다 | 독립된 Gemini 검토 원문. 이 런이 그 글을 파일로 읽을 수 있어야 한다. 사업 설명을 다시 붙인 글은 그 원문이 아니다 |
-| 2 | 인증된 Preview의 `/api/build-info` | 막힘 | `VERCEL_TOKEN`, `VERCEL_OIDC_TOKEN`, `VERCEL_AUTOMATION_BYPASS_SECRET` 없음. CLI 설정에 토큰 키가 없다. `vercel` 명령이 이 셸에 없다. Vercel MCP(`web_fetch_vercel_url`)가 이 런의 도구 목록에 없다 | 이 런에서 끝난 `vercel login`, 또는 Vercel MCP `web_fetch_vercel_url`. 보호를 끄지 않는다. 비인증 재요청은 중단했다. `19e8fcca`, `c22ffacb`, `723f3187`은 앱에서 읽히기 전까지 검증 SHA가 아니다 |
+| 2 | 인증된 Preview의 `/api/build-info` | 막힘 | 2026-10-28 09:20 KST. 이 런에 주입된 비밀 이름은 `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`뿐이다. `VERCEL_AUTOMATION_BYPASS_SECRET`은 그 목록에 없다. Vercel 설정 주소는 `/login`으로 끝난다. 헤더 `x-vercel-protection-bypass`를 붙일 값이 없어 요청을 보내지 않았다 | 비밀값을 이 대화에 붙이지 않는다. Cursor Cloud Agent 환경 `316b619d-a743-11f1-a7d1-d6b4613131ce`의 비밀 저장소에 `VERCEL_AUTOMATION_BYPASS_SECRET`이라는 이름으로 넣는다. 이미 떠 있는 이 런은 새 비밀을 받지 않으므로, 저장 뒤 새 실행이 필요하다. Vercel 화면에서는 그 비밀을 시스템 환경변수 `VERCEL_AUTOMATION_BYPASS_SECRET`으로 지정한 뒤 Preview를 다시 배포한다. 그 다음에만 새 실행이 헤더로 `/api/build-info`를 읽는다. Production 보호는 바꾸지 않는다 |
 | 3 | 검토를 실행하는 서버의 `GPT_API_KEY` | 없음 | 이 프로세스 환경에 키가 없다 | 검토를 실행하는 런타임에 `GPT_API_KEY`가 있어야 한다. 값 출력, 로그, 저장은 하지 않는다. 존재와 호출 결과만 확인한다 |
+
+### 2026-10-28 09:20 KST 자동화 인증 연결
+
+Vercel 프로젝트에 Protection Bypass for Automation이 추가됐다는 보고와, 이 실행 환경이 그 비밀을 요청에 실을 수 있는지는 별개다.
+
+| 단계 | 결과 |
+|---|---|
+| 비밀이 목록에 있는지, `VERCEL_AUTOMATION_BYPASS_SECRET` 시스템 환경변수로 지정됐는지 | 이 런에서는 확인하지 못했다. `https://vercel.com/jyp-ai1s-projects/ai-startup-validation/settings/deployment-protection` 은 로그인 화면으로 이동했다. HTTP 200, 최종 경로 `/login` |
+| Preview 재배포 | 환경변수 지정이 확인되기 전에는 적용 배포로 보지 않는다. 08:45 KST Preview는 `7e27e461`, URL `https://ai-startup-validation-h2jmgyi08-jyp-ai1s-projects.vercel.app`, GitHub deployment `7373232579`다. 이 기록 커밋의 push는 Git 연동으로 새 Preview를 만든다. 그 배포는 시스템 환경변수 지정을 확인한 재배포가 아니다. 어느 URL이든 `/api/build-info`는 비밀값 없이 호출하지 않는다 |
+| `x-vercel-protection-bypass` 적용 | 하지 않았다. 비밀값이 이 프로세스에 없다. 값의 길이, 앞자리, 로그를 남기지 않는다 |
+| 앱 JSON과 SHA | 없음. 로그인 HTML이 다시 나왔다는 뜻이 아니라, 요청 자체가 없다 |
+
+이 인증이 연결돼도 모델 호출, 저장, 재조회, 화면 일치는 다음 단계다. 이 프로세스의 `GPT_API_KEY`는 여전히 없다. Vercel Preview 환경에 키가 등록됐다는 보고만으로 이 런의 모델 호출을 시작하지 않는다.
 
 1과 2가 갖춰져도 3이 없으면 모델 호출을 하지 않는다. 인증만으로 검증 시작으로 기록하지 않는다. 세 가지가 모두 갖춰진 뒤에만 모델 호출 → 비교 분석 → 저장 → 재조회 → 새로고침 후 화면 일치를 수행한다.
 
@@ -108,4 +122,4 @@ CPO 검토 요청 조건은 충족되지 않았다. PASS가 아니다.
 
 ## 7. CTO 판정
 
-BLOCKED. 원문 저장은 호출 증거가 아니다. 고정 질문 화면은 비교 기준을 통과하지 못했고, 독립 모델 결론은 아직 없다.
+BLOCKED. 자동화 인증은 Vercel 프로젝트 설정으로 보고됐고, 이 실행 환경의 요청에는 연결되지 않았다. 원문 저장과 설정 추가는 호출 증거가 아니다.
