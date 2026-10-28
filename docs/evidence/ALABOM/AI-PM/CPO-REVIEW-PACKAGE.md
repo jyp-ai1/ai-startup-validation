@@ -270,3 +270,33 @@ CEO Chrome의 Preview 로그인은 이 런의 브라우저가 아니다. 리뷰 
 | 저장·재조회 | **FAIL** — 이번 연결로 만든 행 없음 |
 | UI와 후속 갱신 | **미검증** |
 | 전체 | **BLOCKED** |
+
+## 13. 2026-10-28 14:03 KST Preview SHA와 첫 실패
+
+UI는 수정하지 않았다. Production `https://alabom.vercel.app`과 잠금 SHA `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`는 호출하지 않았다. 서비스 롤로 검토 행을 만들지 않았다. 키와 쿠키는 적지 않는다.
+
+GitHub deployment `7375920672`의 URL `https://ai-startup-validation-krb3t6jz8-jyp-ai1s-projects.vercel.app`에 우회 헤더로 `GET /api/build-info`를 보냈다.
+
+| 항목 | 결과 |
+|---|---|
+| HTTP | 200, `application/json` |
+| `data.commit` | `c23e37c7a887f856e1e8747a93fa0e093abc7390` |
+| `data.branch` | `cursor/preview-login-gate-4b88` |
+| `data.environment` | `production`. 이것은 `NODE_ENV`다. Production 배포가 아니다 |
+| 기준 커밋과 비교 | 같다. 이 SHA에 워크스페이스의 `AiPmReviewPanel`과 `POST /api/ai-pm-review` 호출이 들어 있다 |
+| 화면 버튼 클릭 | 관찰하지 않음. 브라우저에서 `AI PM 1차 검토`를 누르지 않았다 |
+
+같은 URL에 `POST /api/ai-pm-review`를 1회 보냈다. HTTP 401, `application/json`, `error`는 `login_required`, `review`는 null이다. 앱 세션 검사에서 멈췄다. `readGptApiKey()`와 모델 호출 코드에는 들어가지 않았다. 재시도하지 않았다.
+
+| 단계 | 판정 |
+|---|---|
+| 1. URL과 실행 SHA | **PASS** — 위 JSON |
+| 1. 버튼이 POST를 보내는지 | **미검증** — 클릭을 보지 않음 |
+| 2. 인증된 요청이 검토 로직에 진입 | **FAIL** — 401 `login_required` |
+| 3. 서버 `GPT_API_KEY`와 모델 호출 | **미검증** — 2에서 중단 |
+| 4. 모델 원응답과 `nextQuestion` | **미검증** |
+| 5. 저장·재조회 | **미검증** — 이 요청은 행을 만들지 않음 |
+| 6. UI와 후속 답변 | **미검증** |
+| 전체 | **BLOCKED** |
+
+첫 실패는 2단계다. 이 요청에는 Vercel 우회만 있었고 Supabase 세션 쿠키는 없었다. 2026-10-28 14:06 KST에 `ai_pm_reviews`는 `content-range */0`이다. 재조회할 리뷰 ID가 없다. Preview 서버의 `GPT_API_KEY`는 이 401보다 앞에서 읽히지 않으므로 미검증이다. 이 문서 커밋이 만드는 다음 Preview는 build-info로 SHA를 다시 읽기 전에는 검증 대상이 아니다. 읽은 실행 대상은 위 URL과 `c23e37c7a887f856e1e8747a93fa0e093abc7390`이다.
