@@ -703,6 +703,38 @@ describe('AI PM first review', () => {
       'founder_answer_source_unlinked:nextVerification',
       'founder_answer_source_unlinked:nextQuestion',
     ]);
+    const rootOnly = {
+      ...kept,
+      founderAnswer: kept.changes[0]?.founderAnswer,
+      changes: kept.changes.map(({ founderAnswer: _answer, ...change }) => change),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(rootOnly), context)).toEqual([
+      'founder_answer_type:judgment',
+      'founder_answer_type:hypotheses',
+      'founder_answer_type:nextVerification',
+      'founder_answer_type:nextQuestion',
+    ]);
+    const unlinkedField = {
+      ...kept,
+      changes: kept.changes.map((change) => ({
+        ...change,
+        founderAnswer: { ...change.founderAnswer, supplement: '형식적인 추가 설명' },
+      })),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(unlinkedField), context)).toEqual([
+      'founder_answer_supplement_unlinked:judgment',
+      'founder_answer_supplement_unlinked:hypotheses',
+      'founder_answer_supplement_unlinked:nextVerification',
+      'founder_answer_supplement_unlinked:nextQuestion',
+    ]);
+    const copiedChoiceGrounds = {
+      ...kept,
+      changes: kept.changes.map((change) => (change.field === 'judgment' ? { ...change, grounds: choice } : change)),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(copiedChoiceGrounds), context)).toEqual([
+      'grounds_missing_supplement:judgment',
+      'grounds_choice_copied:judgment',
+    ]);
     const repeatedChoice = '체험 프로그램을 먼저 검증할 것이라는 선택 문장.';
     const repeatedGrounds = {
       ...kept,
@@ -827,6 +859,7 @@ describe('AI PM first review', () => {
       'follow_up_output_missing_change:nextVerification',
       'follow_up_output_missing_change:nextQuestion',
       'choice_promoted_to_judgment',
+      'next_verification_input_unused',
       'next_question_regressed',
       'next_question_unknown_missing',
     ]);
@@ -859,6 +892,7 @@ describe('AI PM first review', () => {
     expect(followUpOutputContractErrors(arrayCall.report.calls[0]?.raw ?? '', arrayContext)).toEqual([
       'founder_answer_type:judgment',
       'grounds_missing_supplement:judgment',
+      'grounds_choice_copied:judgment',
       'founder_answer_type:hypotheses',
       'grounds_missing_supplement:hypotheses',
       'founder_answer_type:nextVerification',
@@ -868,6 +902,7 @@ describe('AI PM first review', () => {
       'grounds_repeated_choice',
       'choice_promoted_to_judgment',
       'hypothesis_demand_ungrounded',
+      'next_verification_input_unused',
     ]);
     const arrayParsed = JSON.parse(arrayCall.report.calls[0]?.raw ?? '{}') as {
       judgment: string;
@@ -975,6 +1010,7 @@ describe('AI PM first review', () => {
       'founder_answer_type:nextVerification',
       'next_verification_choice_unmentioned',
       'founder_answer_type:nextQuestion',
+      'next_verification_input_unused',
     ]);
     const sourceParsed = JSON.parse(sourceCall.report.calls[0]?.raw ?? '{}') as {
       judgment: string;

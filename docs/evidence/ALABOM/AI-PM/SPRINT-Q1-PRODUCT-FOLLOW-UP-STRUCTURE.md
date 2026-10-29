@@ -85,7 +85,9 @@
 
 2026-10-29 21:06 KST에 같은 세 파일을 `WRITE_COMPARE_FIXTURE` 없이 다시 실행했다. 43 passed. 픽스처의 `request`는 이전 객체와 같고, 추가된 칸은 `comparedKeys`다. `modelInvoked`는 false다. 로컬 `next build`는 실행하지 않았다. 그 시점의 Preview 비교 run id는 `q1-incremental-structure-2026-10-29`였다.
 
-2026-10-29 22:30 KST에 `ai-pm-review.test.ts` 20 passed, `ai-pm-quality-compare.test.ts` 18 passed. 모델 호출은 없다. `founderAnswer`는 `choice`, `supplement`, `source`, `status` 객체다. 선택만 있거나 `source`가 `answerOrigin`과 다르면 실패한다. 다음 Preview run id는 `q1-incremental-reflection-source-2026-10-29`다. 그 객체는 아직 없다.
+2026-10-29 22:30 KST에 `ai-pm-review.test.ts` 20 passed, `ai-pm-quality-compare.test.ts` 18 passed. 모델 호출은 없다. `founderAnswer`는 `choice`, `supplement`, `source`, `status` 객체다. 선택만 있거나 `source`가 `answerOrigin`과 다르면 실패한다. 그 뒤 Preview run `q1-incremental-reflection-source-2026-10-29`는 루트에만 `founderAnswer`가 있어 실패했다.
+
+2026-10-29 22:41 KST에 같은 세 파일 45 passed. 모델 호출은 없다. 루트 `founderAnswer`는 변경 원소를 통과시키지 않는다. 원소의 supplement가 입력과 연결되지 않거나 판단 근거가 선택 문장뿐이면 실패한다. 다음 Preview run id는 `q1-incremental-reflection-trace-2026-10-29`다. 그 객체는 아직 없다.
 
 ## 하지 않은 관문
 

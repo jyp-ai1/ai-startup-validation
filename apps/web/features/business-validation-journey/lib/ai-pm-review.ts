@@ -42,12 +42,12 @@ export const FOLLOW_UP_ANALYSIS_CONTRACT_NOTE =
 export const FOLLOW_UP_ANSWER_ORIGINS = ['synthetic-test-data', 'founder-input'] as const;
 export type FollowUpAnswerOrigin = (typeof FOLLOW_UP_ANSWER_ORIGINS)[number];
 
-export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-4';
+export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-5';
 
 export const FOLLOW_UP_FOUNDER_ANSWER_STATUS = 'unverified-input';
 
 export const FOLLOW_UP_OUTPUT_CONTRACT_NOTE =
-  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion이다. founderAnswer는 문자열이면 실패다. choice, supplement, source, status를 구분해 적는다. supplement가 빠지거나 source가 answerOrigin과 다르면 실패다. status는 unverified-input이다. 같은 선택 문장을 네 필드의 grounds로 반복하면 실패다.';
+  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion이다. founderAnswer는 changes 원소 안의 객체다. 루트 founderAnswer는 그 원소를 통과시키지 않는다. choice, supplement, source, status를 구분한다. supplement가 입력과 연결되지 않으면 실패다. 선택 문장만 판단 근거이면 실패다.';
 
 export const FOLLOW_UP_OUTPUT_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'] as const;
 
@@ -1226,6 +1226,9 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
     else if (absentInputMarkers(context.supplement).length > 0 && !absentInputMarkers(context.supplement).some((marker) => grounds.includes(marker))) {
       errors.push(`grounds_missing_supplement:${field}`);
     }
+    if (field === 'judgment' && context.choiceLabel && grounds && choiceOnlyGrounds(grounds, context.choiceLabel)) {
+      errors.push('grounds_choice_copied:judgment');
+    }
     if (changed) {
       if (unchangedReason) errors.push(`follow_up_output_unchanged_reason:${field}`);
     } else if (!unchangedReason) errors.push(`follow_up_output_unchanged_reason:${field}`);
@@ -1268,6 +1271,13 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
   const claimText = [judgment, hypotheses.join('\n'), nextVerification, nextQuestion, recordedGrounds.join('\n')].join('\n');
   if (inventedPresence(claimText, context.supplement)) errors.push('absent_input_invented');
   if (experienceFirst && !nextVerification.includes('체험')) errors.push('next_verification_priority_missing');
+  if (
+    experienceFirst &&
+    absentInputMarkers(context.supplement).some((marker) => marker.includes('양조장')) &&
+    !nextVerification.includes('양조장')
+  ) {
+    errors.push('next_verification_input_unused');
+  }
   if (experienceFirst && /마케팅/.test(nextQuestion) && /효과|우선|먼저|검증/.test(nextQuestion)) errors.push('next_question_regressed');
   if (experienceFirst) {
     const markers = absentInputMarkers(context.supplement);
@@ -1313,17 +1323,18 @@ function reviewSystemPrompt(): string {
     'hypotheses는 비어 있지 않은 문자열 배열이다.',
     'changes는 JSON 배열이다. 객체 맵, 문자열, 누락, 배열이 아닌 원소는 실패다.',
     '배열 원소는 네 개다. field는 judgment, hypotheses, nextVerification, nextQuestion 이다.',
-    'founderAnswer는 문자열이 아니다. 네 필드의 changes가 같은 객체를 쓴다.',
+    '루트에 founderAnswer 키를 만들지 않는다. 루트 객체는 changes 원소를 통과시키지 않는다.',
+    'founderAnswer는 각 changes 원소 안의 객체다. 문자열이면 실패다.',
     'founderAnswer.choice는 선택 문장 그대로다. 선택이 없으면 null이다.',
     'founderAnswer.supplement는 추가 설명의 핵심이다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 네 말을 적는다. 추가 설명 전체를 복사하지 않는다.',
     'founderAnswer.source는 answerOrigin과 같다.',
     'founderAnswer.status는 unverified-input 이다. 검증된 시장 사실이 아니다.',
-    'choice만 있고 supplement가 없으면 실패다. source가 answerOrigin과 다르면 실패다.',
-    '예시 founderAnswer: {"choice":"체험 프로그램을 먼저 검증할 것","supplement":"예약 고객, 가격, 계약, 확정된 양조장은 없다","source":"synthetic-test-data","status":"unverified-input"}',
-    '각 원소는 previous, founderAnswer, updated, grounds, unchangedReason을 가진다.',
+    'choice만 있고 supplement가 없으면 실패다. supplement가 입력 문장과 연결되지 않으면 실패다. source가 answerOrigin과 다르면 실패다.',
+    '예시 원소: {"field":"judgment","previous":"저장 판단","founderAnswer":{"choice":"체험 프로그램을 먼저 검증할 것","supplement":"예약 고객, 가격, 계약, 확정된 양조장은 없다","source":"synthetic-test-data","status":"unverified-input"},"updated":"저장 판단","grounds":"체험 프로그램을 먼저 검증할 것. 추가 설명은 예약 고객, 가격, 계약, 확정된 양조장은 없다. 이 없음은 판단을 바꾸지 않는다.","unchangedReason":"선택은 계획이고 수요를 확인한 문장이 아니다."}',
+    '나머지 세 원소도 같은 founderAnswer 객체를 원소 안에 넣는다. previous, updated, grounds, unchangedReason은 그 필드 값이다.',
     'previous는 요청의 저장값을 그대로 적는다. hypotheses의 previous와 updated는 항목을 " / "로 잇는다.',
     'updated는 그 필드의 반환값과 같다.',
-    'grounds가 비어 있으면 실패다. 네 필드의 grounds가 같은 선택 문장이면 실패다. 계획은 그 계획이 옳다는 근거가 아니다.',
+    'grounds가 비어 있으면 실패다. 판단의 grounds가 선택 문장뿐이면 실패다. 네 필드의 grounds가 같은 선택 문장이면 실패다. 계획은 그 계획이 옳다는 근거가 아니다.',
     '추가 설명에 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 말을 각 grounds에 넣는다. 그 없음은 수요가 있다는 근거가 아니다.',
     'updated가 previous와 다르면 unchangedReason은 빈 문자열이다.',
     'updated가 previous와 같으면 unchangedReason에 바꾸지 않은 이유를 적고, grounds에도 추가 설명과의 관계를 적는다.',
@@ -1334,7 +1345,7 @@ function reviewSystemPrompt(): string {
     'founderFacts에 선택 문장이나 추가 설명을 넣지 않는다.',
     'revenueModel은 저장값에 가설 표시가 있으면 그 표시를 유지한다. 가격, 예약, 계약이 확인되지 않았으면 확정된 수익으로 쓰지 않는다.',
     '추가 설명이 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 없음을 확인된 사실과 구분한다. hypotheses를 그대로 두면 grounds와 unchangedReason에 그 없음을 적는다.',
-    '선택이 체험을 먼저 검증하는 계획이면 nextVerification만 체험 확인으로 바꾼다. grounds에는 선택 문장과 추가 설명의 없음 문장을 함께 넣는다.',
+    '선택이 체험을 먼저 검증하는 계획이면 nextVerification은 체험을 열 확정된 양조장이 있는지부터 확인한다. 체험 확인처럼 짧은 말만 쓰지 않는다. grounds에는 선택 문장과 추가 설명의 없음 문장을 함께 넣는다.',
     '그 선택이면 nextQuestion은 마케팅 효과를 다시 먼저 묻지 않는다. 추가 설명이 없다고 한 양조장, 가격, 예약, 계약 중 하나를 묻는다.',
     '가설이 강화되었다고 쓰지 않는다. 수요가 있다고 단정하지 않는다.',
   ].join(' ');
