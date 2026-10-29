@@ -99,6 +99,8 @@
 
 2026-10-30 00:16 KST에 같은 세 파일 45 passed. 모델 호출은 없다. 저장된 가설이 미확인이면 다른 문장으로 바꾸면 실패한다. `nextQuestion`이 물음표로 끝나지 않거나 지시 문장이면 실패한다. `effect`와 `reason`이 같으면 실패한다. 그 뒤 Preview run `q1-incremental-reflection-question-2026-10-29`는 가설 `미확인`, 질문 `양조장 후보가 있는가?`, 검증 문장, 수익 가설은 맞췄으나 세 원소의 선택과 추가 설명을 null로 두어 오류 13건이다. `SPRINT-Q1-INCREMENTAL-REFLECTION-QUESTION.md`.
 
+2026-10-30 00:40 KST에 모델 호출은 없다. 같은 세 파일에 경로 추적 테스트 2건을 더해 47 passed다. 화면은 답을 저장하고 2차 요청을 보내지 않는다. 격리 run의 2차 요청에는 1차 분석과 선택과 추가 설명이 들어 있다. 그 반환을 `parseSections`에 넣으면 저장 섹션이 되지 않는다. `SPRINT-Q1-FOLLOW-UP-PATH.md`.
+
 ## 하지 않은 관문
 
 | 관문 | 상태 |

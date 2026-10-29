@@ -1749,6 +1749,111 @@ describe('AI PM first review', () => {
     expect(questionParsed.changes.filter((change) => change.field !== 'judgment').every((change) => change.founderAnswer.choice === null)).toBe(true);
   });
 
+  it('shows the second request carries the first analysis while the screen never sends it', () => {
+    const recorded = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-question-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as {
+      productFollowUpInvoked: boolean;
+      report: { calls: Array<{ raw: string; userPrompt: string }> };
+    };
+    expect(recorded.productFollowUpInvoked).toBe(false);
+    const sent = JSON.parse(recorded.report.calls[0]?.userPrompt ?? '{}') as {
+      originalInput: string;
+      previousQuestion: string;
+      previousAnalysis: { judgment: string; nextQuestion: string; hypotheses: string[]; revenueModel: string };
+      founderChoice: { label: string; answerOrigin: string };
+      founderSupplement: string;
+      answerOrigin: string;
+    };
+    expect(sent.originalInput.length).toBeGreaterThan(20);
+    expect(sent.previousAnalysis.judgment.length).toBeGreaterThan(0);
+    expect(sent.previousQuestion).toBe(sent.previousAnalysis.nextQuestion);
+    expect(sent.founderChoice.label).toBe('체험 프로그램을 먼저 검증할 것');
+    expect(sent.founderChoice.answerOrigin).toBe('synthetic-test-data');
+    expect(sent.founderSupplement).toContain('확정된 양조장');
+    expect(sent.answerOrigin).toBe('synthetic-test-data');
+    const raw = recorded.report.calls[0]?.raw ?? '';
+    expect(parseSections(raw, sent.originalInput)).toBeNull();
+    const panel = readFileSync(new URL('../../components/ai-pm-review-panel.tsx', import.meta.url), 'utf8');
+    expect(panel).not.toContain('/api/ai-pm-review/follow-up');
+    expect(panel).toContain("fetch('/api/ai-pm-review/feedback'");
+    expect(panel).toContain('답을 저장했습니다. 모델 호출은 없습니다.');
+  });
+
+  it('keeps the parent analysis when a reflection return cannot be stored as sections', async () => {
+    const recorded = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-question-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as { report: { calls: Array<{ raw: string }> } };
+    const raw = recorded.report.calls[0]?.raw ?? '';
+    const store = openAiPmReviewStore(storePath());
+    const seen: ChatRequest[] = [];
+    const chat = async (request: ChatRequest) => {
+      seen.push(request);
+      return reply(seen.length === 1 ? JSON.stringify(sections()) : raw);
+    };
+    const first = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    await saveReviewFeedback({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      now: NOW,
+      body: {
+        reviewId: first.record.reviewId,
+        choiceId: 'c1',
+        choiceLabel: '체험 프로그램을 먼저 검증할 것',
+        otherText: '',
+      },
+    });
+    const follow = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement: '예약 고객, 가격, 계약, 확정된 양조장은 없다.',
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(follow.ok).toBe(true);
+    if (!follow.ok) return;
+    const payload = JSON.parse(seen[1]?.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      originalInput: string;
+      previousAnalysis: { judgment: string };
+      founderChoice: { label: string };
+      founderSupplement: string;
+      answerOrigin: string;
+    };
+    expect(payload.originalInput).toBe(PLAN);
+    expect(payload.previousAnalysis.judgment).toBe(sections().judgment);
+    expect(payload.founderChoice.label).toBe('체험 프로그램을 먼저 검증할 것');
+    expect(payload.founderSupplement).toContain('확정된 양조장');
+    expect(payload.answerOrigin).toBe('founder-input');
+    expect(follow.record.parentReviewId).toBe(first.record.reviewId);
+    expect(follow.record.sections).toBeNull();
+    expect(follow.record.rawContent).toBe(raw);
+    expect(follow.record.status).toBe('failed');
+    const parent = await store.readReview('user-a', first.record.reviewId);
+    expect(parent?.sections?.judgment).toBe(sections().judgment);
+    expect(parent?.sections?.nextQuestion).toBe(sections().nextQuestion);
+    store.close();
+  });
+
   it('sends a typed note and the same file text through one review', async () => {
     const typed = reviewInputFromParts({ typed: PLAN });
     const file = reviewInputFromParts({ extracted: PLAN, fileName: 'plan.txt' });
