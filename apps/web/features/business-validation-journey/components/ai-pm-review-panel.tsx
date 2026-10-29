@@ -6,7 +6,7 @@ import { Button, Textarea } from '@repo/ui';
 
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 import { businessBodyForReviewMatch, stripReviewIntakeLines } from '@/lib/project/parse-intake-seed';
-import type { AiPmReviewView } from '../lib/ai-pm-review';
+import { reviewFailureCopy, type AiPmReviewView } from '../lib/ai-pm-review';
 import {
   REVIEW_FOCUS_PRESETS,
   REVIEW_PURPOSE_LABEL,
@@ -411,7 +411,9 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
       ) : null}
 
       {active?.status === 'failed' && !analysis ? (
-        <p className="text-sm">검토가 끝나기 전에 실패했습니다. 결과 원문은 없습니다.</p>
+        <p className="text-sm" data-testid="ai-pm-review-error">
+          {reviewFailureCopy(active.failure)}
+        </p>
       ) : null}
 
       {step === 'result' ? (
@@ -923,7 +925,7 @@ function writeStoredChoice(reviewId: string, choice: ChoiceAnswer) {
 function statusLine(review: AiPmReviewView): string {
   if (review.status === 'ready') return '모델 검토를 저장했습니다.';
   if (review.status === 'unavailable') return '지금은 모델 검토 결과를 만들지 못했습니다. 입력은 여기에 남아 있습니다.';
-  return '검토가 끝나기 전에 실패했습니다. 결과 원문은 없습니다.';
+  return reviewFailureCopy(review.failure);
 }
 
 function inputError(error?: string): string {

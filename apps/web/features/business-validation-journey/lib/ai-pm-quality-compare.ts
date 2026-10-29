@@ -188,6 +188,93 @@ export function buildQuality6CompareRequest(text = COMPARE_BUSINESS_INPUT): Chat
   };
 }
 
+export const QUALITY7_PROMPT_VERSION = 'quality-7-cpo-draft';
+
+export const QUALITY7_REVENUE_ITEMS = ['체험 참가비', '수수료', '수익 공유', '마케팅 서비스 수수료'] as const;
+
+/** A fee word inside the marketing-fee phrase does not count as its own stated fee. */
+export function revenueItemStated(text: string, item: (typeof QUALITY7_REVENUE_ITEMS)[number]): boolean {
+  if (item === '수수료') return text.replace(/마케팅 서비스 수수료/g, '').includes('수수료');
+  if (item === '체험 참가비') return text.includes('참가비');
+  return text.includes(item);
+}
+
+/** One string. Each item carries its own 가설 or 사실 mark. */
+export function quality7RevenueString(text: string): string {
+  return QUALITY7_REVENUE_ITEMS.map((item) =>
+    revenueItemStated(text, item) ? `사실: ${item} — 입력에 있다.` : `가설: ${item} — 입력에 없다.`,
+  ).join(' ');
+}
+
+export const QUALITY7_SYSTEM_PROMPT = [
+  '프롬프트 버전 quality-7-cpo-draft.',
+  'JSON 객체만 반환한다.',
+  `키는 ${QUALITY5_OUTPUT_KEYS} 이다.`,
+  'summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, judgment, nextVerification, nextQuestion, nextQuestionReason은 문자열이다.',
+  'strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, choices는 문자열 배열이다.',
+  'revenueModel의 JSON 타입은 string이다. 객체, 배열, 숫자로 쓰지 않는다.',
+  '입력에 없는 체험 참가비, 수수료, 수익 공유, 마케팅 서비스 수수료는 그 문자열 안에서 항목마다 가설: 로 시작한다. 한 항목의 가설: 은 다른 항목에 적용되지 않는다. 입력에 적힌 수익만 사실: 로 시작한다.',
+  'customer는 이용자다. payer는 비용을 내는 주체다. 입력에 지불자가 없으면 payer는 미확인이다. 이용자를 지불자로 쓰지 않는다.',
+  'nextQuestion은 하나다. 협력 가능성이 높다, 낮다, 미정인지만 묻지 않는다. 질문과 choices는 같은 결정이다.',
+  '모델이나 공급사 이름은 쓰지 않는다.',
+].join('\n');
+
+export function quality7UserBlock(text: string): string {
+  const choiceLines = quality6DecisionBlock(text)
+    .split('\n')
+    .filter((line) => !line.startsWith('입력에 없는 참가비'));
+  return [
+    ...choiceLines,
+    '입력에 지불자가 없으면 payer는 미확인이다. 이용자를 지불자로 쓰지 않는다.',
+    'revenueModel의 JSON 타입은 string이다. 객체, 배열, 숫자로 쓰지 않는다.',
+    `revenueModel 값은 다음 문자열만 쓴다. ${quality7RevenueString(text)}`,
+    '각 가설: 과 사실: 은 바로 뒤의 항목 하나에만 적용된다.',
+    'operatingModel은 구상이며 결합 모델을 확정 사실로 쓰지 않는다.',
+  ].join('\n');
+}
+
+export function buildQuality7CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
+  return {
+    model: AI_PM_REVIEW_MODEL,
+    temperature: 0.2,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: QUALITY7_SYSTEM_PROMPT },
+      {
+        role: 'user',
+        content: `사업 입력:\n${text}\n\n프롬프트 버전 ${QUALITY7_PROMPT_VERSION}.\n키: ${QUALITY5_OUTPUT_KEYS}.\n문자열 키는 문자열이고 revenueModel도 문자열이다.\n${quality7UserBlock(text)}`,
+      },
+    ],
+  };
+}
+
+/** Item marks on a stored string. A missing raw stays unchecked. This does not call a model. */
+export function scoreRevenueContract(
+  raw: string | null,
+  sourceText: string,
+): { typeOk: boolean; itemsOk: boolean; detail: string } {
+  if (!raw?.trim()) return { typeOk: false, itemsOk: false, detail: '원문 없음' };
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return { typeOk: false, itemsOk: false, detail: 'JSON이 아니다' };
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return { typeOk: false, itemsOk: false, detail: 'JSON 객체가 아니다' };
+  }
+  const value = (parsed as Record<string, unknown>).revenueModel;
+  if (typeof value !== 'string') {
+    return { typeOk: false, itemsOk: false, detail: `revenueModel 타입은 ${value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value}` };
+  }
+  const missing = QUALITY7_REVENUE_ITEMS.filter((item) => {
+    const marker = revenueItemStated(sourceText, item) ? `사실: ${item}` : `가설: ${item}`;
+    return !value.includes(marker);
+  });
+  return { typeOk: true, itemsOk: missing.length === 0, detail: missing.length ? `표시 없는 항목: ${missing.join(', ')}` : value };
+}
+
 export function buildQuality5CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
   return {
     model: AI_PM_REVIEW_MODEL,

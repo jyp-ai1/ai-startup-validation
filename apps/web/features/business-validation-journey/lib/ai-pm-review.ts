@@ -69,10 +69,12 @@ export type AiPmReviewView = {
   sections: ReviewSections | null;
   /** Set only when nextQuestion was parsed from the review model payload. */
   questionSource: 'model-review' | null;
-  finishedAt: string;
-  feedback: AiPmFeedbackView[];
-  revision: { pass: boolean; summary: string; changes: string[] } | null;
-};
+    finishedAt: string;
+    feedback: AiPmFeedbackView[];
+    revision: { pass: boolean; summary: string; changes: string[] } | null;
+    /** Stored error. A type mismatch is not shown as an analysis. */
+    failure: string | null;
+  };
 
 export function normalizeReviewText(text: string): string {
   return text.replace(/\r\n/g, '\n').replace(/[ \t]+\n/g, '\n').trim();
@@ -250,7 +252,38 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
     revision: record.revisionGate
       ? { pass: record.revisionGate.pass, summary: record.revisionGate.summary, changes: record.revisionGate.changes }
       : null,
+    failure: clientFailure(record.error),
   };
+}
+
+const CLIENT_FAILURES = ['revenue_model_type', 'invalid_json', 'unstructured_response'] as const;
+
+function clientFailure(error: string | null): (typeof CLIENT_FAILURES)[number] | null {
+  return CLIENT_FAILURES.find((code) => code === error) ?? null;
+}
+
+/** Copy for a failed review. A wrong field type is named instead of shown as an analysis. */
+export function reviewFailureCopy(failure: string | null): string {
+  if (failure === 'revenue_model_type') return '수익 구조가 문자열이 아니어서 분석으로 표시하지 않습니다.';
+  if (failure === 'invalid_json' || failure === 'unstructured_response') {
+    return '응답이 제품이 읽는 필드와 달라 분석으로 표시하지 않습니다.';
+  }
+  return '검토가 끝나기 전에 실패했습니다. 결과 원문은 없습니다.';
+}
+
+/** Why a model string cannot be stored as an analysis. Null means the product parser accepts it. */
+export function reviewContractError(raw: string): 'invalid_json' | 'revenue_model_type' | 'unstructured_response' | null {
+  const stripped = raw.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(stripped);
+  } catch {
+    return 'invalid_json';
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return 'invalid_json';
+  const record = parsed as Record<string, unknown>;
+  if ('revenueModel' in record && typeof record.revenueModel !== 'string') return 'revenue_model_type';
+  return parseSections(raw) ? null : 'unstructured_response';
 }
 
 /** Older succeeded follow-ups have no stored gate. Compare them on read and keep the row unchanged. */
@@ -778,7 +811,7 @@ async function finishCall(input: {
       status: accepted ? 'succeeded' : 'failed',
       evidence: input.input.evidence,
       callCount: 1,
-      error: sections ? (revisionGate && !revisionGate.pass ? 'revision_gate' : null) : 'unstructured_response',
+      error: sections ? (revisionGate && !revisionGate.pass ? 'revision_gate' : null) : reviewContractError(response.content),
       provider: response.provider === 'google' ? 'google' : response.provider === 'openai' ? 'openai' : null,
       model: response.model,
       sections,

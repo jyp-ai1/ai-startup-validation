@@ -1,10 +1,22 @@
 import { spawnSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
 
-import { AI_PM_FIRST_PROMPT_VERSION, AI_PM_REVIEW_MODEL, buildFirstReviewRequest, buildFollowUpRequest } from '../ai-pm-review';
+import {
+  AI_PM_FIRST_PROMPT_VERSION,
+  AI_PM_REVIEW_MODEL,
+  buildFirstReviewRequest,
+  buildFollowUpRequest,
+  parseSections,
+  presentReview,
+  reviewContractError,
+  reviewFailureCopy,
+} from '../ai-pm-review';
+import { openAiPmReviewStore, type StoredReview } from '../ai-pm-review-store';
 import { KNOWN_FAILURE_A, KNOWN_FAILURE_B, scoreBreweryRegression } from '../ai-pm-quality-scenarios';
 import {
   PREVIEW_COMPARE_RUN_ID,
@@ -21,8 +33,14 @@ import {
   QUALITY5_SYSTEM_PROMPT,
   QUALITY6_BREWERY_CHOICES,
   QUALITY6_PROMPT_VERSION,
+  QUALITY7_PROMPT_VERSION,
+  QUALITY7_SYSTEM_PROMPT,
   buildQuality6CompareRequest,
+  buildQuality7CompareRequest,
   quality6DecisionBlock,
+  quality7RevenueString,
+  quality7UserBlock,
+  scoreRevenueContract,
   buildQuality2CompareRequest,
   buildQuality3CompareRequest,
   buildQuality5CompareRequest,
@@ -32,7 +50,7 @@ import {
   sprintGateSummary,
   compareConfounders,
 } from '../ai-pm-quality-compare';
-import { AI_PM_REVIEW_INPUT_TOKEN_BUDGET, clampReviewText, estimateReviewTokens, parseSections } from '../ai-pm-review';
+import { AI_PM_REVIEW_INPUT_TOKEN_BUDGET, clampReviewText, estimateReviewTokens } from '../ai-pm-review';
 
 describe('quality-2 and quality-3 compare requests', () => {
   it('keeps quality-2 equal to the product first-review request', () => {
@@ -98,12 +116,13 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality6-once-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality7-once-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('quality-6-request.json');
+    expect(script).toContain('quality-7-request.json');
+    expect(script).not.toContain('quality-6-request.json');
     expect(script).not.toContain('quality-compare-requests.json');
     expect(script).not.toContain('/api/ai-pm-review/follow-up');
     expect(script).not.toContain('buildFollowUpRequest');
@@ -264,6 +283,67 @@ describe('quality-2 and quality-3 compare requests', () => {
     };
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(repairUrl, `${JSON.stringify(repair, null, 2)}\n`);
     expect(JSON.parse(readFileSync(repairUrl, 'utf8'))).toEqual(repair);
+    const nextUrl = new URL('../quality-7-request.json', import.meta.url);
+    const next = {
+      businessInput: COMPARE_BUSINESS_INPUT,
+      baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-pair-recorded.json',
+      requests: [{ promptVersion: QUALITY7_PROMPT_VERSION, request: buildQuality7CompareRequest() }],
+    };
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(nextUrl, `${JSON.stringify(next, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(nextUrl, 'utf8'))).toEqual(next);
+  });
+
+  it('keeps quality-7 revenue as a string and rejects the quality-6 object', async () => {
+    const brewery = buildQuality7CompareRequest();
+    const system = brewery.messages[0]?.content ?? '';
+    const user = brewery.messages[1]?.content ?? '';
+    const revenue = quality7RevenueString(COMPARE_BUSINESS_INPUT);
+    expect(AI_PM_FIRST_PROMPT_VERSION).toBe('quality-2');
+    expect(system).toBe(QUALITY7_SYSTEM_PROMPT);
+    expect(system).toContain('revenueModel의 JSON 타입은 string이다.');
+    expect(user).toContain('revenueModel의 JSON 타입은 string이다.');
+    expect(user).toContain(revenue);
+    expect(revenue.split('가설:').length - 1).toBe(4);
+    for (const choice of QUALITY6_BREWERY_CHOICES) expect(user).toContain(choice);
+    expect(buildFirstReviewRequest(COMPARE_BUSINESS_INPUT).messages[0]?.content).not.toContain(QUALITY7_PROMPT_VERSION);
+
+    const experienceOnly = '외국인 관광객에게 막걸리 만들기체험만 안내한다.';
+    const supportOnly = '양조장 온라인 마케팅 페이지 제작만 대행한다.';
+    const unpaid = '동네 빵집 단골에게 빵을 만들어 준다. 누가 내는지는 아직 없다.';
+    const stated = `${COMPARE_BUSINESS_INPUT}\n체험 참가비는 1인 3만원으로 정했다.`;
+    expect(quality7UserBlock(experienceOnly)).not.toContain(QUALITY6_BREWERY_CHOICES[0]);
+    expect(quality7UserBlock(supportOnly)).not.toContain(QUALITY6_BREWERY_CHOICES[0]);
+    expect(quality7UserBlock(unpaid)).toContain('payer는 미확인');
+    expect(quality7RevenueString(stated)).toContain('사실: 체험 참가비');
+    expect(quality7RevenueString(stated)).toContain('가설: 수수료');
+    expect(quality7RevenueString(stated)).toContain('가설: 마케팅 서비스 수수료');
+
+    const accepted = analysisRaw(revenue);
+    expect(reviewContractError(accepted)).toBeNull();
+    expect(parseSections(accepted, COMPARE_BUSINESS_INPUT)?.revenueModel).toBe(revenue);
+    expect(scoreRevenueContract(accepted, COMPARE_BUSINESS_INPUT).itemsOk).toBe(true);
+
+    const objectRaw = analysisRaw({ '체험 수익': '양조장 체험을 통한 수익', '가설: 온라인 마케팅 서비스 수수료': '마케팅 지원 수익' });
+    expect(reviewContractError(objectRaw)).toBe('revenue_model_type');
+    expect(parseSections(objectRaw, COMPARE_BUSINESS_INPUT)).toBeNull();
+    expect(scoreRevenueContract(objectRaw, COMPARE_BUSINESS_INPUT).typeOk).toBe(false);
+    expect(reviewContractError('{"summary":"없다"}')).toBe('unstructured_response');
+    expect(reviewContractError('not-json')).toBe('invalid_json');
+
+    const refused = presentReview(stored('review-object', 'failed', null, objectRaw, 'revenue_model_type'), [], []);
+    expect(refused.status).toBe('failed');
+    expect(refused.sections).toBeNull();
+    expect(refused.failure).toBe('revenue_model_type');
+    expect(reviewFailureCopy(refused.failure)).toContain('문자열이 아니어서');
+
+    const sections = parseSections(accepted, COMPARE_BUSINESS_INPUT);
+    const store = openAiPmReviewStore(join(mkdtempSync(join(tmpdir(), 'ai-pm-q7-')), 'reviews.sqlite'));
+    await store.insertReview(stored('review-string', 'succeeded', sections, accepted, null));
+    const reread = await store.listReviews('user-a', 'project-test');
+    expect(reread).toHaveLength(1);
+    expect(reread[0]?.sections?.revenueModel).toBe(revenue);
+    expect(reread[0]?.status).toBe('succeeded');
+    store.close();
   });
 
   it('fails the known brewery regressions and passes a hedged alternative', () => {
@@ -282,3 +362,69 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(scoreBreweryRegression(null, COMPARE_BUSINESS_INPUT).regressionA).toBe('not_run');
   });
 });
+
+function analysisRaw(revenueModel: string | Record<string, string>): string {
+  return JSON.stringify({
+    summary: '관광객의 양조장 체험과 양조장의 온라인 마케팅 지원을 함께 구상한다.',
+    customer: '전통주를 좋아하는 내국인·외국인 관광객',
+    problem: '미확인',
+    value: '미확인',
+    operatingModel: '구상 중이며 운영 방식은 확정되지 않았다.',
+    alternatives: '미확인',
+    differentiation: '미확인',
+    payer: '미확인',
+    revenueModel,
+    market: '미확인',
+    competition: '미확인',
+    operations: '미확인',
+    profitability: '미확인',
+    strengths: ['두 축이 한 입력에 있다'],
+    risks: ['지불자가 확인되지 않았다'],
+    assumptions: ['무엇을 먼저 검증할지 정하지 않았다'],
+    evidenceToChange: ['한쪽을 먼저 검증하겠다는 대표자 답'],
+    founderFacts: ['체험과 마케팅 지원을 구상 중이다'],
+    inferences: ['추론: 두 축의 우선순위는 아직 없다'],
+    judgment: '예비 판단. 우선 검증 축이 미확인이다.',
+    nextVerification: '양조장 몇 곳에 마케팅 지원의 필요를 묻는다.',
+    nextQuestion: '무엇을 먼저 검증할 것인가?',
+    nextQuestionReason: '우선순위가 다음 검증 대상을 바꾼다.',
+    choices: [...QUALITY6_BREWERY_CHOICES],
+  });
+}
+
+function stored(
+  reviewId: string,
+  status: StoredReview['status'],
+  sections: StoredReview['sections'],
+  rawContent: string,
+  error: string | null,
+): StoredReview {
+  return {
+    reviewId,
+    userId: 'user-a',
+    version: 1,
+    parentReviewId: null,
+    sourceFeedbackId: null,
+    supplementSha: null,
+    projectId: 'project-test',
+    inputSha: 'sha',
+    inputText: COMPARE_BUSINESS_INPUT,
+    inputOrigin: 'typed',
+    fileName: null,
+    status,
+    evidence: 'injected_http',
+    provider: 'openai',
+    model: 'gpt-4o-mini',
+    sections,
+    rawContent,
+    promptTokens: 1,
+    completionTokens: 1,
+    totalTokens: 2,
+    usageKnown: true,
+    callCount: 1,
+    latencyMs: 1,
+    error,
+    requestedAt: '2026-10-29T08:00:00.000Z',
+    finishedAt: '2026-10-29T08:00:01.000Z',
+  };
+}
