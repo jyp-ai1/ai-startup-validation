@@ -85,12 +85,14 @@
 
 2026-10-29 21:06 KST에 같은 세 파일을 `WRITE_COMPARE_FIXTURE` 없이 다시 실행했다. 43 passed. 픽스처의 `request`는 이전 객체와 같고, 추가된 칸은 `comparedKeys`다. `modelInvoked`는 false다. 로컬 `next build`는 실행하지 않았다. 그 시점의 Preview 비교 run id는 `q1-incremental-structure-2026-10-29`였다.
 
+2026-10-29 22:30 KST에 `ai-pm-review.test.ts` 20 passed, `ai-pm-quality-compare.test.ts` 18 passed. 모델 호출은 없다. `founderAnswer`는 `choice`, `supplement`, `source`, `status` 객체다. 선택만 있거나 `source`가 `answerOrigin`과 다르면 실패한다. 다음 Preview run id는 `q1-incremental-reflection-source-2026-10-29`다. 그 객체는 아직 없다.
+
 ## 하지 않은 관문
 
 | 관문 | 상태 |
 |---|---|
 | 제품 요청 구조 | PASS. CPO 2026-10-29 21:12 KST. SHA `eed29780cf9b43f2f580bb003bd7c0142c053a77` |
-| 증분 반영 | FAIL. 근거 검사 재검증도 `founderAnswer`가 추가 설명을 빼먹어 오류가 남음. `SPRINT-Q1-INCREMENTAL-REFLECTION-GROUNDS.md` |
+| 증분 반영 | FAIL. `q1-incremental-reflection-grounds-2026-10-29`는 `founderAnswer`가 선택만 담아 실패. 다음 호출 계약은 `reflection-output-4`. `SPRINT-Q1-INCREMENTAL-REFLECTION-GROUNDS.md` |
 | 2차 품질 | **NOT RUN** |
 | 저장·복원 | **NOT RUN** |
 | 화면 Q9·Q10 | **BLOCKED**. 2026-10-29 18:07 KST. Vercel CLI logged out. Preview `GET /workspace` HTTP 401 |

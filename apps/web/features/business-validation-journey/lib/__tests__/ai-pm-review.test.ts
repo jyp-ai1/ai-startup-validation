@@ -73,7 +73,12 @@ function validUngatedFollowUpRaw(previous: ReviewSections, supplement = '양조�
   const line = previous.hypotheses.join(' / ');
   const baselineVerification = previous.analysis?.nextVerification ?? '';
   const nextVerification = baselineVerification || '추가 설명이 확인되기 전에는 기존 질문을 다시 확인한다.';
-  const founderAnswer = supplement;
+  const founderAnswer = {
+    choice: null,
+    supplement,
+    source: 'founder-input',
+    status: 'unverified-input',
+  };
   const change = (field: string, previousValue: string, updated: string) => {
     const same = updated === previousValue;
     return {
@@ -620,7 +625,12 @@ describe('AI PM first review', () => {
         {
           field: 'judgment',
           previous: context.previousJudgment,
-          founderAnswer: `${choice} ${sent.founderSupplement}`,
+          founderAnswer: {
+            choice,
+            supplement: cited,
+            source: 'synthetic-test-data',
+            status: 'unverified-input',
+          },
           updated: sent.previousAnalysis.judgment,
           grounds: `${cited}. 이 없음은 확인된 수요가 아니어서 저장된 판단을 확정하지 않는다.`,
           unchangedReason: `${cited} 이므로 선택 계획을 판단으로 올리지 않고 그대로 둔다.`,
@@ -628,7 +638,12 @@ describe('AI PM first review', () => {
         {
           field: 'hypotheses',
           previous: context.previousHypotheses.join(' / '),
-          founderAnswer: `${choice} ${sent.founderSupplement}`,
+          founderAnswer: {
+            choice,
+            supplement: cited,
+            source: 'synthetic-test-data',
+            status: 'unverified-input',
+          },
           updated: context.previousHypotheses.join(' / '),
           grounds: `${cited}. 추가 설명은 가설을 강화할 확인된 사실을 주지 않는다.`,
           unchangedReason: `${cited} 이므로 가설을 유지한다.`,
@@ -636,7 +651,12 @@ describe('AI PM first review', () => {
         {
           field: 'nextVerification',
           previous: context.previousNextVerification,
-          founderAnswer: `${choice} ${sent.founderSupplement}`,
+          founderAnswer: {
+            choice,
+            supplement: cited,
+            source: 'synthetic-test-data',
+            status: 'unverified-input',
+          },
           updated: nextVerification,
           grounds: `${choice} ${cited} 그래서 체험을 열 양조장 확인을 먼저 둔다.`,
           unchangedReason: '',
@@ -644,7 +664,12 @@ describe('AI PM first review', () => {
         {
           field: 'nextQuestion',
           previous: context.previousNextQuestion,
-          founderAnswer: `${choice} ${sent.founderSupplement}`,
+          founderAnswer: {
+            choice,
+            supplement: cited,
+            source: 'synthetic-test-data',
+            status: 'unverified-input',
+          },
           updated: nextQuestion,
           grounds: `${choice} 어느 쪽을 먼저 볼지는 계획으로 답해졌고 ${cited}.`,
           unchangedReason: '',
@@ -652,6 +677,32 @@ describe('AI PM first review', () => {
       ],
     };
     expect(followUpOutputContractErrors(JSON.stringify(kept), context)).toEqual([]);
+    const choiceOnly = {
+      ...kept,
+      changes: kept.changes.map((change) => ({
+        ...change,
+        founderAnswer: { ...change.founderAnswer, supplement: '' },
+      })),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(choiceOnly), context)).toEqual([
+      'founder_answer_supplement_missing:judgment',
+      'founder_answer_supplement_missing:hypotheses',
+      'founder_answer_supplement_missing:nextVerification',
+      'founder_answer_supplement_missing:nextQuestion',
+    ]);
+    const unlinkedSource = {
+      ...kept,
+      changes: kept.changes.map((change) => ({
+        ...change,
+        founderAnswer: { ...change.founderAnswer, source: 'model' },
+      })),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(unlinkedSource), context)).toEqual([
+      'founder_answer_source_unlinked:judgment',
+      'founder_answer_source_unlinked:hypotheses',
+      'founder_answer_source_unlinked:nextVerification',
+      'founder_answer_source_unlinked:nextQuestion',
+    ]);
     const repeatedChoice = '체험 프로그램을 먼저 검증할 것이라는 선택 문장.';
     const repeatedGrounds = {
       ...kept,
@@ -806,13 +857,13 @@ describe('AI PM first review', () => {
       answerOrigin: 'synthetic-test-data' as const,
     };
     expect(followUpOutputContractErrors(arrayCall.report.calls[0]?.raw ?? '', arrayContext)).toEqual([
-      'follow_up_output_founder_answer_untraced:judgment',
+      'founder_answer_type:judgment',
       'grounds_missing_supplement:judgment',
-      'follow_up_output_founder_answer_untraced:hypotheses',
+      'founder_answer_type:hypotheses',
       'grounds_missing_supplement:hypotheses',
-      'follow_up_output_founder_answer_untraced:nextVerification',
+      'founder_answer_type:nextVerification',
       'grounds_missing_supplement:nextVerification',
-      'follow_up_output_founder_answer_untraced:nextQuestion',
+      'founder_answer_type:nextQuestion',
       'grounds_missing_supplement:nextQuestion',
       'grounds_repeated_choice',
       'choice_promoted_to_judgment',
@@ -863,11 +914,11 @@ describe('AI PM first review', () => {
       answerOrigin: 'synthetic-test-data' as const,
     };
     expect(followUpOutputContractErrors(groundsCall.report.calls[0]?.raw ?? '', groundsContext)).toEqual([
-      'follow_up_output_founder_answer_untraced:judgment',
+      'founder_answer_type:judgment',
       'follow_up_output_grounds_untraced:judgment',
-      'follow_up_output_founder_answer_untraced:hypotheses',
-      'follow_up_output_founder_answer_untraced:nextVerification',
-      'follow_up_output_founder_answer_untraced:nextQuestion',
+      'founder_answer_type:hypotheses',
+      'founder_answer_type:nextVerification',
+      'founder_answer_type:nextQuestion',
     ]);
     const groundsParsed = JSON.parse(groundsCall.report.calls[0]?.raw ?? '{}') as {
       judgment: string;

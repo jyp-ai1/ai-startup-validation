@@ -42,10 +42,12 @@ export const FOLLOW_UP_ANALYSIS_CONTRACT_NOTE =
 export const FOLLOW_UP_ANSWER_ORIGINS = ['synthetic-test-data', 'founder-input'] as const;
 export type FollowUpAnswerOrigin = (typeof FOLLOW_UP_ANSWER_ORIGINS)[number];
 
-export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-3';
+export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-4';
+
+export const FOLLOW_UP_FOUNDER_ANSWER_STATUS = 'unverified-input';
 
 export const FOLLOW_UP_OUTPUT_CONTRACT_NOTE =
-  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion이다. changes는 네 필드의 JSON 배열이다. 같은 선택 문장을 네 필드의 grounds로 반복하면 실패다. 미확인 가설을 수요 존재 예상으로 바꾸면 실패다. 추가 설명에 없는 예약 고객, 가격, 계약을 있는 정보로 쓰면 실패다. 선택 계획을 judgment로 옮기면 실패다.';
+  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion이다. founderAnswer는 문자열이면 실패다. choice, supplement, source, status를 구분해 적는다. supplement가 빠지거나 source가 answerOrigin과 다르면 실패다. status는 unverified-input이다. 같은 선택 문장을 네 필드의 grounds로 반복하면 실패다.';
 
 export const FOLLOW_UP_OUTPUT_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'] as const;
 
@@ -1080,10 +1082,28 @@ function citesSupplement(text: string, supplement: string): boolean {
   return false;
 }
 
-function founderAnswerCitesSources(text: string, context: FollowUpOutputContext): boolean {
-  if (context.choiceLabel && !text.includes(context.choiceLabel)) return false;
-  if (context.supplement.trim().length > 0 && !citesSupplement(text, context.supplement)) return false;
-  return text.trim().length > 0;
+function founderAnswerRecordErrors(field: string, value: unknown, context: FollowUpOutputContext): string[] {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return [`founder_answer_type:${field}`];
+  const record = value as Record<string, unknown>;
+  const errors: string[] = [];
+  const choice = record.choice;
+  const supplement = typeof record.supplement === 'string' ? record.supplement.trim() : '';
+  const source = typeof record.source === 'string' ? record.source.trim() : '';
+  const status = typeof record.status === 'string' ? record.status.trim() : '';
+  if (context.choiceLabel) {
+    if (choice !== context.choiceLabel) errors.push(`founder_answer_choice:${field}`);
+  } else if (!(choice === null || choice === '')) errors.push(`founder_answer_choice:${field}`);
+  if (context.supplement.trim()) {
+    if (!supplement) errors.push(`founder_answer_supplement_missing:${field}`);
+    else if (!citesSupplement(supplement, context.supplement)) errors.push(`founder_answer_supplement_unlinked:${field}`);
+    else {
+      const needed = ['예약', '가격', '계약', '양조장'].filter((token) => context.supplement.includes(token));
+      if (needed.some((token) => !supplement.includes(token))) errors.push(`founder_answer_supplement_missing:${field}`);
+    }
+  }
+  if (source !== context.answerOrigin) errors.push(`founder_answer_source_unlinked:${field}`);
+  if (status !== FOLLOW_UP_FOUNDER_ANSWER_STATUS) errors.push(`founder_answer_status:${field}`);
+  return errors;
 }
 
 function choiceOnlyGrounds(grounds: string, choice: string): boolean {
@@ -1194,13 +1214,11 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
       continue;
     }
     const previous = typeof change.previous === 'string' ? change.previous : '';
-    const founderAnswer = typeof change.founderAnswer === 'string' ? change.founderAnswer.trim() : '';
     const updated = typeof change.updated === 'string' ? change.updated : '';
     const grounds = typeof change.grounds === 'string' ? change.grounds.trim() : '';
     const unchangedReason = typeof change.unchangedReason === 'string' ? change.unchangedReason.trim() : '';
     if (previous !== expectedPrevious[field]) errors.push(`follow_up_output_previous:${field}`);
-    if (!founderAnswer) errors.push(`follow_up_output_founder_answer:${field}`);
-    else if (!founderAnswerCitesSources(founderAnswer, context)) errors.push(`follow_up_output_founder_answer_untraced:${field}`);
+    errors.push(...founderAnswerRecordErrors(field, change.founderAnswer, context));
     if (updated !== expectedUpdated[field]) errors.push(`follow_up_output_updated:${field}`);
     const changed = updated !== previous;
     if (!grounds) errors.push(`follow_up_output_grounds:${field}`);
@@ -1295,7 +1313,13 @@ function reviewSystemPrompt(): string {
     'hypotheses는 비어 있지 않은 문자열 배열이다.',
     'changes는 JSON 배열이다. 객체 맵, 문자열, 누락, 배열이 아닌 원소는 실패다.',
     '배열 원소는 네 개다. field는 judgment, hypotheses, nextVerification, nextQuestion 이다.',
-    '예시 형태: {"changes":[{"field":"judgment","previous":"저장 판단","founderAnswer":"선택: 체험 프로그램을 먼저 검증할 것. 추가 설명: 예약 고객, 가격, 계약, 확정된 양조장은 없다.","updated":"저장 판단","grounds":"추가 설명은 예약 고객, 가격, 계약, 확정된 양조장은 없다. 선택은 계획이라 판단을 바꾸지 않는다.","unchangedReason":"수요를 확인한 문장이 아니다."},{"field":"hypotheses","previous":"미확인","founderAnswer":"선택: 체험 프로그램을 먼저 검증할 것. 추가 설명: 예약 고객, 가격, 계약, 확정된 양조장은 없다.","updated":"미확인","grounds":"추가 설명은 예약 고객, 가격, 계약, 확정된 양조장은 없다. 수요 존재의 근거가 아니다.","unchangedReason":"가설은 미확인으로 둔다."},{"field":"nextVerification","previous":"저장 검증","founderAnswer":"선택: 체험 프로그램을 먼저 검증할 것. 추가 설명: 예약 고객, 가격, 계약, 확정된 양조장은 없다.","updated":"체험을 열 확정된 양조장이 있는지부터 확인한다.","grounds":"체험 프로그램을 먼저 검증할 것. 추가 설명은 확정된 양조장은 없다.","unchangedReason":""},{"field":"nextQuestion","previous":"저장 질문","founderAnswer":"선택: 체험 프로그램을 먼저 검증할 것. 추가 설명: 예약 고객, 가격, 계약, 확정된 양조장은 없다.","updated":"체험을 열 양조장이 정해져 있습니까?","grounds":"체험 프로그램을 먼저 검증할 것. 추가 설명은 확정된 양조장은 없다.","unchangedReason":""}]}',
+    'founderAnswer는 문자열이 아니다. 네 필드의 changes가 같은 객체를 쓴다.',
+    'founderAnswer.choice는 선택 문장 그대로다. 선택이 없으면 null이다.',
+    'founderAnswer.supplement는 추가 설명의 핵심이다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 네 말을 적는다. 추가 설명 전체를 복사하지 않는다.',
+    'founderAnswer.source는 answerOrigin과 같다.',
+    'founderAnswer.status는 unverified-input 이다. 검증된 시장 사실이 아니다.',
+    'choice만 있고 supplement가 없으면 실패다. source가 answerOrigin과 다르면 실패다.',
+    '예시 founderAnswer: {"choice":"체험 프로그램을 먼저 검증할 것","supplement":"예약 고객, 가격, 계약, 확정된 양조장은 없다","source":"synthetic-test-data","status":"unverified-input"}',
     '각 원소는 previous, founderAnswer, updated, grounds, unchangedReason을 가진다.',
     'previous는 요청의 저장값을 그대로 적는다. hypotheses의 previous와 updated는 항목을 " / "로 잇는다.',
     'updated는 그 필드의 반환값과 같다.',
@@ -1303,7 +1327,7 @@ function reviewSystemPrompt(): string {
     '추가 설명에 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 말을 각 grounds에 넣는다. 그 없음은 수요가 있다는 근거가 아니다.',
     'updated가 previous와 다르면 unchangedReason은 빈 문자열이다.',
     'updated가 previous와 같으면 unchangedReason에 바꾸지 않은 이유를 적고, grounds에도 추가 설명과의 관계를 적는다.',
-    'founderAnswer에는 선택 문장과 추가 설명을 그대로 적는다. 새로 만든 판단이나 가설 문장을 founderAnswer에 넣지 않는다.',
+    '새로 만든 판단이나 가설 문장을 founderAnswer에 넣지 않는다. 선택, 추가 설명, 출처, 미검증 상태를 칸으로 나눈다.',
     'hypotheses가 미확인이면 그 문장을 유지한다. 수요가 존재할 것이라는 예상으로 바꾸지 않는다.',
     'judgment는 저장 판단을 유지한다. 선택 문장이나 그 계획을 필요하다는 판단으로 옮기지 않는다.',
     'choiceTrace는 label, answerOrigin, role이다. 선택이 있으면 label은 그 문장 그대로이고 role은 plan이다.',
