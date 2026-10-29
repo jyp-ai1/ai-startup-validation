@@ -19,21 +19,27 @@
 
 ## 불일치 검사
 
-`followUpStructureCoverage`는 형태만 본다. 원문을 다른 문장으로 바꿔도 `originalInput`이 true다.
+`followUpStructureCoverage`는 형태만 본다. 원문을 다른 문장으로 바꿔도 `originalInput`이 true다. 값 비교는 `followUpRequestMismatches`다. 구현은 `apps/web/features/business-validation-journey/lib/ai-pm-review.ts`의 `followUpRequestMismatches`다. 저장 섹션 키는 `followUpPreviousAnalysis`가 만든 객체의 키를 돌고, `analysis`가 객체이면 그 안의 키도 돈다.
 
-`followUpRequestMismatches`는 값이다. 맞는 요청의 목록은 `[]`다. 같은 테스트가 아래 칸을 바꾼 값, 빈 값, 없는 키로 각각 실패하는지 본다.
+테스트 원문은 `apps/web/features/business-validation-journey/lib/__tests__/ai-pm-review.test.ts`의 `puts the stored analysis and the answer origin on the product follow-up request`다. 맞는 요청의 불일치 목록은 `[]`다. 그 테스트는 저장본 `previousAnalysis`의 `analysis`를 뺀 키 전부와 `analysis` 안의 키 전부를 바꾼 값, 빈 값, 없는 키로 각각 넣는다. 빈 값이 저장값과 같으면 빈 값 검사는 건너뛴다. 이 입력에서 그 경우는 `previousAnalysis.claimConfirmation`뿐이고 저장값이 `null`이다. `analysis` 키 자체를 지우면 이름은 `previousAnalysis.analysis`다.
 
-`analysisContract`, `originalInput`, `previousQuestion`, `previousAnalysis.customer`, `previousAnalysis.problem`, `previousAnalysis.revenueModel`, `previousAnalysis.judgment`, `previousAnalysis.nextQuestion`, `previousAnalysis.hypotheses`, `previousAnalysis.analysis`, `previousAnalysis.analysis.summary`, `previousAnalysis.analysis.founderFacts`, `previousAnalysis.analysis.choices`, `previousAnalysis.analysis.judgmentDetail`, `founderChoice`, `founderChoice.label`, `founderChoice.answerOrigin`, `founderChoice.otherText`, `founderSupplement`, `separationRules`, `answerOrigin`, `answerOriginNotice`.
+저장 섹션 키: `customer`, `problem`, `market`, `revenueModel`, `execution`, `risks`, `uncertain`, `hypotheses`, `judgment`, `nextQuestion`, `nextQuestionReason`, `answerHint`, `claimConfirmation`.
 
-`previousAnalysis` 객체 자체를 지우면 이름은 `previousAnalysis`다. 원문만 바꾸면 `originalInput`만 해당하고 `previousAnalysis`는 남지 않는다.
+분석 키: `summary`, `value`, `operatingModel`, `payer`, `competition`, `operations`, `profitability`, `strengths`, `assumptions`, `evidenceToChange`, `founderFacts`, `inferences`, `judgmentDetail`, `choices`, `alternatives`, `differentiation`, `nextVerification`.
+
+같은 테스트가 스칼라로 바꾼 값·빈 값·없는 키를 보는 이름: `analysisContract`, `analysisContractNote`, `originalInput`, `previousQuestion`, `previousAnalysis`, `previousAnalysis.customer`, `previousAnalysis.problem`, `previousAnalysis.revenueModel`, `previousAnalysis.judgment`, `previousAnalysis.nextQuestion`, `previousAnalysis.hypotheses`, `previousAnalysis.analysis`, `previousAnalysis.analysis.summary`, `previousAnalysis.analysis.founderFacts`, `previousAnalysis.analysis.choices`, `previousAnalysis.analysis.judgmentDetail`, `founderChoice`, `founderChoice.label`, `founderChoice.choiceId`, `founderChoice.answerOrigin`, `founderChoice.otherText`, `founderSupplement`, `supplement`, `separationRules`, `answerOrigin`, `answerOriginNotice`. 시스템 문장에서 다섯 규칙을 하나씩 빼면 `system:`과 그 규칙 문장이 불일치 이름이다.
+
+실행한 키 목록은 `sprint-q1-product-follow-up-request.json`의 `comparedKeys`다. 그 목록은 이 테스트가 각 키를 바꿔 `followUpRequestMismatches`가 그 이름을 반환한 기록이다.
+
+`previousAnalysis` 객체 자체를 지우면 이름은 `previousAnalysis`다. 원문만 바꾸면 `originalInput`만 해당하고 이름 `previousAnalysis`는 남지 않는다. `previousAnalysis.customer` 같은 하위 이름은 그 검사와 별개다.
 
 ## 출처
 
-합성 생성 `buildSyntheticFollowUpRequest`는 `answerOrigin`이 `synthetic-test-data`가 아니면 `synthetic_answer_origin_required`를 던진다. `founder-input`도 던진다.
+출처 분리는 `buildFollowUpRequest`와 `buildSyntheticFollowUpRequest`에 있다. 합성 생성은 `answerOrigin`이 `synthetic-test-data`가 아니면 `synthetic_answer_origin_required`를 던진다. `founder-input`도 던진다.
 
-`buildFollowUpRequest`는 출처가 없으면 `follow_up_answer_origin_required`를 던진다. 조용히 `founder-input`이 되지 않는다.
+`buildFollowUpRequest`는 출처가 없으면 `follow_up_answer_origin_required`를 던진다. 없는 출처가 `founder-input`이 되지 않는다. 허용 목록 밖이면 `follow_up_answer_origin_invalid`다.
 
-저장된 피드백 경로 `runFollowUpReview`만 `answerOrigin: 'founder-input'`을 직접 넘긴다. 그 함수는 `buildSyntheticFollowUpRequest`를 쓰지 않는다. 이번 턴에 그 경로를 호출하지 않았다.
+저장된 피드백 경로 `runFollowUpReview`만 `answerOrigin: 'founder-input'`을 직접 넘긴다. 그 함수는 `buildSyntheticFollowUpRequest`를 쓰지 않는다. 라우트 파일 `apps/web/app/api/ai-pm-review/follow-up/route.ts`에는 `answerOrigin` 문자열이 없고, 패널은 `/api/ai-pm-review/follow-up`을 호출하지 않는다. 이번 턴에 그 경로를 호출하지 않았다.
 
 두 출처의 고지는 다르다. 합성은 실제 창업자 답변이 아니라고 적고, 저장된 입력은 검증된 사실이 아니라고 적는다. 다섯 규칙도 둘 다 사실로 올리지 말라고 한다. 합성 선택 문장과 추가 설명은 `founderFacts`에 없다.
 
@@ -77,13 +83,13 @@
 | `ai-pm-quality-compare.test.ts` | 17 passed |
 | `ai-pm-quality-scenarios.test.ts` | 7 passed |
 
-로컬 `next build`는 실행하지 않았다. Preview 비교 run id는 `q1-incremental-structure-2026-10-29` 그대로다.
+2026-10-29 21:06 KST에 같은 세 파일을 `WRITE_COMPARE_FIXTURE` 없이 다시 실행했다. 43 passed. 픽스처의 `request`는 이전 객체와 같고, 추가된 칸은 `comparedKeys`다. `modelInvoked`는 false다. 로컬 `next build`는 실행하지 않았다. Preview 비교 run id는 `q1-incremental-structure-2026-10-29` 그대로다.
 
 ## 하지 않은 관문
 
 | 관문 | 상태 |
 |---|---|
-| 제품 요청 구조 | 계약 `parsed-sections-1`과 칸별 불일치 검사를 제출한다. CPO 재검토 전 |
+| 제품 요청 구조 | 계약 `parsed-sections-1`은 CPO가 적절하다고 보았다. 구현 확인은 `ai-pm-review.ts`의 `followUpRequestMismatches`와 위 테스트 원문이다. 구조 관문 판정은 CPO 재검토 전이다 |
 | 증분 반영 | **NOT RUN** |
 | 2차 품질 | **NOT RUN** |
 | 저장·복원 | **NOT RUN** |

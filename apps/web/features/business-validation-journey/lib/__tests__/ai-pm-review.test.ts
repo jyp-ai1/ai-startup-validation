@@ -379,10 +379,124 @@ describe('AI PM first review', () => {
       ['answerOriginNotice', (payload) => { payload.answerOriginNotice = followUpAnswerNotice('founder-input'); }],
       ['answerOriginNotice', (payload) => { payload.answerOriginNotice = ''; }],
       ['answerOriginNotice', (payload) => { delete payload.answerOriginNotice; }],
+      ['analysisContractNote', (payload) => { payload.analysisContractNote = '원문 바이트 복사'; }],
+      ['analysisContractNote', (payload) => { payload.analysisContractNote = ''; }],
+      ['analysisContractNote', (payload) => { delete payload.analysisContractNote; }],
+      ['founderChoice.choiceId', (payload) => { choiceOf(payload).choiceId = 'c9'; }],
+      ['founderChoice.choiceId', (payload) => { choiceOf(payload).choiceId = ''; }],
+      ['founderChoice.choiceId', (payload) => { delete choiceOf(payload).choiceId; }],
+      ['supplement', (payload) => { payload.supplement = '다른 설명'; }],
+      ['supplement', (payload) => { payload.supplement = ''; }],
+      ['supplement', (payload) => { delete payload.supplement; }],
     ];
     for (const [name, apply] of requiredMismatches) {
       expect(followUpRequestMismatches(mutate(apply), source), name).toContain(name);
     }
+    const changedValue = (value: unknown): unknown => {
+      if (typeof value === 'string') return `${value} 변경`;
+      if (Array.isArray(value)) return [{ id: 'changed', label: '변경' }];
+      if (value === null) return '있음';
+      return { changed: true };
+    };
+    const emptyValue = (value: unknown): unknown => {
+      if (typeof value === 'string') return '';
+      if (Array.isArray(value)) return [];
+      if (value === null) return null;
+      return '';
+    };
+    const requiredSectionKeys = [
+      'customer',
+      'problem',
+      'market',
+      'revenueModel',
+      'execution',
+      'risks',
+      'uncertain',
+      'hypotheses',
+      'judgment',
+      'nextQuestion',
+      'nextQuestionReason',
+      'answerHint',
+      'claimConfirmation',
+    ];
+    const requiredAnalysisKeys = [
+      'summary',
+      'value',
+      'operatingModel',
+      'payer',
+      'competition',
+      'operations',
+      'profitability',
+      'strengths',
+      'assumptions',
+      'evidenceToChange',
+      'founderFacts',
+      'inferences',
+      'judgmentDetail',
+      'choices',
+      'alternatives',
+      'differentiation',
+      'nextVerification',
+    ];
+    const sectionRecord = user.previousAnalysis as unknown as Record<string, unknown>;
+    const analysisRecord = user.previousAnalysis.analysis as unknown as Record<string, unknown>;
+    expect(Object.keys(sectionRecord).sort()).toEqual([...requiredSectionKeys, 'analysis'].sort());
+    expect(Object.keys(analysisRecord).sort()).toEqual([...requiredAnalysisKeys].sort());
+    const emptySkipped: string[] = [];
+    const walkRecord = (
+      prefix: string,
+      current: Record<string, unknown>,
+      assign: (payload: Record<string, unknown>, key: string, value: unknown) => void,
+      remove: (payload: Record<string, unknown>, key: string) => void,
+    ) => {
+      for (const key of Object.keys(current)) {
+        const name = `${prefix}${key}`;
+        const value = current[key];
+        expect(followUpRequestMismatches(mutate((payload) => assign(payload, key, changedValue(value))), source), `${name}:changed`).toContain(name);
+        const empty = emptyValue(value);
+        if (JSON.stringify(empty) === JSON.stringify(value)) emptySkipped.push(name);
+        else expect(followUpRequestMismatches(mutate((payload) => assign(payload, key, empty)), source), `${name}:empty`).toContain(name);
+        expect(followUpRequestMismatches(mutate((payload) => remove(payload, key)), source), `${name}:missing`).toContain(name);
+      }
+    };
+    walkRecord(
+      'previousAnalysis.',
+      Object.fromEntries(requiredSectionKeys.map((key) => [key, sectionRecord[key]])),
+      (payload, key, value) => {
+        sectionOf(payload)[key] = value;
+      },
+      (payload, key) => {
+        delete sectionOf(payload)[key];
+      },
+    );
+    walkRecord(
+      'previousAnalysis.analysis.',
+      analysisRecord,
+      (payload, key, value) => {
+        analysisOf(payload)[key] = value;
+      },
+      (payload, key) => {
+        delete analysisOf(payload)[key];
+      },
+    );
+    expect(emptySkipped).toEqual(['previousAnalysis.claimConfirmation']);
+    expect(followUpRequestMismatches(mutate((payload) => { delete sectionOf(payload).analysis; }), source)).toContain('previousAnalysis.analysis');
+    const systemContent = request.messages.find((message) => message.role === 'system')?.content ?? '';
+    for (const rule of FOLLOW_UP_SEPARATION_RULES) {
+      const dropped = request.messages.map((message) =>
+        message.role === 'system' ? { ...message, content: systemContent.replace(rule, '') } : message,
+      );
+      expect(followUpRequestMismatches({ ...request, messages: dropped }, source), rule).toContain(`system:${rule}`);
+    }
+    const comparedKeys = {
+      contract: FOLLOW_UP_ANALYSIS_CONTRACT,
+      previousAnalysis: requiredSectionKeys,
+      analysis: requiredAnalysisKeys,
+      emptySkipped,
+      modes: 'changed, empty when the empty value differs from the stored value, missing',
+      scalarMismatches: [...new Set(requiredMismatches.map(([name]) => name))].sort(),
+      systemRules: [...FOLLOW_UP_SEPARATION_RULES],
+    };
     const panel = readFileSync(new URL('../../components/ai-pm-review-panel.tsx', import.meta.url), 'utf8');
     const followRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/follow-up/route.ts', import.meta.url), 'utf8');
     expect(panel).not.toContain('/api/ai-pm-review/follow-up');
@@ -402,6 +516,7 @@ describe('AI PM first review', () => {
         executionSha: evidence.gitSha,
         note: '1차 모델 출력이다. 품질 통과가 아니다. 이 파일은 제품 요청 객체이며 모델을 호출하지 않는다.',
       },
+      comparedKeys,
       request,
     };
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(evidenceUrl, `${JSON.stringify(frozen, null, 2)}\n`);
