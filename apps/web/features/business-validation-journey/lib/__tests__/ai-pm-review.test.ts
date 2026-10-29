@@ -619,7 +619,6 @@ describe('AI PM first review', () => {
         'follow_up_output_missing_hypotheses',
         'follow_up_output_missing_nextVerification',
         'hypothesis_label_removed',
-        'choice_untraced',
       ]),
     );
     const choice = sent.founderChoice.label;
@@ -647,7 +646,6 @@ describe('AI PM first review', () => {
       nextVerification,
       nextQuestion,
       revenueModel: context.previousRevenueModel,
-      choiceTrace: { label: choice, answerOrigin: 'synthetic-test-data', role: 'plan' },
       founderFacts: sent.previousAnalysis.analysis && 'founderFacts' in sent.previousAnalysis.analysis
         ? (sent.previousAnalysis.analysis as { founderFacts?: string[] }).founderFacts
         : [],
@@ -659,7 +657,7 @@ describe('AI PM first review', () => {
           decision: 'retained',
           reason: `${cited}. 이 없음은 확인된 사실이 아니어서 저장된 판단을 바꾸지 않는다.`,
           founderAnswer,
-          choiceTrace: { label: choice, effect: choiceEffect('judgment') },
+          choiceTrace: { label: choice, answerOrigin: 'synthetic-test-data', role: 'plan', effect: choiceEffect('judgment') },
           evidenceStatus: 'unverified-input',
         },
         {
@@ -669,7 +667,7 @@ describe('AI PM first review', () => {
           decision: 'retained',
           reason: `${cited}. 이 없음은 수요의 근거가 아니어서 가설은 미확인으로 둔다.`,
           founderAnswer,
-          choiceTrace: { label: choice, effect: choiceEffect('hypotheses') },
+          choiceTrace: { label: choice, answerOrigin: 'synthetic-test-data', role: 'plan', effect: choiceEffect('hypotheses') },
           evidenceStatus: 'unverified-input',
         },
         {
@@ -679,7 +677,7 @@ describe('AI PM first review', () => {
           decision: 'changed',
           reason: `${choice}. ${cited}. 확정된 양조장이 없으므로 양조장 후보와 협력 가능 여부를 먼저 검증하고, 가격과 예약은 별도로 둔다.`,
           founderAnswer,
-          choiceTrace: { label: choice, effect: choiceEffect('nextVerification') },
+          choiceTrace: { label: choice, answerOrigin: 'synthetic-test-data', role: 'plan', effect: choiceEffect('nextVerification') },
           evidenceStatus: 'unverified-input',
         },
         {
@@ -689,7 +687,7 @@ describe('AI PM first review', () => {
           decision: 'changed',
           reason: `${choice}. ${cited}. 저장된 질문을 양조장 후보 질문으로 바꾼다.`,
           founderAnswer,
-          choiceTrace: { label: choice, effect: choiceEffect('nextQuestion') },
+          choiceTrace: { label: choice, answerOrigin: 'synthetic-test-data', role: 'plan', effect: choiceEffect('nextQuestion') },
           evidenceStatus: 'unverified-input',
         },
       ],
@@ -871,8 +869,18 @@ describe('AI PM first review', () => {
     expect(followUpOutputContractErrors(JSON.stringify(copied), context)).toContain('choice_in_founder_facts');
     const strengthened = { ...kept, judgment: '체험 수요 가설이 강화되었다.' };
     expect(followUpOutputContractErrors(JSON.stringify(strengthened), context)).toContain('hypothesis_strengthened');
-    const untraced = { ...kept, choiceTrace: null };
-    expect(followUpOutputContractErrors(JSON.stringify(untraced), context)).toContain('choice_untraced');
+    const rootOnlyTrace = {
+      ...kept,
+      choiceTrace: { label: choice, answerOrigin: 'synthetic-test-data', role: 'plan', effect: choiceEffect('judgment') },
+      changes: kept.changes.map(({ choiceTrace: _trace, ...change }) => change),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(rootOnlyTrace), context)).toEqual([
+      'choice_trace_root_only',
+      'choice_effect_missing:judgment',
+      'choice_effect_missing:hypotheses',
+      'choice_effect_missing:nextVerification',
+      'choice_effect_missing:nextQuestion',
+    ]);
     const nullChoice = {
       ...kept,
       changes: kept.changes.map((change) => ({
@@ -896,12 +904,29 @@ describe('AI PM first review', () => {
       'choice_effect_missing:nextVerification',
       'choice_effect_missing:nextQuestion',
     ]);
+    const missingStatus = {
+      ...kept,
+      changes: kept.changes.map(({ evidenceStatus: _status, ...change }) => change),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(missingStatus), context)).toEqual([
+      'evidence_status:judgment',
+      'evidence_status:hypotheses',
+      'evidence_status:nextVerification',
+      'evidence_status:nextQuestion',
+    ]);
+    const uncitedHypothesis = {
+      ...kept,
+      changes: kept.changes.map((change) => (change.field === 'hypotheses' ? { ...change, reason: '가설은 미확인으로 둔다.' } : change)),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(uncitedHypothesis), context)).toContain('reason_untraced:hypotheses');
     const unrelatedChoiceTrace = {
       ...kept,
       changes: kept.changes.map((change) => ({
         ...change,
         choiceTrace: {
           label: '마케팅을 먼저 할 것',
+          answerOrigin: 'synthetic-test-data',
+          role: 'plan',
           effect:
             change.field === 'judgment'
               ? '마케팅을 먼저 할 것은 저장된 판단을 유지한다.'
@@ -928,7 +953,7 @@ describe('AI PM first review', () => {
       ...kept,
       changes: kept.changes.map((change) => ({
         ...change,
-        choiceTrace: { label: choice, effect: copiedEffect },
+        choiceTrace: { label: choice, answerOrigin: 'synthetic-test-data', role: 'plan', effect: copiedEffect },
       })),
     };
     expect(followUpOutputContractErrors(JSON.stringify(copiedEffects), context)).toEqual(['choice_effect_copied']);
@@ -1022,6 +1047,7 @@ describe('AI PM first review', () => {
       answerOrigin: 'synthetic-test-data' as const,
     };
     expect(followUpOutputContractErrors(arrayCall.report.calls[0]?.raw ?? '', arrayContext)).toEqual([
+      'choice_trace_root_only',
       'founder_answer_type:judgment',
       'choice_effect_missing:judgment',
       'follow_up_output_current:judgment',
@@ -1098,6 +1124,7 @@ describe('AI PM first review', () => {
       answerOrigin: 'synthetic-test-data' as const,
     };
     expect(followUpOutputContractErrors(groundsCall.report.calls[0]?.raw ?? '', groundsContext)).toEqual([
+      'choice_trace_root_only',
       'founder_answer_type:judgment',
       'choice_effect_missing:judgment',
       'follow_up_output_current:judgment',
@@ -1177,6 +1204,7 @@ describe('AI PM first review', () => {
       answerOrigin: 'synthetic-test-data' as const,
     };
     expect(followUpOutputContractErrors(sourceCall.report.calls[0]?.raw ?? '', sourceContext)).toEqual([
+      'choice_trace_root_only',
       'founder_answer_type:judgment',
       'choice_effect_missing:judgment',
       'follow_up_output_current:judgment',
@@ -1258,6 +1286,7 @@ describe('AI PM first review', () => {
       answerOrigin: 'synthetic-test-data' as const,
     };
     expect(followUpOutputContractErrors(traceCall.report.calls[0]?.raw ?? '', traceContext)).toEqual([
+      'choice_trace_root_only',
       'choice_effect_missing:judgment',
       'follow_up_output_current:judgment',
       'decision_missing:judgment',
@@ -1338,7 +1367,6 @@ describe('AI PM first review', () => {
     };
     expect(followUpOutputContractErrors(reasonCall.report.calls[0]?.raw ?? '', reasonContext)).toEqual([
       'follow_up_output_missing_revenueModel',
-      'choice_untraced',
       'founder_answer_choice:judgment',
       'choice_effect_missing:judgment',
       'founder_answer_choice:hypotheses',
@@ -1418,7 +1446,7 @@ describe('AI PM first review', () => {
       answerOrigin: 'synthetic-test-data' as const,
     };
     expect(followUpOutputContractErrors(preserveCall.report.calls[0]?.raw ?? '', preserveContext)).toEqual([
-      'choice_untraced',
+      'choice_trace_root_only',
       'choice_effect_missing:judgment',
       'evidence_status:judgment',
       'choice_effect_missing:hypotheses',

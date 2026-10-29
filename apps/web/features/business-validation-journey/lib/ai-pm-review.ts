@@ -42,7 +42,7 @@ export const FOLLOW_UP_ANALYSIS_CONTRACT_NOTE =
 export const FOLLOW_UP_ANSWER_ORIGINS = ['synthetic-test-data', 'founder-input'] as const;
 export type FollowUpAnswerOrigin = (typeof FOLLOW_UP_ANSWER_ORIGINS)[number];
 
-export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-7';
+export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-8';
 
 export const FOLLOW_UP_FOUNDER_ANSWER_STATUS = 'unverified-input';
 
@@ -50,7 +50,7 @@ export const FOLLOW_UP_BREWERY_VERIFICATION_PLAN =
   '체험 프로그램을 먼저 검증할 것. 먼저 체험 프로그램을 제공할 수 있는 양조장 후보를 찾고, 실제 협력 가능 여부와 체험 운영 조건을 확인한다. 협력 가능 여부가 확인되기 전까지는 확정된 공급처로 간주하지 않는다. 이후 잠재 고객 인터뷰와 체험 참여 의향을 확인하고, 가격 수용도와 예약 전환은 별도로 검증한다.';
 
 export const FOLLOW_UP_OUTPUT_CONTRACT_NOTE =
-  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, choiceTrace, changes이다. founderAnswer.choice가 null이면 실패다. revenueModel은 저장된 가설 문장 그대로다. 원소 choiceTrace.effect는 그 필드에 미치는 영향이다. 선택 문장만 근거로 복사해도 실패하고, 선택 문장을 빼도 실패다.';
+  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes이다. choiceTrace와 evidenceStatus는 각 changes 원소에 있다. 루트 choiceTrace만 있으면 실패다. founderAnswer.choice가 null이면 실패다. 원소 choiceTrace는 label, answerOrigin, role, effect다. revenueModel은 저장된 가설 문장 그대로다.';
 
 export const FOLLOW_UP_OUTPUT_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'] as const;
 
@@ -1121,9 +1121,13 @@ function choiceEffectErrors(field: string, value: unknown, context: FollowUpOutp
   if (!value || typeof value !== 'object' || Array.isArray(value)) return [`choice_effect_missing:${field}`];
   const record = value as Record<string, unknown>;
   const label = typeof record.label === 'string' ? record.label : '';
+  const origin = typeof record.answerOrigin === 'string' ? record.answerOrigin.trim() : '';
+  const role = typeof record.role === 'string' ? record.role.trim() : '';
   const effect = typeof record.effect === 'string' ? record.effect.trim() : '';
   const errors: string[] = [];
   if (label !== context.choiceLabel) errors.push(`choice_effect_label:${field}`);
+  if (origin !== context.answerOrigin) errors.push(`choice_effect_origin:${field}`);
+  if (role !== 'plan') errors.push(`choice_effect_role:${field}`);
   if (!effect) return [...errors, `choice_effect_missing:${field}`];
   const cue = FIELD_REASON_CUES[field as (typeof FOLLOW_UP_OUTPUT_FIELDS)[number]];
   if (!effect.includes(context.choiceLabel) || (cue && !cue.test(effect))) errors.push(`choice_effect_unrelated:${field}`);
@@ -1228,17 +1232,22 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
   const facts = Array.isArray(parsed.founderFacts) ? parsed.founderFacts.map((item) => String(item)) : [];
   if (context.choiceLabel && facts.some((fact) => fact.includes(context.choiceLabel ?? ''))) errors.push('choice_in_founder_facts');
   if (context.supplement && facts.some((fact) => fact.includes(context.supplement))) errors.push('supplement_in_founder_facts');
-  if (context.choiceLabel) {
-    const trace = parsed.choiceTrace;
-    const record = trace && typeof trace === 'object' && !Array.isArray(trace) ? (trace as Record<string, unknown>) : null;
-    if (!record || record.label !== context.choiceLabel || record.answerOrigin !== context.answerOrigin || record.role !== 'plan') {
-      errors.push('choice_untraced');
-    }
-  }
   const changes = Array.isArray(parsed.changes) ? parsed.changes : null;
   if (!Object.prototype.hasOwnProperty.call(parsed, 'changes') || parsed.changes == null) errors.push('follow_up_output_missing_changes');
   else if (!changes) errors.push('follow_up_output_changes_type');
   else if (changes.some((item) => !item || typeof item !== 'object' || Array.isArray(item))) errors.push('follow_up_output_change_type');
+  if (context.choiceLabel && changes) {
+    const root = parsed.choiceTrace;
+    const rootObject = Boolean(root && typeof root === 'object' && !Array.isArray(root));
+    const elementTraces = FOLLOW_UP_OUTPUT_FIELDS.map((field) => {
+      const change = changes.find((item) => item && typeof item === 'object' && (item as Record<string, unknown>).field === field) as
+        | Record<string, unknown>
+        | undefined;
+      const trace = change?.choiceTrace;
+      return Boolean(trace && typeof trace === 'object' && !Array.isArray(trace));
+    });
+    if (rootObject && elementTraces.every((present) => !present)) errors.push('choice_trace_root_only');
+  }
   const expectedPrevious: Record<(typeof FOLLOW_UP_OUTPUT_FIELDS)[number], string> = {
     judgment: context.previousJudgment,
     hypotheses: hypothesisLine(context.previousHypotheses),
@@ -1383,7 +1392,8 @@ function reviewSystemPrompt(): string {
   return [
     followUpBasePrompt(),
     `반환 계약 ${FOLLOW_UP_OUTPUT_CONTRACT}.`,
-    '필수 키는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, choiceTrace, changes 이다.',
+    '필수 키는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes 이다.',
+    'choiceTrace와 evidenceStatus는 각 changes 원소에 있다. 루트에만 있으면 실패다.',
     '필수 키가 없으면 실패다.',
     'hypotheses는 비어 있지 않은 문자열 배열이다.',
     'changes는 JSON 배열이다. 객체 맵, 문자열, 누락, 배열이 아닌 원소는 실패다.',
@@ -1402,22 +1412,20 @@ function reviewSystemPrompt(): string {
     '선택이 있으면 founderAnswer.choice는 그 문장 그대로다. 선택이 있는데 null이면 실패다. 선택 입력이 없을 때만 null이다.',
     'founderAnswer.supplement는 추가 설명의 핵심이다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 네 말을 적는다.',
     'founderAnswer.source는 answerOrigin과 같다. founderAnswer.status는 unverified-input 이다.',
-    '원소 choiceTrace.label은 선택 문장 그대로다. effect는 그 선택이 그 필드에만 미치는 영향이다. effect가 없거나 선택과 다르거나 선택 문장뿐이면 실패다. 네 effect가 같으면 실패다.',
+    '원소 choiceTrace는 label, answerOrigin, role, effect다. label은 선택 문장, answerOrigin은 입력과 같고 role은 plan이다. effect는 그 필드에만 미치는 영향이다. effect가 없거나 선택과 다르거나 선택 문장뿐이면 실패다. 네 effect가 같으면 실패다.',
     'judgment의 effect는 그 선택이 계획이라 저장된 판단을 바꾸지 않는다고 적는다.',
     'hypotheses의 effect는 그 선택이 가설의 수요 증거가 아니라고 적는다.',
     'nextVerification의 effect는 그 선택 때문에 양조장 후보를 먼저 검증한다고 적는다.',
     'nextQuestion의 effect는 그 선택 때문에 질문을 양조장 후보로 바꾼다고 적는다.',
-    '예시 원소: {"field":"judgment","previous":"저장 판단","current":"저장 판단","decision":"retained","reason":"예약 고객, 가격, 계약, 확정된 양조장은 없다. 이 없음은 확인된 사실이 아니어서 저장된 판단을 바꾸지 않는다.","founderAnswer":{"choice":"체험 프로그램을 먼저 검증할 것","supplement":"예약 고객, 가격, 계약, 확정된 양조장은 없다","source":"synthetic-test-data","status":"unverified-input"},"choiceTrace":{"label":"체험 프로그램을 먼저 검증할 것","effect":"체험 프로그램을 먼저 검증할 것은 계획이라 저장된 판단을 바꾸지 않는다."},"evidenceStatus":"unverified-input"}',
-    'hypotheses는 미확인이면 retained다. reason은 그 없음이 수요의 근거가 아니어서 가설을 미확인으로 둔다고 적는다.',
+    '예시 원소: {"field":"judgment","previous":"저장 판단","current":"저장 판단","decision":"retained","reason":"예약 고객, 가격, 계약, 확정된 양조장은 없다. 이 없음은 확인된 사실이 아니어서 저장된 판단을 바꾸지 않는다.","founderAnswer":{"choice":"체험 프로그램을 먼저 검증할 것","supplement":"예약 고객, 가격, 계약, 확정된 양조장은 없다","source":"synthetic-test-data","status":"unverified-input"},"choiceTrace":{"label":"체험 프로그램을 먼저 검증할 것","answerOrigin":"synthetic-test-data","role":"plan","effect":"체험 프로그램을 먼저 검증할 것은 계획이라 저장된 판단을 바꾸지 않는다."},"evidenceStatus":"unverified-input"}',
+    'hypotheses는 미확인이면 retained다. reason에는 예약 고객, 가격, 계약, 확정된 양조장과 가설을 넣고, 그 없음이 가설을 확정하지 못한다고 적는다.',
     'judgment는 저장 판단을 유지한다. 선택이나 검증 계획을 판단으로 옮기지 않는다.',
     `nextVerification의 current는 이 문장이다. ${FOLLOW_UP_BREWERY_VERIFICATION_PLAN}`,
     '그 문장은 검증 계획이다. 양조장이 확보됐거나 수요가 확인됐다는 뜻이 아니다. decision은 changed이고 reason은 선택 문장으로 시작해 없음과 검증을 적는다.',
     'nextQuestion은 마케팅 효과를 다시 먼저 묻지 않는다. 양조장 후보가 있는지를 묻는다. previous는 저장된 질문 그대로다. decision은 changed이고 reason은 선택 문장과 질문과 바꾼 이유를 적는다.',
-    '루트 choiceTrace는 label, answerOrigin, role이다. 선택이 있으면 label은 그 문장 그대로이고 role은 plan이다. 루트 choiceTrace만 있고 원소 choiceTrace가 없으면 실패다.',
     'revenueModel은 previousAnalysis.revenueModel 문장을 그대로 복사한다. 빼거나 고치면 실패다. 가설 표시를 지우거나 확정 수익으로 바꾸지 않는다. 저장된 값이 없으면 새 문장을 만들지 않는다.',
     'founderFacts에 선택 문장이나 추가 설명을 넣지 않는다.',
     '가설이 강화되었다고 쓰지 않는다. 수요가 있다고 단정하지 않는다.',
-    '반환 뼈대는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, choiceTrace, changes를 모두 가진 객체다.',
   ].join(' ');
 }
 
