@@ -44,11 +44,22 @@ export function parseIntakeSeedDocument(text: string): ParsedIntakeSeed {
   return { projectTitle, businessDescription, businessOneLinerCandidate };
 }
 
+/** Drops the first-review purpose lines so a stored envelope still matches the business body. */
+export function stripReviewIntakeLines(text: string): string {
+  return text
+    .split('\n')
+    .filter((line) => !/^(검토 목적|현재 단계|가장 알고 싶은 것):/.test(line.trim()))
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 /** Text used to attach a stored review. The intake wrapper is not part of the review input. */
 export function businessBodyForReviewMatch(text: string): string {
-  const parsed = parseIntakeSeedDocument(text).businessDescription?.replace(/\s+/g, ' ').trim() ?? '';
+  const stripped = stripReviewIntakeLines(text);
+  const parsed = parseIntakeSeedDocument(stripped).businessDescription?.replace(/\s+/g, ' ').trim() ?? '';
   if (parsed.length >= 8) return parsed;
-  return text.replace(/\s+/g, ' ').trim();
+  return stripped.replace(/\s+/g, ' ').trim();
 }
 
 /** True when line is project metadata, not business substance. */

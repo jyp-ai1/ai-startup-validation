@@ -88,6 +88,7 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   aiPmFeedbackStored: 'ai_pm_feedback_stored',
   aiPmSingleFlowViewed: 'ai_pm_single_flow_viewed',
   aiPmRevisionViewed: 'ai_pm_revision_viewed',
+  aiPmChoiceSaved: 'ai_pm_choice_saved',
 } as const;
 
 export type ProductAnalyticsEvent =

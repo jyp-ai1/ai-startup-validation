@@ -11,7 +11,7 @@ import { chooseReviewBackend, openSupabaseReviewStore, type AiPmDurablePort } fr
 import {
   AI_PM_GEMINI_FALLBACK_MODEL,
   AI_PM_REVIEW_INPUT_TOKEN_BUDGET,
-  AI_PM_REVIEW_MAX_TOKENS,
+  AI_PM_REVIEW_FIRST_MAX_TOKENS,
   assessFollowUpRevision,
   buildFirstReviewRequest,
   buildFollowUpRequest,
@@ -27,6 +27,7 @@ import {
   saveReviewFeedback,
   toAiPmReviewView,
 } from '../ai-pm-review';
+import { composeReviewInput, nextDirectionAfterChoice } from '../ai-pm-review-intake';
 import { visibleClaimStates } from '../ai-pm-review-marks';
 import { projectLinksForUnscopedReviews } from '../ai-pm-review-project';
 import { openAiPmReviewStore, type ReviewSections, type StoredFeedback, type StoredReview } from '../ai-pm-review-store';
@@ -456,6 +457,10 @@ describe('AI PM first review', () => {
     expect(panel).toContain('revisionReview.finishedAt >= active.finishedAt');
     expect(panel).not.toContain('present-si-ai-pm-question');
     expect(panel).not.toContain('가장 가까운 결제 후보에게 유료로 제안했거나');
+    expect(panel).toContain('검토 목적');
+    expect(panel).toContain('기타 / 직접 입력');
+    expect(panel).not.toContain('/api/ai-pm-review/follow-up');
+    expect(panel).toContain('data-testid="ai-pm-choice-submit"');
     const request = buildFirstReviewRequest(PLAN);
     expect(request.messages.map((message) => message.content).join('\n')).not.toContain(
       '가장 가까운 결제 후보에게 유료로 제안했거나',
@@ -610,10 +615,12 @@ describe('AI PM first review', () => {
   it('caps the review request and switches once after a quota error', async () => {
     const request = buildFirstReviewRequest(`${'가'.repeat(20_000)} UNIQUEPLANMARKER`);
     const joined = request.messages.map((message) => message.content).join('\n');
-    expect(request.maxTokens).toBe(AI_PM_REVIEW_MAX_TOKENS);
-    expect(request.maxTokens).toBe(800);
+    expect(request.maxTokens).toBe(AI_PM_REVIEW_FIRST_MAX_TOKENS);
     expect(estimateReviewTokens(joined)).toBeLessThanOrEqual(AI_PM_REVIEW_INPUT_TOKEN_BUDGET);
-    expect(joined).toContain('problem, target_customer, solution, business_model, validation_metric, nextQuestion');
+    expect(joined).toContain('summary, customer, problem, value, operatingModel');
+    expect(joined).toContain('choices');
+    expect(joined).toContain('모든 사업에 결제 여부를 먼저 묻지 않는다');
+    expect(joined).toContain('시장 규모');
     expect(joined).not.toContain('UNIQUEPLANMARKER');
     const short = {
       problem: '노출이 약하다.',
@@ -1166,6 +1173,163 @@ describe('AI PM first review', () => {
     await remoteBackend.store.deleteOwnedRecords(owner);
     expect(await remoteBackend.store.listReviews(owner, 'project-test')).toEqual([]);
     expect(port.rows).toHaveLength(0);
+  });
+});
+
+const BREWERY =
+  '다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.';
+
+function breweryAnalysis(question: string, choices: string[]) {
+  return {
+    summary:
+      '전통주에 관심 있는 내국인과 외국인 관광객에게 양조장 체험과 주변 관광을 연결하고, 양조장에는 온라인 마케팅과 고객 유치 지원을 제공하는 사업입니다.',
+    customer: '전통주 체험에 관심 있는 내국인과 외국인 관광객.',
+    problem: '양조장 체험과 주변 관광을 하나의 경험으로 찾기 어렵다는 구상이다.',
+    value: '양조장 체험을 안내하고 주변 관광을 연결하며, 양조장의 온라인 마케팅을 지원한다.',
+    operatingModel: '양조장과 함께 체험 안내와 마케팅 지원을 운영하려는 구상이다.',
+    payer: '누가 비용을 내는지는 원문에 없다. 양조장일 수 있다는 추정이다.',
+    revenueModel: '수익 구조와 가격은 원문에 없다.',
+    market: '개인 경험을 중시하는 관광객이 늘고 있다는 진술이 있다. 시장 규모는 원문만으로 확정할 수 없다.',
+    competition: '경쟁 수단은 원문에 없다.',
+    operations: '시범 운영 사실은 원문에 없다.',
+    profitability: '매출은 원문만으로 확정할 수 없다.',
+    strengths: ['체험과 주변 관광을 함께 말한다.'],
+    risks: ['체험 수요와 양조장의 비용 부담이 확인되지 않았다.'],
+    assumptions: ['관광객이 체험을 예약할 의사가 있다.'],
+    evidenceToChange: ['실제 예약 한 건', '양조장과 비용 논의를 한 사실'],
+    founderFacts: ['전통주 체험과 주변 관광을 안내한다.', '양조장 온라인 마케팅을 지원하려 한다.'],
+    inferences: ['결제자는 양조장일 수 있다는 추정이다.'],
+    judgment: '체험 수요와 양조장의 비용 부담을 확인하기 전에는 수익성을 확정할 수 없습니다.',
+    nextQuestion: question,
+    nextQuestionReason: '이 답이 다음 질문의 대상을 바꿉니다.',
+    choices,
+  };
+}
+
+describe('first review analysis', () => {
+  it('stores a business reading and choices, and drops a figure the source does not contain', async () => {
+    const question = '처음 사업을 시작할 때, 가장 먼저 해결하려는 문제는 무엇인가요?';
+    const choices = [
+      '관광객이 양조장 체험을 발견하고 예약하기 어렵다',
+      '양조장이 온라인 홍보를 해도 실제 방문으로 연결되지 않는다',
+      '기타 / 직접 입력',
+    ];
+    const withFigure = {
+      ...breweryAnalysis(question, choices),
+      market: '시장 규모는 300억으로 확정되어 있다.',
+    };
+    const parsed = parseSections(JSON.stringify(withFigure), BREWERY);
+    expect(parsed?.analysis?.summary).toContain('양조장 체험');
+    expect(parsed?.analysis?.choices.map((choice) => choice.label)).toEqual(choices);
+    expect(parsed?.analysis?.choices.at(-1)?.id).toBe('other');
+    expect(parsed?.market).toContain('원문에 없는 수치');
+    expect(parsed?.market).not.toContain('300억');
+    expect(parsed?.judgment).toBe(parsed?.analysis?.summary);
+    const fixed = '가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.';
+    expect(parseSections(JSON.stringify(breweryAnalysis(fixed, choices)), BREWERY)).toBeNull();
+  });
+
+  it('asks from the review purpose and saves a choice without another model call', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const calls: string[] = [];
+    const chat = async (request: ChatRequest) => {
+      const content = request.messages.map((message) => message.content).join('\n');
+      calls.push(content);
+      const revenue = content.includes('수익모델 검증');
+      return reply(
+        JSON.stringify(
+          breweryAnalysis(
+            revenue
+              ? '양조장이 마케팅 지원 비용을 논의할 상대가 있습니까?'
+              : '처음 사업을 시작할 때, 가장 먼저 해결하려는 문제는 무엇인가요?',
+            revenue
+              ? ['논의한 양조장이 있다', '아직 논의 전이다', '기타 / 직접 입력']
+              : ['관광객이 예약 경로를 찾기 어렵다', '양조장 홍보가 방문으로 이어지지 않는다', '기타 / 직접 입력'],
+          ),
+        ),
+      );
+    };
+    const marketText = composeReviewInput({
+      text: BREWERY,
+      purpose: 'market',
+      stage: 'idea',
+      focus: '고객이 누구인지',
+    });
+    const revenueText = composeReviewInput({ text: BREWERY, purpose: 'revenue' });
+    expect(marketText).not.toBe(revenueText);
+    const market = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: marketText,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    const revenue = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: revenueText,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    const again = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: marketText,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(calls).toHaveLength(2);
+    expect(market.view.sections?.nextQuestion).not.toBe(revenue.view.sections?.nextQuestion);
+    expect(again.called).toBe(false);
+    expect(again.record.reviewId).toBe(market.record.reviewId);
+    const saved = await saveReviewFeedback({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      now: NOW,
+      body: {
+        reviewId: market.record.reviewId,
+        choiceId: 'c1',
+        choiceLabel: '관광객이 예약 경로를 찾기 어렵다',
+        otherText: '',
+      },
+    });
+    expect(saved.ok).toBe(true);
+    if (!saved.ok) return;
+    expect(saved.feedback.modelCalls).toBe(0);
+    expect(saved.view.feedback.at(-1)?.choiceAnswer?.label).toContain('예약 경로');
+    const tourist = nextDirectionAfterChoice({
+      label: '관광객이 예약 경로를 찾기 어렵다',
+      otherText: '',
+      reason: '예약 경로를 확인합니다.',
+    });
+    const breweryPay = nextDirectionAfterChoice({
+      label: '양조장 홍보가 방문으로 이어지지 않는다',
+      otherText: '',
+      reason: '양조장의 현재 홍보를 확인합니다.',
+    });
+    expect(tourist).not.toBe(breweryPay);
+    expect(tourist).toContain('후속 모델 검토는 실행하지 않습니다');
+    const missingOther = parseFeedbackBody({
+      reviewId: market.record.reviewId,
+      choiceId: 'other',
+      choiceLabel: '기타 / 직접 입력',
+      otherText: ' ',
+    });
+    expect(missingOther.ok).toBe(false);
+    store.close();
   });
 });
 

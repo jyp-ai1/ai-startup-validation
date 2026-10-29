@@ -140,6 +140,35 @@ export type StoredReview = {
   finishedAt: string;
 };
 
+export type ReviewChoice = {
+  id: string;
+  label: string;
+};
+
+/** First-review business reading. Absent on rows stored before this contract. */
+export type BusinessAnalysis = {
+  summary: string;
+  value: string;
+  operatingModel: string;
+  payer: string;
+  competition: string;
+  operations: string;
+  profitability: string;
+  strengths: string[];
+  assumptions: string[];
+  evidenceToChange: string[];
+  founderFacts: string[];
+  inferences: string[];
+  judgmentDetail: string;
+  choices: ReviewChoice[];
+};
+
+export type ChoiceAnswer = {
+  choiceId: string;
+  label: string;
+  otherText: string;
+};
+
 export type ReviewSections = {
   customer: string;
   problem: string;
@@ -155,6 +184,8 @@ export type ReviewSections = {
   answerHint: string;
   /** Explicit confirmation for the problem, customer, and revenue claims. Null on a first review. */
   claimConfirmation: ClaimConfirmation | null;
+  /** Set when the first review returned a business analysis and choices. */
+  analysis?: BusinessAnalysis | null;
 };
 
 export type Agreement = 'agree' | 'partial' | 'disagree' | 'need_info';
@@ -194,6 +225,8 @@ export type StoredFeedback = {
   comment: string;
   nextAction: NextAction;
   marks: ReviewMark[];
+  /** Founder's choice on the first question. Saving it does not call a model. */
+  choiceAnswer?: ChoiceAnswer | null;
   submittedAt: string;
   modelCalls: 0;
 };

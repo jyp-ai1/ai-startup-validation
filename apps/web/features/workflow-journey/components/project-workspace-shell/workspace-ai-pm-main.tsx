@@ -840,7 +840,7 @@ export function WorkspaceAiPmMain({
   const flowBody = (
     <div className="space-y-6">
       {siInputText.length >= 8 ? <AiPmReviewPanel initialText={siInputText} projectId={projectId} /> : null}
-      {siJudgment && !isPostReview ? (
+      {siJudgment && !isPostReview && siInputText.length < 8 ? (
         <div data-testid="si-journey-block" data-si-source="business-input">
           <SiReviewSurface judgment={siJudgment} projectId={projectId} sourceText={siInputText} />
           {siBindView?.question ? (

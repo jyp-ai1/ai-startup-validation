@@ -2264,6 +2264,51 @@ ADR-067 compares the sentence that states a claim. That comparison still rejects
 
 ---
 
+## ADR-070: The first review states the business, then one choice
+
+**Status:** Accepted  
+**Date:** 2026-10-29  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The stored first review could be a short field map and one free-text question. The workspace showed that text, and an internal judgment could sit beside it. The same business body reused that row, so a better prompt never ran. A follow-up call was still available from the question step. Save, restore, and workspace scope already passed and stay as they are.
+
+### Decision
+
+1. A first review asks for a business summary, customer, problem, value, operating model, payer, revenue model, market, competition, operations, profitability, strengths, risks, unverified assumptions, evidence that would change the judgment, and one question with choices. The last choice is direct input. The fixed paid-conversion sentence is still rejected.
+2. The founder sends the business body and a review purpose. Stage and the thing they most want to know are optional. Those lines are part of the stored hash. Lookup remains `user_id`, `project_id`, and that hash. The body match ignores the purpose lines, and a review with `sections.analysis` is the one the screen restores.
+3. Saving a choice writes feedback and does not call a model. The screen states what was confirmed and the next direction from that choice. The panel does not call `POST /api/ai-pm-review/follow-up`.
+4. A count of 억, 만, %, 원, or 명 that is not in the source text is replaced before storage. Internal scores do not replace the analysis. When the workspace already has business text, the strategic-intelligence surface is not rendered with the review.
+5. This decision does not start a second model review, unlock production, or merge PR #209.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Keep the short field map and change only the screen labels | No prompt change | The stored text would still be the thin judgment |
+| Reuse the previous succeeded row for the same body | No new model call | The failed reading would stay on screen |
+| Run a follow-up after the choice | The next question could be generated | That call is not approved |
+
+### Consequences
+
+**Positive:**
+
+- The first response can show a business reading and a choice that depends on the purpose.
+- An older row remains stored. A new purpose line is a new hash, so the old row is not overwritten.
+
+**Negative:**
+
+- The same body with a purpose makes one new first-review call on that workspace.
+- A model can still miss the business. A unit test does not make that a pass.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #209 stays unmerged. The second follow-up review is not started.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

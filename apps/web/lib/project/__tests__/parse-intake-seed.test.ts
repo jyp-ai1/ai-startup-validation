@@ -24,4 +24,11 @@ describe('parseIntakeSeedDocument (FIX-10)', () => {
     expect(businessBodyForReviewMatch(body)).toBe(body);
     expect(businessBodyForReviewMatch(document)).toBe(businessBodyForReviewMatch(body));
   });
+
+  it('matches a review that also stored the purpose lines', () => {
+    const body = '다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 양조장 체험을 안내한다.';
+    const stored = `${body}\n\n검토 목적: 종합 검토\n현재 단계: 아이디어\n가장 알고 싶은 것: 없음`;
+    expect(businessBodyForReviewMatch(stored)).toBe(body);
+    expect(businessBodyForReviewMatch(stored)).toBe(businessBodyForReviewMatch(body));
+  });
 });

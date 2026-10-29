@@ -127,7 +127,7 @@ export function readingFromInput(text: string): ReviewReading {
 export function readingFromSections(sections: ReviewSections): ReviewReading {
   return {
     source: 'model-review',
-    summary: sections.judgment,
+    summary: sections.analysis?.summary || sections.judgment,
     idea: sections.execution,
     hypothesis: sections.uncertain[0] ?? sections.hypotheses[0] ?? null,
     question: sections.nextQuestion,

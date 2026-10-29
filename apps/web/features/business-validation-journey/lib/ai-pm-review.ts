@@ -7,6 +7,8 @@ import type {
   Accuracy,
   Agreement,
   AiPmReviewStore,
+  BusinessAnalysis,
+  ChoiceAnswer,
   NextAction,
   ReviewMark,
   ReviewSections,
@@ -19,6 +21,7 @@ import type {
 export const AI_PM_REVIEW_MODEL = 'gpt-4o-mini';
 export const AI_PM_GEMINI_FALLBACK_MODEL = 'gemini-3.1-flash-lite';
 export const AI_PM_REVIEW_MAX_TOKENS = 800;
+export const AI_PM_REVIEW_FIRST_MAX_TOKENS = 1800;
 export const AI_PM_REVIEW_INPUT_TOKEN_BUDGET = 3_000;
 export const AI_PM_REVIEW_INPUT_LIMIT = 24_000;
 
@@ -48,6 +51,7 @@ export type AiPmFeedbackView = {
   comment: string;
   nextAction: NextAction;
   marks: ReviewMark[];
+  choiceAnswer: ChoiceAnswer | null;
   submittedAt: string;
 };
 
@@ -148,7 +152,7 @@ export async function callReviewWithQuotaSwitch(input: {
       return await input.gemini({
         ...input.request,
         model: AI_PM_GEMINI_FALLBACK_MODEL,
-        maxTokens: AI_PM_REVIEW_MAX_TOKENS,
+        maxTokens: input.request.maxTokens,
       });
     } catch (fallbackError) {
       const first = error instanceof Error ? error.message : 'quota';
@@ -179,7 +183,7 @@ export function openReviewChat(env: Record<string, string | undefined> = process
             return googleChat({
               apiKey: googleKey,
               request: chatRequest,
-              maxOutputTokensCeiling: AI_PM_REVIEW_MAX_TOKENS,
+              maxOutputTokensCeiling: chatRequest.maxTokens,
             });
           }
         : undefined,
@@ -238,6 +242,7 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
         comment: item.comment,
         nextAction: item.nextAction,
         marks: normalizeMarks(item.marks),
+        choiceAnswer: item.choiceAnswer ?? null,
         submittedAt: item.submittedAt,
       })),
     revision: record.revisionGate
@@ -271,13 +276,13 @@ export function buildFirstReviewRequest(text: string): ChatRequest {
   return {
     model: AI_PM_REVIEW_MODEL,
     temperature: 0.2,
-    maxTokens: AI_PM_REVIEW_MAX_TOKENS,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
     responseFormat: { type: 'json_object' },
     messages: fitReviewMessages([
-      { role: 'system', content: reviewSystemPrompt() },
+      { role: 'system', content: firstReviewSystemPrompt() },
       {
         role: 'user',
-        content: `사업 입력:\n${text}\n\n키: problem, target_customer, solution, business_model, validation_metric, nextQuestion.`,
+        content: `사업 입력:\n${text}\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextQuestion, nextQuestionReason, choices.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다.`,
       },
     ]),
   };
@@ -382,6 +387,22 @@ export function parseFeedbackBody(body: unknown): { ok: true; value: Omit<Stored
   if (!body || typeof body !== 'object') return { ok: false, error: 'feedback_incomplete' };
   const source = body as Record<string, unknown>;
   const reviewId = typeof source.reviewId === 'string' ? source.reviewId.trim() : '';
+  const choiceAnswer = readChoiceAnswer(source);
+  if (reviewId && choiceAnswer) {
+    return {
+      ok: true,
+      value: {
+        reviewId,
+        agreement: 'need_info',
+        accuracy: 'hard_to_compare',
+        revisionAreas: ['other'],
+        comment: choiceAnswer.otherText || choiceAnswer.label,
+        nextAction: 'verify_hypotheses',
+        marks: [],
+        choiceAnswer,
+      },
+    };
+  }
   const agreement = oneOf(source.agreement, AGREEMENTS);
   const accuracy = oneOf(source.accuracy, ACCURACY);
   const nextAction = oneOf(source.nextAction, NEXT);
@@ -392,14 +413,14 @@ export function parseFeedbackBody(body: unknown): { ok: true; value: Omit<Stored
   const marks = normalizeMarks(source.marks);
   if (reviewId && marks.length > 0) {
     const derived = feedbackFromMarks(marks, comment);
-    return { ok: true, value: { reviewId, ...derived } };
+    return { ok: true, value: { reviewId, ...derived, choiceAnswer: null } };
   }
   if (!reviewId || !agreement || !accuracy || !nextAction || !revisionAreas) {
     return { ok: false, error: 'feedback_incomplete' };
   }
   return {
     ok: true,
-    value: { reviewId, agreement, accuracy, revisionAreas, comment, nextAction, marks: [] },
+    value: { reviewId, agreement, accuracy, revisionAreas, comment, nextAction, marks: [], choiceAnswer: null },
   };
 }
 
@@ -689,6 +710,25 @@ function reviewSystemPrompt(): string {
   ].join(' ');
 }
 
+function firstReviewSystemPrompt(): string {
+  return [
+    '당신은 ALABOM의 AI PM이다. 사업 원문으로 1차 사업성 검토를 작성한다.',
+    '사용자가 적은 사실과 추정은 나눈다. 추정에는 추정이라고 적는다.',
+    '가격, 인원, 매출, 시장 규모, 수요 수치는 입력에 없으면 만들지 않는다. 없으면 원문만으로 확정할 수 없다고 적는다.',
+    '내부 점수나 상태 문구로 분석을 대체하지 않는다. 판단을 보류한다는 문장으로 분석을 끝내지 않는다.',
+    '첫 질문은 이 사업의 검토 목적과 가장 큰 불확실성에서 만든다.',
+    '모든 사업에 결제 여부를 먼저 묻지 않는다. 결제 확인은 수익모델이 그 불확실성일 때만 선택지에 넣는다.',
+    'JSON만 반환한다.',
+    '키는 summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextQuestion, nextQuestionReason, choices 이다.',
+    'summary는 사업 한 문장이다.',
+    'customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, judgment는 각각 한 단락이다.',
+    'strengths, risks, assumptions, evidenceToChange, founderFacts, inferences는 문자열 배열이다.',
+    'nextQuestion은 질문 하나다. nextQuestionReason은 이 답이 다음 판단을 어떻게 바꾸는지다.',
+    'choices는 이 원문에만 해당하는 문자열 3개에서 5개다. 마지막은 기타 / 직접 입력이다.',
+    '질문 목록의 문장을 복사하지 않는다. 모델 이름이나 공급사 이름은 쓰지 않는다.',
+  ].join(' ');
+}
+
 async function finishCall(input: {
   store: AiPmReviewStore;
   input: {
@@ -712,7 +752,7 @@ async function finishCall(input: {
   const started = Date.now();
   try {
     const response = await input.chat(input.request);
-    const sections = parseSections(response.content);
+    const sections = parseSections(response.content, input.input.text);
     const revisionGate =
       sections && input.gate && needsRevisionGate(input.gate.marks)
         ? assessFollowUpRevision({ previous: input.gate.previous, next: sections, marks: input.gate.marks })
@@ -849,13 +889,17 @@ function expandShortAnalysis(input: {
     nextQuestionReason: `확인할 지표는 ${input.validation_metric}`,
     answerHint: '확인된 사실만 적는다. 계획이면 계획이라고 적는다.',
     claimConfirmation: input.claimConfirmation,
+    analysis: null,
   };
 }
 
-export function parseSections(content: string): ReviewSections | null {
+export function parseSections(content: string, sourceText = ''): ReviewSections | null {
   const stripped = content.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
   try {
     const parsed = JSON.parse(stripped) as Record<string, unknown>;
+    const analysis = readBusinessAnalysis(parsed, sourceText);
+    if (analysis) return analysis;
+    if (textField(parsed.summary) || Array.isArray(parsed.choices)) return null;
     const problem = textField(parsed.problem);
     const targetCustomer = textField(parsed.target_customer);
     const solution = textField(parsed.solution);
@@ -903,10 +947,103 @@ export function parseSections(content: string): ReviewSections | null {
       nextQuestionReason,
       answerHint,
       claimConfirmation: readConfirmation(parsed.confirmation),
+      analysis: null,
     };
   } catch {
     return null;
   }
+}
+
+function readChoiceAnswer(source: Record<string, unknown>): ChoiceAnswer | null {
+  const choiceId = typeof source.choiceId === 'string' ? source.choiceId.trim() : '';
+  const label = typeof source.choiceLabel === 'string' ? source.choiceLabel.trim().slice(0, 500) : '';
+  const otherText = typeof source.otherText === 'string' ? source.otherText.trim().slice(0, 2000) : '';
+  if (!choiceId || !label) return null;
+  if (choiceId === 'other' && !otherText) return null;
+  return { choiceId, label, otherText };
+}
+
+function readBusinessAnalysis(parsed: Record<string, unknown>, sourceText: string): ReviewSections | null {
+  const summary = scrubFigures(textField(parsed.summary), sourceText);
+  const customer = textField(parsed.customer);
+  const problem = textField(parsed.problem);
+  const value = textField(parsed.value);
+  const operatingModel = textField(parsed.operatingModel);
+  const payer = textField(parsed.payer);
+  const revenueModel = textField(parsed.revenueModel);
+  const market = scrubFigures(textField(parsed.market), sourceText);
+  const competition = scrubFigures(textField(parsed.competition), sourceText);
+  const operations = textField(parsed.operations);
+  const profitability = scrubFigures(textField(parsed.profitability), sourceText);
+  const judgmentDetail = scrubFigures(textField(parsed.judgment), sourceText);
+  const nextQuestion = textField(parsed.nextQuestion);
+  const nextQuestionReason = textField(parsed.nextQuestionReason);
+  const strengths = stringList(parsed.strengths);
+  const risks = stringList(parsed.risks);
+  const assumptions = stringList(parsed.assumptions);
+  const evidenceToChange = stringList(parsed.evidenceToChange);
+  const choices = readChoices(parsed.choices);
+  if (!summary || !customer || !problem || !value || !operatingModel || !payer || !revenueModel) return null;
+  if (!market || !competition || !operations || !profitability || !judgmentDetail) return null;
+  if (!nextQuestion || !nextQuestionReason || !strengths || !risks || !assumptions || !evidenceToChange) return null;
+  if (!choices) return null;
+  if (nextQuestion === FIXED_RULE_QUESTION || choices.some((choice) => choice.label === FIXED_RULE_QUESTION)) return null;
+  const analysis: BusinessAnalysis = {
+    summary,
+    value,
+    operatingModel,
+    payer,
+    competition,
+    operations,
+    profitability,
+    strengths,
+    assumptions,
+    evidenceToChange,
+    founderFacts: stringList(parsed.founderFacts) ?? [],
+    inferences: (stringList(parsed.inferences) ?? []).map((item) => scrubFigures(item, sourceText) ?? item),
+    judgmentDetail,
+    choices,
+  };
+  return {
+    customer,
+    problem,
+    market,
+    revenueModel,
+    execution: operatingModel,
+    risks,
+    uncertain: assumptions,
+    hypotheses: assumptions,
+    judgment: summary,
+    nextQuestion,
+    nextQuestionReason,
+    answerHint: '선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.',
+    claimConfirmation: null,
+    analysis,
+  };
+}
+
+function readChoices(value: unknown): BusinessAnalysis['choices'] | null {
+  if (!Array.isArray(value)) return null;
+  const labels = value
+    .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+    .map((item) => item.trim())
+    .slice(0, 6);
+  if (labels.length < 2) return null;
+  const withOther = labels.some((label) => /기타/.test(label)) ? labels : [...labels, '기타 / 직접 입력'];
+  const otherIndex = withOther.reduce((found, label, index) => (/기타/.test(label) ? index : found), -1);
+  return withOther.map((label, index) => ({
+    id: index === otherIndex ? 'other' : `c${index + 1}`,
+    label,
+  }));
+}
+
+/** Drops a count the business text does not contain, so a model figure is not stored as a fact. */
+function scrubFigures(value: string | null, sourceText: string): string | null {
+  if (!value) return null;
+  return value.replace(/\d[\d,.]*(?:\s*)(?:억|만|%|원|명)/g, (match) => {
+    const digits = match.replace(/[^\d]/g, '');
+    return digits && sourceText.includes(digits) ? match : '원문에 없는 수치';
+  });
 }
 
 const CONFIRMATION_STATES = ['unconfirmed', 'confirmed'] as const;
