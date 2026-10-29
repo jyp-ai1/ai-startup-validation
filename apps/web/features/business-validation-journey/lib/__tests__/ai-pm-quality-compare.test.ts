@@ -14,6 +14,8 @@ import {
 import {
   COMPARE_BUSINESS_INPUT,
   QUALITY3_PROMPT_VERSION,
+  QUALITY4_PROMPT_VERSION,
+  QUALITY4_SYSTEM_PROMPT,
   buildQuality2CompareRequest,
   buildQuality3CompareRequest,
   compareConfounders,
@@ -109,6 +111,24 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(child.status).toBe(0);
     expect(child.stdout).toContain('preview-quality-compare skip');
     expect(child.stdout).not.toContain('sk-testsecretvalue');
+  });
+
+  it('keeps the quality-4 question draft out of the product prompt', () => {
+    const product = buildFirstReviewRequest(COMPARE_BUSINESS_INPUT);
+    const system = product.messages[0]?.content ?? '';
+    expect(AI_PM_FIRST_PROMPT_VERSION).toBe('quality-2');
+    expect(system).toContain('프롬프트 버전 quality-2');
+    expect(system).not.toContain(QUALITY4_PROMPT_VERSION);
+    expect(QUALITY4_PROMPT_VERSION).toBe('quality-4-draft');
+    expect(QUALITY4_SYSTEM_PROMPT).toContain('프롬프트 버전 quality-4.');
+    expect(QUALITY4_SYSTEM_PROMPT).toContain('customer와 payer를 나눈다');
+    expect(QUALITY4_SYSTEM_PROMPT).toContain('가설이라고 적고');
+    expect(QUALITY4_SYSTEM_PROMPT).toContain('높다, 낮다, 미정인지만 묻지 않는다');
+    expect(QUALITY4_SYSTEM_PROMPT).toContain('무엇을 먼저 팔지');
+    expect(QUALITY4_SYSTEM_PROMPT).toContain('아직 정하지 못함');
+    expect(QUALITY4_SYSTEM_PROMPT.length).toBeLessThan(2200);
+    const fixture = readFileSync(new URL('../quality-compare-requests.json', import.meta.url), 'utf8');
+    expect(fixture).not.toContain('quality-4');
   });
 
   it('keeps the preview request fixture equal to the builders', () => {
