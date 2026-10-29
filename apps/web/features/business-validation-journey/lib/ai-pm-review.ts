@@ -1069,16 +1069,21 @@ function absentInputMarkers(supplement: string): string[] {
   return ABSENT_INPUT_MARKERS.filter((marker) => supplement.includes(marker));
 }
 
-function citesSupplementOrChoice(text: string, context: FollowUpOutputContext): boolean {
-  if (context.choiceLabel && text.includes(context.choiceLabel)) return true;
-  const source = compact(context.supplement);
+function citesSupplement(text: string, supplement: string): boolean {
+  const source = compact(supplement);
+  if (source.length === 0) return true;
   const haystack = compact(text);
-  if (source.length === 0) return text.trim().length > 0;
   if (source.length < 8) return haystack.includes(source);
   for (let index = 0; index + 8 <= source.length; index += 1) {
     if (haystack.includes(source.slice(index, index + 8))) return true;
   }
   return false;
+}
+
+function founderAnswerCitesSources(text: string, context: FollowUpOutputContext): boolean {
+  if (context.choiceLabel && !text.includes(context.choiceLabel)) return false;
+  if (context.supplement.trim().length > 0 && !citesSupplement(text, context.supplement)) return false;
+  return text.trim().length > 0;
 }
 
 function choiceOnlyGrounds(grounds: string, choice: string): boolean {
@@ -1195,7 +1200,7 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
     const unchangedReason = typeof change.unchangedReason === 'string' ? change.unchangedReason.trim() : '';
     if (previous !== expectedPrevious[field]) errors.push(`follow_up_output_previous:${field}`);
     if (!founderAnswer) errors.push(`follow_up_output_founder_answer:${field}`);
-    else if (!citesSupplementOrChoice(founderAnswer, context)) errors.push(`follow_up_output_founder_answer_untraced:${field}`);
+    else if (!founderAnswerCitesSources(founderAnswer, context)) errors.push(`follow_up_output_founder_answer_untraced:${field}`);
     if (updated !== expectedUpdated[field]) errors.push(`follow_up_output_updated:${field}`);
     const changed = updated !== previous;
     if (!grounds) errors.push(`follow_up_output_grounds:${field}`);
@@ -1290,7 +1295,7 @@ function reviewSystemPrompt(): string {
     'hypotheses는 비어 있지 않은 문자열 배열이다.',
     'changes는 JSON 배열이다. 객체 맵, 문자열, 누락, 배열이 아닌 원소는 실패다.',
     '배열 원소는 네 개다. field는 judgment, hypotheses, nextVerification, nextQuestion 이다.',
-    '예시 형태: {"changes":[{"field":"judgment","previous":"저장 판단","founderAnswer":"선택 문장과 추가 설명","updated":"저장 판단","grounds":"추가 설명에 있는 말","unchangedReason":"바꾸지 않은 이유"},{"field":"hypotheses","previous":"저장 가설","founderAnswer":"선택 문장과 추가 설명","updated":"저장 가설","grounds":"추가 설명에 있는 말","unchangedReason":"가설을 유지하는 이유"},{"field":"nextVerification","previous":"저장 검증","founderAnswer":"선택 문장","updated":"바뀐 검증","grounds":"선택 문장","unchangedReason":""},{"field":"nextQuestion","previous":"저장 질문","founderAnswer":"선택 문장","updated":"바뀐 질문","grounds":"선택 문장","unchangedReason":""}]}',
+    '예시 형태: {"changes":[{"field":"judgment","previous":"저장 판단","founderAnswer":"선택: 체험 프로그램을 먼저 검증할 것. 추가 설명: 예약 고객, 가격, 계약, 확정된 양조장은 없다.","updated":"저장 판단","grounds":"추가 설명은 예약 고객, 가격, 계약, 확정된 양조장은 없다. 선택은 계획이라 판단을 바꾸지 않는다.","unchangedReason":"수요를 확인한 문장이 아니다."},{"field":"hypotheses","previous":"미확인","founderAnswer":"선택: 체험 프로그램을 먼저 검증할 것. 추가 설명: 예약 고객, 가격, 계약, 확정된 양조장은 없다.","updated":"미확인","grounds":"추가 설명은 예약 고객, 가격, 계약, 확정된 양조장은 없다. 수요 존재의 근거가 아니다.","unchangedReason":"가설은 미확인으로 둔다."},{"field":"nextVerification","previous":"저장 검증","founderAnswer":"선택: 체험 프로그램을 먼저 검증할 것. 추가 설명: 예약 고객, 가격, 계약, 확정된 양조장은 없다.","updated":"체험을 열 확정된 양조장이 있는지부터 확인한다.","grounds":"체험 프로그램을 먼저 검증할 것. 추가 설명은 확정된 양조장은 없다.","unchangedReason":""},{"field":"nextQuestion","previous":"저장 질문","founderAnswer":"선택: 체험 프로그램을 먼저 검증할 것. 추가 설명: 예약 고객, 가격, 계약, 확정된 양조장은 없다.","updated":"체험을 열 양조장이 정해져 있습니까?","grounds":"체험 프로그램을 먼저 검증할 것. 추가 설명은 확정된 양조장은 없다.","unchangedReason":""}]}',
     '각 원소는 previous, founderAnswer, updated, grounds, unchangedReason을 가진다.',
     'previous는 요청의 저장값을 그대로 적는다. hypotheses의 previous와 updated는 항목을 " / "로 잇는다.',
     'updated는 그 필드의 반환값과 같다.',

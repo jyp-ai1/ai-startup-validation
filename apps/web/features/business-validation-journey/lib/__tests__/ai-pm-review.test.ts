@@ -636,7 +636,7 @@ describe('AI PM first review', () => {
         {
           field: 'nextVerification',
           previous: context.previousNextVerification,
-          founderAnswer: choice,
+          founderAnswer: `${choice} ${sent.founderSupplement}`,
           updated: nextVerification,
           grounds: `${choice} ${cited} 그래서 체험을 열 양조장 확인을 먼저 둔다.`,
           unchangedReason: '',
@@ -644,7 +644,7 @@ describe('AI PM first review', () => {
         {
           field: 'nextQuestion',
           previous: context.previousNextQuestion,
-          founderAnswer: choice,
+          founderAnswer: `${choice} ${sent.founderSupplement}`,
           updated: nextQuestion,
           grounds: `${choice} 어느 쪽을 먼저 볼지는 계획으로 답해졌고 ${cited}.`,
           unchangedReason: '',
