@@ -87,14 +87,14 @@
 
 2026-10-29 22:30 KST에 `ai-pm-review.test.ts` 20 passed, `ai-pm-quality-compare.test.ts` 18 passed. 모델 호출은 없다. `founderAnswer`는 `choice`, `supplement`, `source`, `status` 객체다. 선택만 있거나 `source`가 `answerOrigin`과 다르면 실패한다. 그 뒤 Preview run `q1-incremental-reflection-source-2026-10-29`는 루트에만 `founderAnswer`가 있어 실패했다.
 
-2026-10-29 22:41 KST에 같은 세 파일 45 passed. 모델 호출은 없다. 루트 `founderAnswer`는 변경 원소를 통과시키지 않는다. 원소의 supplement가 입력과 연결되지 않거나 판단 근거가 선택 문장뿐이면 실패한다. 다음 Preview run id는 `q1-incremental-reflection-trace-2026-10-29`다. 그 객체는 아직 없다.
+2026-10-29 22:41 KST에 같은 세 파일 45 passed. 모델 호출은 없다. 루트 `founderAnswer`는 변경 원소를 통과시키지 않는다. 원소의 supplement가 입력과 연결되지 않거나 판단 근거가 선택 문장뿐이면 실패한다. 그 뒤 Preview run `q1-incremental-reflection-trace-2026-10-29`는 원소 안에 `founderAnswer`를 두었으나 자동 검증 오류 5건이 남았다. `SPRINT-Q1-INCREMENTAL-REFLECTION-TRACE.md`.
 
 ## 하지 않은 관문
 
 | 관문 | 상태 |
 |---|---|
 | 제품 요청 구조 | PASS. CPO 2026-10-29 21:12 KST. SHA `eed29780cf9b43f2f580bb003bd7c0142c053a77` |
-| 증분 반영 | FAIL. `q1-incremental-reflection-source-2026-10-29`는 루트 `founderAnswer`만 채우고 변경 원소에는 없어 오류 5건. `SPRINT-Q1-INCREMENTAL-REFLECTION-SOURCE.md` |
+| 증분 반영 | FAIL. `q1-incremental-reflection-trace-2026-10-29`는 변경 원소의 `founderAnswer`는 채웠으나 검증 문장이 양조장을 쓰지 않고 유지 이유가 비어 오류 5건. `SPRINT-Q1-INCREMENTAL-REFLECTION-TRACE.md` |
 | 2차 품질 | **NOT RUN** |
 | 저장·복원 | **NOT RUN** |
 | 화면 Q9·Q10 | **BLOCKED**. 2026-10-29 18:07 KST. Vercel CLI logged out. Preview `GET /workspace` HTTP 401 |

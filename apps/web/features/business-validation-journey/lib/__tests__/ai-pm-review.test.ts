@@ -1034,6 +1034,66 @@ describe('AI PM first review', () => {
     expect(sourceParsed.nextVerification).toBe('체험 확인');
     expect(sourceParsed.nextQuestion).toContain('양조장');
     expect(sourceParsed.nextQuestion).not.toContain('마케팅 지원의 효과');
+    const traceCall = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-trace-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as {
+      runId: string;
+      priorRunId: string;
+      gitSha: string;
+      productFollowUpInvoked: boolean;
+      reflectionScored: boolean;
+      report: { calls: Array<{ raw: string; userPrompt: string }> };
+    };
+    expect(traceCall.runId).toBe('q1-incremental-reflection-trace-2026-10-29');
+    expect(traceCall.priorRunId).toBe('q1-incremental-reflection-source-2026-10-29');
+    expect(traceCall.gitSha).toBe('09ff316a35e3e889fde9c0587091fbf79bfcd847');
+    expect(traceCall.productFollowUpInvoked).toBe(false);
+    expect(traceCall.reflectionScored).toBe(false);
+    const traceSent = JSON.parse(traceCall.report.calls[0]?.userPrompt ?? '{}') as typeof sent;
+    const traceContext = {
+      previousJudgment: traceSent.previousAnalysis.judgment,
+      previousHypotheses: traceSent.previousAnalysis.hypotheses,
+      previousNextVerification: traceSent.previousAnalysis.analysis.nextVerification,
+      previousNextQuestion: traceSent.previousAnalysis.nextQuestion,
+      previousRevenueModel: traceSent.previousAnalysis.revenueModel,
+      choiceLabel: traceSent.founderChoice.label,
+      supplement: traceSent.founderSupplement,
+      answerOrigin: 'synthetic-test-data' as const,
+    };
+    expect(followUpOutputContractErrors(traceCall.report.calls[0]?.raw ?? '', traceContext)).toEqual([
+      'follow_up_output_unchanged_reason:judgment',
+      'follow_up_output_unchanged_reason:hypotheses',
+      'follow_up_output_previous:nextQuestion',
+      'follow_up_output_unchanged_reason:nextQuestion',
+      'next_verification_input_unused',
+    ]);
+    const traceParsed = JSON.parse(traceCall.report.calls[0]?.raw ?? '{}') as {
+      judgment: string;
+      hypotheses: string[];
+      nextVerification: string;
+      nextQuestion: string;
+      revenueModel: string;
+      founderAnswer?: unknown;
+      changes: Array<{
+        field: string;
+        founderAnswer: { choice: string; supplement: string; source: string; status: string };
+        grounds: string;
+        unchangedReason: string;
+      }>;
+    };
+    expect(traceParsed.founderAnswer).toBeUndefined();
+    expect(traceParsed.judgment).toBe(traceContext.previousJudgment);
+    expect(traceParsed.hypotheses).toEqual(['미확인']);
+    expect(traceParsed.revenueModel).toContain('가설');
+    expect(traceParsed.nextVerification).not.toContain('양조장');
+    expect(traceParsed.changes).toHaveLength(4);
+    expect(traceParsed.changes.every((change) => change.founderAnswer.status === 'unverified-input')).toBe(true);
+    expect(traceParsed.changes.every((change) => change.founderAnswer.source === 'synthetic-test-data')).toBe(true);
+    expect(traceParsed.changes.every((change) => change.founderAnswer.supplement.includes('확정된 양조장'))).toBe(true);
+    expect(traceParsed.changes.every((change) => change.unchangedReason === '')).toBe(true);
   });
 
   it('sends a typed note and the same file text through one review', async () => {
