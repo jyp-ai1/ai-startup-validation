@@ -894,3 +894,20 @@ Preview 배포 `7401624594`는 2026-10-29 10:28 KST에 성공했다. URL은 `htt
 | 후속 모델 호출 없음 | **이 런에서 호출하지 않음** — 저장 경로는 단위 테스트에서 모델 호출 0 |
 | 1차 게이트 | **FAIL 유지** |
 | Production / PR #209 | **잠금, 미병합** |
+
+## 32. 2026-10-29 11:21 KST 런타임 확인 재시도
+
+CPO는 1차 게이트 FAIL을 유지했다. 이번 실행은 프롬프트를 바꾸지 않고, 배포된 Preview에서 `/api/build-info`와 양조장 1차 응답을 읽으려 했다.
+
+문서 커밋 `55d8e9d0`의 Preview 배포 `7401815072`는 2026-10-29 10:42 KST에 성공했다. URL은 `https://ai-startup-validation-aqm2qkhud-jyp-ai1s-projects.vercel.app`이다. 이 런의 주입 비밀에는 `VERCEL_AUTOMATION_BYPASS_SECRET`과 `VERCEL_TOKEN`이 없다.
+
+그 배포의 `/api/build-info`를 기존 Chrome 프로필로 열었다. 도착 주소는 `https://vercel.com/login`이고 화면은 Vercel 로그인이다. 앱 JSON은 없다. `data.commit`은 읽지 못했다. Git SHA를 런타임 SHA로 쓰지 않는다.
+
+양조장 본문 제출, 모델 호출, 선택 저장, 새로고침, 재로그인, A·B 격리는 시작하지 않았다. 후속 모델 검토는 호출하지 않았다. Production은 호출하지 않았다. PR #209는 병합하지 않는다.
+
+| 항목 | 판정 |
+|---|---|
+| Preview `/api/build-info` 런타임 SHA | **BLOCKED** — Vercel 로그인 화면 |
+| 양조장 1차 모델 호출 | **NOT RUN** |
+| 응답 품질, 저장, 복원, A/B | **NOT RUN** |
+| 1차 게이트 | **FAIL 유지** |
