@@ -1,5 +1,5 @@
 /**
- * quality-9-cpo-draft calls for the brewery, experience-only, and supplier-only inputs.
+ * quality-10-cpo-draft calls for the brewery, experience-only, and supplier-only inputs.
  * Production builds return immediately. The product second-review route is not called.
  * Requests come from the frozen JSON checked against the builders. Results go to a
  * private Supabase bucket. Credentials are not written to the report or the log.
@@ -8,13 +8,13 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PREVIEW_COMPARE_RUN_ID = 'q1-quality9-inputs-2026-10-29';
+export const PREVIEW_COMPARE_RUN_ID = 'q1-quality10-inputs-2026-10-29';
 export const PREVIEW_COMPARE_BUCKET = 'ai-pm-quality-compare';
 export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(scriptDir, '..');
-const fixturePath = join(webRoot, 'features/business-validation-journey/lib/quality-9-inputs-request.json');
+const fixturePath = join(webRoot, 'features/business-validation-journey/lib/quality-10-inputs-request.json');
 
 export function shouldRunPreviewQualityCompare(env) {
   return env.VERCEL_ENV === 'preview' && Boolean(env.VERCEL_GIT_COMMIT_REF) && env.VERCEL_GIT_COMMIT_REF !== 'main';

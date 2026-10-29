@@ -422,6 +422,122 @@ export const QUALITY9_SYSTEM_PROMPT = [
   'inferences는 입력 문장에서 도출한 해석만 담는다. 입력 문장을 그대로 또는 표현만 바꾸어 다시 적지 않는다. 근거가 없으면 미확인이다.',
 ].join('\n');
 
+export const QUALITY10_PROMPT_VERSION = 'quality-10-cpo-draft';
+
+export const QUALITY10_EXPERIENCE_CHOICES = [
+  '외국인 관광객이 막걸리 만들기체험을 원하는지 먼저 검증',
+  '체험을 어디서 어떻게 운영할지 먼저 검증',
+  '참가비를 누가 낼지 먼저 검증',
+  '아직 우선순위를 결정하지 못함',
+  '기타 / 직접 입력',
+] as const;
+
+export const QUALITY10_SUPPLIER_CHOICES = [
+  '지역 공장이 페이지 제작을 맡길지 먼저 검증',
+  '제작 범위가 페이지 하나인지 먼저 검증',
+  '마케팅 서비스 수수료를 공장이 낼지 먼저 검증',
+  '아직 우선순위를 결정하지 못함',
+  '기타 / 직접 입력',
+] as const;
+
+export function quality10Branch(text: string): { question: string; choices: readonly string[]; absent: string } {
+  const body = text.split(/\n\s*검토 목적:/)[0] ?? text;
+  const experience = /체험|만들고|마시고/.test(body);
+  const support = /마케팅/.test(body);
+  if (experience && support && /양조장/.test(body)) {
+    return {
+      question: '무엇을 먼저 검증할 것인가?',
+      choices: QUALITY6_BREWERY_CHOICES,
+      absent: '입력에 없는 막걸리 만들기 전용 문장이나 공장 페이지 전용 문장을 쓰지 않는다.',
+    };
+  }
+  if (experience && !support && /막걸리/.test(body)) {
+    return {
+      question: '막걸리 만들기체험에서 무엇을 먼저 확인할 것인가?',
+      choices: QUALITY10_EXPERIENCE_CHOICES,
+      absent: '공급자 마케팅 지원, 양조장, 온라인 페이지 대행은 질문과 선택지에 쓰지 않는다.',
+    };
+  }
+  if (support && !experience && /공장/.test(body) && /페이지/.test(body)) {
+    return {
+      question: '온라인 마케팅 페이지 대행에서 무엇을 먼저 확인할 것인가?',
+      choices: QUALITY10_SUPPLIER_CHOICES,
+      absent: '관광객 체험, 양조장, 막걸리 만들기는 질문과 선택지에 쓰지 않는다.',
+    };
+  }
+  return {
+    question: '무엇을 먼저 검증할 것인가?',
+    choices: ['입력에 적힌 고객을 먼저 검증', '입력에 적힌 제공 방식을 먼저 검증', '누가 비용을 낼지 먼저 검증', '아직 우선순위를 결정하지 못함', '기타 / 직접 입력'],
+    absent: '입력에 없는 체험 상품이나 마케팅 대행을 선택지에 넣지 않는다.',
+  };
+}
+
+export function quality10UserBlock(text: string): string {
+  const branch = quality10Branch(text);
+  const facts = quality8FounderFacts(text);
+  const inference = quality9Inference(text);
+  return [
+    `프롬프트 버전 ${QUALITY10_PROMPT_VERSION}.`,
+    `키: ${QUALITY5_OUTPUT_KEYS}.`,
+    'summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, judgment, nextVerification, nextQuestion, nextQuestionReason은 문자열이다.',
+    'strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, choices는 문자열 배열이다.',
+    'choices는 배열만 쓴다. 문자열이나 미확인 한 단어로 쓰지 않는다.',
+    `nextQuestion은 ${branch.question} 만 쓴다.`,
+    `choices는 ${JSON.stringify([...branch.choices])} 만 이 순서로 쓴다.`,
+    branch.absent,
+    '질문과 선택지는 같은 결정이다. 선택지에 없는 방향을 묻지 않는다.',
+    `founderFacts는 ${JSON.stringify(facts)} 만 쓴다.`,
+    '입력에 없는 경력, 능력, 네트워크는 쓰지 않는다.',
+    'strengths는 ["미확인"] 만 쓴다. 관심 증가를 쓰지 않는다.',
+    `inferences는 ${JSON.stringify([inference])} 만 쓴다.`,
+    'founderFacts 문장을 inferences에 그대로 또는 표현만 바꾸어 다시 넣지 않는다.',
+    '입력에 지불자가 없으면 payer는 미확인이다.',
+    'revenueModel의 JSON 타입은 string이다. 객체, 배열, 한 항목으로 줄이지 않는다.',
+    `revenueModel 값은 다음 문자열만 쓴다. ${quality7RevenueString(text)}`,
+    '가격, 매출, 고객 수, 계약, 제휴 확정은 만들지 않는다.',
+    'operatingModel은 구상이다. 모르는 문자열 키는 미확인이다.',
+  ].join('\n');
+}
+
+export const QUALITY10_SYSTEM_PROMPT = [
+  '프롬프트 버전 quality-10-cpo-draft.',
+  'JSON 객체만 반환한다.',
+  `키는 ${QUALITY5_OUTPUT_KEYS} 이다.`,
+  'summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, judgment, nextVerification, nextQuestion, nextQuestionReason은 문자열이다.',
+  'strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, choices는 문자열 배열이다.',
+  'choices는 배열이다. 문자열로 쓰지 않는다.',
+  'revenueModel의 JSON 타입은 string이다. 사용자 메시지의 수익 문자열을 줄이지 않는다.',
+  'payer는 입력에 지불자가 없으면 미확인이다.',
+  'founderFacts는 입력 문장만 담는다. inferences에 그 문장을 다시 적지 않는다.',
+  '질문과 choices는 그 입력에 있는 사업만 가른다. 입력에 없는 다른 사업 축을 가정하지 않는다.',
+  '모델이나 공급사 이름은 쓰지 않는다.',
+].join('\n');
+
+export function buildQuality10CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
+  return {
+    model: AI_PM_REVIEW_MODEL,
+    temperature: 0.2,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: QUALITY10_SYSTEM_PROMPT },
+      { role: 'user', content: `사업 입력:\n${text}\n\n${quality10UserBlock(text)}` },
+    ],
+  };
+}
+
+export function buildQuality10InputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
+  return [
+    { inputId: 'brewery', text: COMPARE_BUSINESS_INPUT },
+    { inputId: 'experience', text: QUALITY9_EXPERIENCE_INPUT },
+    { inputId: 'supplier', text: QUALITY9_SUPPLIER_INPUT },
+  ].map((item) => ({
+    inputId: item.inputId,
+    promptVersion: `${QUALITY10_PROMPT_VERSION}:${item.inputId}`,
+    request: buildQuality10CompareRequest(item.text),
+  }));
+}
+
 export function buildQuality9CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
   const quality8 = buildQuality8CompareRequest(text);
   const user = (quality8.messages[1]?.content ?? '')

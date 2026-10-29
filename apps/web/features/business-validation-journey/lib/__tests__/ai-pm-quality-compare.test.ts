@@ -40,8 +40,15 @@ import {
   QUALITY9_PROMPT_VERSION,
   QUALITY9_SUPPLIER_INPUT,
   buildQuality6CompareRequest,
+  QUALITY10_EXPERIENCE_CHOICES,
+  QUALITY10_PROMPT_VERSION,
+  QUALITY10_SUPPLIER_CHOICES,
   buildQuality9CompareRequest,
   buildQuality9InputRequests,
+  buildQuality10CompareRequest,
+  buildQuality10InputRequests,
+  quality10Branch,
+  quality10UserBlock,
   quality9EvidenceBlock,
   quality9Inference,
   scoreInferenceSeparation,
@@ -129,13 +136,13 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality9-inputs-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality10-inputs-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('quality-9-inputs-request.json');
-    expect(script).not.toContain('quality-9-request.json');
+    expect(script).toContain('quality-10-inputs-request.json');
+    expect(script).not.toContain('quality-9-inputs-request.json');
     expect(script).not.toContain('quality-compare-requests.json');
     expect(script).not.toContain('/api/ai-pm-review/follow-up');
     expect(script).not.toContain('buildFollowUpRequest');
@@ -333,6 +340,45 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(inputs.requests[1]?.request.messages[1]?.content).not.toContain(QUALITY6_BREWERY_CHOICES[0]);
     expect(inputs.requests[2]?.request.messages[1]?.content).toContain(QUALITY9_SUPPLIER_INPUT);
     expect(inputs.requests[2]?.request.messages[1]?.content).not.toContain(QUALITY6_BREWERY_CHOICES[0]);
+    const universalUrl = new URL('../quality-10-inputs-request.json', import.meta.url);
+    const universal = {
+      businessInput: COMPARE_BUSINESS_INPUT,
+      baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality9-inputs-recorded.json',
+      requests: buildQuality10InputRequests(),
+    };
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(universalUrl, `${JSON.stringify(universal, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(universalUrl, 'utf8'))).toEqual(universal);
+  });
+
+  it('gives each quality-10 input its own question array and a full revenue string', () => {
+    const brewery = quality10UserBlock(COMPARE_BUSINESS_INPUT);
+    const experience = quality10UserBlock(QUALITY9_EXPERIENCE_INPUT);
+    const supplier = quality10UserBlock(QUALITY9_SUPPLIER_INPUT);
+    expect(AI_PM_FIRST_PROMPT_VERSION).toBe('quality-2');
+    expect(buildQuality10CompareRequest().messages[0]?.content).toContain(QUALITY10_PROMPT_VERSION);
+    expect(buildFirstReviewRequest(COMPARE_BUSINESS_INPUT).messages[0]?.content).not.toContain(QUALITY10_PROMPT_VERSION);
+    expect(brewery).toContain('무엇을 먼저 검증할 것인가?');
+    for (const choice of QUALITY6_BREWERY_CHOICES) expect(brewery).toContain(choice);
+    expect(experience).toContain('막걸리 만들기체험에서 무엇을 먼저 확인할 것인가?');
+    for (const choice of QUALITY10_EXPERIENCE_CHOICES) expect(experience).toContain(choice);
+    expect(quality10Branch(QUALITY9_EXPERIENCE_INPUT).choices.join('')).not.toContain('마케팅');
+    expect(quality10Branch(QUALITY9_EXPERIENCE_INPUT).choices.join('')).not.toContain('양조장');
+    expect(supplier).toContain('온라인 마케팅 페이지 대행에서 무엇을 먼저 확인할 것인가?');
+    for (const choice of QUALITY10_SUPPLIER_CHOICES) expect(supplier).toContain(choice);
+    expect(quality10Branch(QUALITY9_SUPPLIER_INPUT).choices.join('')).not.toContain('관광객');
+    expect(quality10Branch(QUALITY9_SUPPLIER_INPUT).choices.join('')).not.toContain('막걸리');
+    for (const block of [brewery, experience, supplier]) {
+      expect(block).toContain('choices는 배열만 쓴다');
+      expect(block).toContain(quality7RevenueString(COMPARE_BUSINESS_INPUT));
+      expect(block).toContain('한 항목으로 줄이지 않는다');
+    }
+    expect(quality10Branch(QUALITY9_EXPERIENCE_INPUT).choices).toEqual([...QUALITY10_EXPERIENCE_CHOICES]);
+    expect(quality10Branch(QUALITY9_SUPPLIER_INPUT).choices).toEqual([...QUALITY10_SUPPLIER_CHOICES]);
+    const stringChoices = analysisRaw(quality7RevenueString(COMPARE_BUSINESS_INPUT));
+    const broken = JSON.parse(stringChoices) as { choices: unknown };
+    broken.choices = '미확인';
+    expect(parseSections(JSON.stringify(broken), COMPARE_BUSINESS_INPUT)).toBeNull();
+    expect(reviewContractError(JSON.stringify(broken))).toBe('unstructured_response');
   });
 
   it('keeps quality-9 inferences from copying founder sentences', () => {
