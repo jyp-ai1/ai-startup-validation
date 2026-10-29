@@ -768,7 +768,34 @@ describe('AI PM first review', () => {
           : change,
       ),
     };
-    expect(followUpOutputContractErrors(JSON.stringify(demandForecast), context)).toContain('hypothesis_demand_ungrounded');
+    const demandErrors = followUpOutputContractErrors(JSON.stringify(demandForecast), context);
+    expect(demandErrors).toContain('hypothesis_unconfirmed_replaced');
+    expect(demandErrors).toContain('hypothesis_demand_ungrounded');
+    const instructionQuestion = '체험 운영을 검증하려면 양조장 후보가 있는지 질문한다.';
+    const copiedInstruction = {
+      ...kept,
+      nextQuestion: instructionQuestion,
+      changes: kept.changes.map((change) =>
+        change.field === 'nextQuestion' ? { ...change, current: instructionQuestion, decision: 'changed' } : change,
+      ),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(copiedInstruction), context)).toContain('next_question_not_a_question');
+    const repeatedEffect = `${choice}은 체험 검증을 먼저 둔다. 이 선택만으로 수요와 양조장 협력은 입증되지 않는다.`;
+    const sameEffectAndReason = {
+      ...kept,
+      changes: kept.changes.map((change) =>
+        change.field === 'nextVerification'
+          ? {
+              ...change,
+              reason: `${repeatedEffect} ${cited}`,
+              choiceTrace: { label: choice, answerOrigin: 'synthetic-test-data', role: 'plan', effect: `${repeatedEffect} ${cited}` },
+            }
+          : change,
+      ),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(sameEffectAndReason), context)).toContain(
+      'reason_repeats_effect:nextVerification',
+    );
     const invented = {
       ...kept,
       changes: kept.changes.map((change) =>
@@ -1121,6 +1148,7 @@ describe('AI PM first review', () => {
       'evidence_status:nextQuestion',
       'next_question_choice_unmentioned',
       'choice_promoted_to_judgment',
+      'hypothesis_unconfirmed_replaced',
       'hypothesis_demand_ungrounded',
       'next_verification_choice_absent',
       'next_verification_not_executable',
@@ -1357,6 +1385,7 @@ describe('AI PM first review', () => {
       'evidence_status:nextQuestion',
       'next_question_choice_unmentioned',
       'next_verification_not_executable',
+      'next_question_not_a_question',
     ]);
     const traceParsed = JSON.parse(traceCall.report.calls[0]?.raw ?? '{}') as {
       judgment: string;
@@ -1642,9 +1671,13 @@ describe('AI PM first review', () => {
       'choice_effect_unrelated:hypotheses',
       'choice_effect_priority_unlinked:nextVerification',
       'reason_missing_supplement:nextVerification',
+      'reason_repeats_effect:nextVerification',
       'choice_effect_question_unlinked:nextQuestion',
       'reason_missing_supplement:nextQuestion',
+      'reason_repeats_effect:nextQuestion',
+      'hypothesis_unconfirmed_replaced',
       'hypothesis_demand_ungrounded',
+      'next_question_not_a_question',
     ]);
     const linkParsed = JSON.parse(linkCall.report.calls[0]?.raw ?? '{}') as typeof elementParsed;
     expect(linkParsed.choiceTrace).toBeUndefined();

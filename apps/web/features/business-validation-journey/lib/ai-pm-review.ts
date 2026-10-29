@@ -42,7 +42,7 @@ export const FOLLOW_UP_ANALYSIS_CONTRACT_NOTE =
 export const FOLLOW_UP_ANSWER_ORIGINS = ['synthetic-test-data', 'founder-input'] as const;
 export type FollowUpAnswerOrigin = (typeof FOLLOW_UP_ANSWER_ORIGINS)[number];
 
-export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-9';
+export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-10';
 
 export const FOLLOW_UP_FOUNDER_ANSWER_STATUS = 'unverified-input';
 
@@ -50,7 +50,7 @@ export const FOLLOW_UP_BREWERY_VERIFICATION_PLAN =
   '체험 프로그램을 먼저 검증할 것. 먼저 체험 프로그램을 제공할 수 있는 양조장 후보를 찾고, 실제 협력 가능 여부와 체험 운영 조건을 확인한다. 협력 가능 여부가 확인되기 전까지는 확정된 공급처로 간주하지 않는다. 이후 잠재 고객 인터뷰와 체험 참여 의향을 확인하고, 가격 수용도와 예약 전환은 별도로 검증한다.';
 
 export const FOLLOW_UP_OUTPUT_CONTRACT_NOTE =
-  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes이다. choiceTrace와 evidenceStatus는 각 changes 원소에 있다. effect는 선택 문장 원문과 그 필드에 미치는 영향을 함께 담는다. 그 선택이라고만 쓰면 실패다. nextQuestion의 reason은 선택 문장과 추가 설명의 없음을 함께 인용한다. revenueModel은 저장된 가설 문장 그대로다.';
+  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes이다. 저장된 가설이 미확인이면 미확인으로 둔다. 수요가 있을 것이라는 문장을 넣으면 실패다. nextQuestion은 물음표로 끝나는 질문이다. 지시 문장을 질문으로 쓰면 실패다. effect와 reason이 같으면 실패다. revenueModel은 저장된 가설 문장 그대로다.';
 
 export const FOLLOW_UP_OUTPUT_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'] as const;
 
@@ -1185,6 +1185,11 @@ function explainsInsufficiency(reason: string): boolean {
   return /충분하지|바꾸지 않|확인된 사실이 아니|근거가 아니|부족|확정하지/.test(reason);
 }
 
+function asksAQuestion(text: string): boolean {
+  const trimmed = text.trim();
+  return /[?？]$/.test(trimmed) && !/질문한다|이 문장이다|적는다|실패다/.test(trimmed);
+}
+
 function verificationPlanReady(text: string): boolean {
   return (
     text.includes('양조장 후보') &&
@@ -1323,6 +1328,12 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
     ) {
       errors.push('reason_missing_supplement:nextQuestion');
     }
+    const trace = change.choiceTrace;
+    const effect =
+      trace && typeof trace === 'object' && !Array.isArray(trace) && typeof (trace as Record<string, unknown>).effect === 'string'
+        ? ((trace as Record<string, unknown>).effect as string).trim()
+        : '';
+    if (reason && effect && compact(reason) === compact(effect)) errors.push(`reason_repeats_effect:${field}`);
   }
   const experienceFirst = Boolean(
     context.choiceLabel &&
@@ -1357,6 +1368,13 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
   if (judgmentRestatesChoice(judgment, context.choiceLabel)) errors.push('choice_promoted_to_judgment');
   if (
     unconfirmedHypotheses(context.previousHypotheses) &&
+    absentInputMarkers(context.supplement).length > 0 &&
+    hypothesisLine(hypotheses) !== hypothesisLine(context.previousHypotheses)
+  ) {
+    errors.push('hypothesis_unconfirmed_replaced');
+  }
+  if (
+    unconfirmedHypotheses(context.previousHypotheses) &&
     hypothesisLine(hypotheses) !== hypothesisLine(context.previousHypotheses) &&
     forecastsDemand(hypotheses.join('\n'))
   ) {
@@ -1373,6 +1391,7 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
   ) {
     errors.push('next_verification_not_executable');
   }
+  if (experienceFirst && !asksAQuestion(nextQuestion)) errors.push('next_question_not_a_question');
   if (experienceFirst && /마케팅/.test(nextQuestion) && /효과|우선|먼저|검증/.test(nextQuestion)) errors.push('next_question_regressed');
   if (experienceFirst) {
     const markers = absentInputMarkers(context.supplement);
@@ -1433,17 +1452,16 @@ function reviewSystemPrompt(): string {
     '선택이 있으면 founderAnswer.choice는 그 문장 그대로다. 선택이 있는데 null이면 실패다. 선택 입력이 없을 때만 null이다.',
     'founderAnswer.supplement는 추가 설명의 핵심이다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 네 말을 적는다.',
     'founderAnswer.source는 answerOrigin과 같다. founderAnswer.status는 unverified-input 이다.',
-    '원소 choiceTrace는 label, answerOrigin, role, effect다. label은 선택 문장, answerOrigin은 입력과 같고 role은 plan이다. effect는 선택 문장 원문을 포함하고 그 필드에만 미치는 영향을 말한다. 그 선택이라고만 쓰면 실패다. 네 effect가 같으면 실패다.',
-    'hypotheses의 effect는 이 문장이다. 체험 프로그램을 먼저 검증할 것은 검증 우선순위의 계획이다. 가설의 수요 증거가 아니므로 가설은 미확인으로 둔다.',
-    'nextVerification의 effect는 이 문장이다. 체험 프로그램을 먼저 검증할 것은 체험 프로그램 검증을 먼저 둔다. 이 선택만으로 수요, 가격 수용도, 양조장 협력 여부는 입증되지 않는다.',
-    'nextQuestion의 effect는 이 문장이다. 체험 프로그램을 먼저 검증할 것이므로 체험 운영을 검증하려면 협력 가능한 양조장 후보가 있는지 질문한다. 후보만으로 협력 확정이나 고객 수요가 입증되지는 않는다.',
+    '원소 choiceTrace는 label, answerOrigin, role, effect다. label은 선택 문장, answerOrigin은 입력과 같고 role은 plan이다. effect는 선택 문장 원문을 포함하고 그 필드에만 미치는 영향을 말한다. 그 선택이라고만 쓰면 실패다. 네 effect가 같으면 실패다. effect와 reason이 같으면 실패다. effect를 current에 넣으면 실패다.',
+    'hypotheses의 effect는 선택 문장과 검증 우선순위를 말하고 수요 증거가 아니라고 말한다. 가설 current에 수요 문장을 넣지 않는다.',
     '예시 원소: {"field":"judgment","previous":"저장 판단","current":"저장 판단","decision":"retained","reason":"예약 고객, 가격, 계약, 확정된 양조장은 없다. 이 없음은 확인된 사실이 아니어서 저장된 판단을 바꾸지 않는다.","founderAnswer":{"choice":"체험 프로그램을 먼저 검증할 것","supplement":"예약 고객, 가격, 계약, 확정된 양조장은 없다","source":"synthetic-test-data","status":"unverified-input"},"choiceTrace":{"label":"체험 프로그램을 먼저 검증할 것","answerOrigin":"synthetic-test-data","role":"plan","effect":"체험 프로그램을 먼저 검증할 것은 계획이라 저장된 판단을 바꾸지 않는다."},"evidenceStatus":"unverified-input"}',
     'hypotheses는 미확인이면 retained다. reason에는 예약 고객, 가격, 계약, 확정된 양조장과 가설을 넣고, 그 없음이 가설을 확정하지 못한다고 적는다.',
     'judgment는 저장 판단을 유지한다. 선택이나 검증 계획을 판단으로 옮기지 않는다.',
     `nextVerification의 current는 이 문장이다. ${FOLLOW_UP_BREWERY_VERIFICATION_PLAN}`,
-    '그 문장은 검증 계획이다. 양조장이 확보됐거나 수요가 확인됐다는 뜻이 아니다. decision은 changed이고 reason은 선택 문장으로 시작해 없음과 검증을 적는다.',
-    'nextQuestion은 마케팅 효과를 다시 먼저 묻지 않는다. 양조장 후보가 있는지를 묻는다. previous는 저장된 질문 그대로다. decision은 changed이다.',
-    'nextQuestion의 reason은 이 문장이다. 체험 프로그램을 먼저 검증할 것. 예약 고객, 가격, 계약, 확정된 양조장은 없다. 체험 운영을 검증하려면 양조장 후보가 필요한지 질문한다. 후보만으로 협력이나 수요가 입증되지는 않는다.',
+    '그 문장은 검증 계획이다. 양조장 후보, 협력 가능 여부, 참여 의향, 가격과 예약의 별도 검증 순서다. 어느 단계도 끝난 사실이 아니다. decision은 changed이다.',
+    'nextVerification의 effect는 선택 문장과 그 순서를 말하고, 수요가 입증되지 않는다고 말한다. reason은 예약 고객, 가격, 계약, 확정된 양조장이 없어 검증이 그 순서에 머문다고 말한다. effect와 다른 문장이다.',
+    'nextQuestion의 current는 양조장 후보가 있는가? 이다. 물음표로 끝난다. 지시 문장이나 effect, reason을 질문 값으로 쓰면 실패다. previous는 저장된 질문 그대로다. decision은 changed이다.',
+    'nextQuestion의 effect는 선택 문장과 양조장 후보 질문의 관계를 말한다. reason은 선택 문장과 예약 고객, 가격, 계약, 확정된 양조장이 없다는 말, 그리고 그 질문이 필요한 이유를 말한다.',
     'revenueModel은 previousAnalysis.revenueModel 문장을 그대로 복사한다. 빼거나 고치면 실패다. 가설 표시를 지우거나 확정 수익으로 바꾸지 않는다. 저장된 값이 없으면 새 문장을 만들지 않는다.',
     'founderFacts에 선택 문장이나 추가 설명을 넣지 않는다.',
     '가설이 강화되었다고 쓰지 않는다. 수요가 있다고 단정하지 않는다.',

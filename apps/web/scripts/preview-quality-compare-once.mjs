@@ -2,6 +2,7 @@
  * One incremental-reflection call of the frozen product follow-up request.
  * The founder answer in the fixture is synthetic test data.
  * Production builds return immediately. The product second-review route is not called.
+ * The link call q1-incremental-reflection-link-2026-10-29 stays RECORDED.
  * The element call q1-incremental-reflection-element-2026-10-29 stays RECORDED.
  * The preserve call q1-incremental-reflection-preserve-2026-10-29 stays RECORDED.
  * Earlier reflection objects stay under their own run ids.
@@ -11,14 +12,14 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-link-2026-10-29';
-export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-element-2026-10-29';
+export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-question-2026-10-29';
+export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-link-2026-10-29';
 export const PREVIEW_COMPARE_BUCKET = 'ai-pm-quality-compare';
 export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(scriptDir, '..');
-const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-link-request.json');
+const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-question-request.json');
 
 export function shouldRunPreviewQualityCompare(env) {
   return env.VERCEL_ENV === 'preview' && Boolean(env.VERCEL_GIT_COMMIT_REF) && env.VERCEL_GIT_COMMIT_REF !== 'main';

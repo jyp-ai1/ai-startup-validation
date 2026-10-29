@@ -167,12 +167,15 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-link-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-question-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('incremental-reflection-link-request.json');
+    expect(script).toContain('incremental-reflection-question-request.json');
+    expect(script).toContain('q1-incremental-reflection-link-2026-10-29');
+    expect(script).not.toContain('q1-incremental-reflection-link-2026-10-29.json');
+    expect(script).not.toContain('incremental-reflection-link-request.json');
     expect(script).toContain('q1-incremental-reflection-element-2026-10-29');
     expect(script).not.toContain('q1-incremental-reflection-element-2026-10-29.json');
     expect(script).not.toContain('incremental-reflection-element-request.json');
@@ -1059,14 +1062,21 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(elementFixture.outputContract).toBe('reflection-output-8');
     expect(elementFixture.requests[0]?.promptVersion).toBe('reflection-output-8:brewery');
     expect(elementFixture.requests[0]?.request).not.toEqual(product.request);
-    const linkRecord = {
+    const linkFixture = JSON.parse(
+      readFileSync(new URL('../incremental-reflection-link-request.json', import.meta.url), 'utf8'),
+    ) as { priorRunId: string; outputContract: string; requests: Array<{ promptVersion: string; request: unknown }> };
+    expect(linkFixture.priorRunId).toBe('q1-incremental-reflection-element-2026-10-29');
+    expect(linkFixture.outputContract).toBe('reflection-output-9');
+    expect(linkFixture.requests[0]?.promptVersion).toBe('reflection-output-9:brewery');
+    expect(linkFixture.requests[0]?.request).not.toEqual(product.request);
+    const questionRecord = {
       businessInput: sentUser.originalInput,
       dataClass: 'synthetic-test-data',
       notice: '테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.',
       analysisContract: 'parsed-sections-1',
-      outputContract: 'reflection-output-9',
+      outputContract: 'reflection-output-10',
       baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-product-follow-up-request.json',
-      priorRunId: 'q1-incremental-reflection-element-2026-10-29',
+      priorRunId: 'q1-incremental-reflection-link-2026-10-29',
       confounders: [
         {
           id: 'call_path',
@@ -1080,25 +1090,25 @@ describe('quality-2 and quality-3 compare requests', () => {
         {
           id: 'separate_record',
           detail:
-            'This run is q1-incremental-reflection-link-2026-10-29. The element run q1-incremental-reflection-element-2026-10-29, the preserve run q1-incremental-reflection-preserve-2026-10-29, the reason run q1-incremental-reflection-reason-2026-10-29, the trace run q1-incremental-reflection-trace-2026-10-29, the source run q1-incremental-reflection-source-2026-10-29, the grounds run q1-incremental-reflection-grounds-2026-10-29, the array run q1-incremental-reflection-array-2026-10-29, the object-map run q1-incremental-reflection-output-2026-10-29, the short-key run q1-incremental-reflection-2026-10-29, and the earlier direct call q1-incremental-structure-2026-10-29 stay RECORDED.',
+            'This run is q1-incremental-reflection-question-2026-10-29. The link run q1-incremental-reflection-link-2026-10-29, the element run q1-incremental-reflection-element-2026-10-29, the preserve run q1-incremental-reflection-preserve-2026-10-29, the reason run q1-incremental-reflection-reason-2026-10-29, the trace run q1-incremental-reflection-trace-2026-10-29, the source run q1-incremental-reflection-source-2026-10-29, the grounds run q1-incremental-reflection-grounds-2026-10-29, the array run q1-incremental-reflection-array-2026-10-29, the object-map run q1-incremental-reflection-output-2026-10-29, the short-key run q1-incremental-reflection-2026-10-29, and the earlier direct call q1-incremental-structure-2026-10-29 stay RECORDED.',
         },
         {
           id: 'output_contract',
           detail:
-            'The request asks for reflection-output-9. Each effect quotes the choice sentence and states that field effect. nextQuestion reason quotes the choice and the missing supplement. revenueModel is the stored hypothesis sentence. An empty error list is not a reflection pass.',
+            'The request asks for reflection-output-10. An unconfirmed hypothesis stays unconfirmed. nextQuestion is a question mark sentence, not an instruction. effect and reason differ. revenueModel is the stored hypothesis sentence. An empty error list is not a reflection pass.',
         },
       ],
       requests: [
         {
           inputId: 'brewery',
-          promptVersion: 'reflection-output-9:brewery',
+          promptVersion: 'reflection-output-10:brewery',
           request: product.request,
         },
       ],
     };
-    const linkUrl = new URL('../incremental-reflection-link-request.json', import.meta.url);
-    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(linkUrl, `${JSON.stringify(linkRecord, null, 2)}\n`);
-    expect(JSON.parse(readFileSync(linkUrl, 'utf8'))).toEqual(linkRecord);
+    const questionUrl = new URL('../incremental-reflection-question-request.json', import.meta.url);
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(questionUrl, `${JSON.stringify(questionRecord, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(questionUrl, 'utf8'))).toEqual(questionRecord);
     const user = JSON.parse(historicalRequest.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
       previousAnalysis: Record<string, unknown>;
       founderChoice: { label: string };
