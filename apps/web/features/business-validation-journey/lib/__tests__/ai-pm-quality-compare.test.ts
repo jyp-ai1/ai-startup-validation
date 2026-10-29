@@ -19,6 +19,10 @@ import {
   QUALITY5_OUTPUT_KEYS,
   QUALITY5_PROMPT_VERSION,
   QUALITY5_SYSTEM_PROMPT,
+  QUALITY6_BREWERY_CHOICES,
+  QUALITY6_PROMPT_VERSION,
+  buildQuality6CompareRequest,
+  quality6DecisionBlock,
   buildQuality2CompareRequest,
   buildQuality3CompareRequest,
   buildQuality5CompareRequest,
@@ -94,11 +98,13 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality5-pair-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality6-once-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
+    expect(script).toContain('quality-6-request.json');
+    expect(script).not.toContain('quality-compare-requests.json');
     expect(script).not.toContain('/api/ai-pm-review/follow-up');
     expect(script).not.toContain('buildFollowUpRequest');
     expect(script).not.toContain('vitest');
@@ -217,6 +223,27 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(sprintGateSummary(scored)).toBe('BLOCKED');
   });
 
+  it('keeps the quality-6 decision list on the two-axis brewery input only', () => {
+    const brewery = buildQuality6CompareRequest();
+    const user = brewery.messages[1]?.content ?? '';
+    expect(AI_PM_FIRST_PROMPT_VERSION).toBe('quality-2');
+    expect(brewery.messages[0]?.content).toContain(QUALITY6_PROMPT_VERSION);
+    expect(brewery.messages[0]?.content).not.toContain('quality-5-cpo-draft');
+    expect(user).toContain('무엇을 먼저 검증할 것인가?');
+    for (const choice of QUALITY6_BREWERY_CHOICES) expect(user).toContain(choice);
+    expect(user).toContain('항목마다 가설:');
+    expect(user).toContain('payer는 미확인');
+    const experienceOnly = '외국인 관광객에게 막걸리 만들기체험만 안내한다.';
+    const supportOnly = '양조장 온라인 마케팅 페이지 제작만 대행한다.';
+    const statedRevenue = `${COMPARE_BUSINESS_INPUT}\n체험 참가비는 1인 3만원으로 정했다.`;
+    expect(quality6DecisionBlock(experienceOnly)).toContain('다섯 선택지를 쓰지 않는다');
+    expect(quality6DecisionBlock(experienceOnly)).not.toContain(QUALITY6_BREWERY_CHOICES[1]);
+    expect(quality6DecisionBlock(supportOnly)).not.toContain(QUALITY6_BREWERY_CHOICES[0]);
+    expect(quality6DecisionBlock(statedRevenue)).toContain('입력에 적힌 수익은 사실로 적는다');
+    expect(buildFirstReviewRequest(COMPARE_BUSINESS_INPUT).messages[0]?.content).not.toContain(QUALITY6_PROMPT_VERSION);
+    expect(parseSections('{"summary":"없다"}', COMPARE_BUSINESS_INPUT)).toBeNull();
+  });
+
   it('keeps the preview request fixture equal to the builders', () => {
     const fixtureUrl = new URL('../quality-compare-requests.json', import.meta.url);
     const fresh = {
@@ -229,6 +256,14 @@ describe('quality-2 and quality-3 compare requests', () => {
     };
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(fixtureUrl, `${JSON.stringify(fresh, null, 2)}\n`);
     expect(JSON.parse(readFileSync(fixtureUrl, 'utf8'))).toEqual(fresh);
+    const repairUrl = new URL('../quality-6-request.json', import.meta.url);
+    const repair = {
+      businessInput: COMPARE_BUSINESS_INPUT,
+      baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-pair-recorded.json',
+      requests: [{ promptVersion: QUALITY6_PROMPT_VERSION, request: buildQuality6CompareRequest() }],
+    };
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(repairUrl, `${JSON.stringify(repair, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(repairUrl, 'utf8'))).toEqual(repair);
   });
 
   it('fails the known brewery regressions and passes a hedged alternative', () => {

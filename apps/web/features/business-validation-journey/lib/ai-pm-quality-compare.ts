@@ -117,6 +117,77 @@ export const QUALITY5_SYSTEM_PROMPT = [
   '17. 모델이나 공급사 이름은 쓰지 않는다.',
 ].join('\n');
 
+export const QUALITY6_PROMPT_VERSION = 'quality-6-cpo-draft';
+
+export const QUALITY6_BREWERY_CHOICES = [
+  '관광객 대상 양조장 체험 상품을 먼저 검증',
+  '양조장 대상 온라인 마케팅 지원을 먼저 검증',
+  '체험과 마케팅 지원을 결합한 모델을 먼저 검증',
+  '아직 우선순위를 결정하지 못함',
+  '기타 / 직접 입력',
+] as const;
+
+/** Short candidate. The decision list is in the user message, and only for an input that has both axes. */
+export const QUALITY6_SYSTEM_PROMPT = [
+  '프롬프트 버전 quality-6-cpo-draft.',
+  'JSON 객체만 반환한다.',
+  `키는 ${QUALITY5_OUTPUT_KEYS} 이다.`,
+  'summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, judgment, nextVerification, nextQuestion, nextQuestionReason은 문자열이다.',
+  'strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, choices는 문자열 배열이다.',
+  'founderFacts는 입력 문장만 적는다. inferences에는 추론이라고 적는다. assumptions는 1~3개다.',
+  'revenueModel은 수익 항목을 나눈다. 입력에 없는 참가비, 수수료, 수익 공유, 마케팅 서비스 수수료는 항목마다 가설: 로 시작한다. 다른 항목에 적힌 가설: 은 이 항목의 표시가 아니다. 입력에 적힌 수익만 사실로 적는다. 가격, 매출, 계약, 제휴 확정은 만들지 않는다.',
+  'customer는 이용자다. payer는 비용을 내는 주체다. 입력에 지불자가 없으면 payer는 미확인이다. 이용자를 지불자로 쓰지 않는다. 공급자가 낸다는 말도 사실로 쓰지 않는다.',
+  'nextQuestion은 하나다. 협력 가능성이 높다, 낮다, 미정인지만 묻지 않는다. 질문과 choices는 같은 결정이다. 선택지에 없는 방향을 묻지 않는다.',
+  '모델이나 공급사 이름은 쓰지 않는다.',
+].join('\n');
+
+export function quality6DecisionBlock(text: string): string {
+  const experience = /체험|만들고|마시고/.test(text);
+  const support = /마케팅/.test(text);
+  const revenue =
+    '입력에 없는 참가비, 수수료, 수익 공유, 마케팅 서비스 수수료는 revenueModel에서 항목마다 가설: 로 시작한다. 입력에 적힌 수익은 사실로 적는다. 입력에 지불자가 없으면 payer는 미확인이다.';
+  if (experience && support && /양조장/.test(text)) {
+    return [
+      '이 입력은 관광객 양조장 체험과 양조장 온라인 마케팅 지원이 함께 있다.',
+      'nextQuestion은 무엇을 먼저 검증할 것인가? 만 쓴다.',
+      `choices는 ${JSON.stringify([...QUALITY6_BREWERY_CHOICES])} 만 쓴다.`,
+      '협력 가능성이 높다, 낮다, 미정은 쓰지 않는다.',
+      revenue,
+    ].join('\n');
+  }
+  if (experience && support) {
+    return [
+      '이 입력은 이용자 경험과 공급자 지원이 함께 있다.',
+      'nextQuestion은 무엇을 먼저 검증할 것인가? 만 쓴다.',
+      'choices는 입력의 경험, 입력의 지원, 둘의 결합, 아직 우선순위를 결정하지 못함, 기타 / 직접 입력만 쓴다.',
+      '양조장 체험 상품과 양조장 마케팅 지원이라는 문구는 입력에 없으면 쓰지 않는다. 높다, 낮다는 쓰지 않는다.',
+      revenue,
+    ].join('\n');
+  }
+  return [
+    '이 입력에는 이용자 경험과 공급자 지원이 함께 있지 않다.',
+    '체험을 먼저 검증, 마케팅 지원을 먼저 검증, 결합 모델의 다섯 선택지를 쓰지 않는다.',
+    '질문은 이 입력의 고객, 지불자, 운영이 갈라지는 검증 하나다. 높다, 낮다는 쓰지 않는다.',
+    revenue,
+  ].join('\n');
+}
+
+export function buildQuality6CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
+  return {
+    model: AI_PM_REVIEW_MODEL,
+    temperature: 0.2,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: QUALITY6_SYSTEM_PROMPT },
+      {
+        role: 'user',
+        content: `사업 입력:\n${text}\n\n프롬프트 버전 ${QUALITY6_PROMPT_VERSION}.\n키: ${QUALITY5_OUTPUT_KEYS}.\n${quality6DecisionBlock(text)}`,
+      },
+    ],
+  };
+}
+
 export function buildQuality5CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
   return {
     model: AI_PM_REVIEW_MODEL,

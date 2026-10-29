@@ -1,0 +1,27 @@
+{
+  "businessInput": "다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n검토 목적: 종합 사업성 검토\n현재 단계: 미확인\n가장 알고 싶은 것: 없음\n검토 계약: comprehensive-1",
+  "baselineSource": "docs/evidence/ALABOM/AI-PM/sprint-q1-pair-recorded.json",
+  "requests": [
+    {
+      "promptVersion": "quality-6-cpo-draft",
+      "request": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "responseFormat": {
+          "type": "json_object"
+        },
+        "messages": [
+          {
+            "role": "system",
+            "content": "프롬프트 버전 quality-6-cpo-draft.\nJSON 객체만 반환한다.\n키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.\nsummary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, judgment, nextVerification, nextQuestion, nextQuestionReason은 문자열이다.\nstrengths, risks, assumptions, evidenceToChange, founderFacts, inferences, choices는 문자열 배열이다.\nfounderFacts는 입력 문장만 적는다. inferences에는 추론이라고 적는다. assumptions는 1~3개다.\nrevenueModel은 수익 항목을 나눈다. 입력에 없는 참가비, 수수료, 수익 공유, 마케팅 서비스 수수료는 항목마다 가설: 로 시작한다. 다른 항목에 적힌 가설: 은 이 항목의 표시가 아니다. 입력에 적힌 수익만 사실로 적는다. 가격, 매출, 계약, 제휴 확정은 만들지 않는다.\ncustomer는 이용자다. payer는 비용을 내는 주체다. 입력에 지불자가 없으면 payer는 미확인이다. 이용자를 지불자로 쓰지 않는다. 공급자가 낸다는 말도 사실로 쓰지 않는다.\nnextQuestion은 하나다. 협력 가능성이 높다, 낮다, 미정인지만 묻지 않는다. 질문과 choices는 같은 결정이다. 선택지에 없는 방향을 묻지 않는다.\n모델이나 공급사 이름은 쓰지 않는다."
+          },
+          {
+            "role": "user",
+            "content": "사업 입력:\n다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n검토 목적: 종합 사업성 검토\n현재 단계: 미확인\n가장 알고 싶은 것: 없음\n검토 계약: comprehensive-1\n\n프롬프트 버전 quality-6-cpo-draft.\n키: summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices.\n이 입력은 관광객 양조장 체험과 양조장 온라인 마케팅 지원이 함께 있다.\nnextQuestion은 무엇을 먼저 검증할 것인가? 만 쓴다.\nchoices는 [\"관광객 대상 양조장 체험 상품을 먼저 검증\",\"양조장 대상 온라인 마케팅 지원을 먼저 검증\",\"체험과 마케팅 지원을 결합한 모델을 먼저 검증\",\"아직 우선순위를 결정하지 못함\",\"기타 / 직접 입력\"] 만 쓴다.\n협력 가능성이 높다, 낮다, 미정은 쓰지 않는다.\n입력에 없는 참가비, 수수료, 수익 공유, 마케팅 서비스 수수료는 revenueModel에서 항목마다 가설: 로 시작한다. 입력에 적힌 수익은 사실로 적는다. 입력에 지불자가 없으면 payer는 미확인이다."
+          }
+        ]
+      }
+    }
+  ]
+}
