@@ -41,12 +41,8 @@ Q1–Q8은 이 원문과 제품 파서·로컬 저장 재조회에서 다시 통
 
 ## Q9·Q10 차단
 
-시도한 주소는 이 브랜치에서 마지막으로 빌드가 끝난 Preview다.
+`d5209232`, `25056552`, `be06edd5`의 Vercel 상태는 failure였다. 화면 컴포넌트가 `ai-pm-review.ts`를 값으로 가져오면서 `node:crypto`가 클라이언트 묶음에 들어갔다. 오류 문장은 `ai-pm-review-failure-copy.ts`로 분리했다. 그 수정 SHA `5fe7a990378a9019799e3bea79ff8bbeca124ab4`의 Preview는 빌드가 끝났다.
 
-`https://ai-startup-validation-cblzp49tt-jyp-ai1s-projects.vercel.app/workspace`
-
-그 배포 SHA는 `c23894014e81afd0b1dfed97077fb7ee4c31c6b2`다. `Accept: application/json`인 `GET /workspace`는 HTTP 401이다. 본문 메시지는 `Protected by Vercel Authentication`이고 `vercel_auth_enabled`는 true다. 인증 우회 헤더와 Vercel MCP는 쓰지 않았다.
-
-그 뒤 `d5209232`, `25056552`, `be06edd5`의 Vercel 상태는 failure다. 로컬 `next build`는 화면 컴포넌트가 `ai-pm-review.ts`를 값으로 가져오면서 `node:crypto`가 클라이언트 묶음에 들어가 컴파일에 실패했다. 오류 문장은 `ai-pm-review-failure-copy.ts`로 분리했다. 분리 뒤 로컬 `next build`는 끝났다. 그 수정이 올라간 Preview에서 로그인, 분석, 답 저장, 새로고침, 로그아웃, 재인증은 아직 실행하지 않았다.
+주소는 `https://ai-startup-validation-fvqqfcdr8-jyp-ai1s-projects.vercel.app/workspace`다. `Accept: application/json`인 `GET /workspace`는 HTTP 401이다. 메시지는 `Protected by Vercel Authentication`이고 `vercel_auth_enabled`는 true다. 이전 성공 배포 `https://ai-startup-validation-cblzp49tt-jyp-ai1s-projects.vercel.app/workspace`도 같은 401이다. 인증 우회 헤더와 Vercel MCP는 쓰지 않았다. 로그인, 분석, 답 저장, 새로고침, 로그아웃, 재인증은 실행하지 않았다.
 
 실행하지 못한 항목은 분석 생성, 질문 확인, 답 저장, 새로고침, 로그아웃 후 재인증, 복원, 답 저장 뒤의 브라우저 요청과 서버 호출 기록이다. 필요한 조건은 이 Preview에 로그인할 수 있는 Vercel 계정이다. Production 잠금은 유지했다.
