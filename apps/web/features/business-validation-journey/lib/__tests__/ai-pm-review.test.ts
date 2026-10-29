@@ -637,7 +637,7 @@ describe('AI PM first review', () => {
         : field === 'hypotheses'
           ? `${choice}은 가설의 수요 증거가 아니다.`
           : field === 'nextVerification'
-            ? `${choice}이므로 양조장 후보를 먼저 검증한다.`
+            ? `${choice}은 체험 검증을 먼저 둔다. 이 선택만으로 수요와 양조장 협력은 입증되지 않는다.`
             : `${choice}이므로 질문을 양조장 후보로 바꾼다.`;
     expect(context.previousRevenueModel).toContain('가설');
     const kept = {
@@ -948,7 +948,7 @@ describe('AI PM first review', () => {
       'choice_effect_label:nextQuestion',
       'choice_effect_unrelated:nextQuestion',
     ]);
-    const copiedEffect = `${choice}은 판단과 가설과 검증과 질문에 같은 말로 남는다.`;
+    const copiedEffect = `${choice}은 판단과 가설의 수요 증거가 아니며 검증을 먼저 두고 수요는 입증되지 않으며 질문을 양조장 후보로 바꾼다.`;
     const copiedEffects = {
       ...kept,
       changes: kept.changes.map((change) => ({
@@ -957,6 +957,52 @@ describe('AI PM first review', () => {
       })),
     };
     expect(followUpOutputContractErrors(JSON.stringify(copiedEffects), context)).toEqual(['choice_effect_copied']);
+    const planAsEvidence = {
+      ...kept,
+      changes: kept.changes.map((change) =>
+        change.field === 'hypotheses'
+          ? {
+              ...change,
+              choiceTrace: {
+                label: choice,
+                answerOrigin: 'synthetic-test-data',
+                role: 'plan',
+                effect: `${choice}은 가설을 미확인으로 두지만 성공 가능성을 높인다.`,
+              },
+            }
+          : change,
+      ),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(planAsEvidence), context)).toContain('choice_effect_plan_as_evidence:hypotheses');
+    const priorityUnlinked = {
+      ...kept,
+      changes: kept.changes.map((change) =>
+        change.field === 'nextVerification'
+          ? {
+              ...change,
+              choiceTrace: {
+                label: choice,
+                answerOrigin: 'synthetic-test-data',
+                role: 'plan',
+                effect: `${choice}은 검증 문장을 다른 말로 유지한다.`,
+              },
+            }
+          : change,
+      ),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(priorityUnlinked), context)).toContain(
+      'choice_effect_priority_unlinked:nextVerification',
+    );
+    const questionWithoutSupplement = {
+      ...kept,
+      changes: kept.changes.map((change) =>
+        change.field === 'nextQuestion' ? { ...change, reason: `${choice}. 질문을 양조장 후보로 바꾼다.` } : change,
+      ),
+    };
+    const questionErrors = followUpOutputContractErrors(JSON.stringify(questionWithoutSupplement), context);
+    expect(questionErrors).toContain('reason_missing_supplement:nextQuestion');
+    expect(questionErrors).not.toContain('next_question_choice_unmentioned');
+    expect(questionErrors).not.toContain('reason_untraced:nextQuestion');
     const droppedRevenue = { ...kept } as Partial<typeof kept>;
     delete droppedRevenue.revenueModel;
     expect(followUpOutputContractErrors(JSON.stringify(droppedRevenue), context)).toEqual(['follow_up_output_missing_revenueModel']);
@@ -1457,6 +1503,7 @@ describe('AI PM first review', () => {
       'evidence_status:nextVerification',
       'choice_effect_missing:nextQuestion',
       'evidence_status:nextQuestion',
+      'reason_missing_supplement:nextQuestion',
     ]);
     const preserveParsed = JSON.parse(preserveCall.report.calls[0]?.raw ?? '{}') as {
       judgment: string;
