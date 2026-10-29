@@ -260,6 +260,8 @@ describe('AI PM first review', () => {
     expect(followSystem).toContain(FOLLOW_UP_OUTPUT_CONTRACT);
     expect(followSystem).toContain('changes는 JSON 배열이다');
     expect(followSystem).toContain('객체 맵');
+    expect(followSystem).toContain('같은 선택 문장');
+    expect(followSystem).toContain('수요가 존재할 것이라는 예상으로 바꾸지 않는다');
     expect(followSystem).not.toContain('grounds는 빈 문자열이다');
     expect(buildFirstReviewRequest(evidence.businessInput).messages[0]?.content).not.toContain(FOLLOW_UP_OUTPUT_CONTRACT);
     expect(estimateReviewTokens(request.messages.map((message) => message.content).join('\n'))).toBeLessThan(
@@ -650,6 +652,43 @@ describe('AI PM first review', () => {
       ],
     };
     expect(followUpOutputContractErrors(JSON.stringify(kept), context)).toEqual([]);
+    const repeatedChoice = '체험 프로그램을 먼저 검증할 것이라는 선택 문장.';
+    const repeatedGrounds = {
+      ...kept,
+      changes: kept.changes.map((change) => ({ ...change, grounds: repeatedChoice })),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(repeatedGrounds), context)).toContain('grounds_repeated_choice');
+    const demandLine = '체험 프로그램의 수요가 존재할 것이다.';
+    const demandForecast = {
+      ...kept,
+      hypotheses: [demandLine],
+      changes: kept.changes.map((change) =>
+        change.field === 'hypotheses'
+          ? { ...change, updated: demandLine, grounds: `${choice} ${cited}`, unchangedReason: '' }
+          : change,
+      ),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(demandForecast), context)).toContain('hypothesis_demand_ungrounded');
+    const invented = {
+      ...kept,
+      changes: kept.changes.map((change) =>
+        change.field === 'judgment'
+          ? { ...change, grounds: `${cited} 그러나 예약 고객이 있고 가격이 정해졌으며 계약이 있다.` }
+          : change,
+      ),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(invented), context)).toContain('absent_input_invented');
+    const planJudgment = '체험 프로그램을 먼저 검증하는 것이 필요하다.';
+    const movedPlan = {
+      ...kept,
+      judgment: planJudgment,
+      changes: kept.changes.map((change) =>
+        change.field === 'judgment'
+          ? { ...change, updated: planJudgment, grounds: `${choice} ${cited}`, unchangedReason: '' }
+          : change,
+      ),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(movedPlan), context)).toContain('choice_promoted_to_judgment');
     const asObject = {
       ...kept,
       changes: {
@@ -766,7 +805,19 @@ describe('AI PM first review', () => {
       supplement: arraySent.founderSupplement,
       answerOrigin: 'synthetic-test-data' as const,
     };
-    expect(followUpOutputContractErrors(arrayCall.report.calls[0]?.raw ?? '', arrayContext)).toEqual([]);
+    expect(followUpOutputContractErrors(arrayCall.report.calls[0]?.raw ?? '', arrayContext)).toEqual([
+      'follow_up_output_founder_answer_untraced:judgment',
+      'grounds_missing_supplement:judgment',
+      'follow_up_output_founder_answer_untraced:hypotheses',
+      'grounds_missing_supplement:hypotheses',
+      'follow_up_output_founder_answer_untraced:nextVerification',
+      'grounds_missing_supplement:nextVerification',
+      'follow_up_output_founder_answer_untraced:nextQuestion',
+      'grounds_missing_supplement:nextQuestion',
+      'grounds_repeated_choice',
+      'choice_promoted_to_judgment',
+      'hypothesis_demand_ungrounded',
+    ]);
     const arrayParsed = JSON.parse(arrayCall.report.calls[0]?.raw ?? '{}') as {
       judgment: string;
       hypotheses: string[];

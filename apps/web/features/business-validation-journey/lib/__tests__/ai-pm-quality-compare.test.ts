@@ -992,49 +992,13 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(outputFixture.outputContract).toBe('reflection-output-1');
     expect(outputFixture.requests[0]?.promptVersion).toBe('reflection-output-1:brewery');
     expect(outputFixture.requests[0]?.request).not.toEqual(product.request);
-    const sentUser = JSON.parse(product.request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
-      originalInput: string;
-    };
-    const arrayRecord = {
-      businessInput: sentUser.originalInput,
-      dataClass: 'synthetic-test-data',
-      notice: '테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.',
-      analysisContract: 'parsed-sections-1',
-      outputContract: 'reflection-output-2',
-      baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-product-follow-up-request.json',
-      priorRunId: 'q1-incremental-reflection-output-2026-10-29',
-      confounders: [
-        {
-          id: 'call_path',
-          detail:
-            'Preview build reads this frozen product request and calls the model directly. It does not call the product second-review route. productFollowUpInvoked false is not a Q10 pass.',
-        },
-        {
-          id: 'data_class',
-          detail: '테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.',
-        },
-        {
-          id: 'separate_record',
-          detail:
-            'This run is q1-incremental-reflection-array-2026-10-29. The object-map run q1-incremental-reflection-output-2026-10-29, the short-key run q1-incremental-reflection-2026-10-29, and the earlier direct call q1-incremental-structure-2026-10-29 stay RECORDED.',
-        },
-        {
-          id: 'output_contract',
-          detail:
-            'The request asks for reflection-output-2. changes must be a JSON array. Empty grounds fail. A changed sentence is not a reflection pass.',
-        },
-      ],
-      requests: [
-        {
-          inputId: 'brewery',
-          promptVersion: 'reflection-output-2:brewery',
-          request: product.request,
-        },
-      ],
-    };
-    const arrayUrl = new URL('../incremental-reflection-array-request.json', import.meta.url);
-    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(arrayUrl, `${JSON.stringify(arrayRecord, null, 2)}\n`);
-    expect(JSON.parse(readFileSync(arrayUrl, 'utf8'))).toEqual(arrayRecord);
+    const arrayFixture = JSON.parse(
+      readFileSync(new URL('../incremental-reflection-array-request.json', import.meta.url), 'utf8'),
+    ) as { priorRunId: string; outputContract: string; requests: Array<{ promptVersion: string; request: unknown }> };
+    expect(arrayFixture.priorRunId).toBe('q1-incremental-reflection-output-2026-10-29');
+    expect(arrayFixture.outputContract).toBe('reflection-output-2');
+    expect(arrayFixture.requests[0]?.promptVersion).toBe('reflection-output-2:brewery');
+    expect(arrayFixture.requests[0]?.request).not.toEqual(product.request);
     const user = JSON.parse(historicalRequest.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
       previousAnalysis: Record<string, unknown>;
       founderChoice: { label: string };

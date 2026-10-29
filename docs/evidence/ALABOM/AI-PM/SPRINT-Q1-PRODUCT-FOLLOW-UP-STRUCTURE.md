@@ -90,7 +90,7 @@
 | 관문 | 상태 |
 |---|---|
 | 제품 요청 구조 | PASS. CPO 2026-10-29 21:12 KST. SHA `eed29780cf9b43f2f580bb003bd7c0142c053a77` |
-| 증분 반영 | FAIL. 배열 계약 재검증도 추가 설명과 가설 경계가 비어 기준 미충족. `SPRINT-Q1-INCREMENTAL-REFLECTION-ARRAY.md` |
+| 증분 반영 | FAIL. 근거 검증기를 고쳤고 새 모델 호출은 하지 않음. `SPRINT-Q1-INCREMENTAL-REFLECTION-GROUNDS.md` |
 | 2차 품질 | **NOT RUN** |
 | 저장·복원 | **NOT RUN** |
 | 화면 Q9·Q10 | **BLOCKED**. 2026-10-29 18:07 KST. Vercel CLI logged out. Preview `GET /workspace` HTTP 401 |

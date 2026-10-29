@@ -42,10 +42,10 @@ export const FOLLOW_UP_ANALYSIS_CONTRACT_NOTE =
 export const FOLLOW_UP_ANSWER_ORIGINS = ['synthetic-test-data', 'founder-input'] as const;
 export type FollowUpAnswerOrigin = (typeof FOLLOW_UP_ANSWER_ORIGINS)[number];
 
-export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-2';
+export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-3';
 
 export const FOLLOW_UP_OUTPUT_CONTRACT_NOTE =
-  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion이다. changes는 네 필드의 JSON 배열이다. 객체 맵, 문자열, 누락, 잘못된 원소 타입은 실패다. 바꾼 항목은 grounds가 비어 있으면 실패다. 그대로 둔 항목은 unchangedReason과 grounds가 모두 있어야 한다. 선택 문장은 판단이 아니다.';
+  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion이다. changes는 네 필드의 JSON 배열이다. 같은 선택 문장을 네 필드의 grounds로 반복하면 실패다. 미확인 가설을 수요 존재 예상으로 바꾸면 실패다. 추가 설명에 없는 예약 고객, 가격, 계약을 있는 정보로 쓰면 실패다. 선택 계획을 judgment로 옮기면 실패다.';
 
 export const FOLLOW_UP_OUTPUT_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'] as const;
 
@@ -1069,6 +1069,55 @@ function absentInputMarkers(supplement: string): string[] {
   return ABSENT_INPUT_MARKERS.filter((marker) => supplement.includes(marker));
 }
 
+function citesSupplementOrChoice(text: string, context: FollowUpOutputContext): boolean {
+  if (context.choiceLabel && text.includes(context.choiceLabel)) return true;
+  const source = compact(context.supplement);
+  const haystack = compact(text);
+  if (source.length === 0) return text.trim().length > 0;
+  if (source.length < 8) return haystack.includes(source);
+  for (let index = 0; index + 8 <= source.length; index += 1) {
+    if (haystack.includes(source.slice(index, index + 8))) return true;
+  }
+  return false;
+}
+
+function choiceOnlyGrounds(grounds: string, choice: string): boolean {
+  const haystack = compact(grounds);
+  const label = compact(choice);
+  if (label.length < 4 || !haystack.includes(label)) return false;
+  return haystack.split(label).join('').length <= 12;
+}
+
+function judgmentRestatesChoice(judgment: string, choice: string | null): boolean {
+  if (!choice) return false;
+  const judged = compact(judgment);
+  const label = compact(choice);
+  if (!judged || !label) return false;
+  if (judged === label || judgment.includes(choice)) return true;
+  const stem = label.slice(0, 10);
+  return stem.length >= 8 && judged.includes(stem);
+}
+
+function unconfirmedHypotheses(previous: readonly string[]): boolean {
+  const lines = previous.map((item) => item.trim()).filter((item) => item.length > 0);
+  return lines.length === 0 || lines.every((item) => item === '미확인');
+}
+
+function forecastsDemand(text: string): boolean {
+  return /수요/.test(text) && /존재|있을|있다|예상/.test(text);
+}
+
+function inventedPresence(text: string, supplement: string): boolean {
+  if (!supplement.includes('없')) return false;
+  const rules: Array<[string, RegExp]> = [
+    ['예약', /예약 고객이 있(?!는지)|예약이 있(?!는지)|예약했다|예약 고객 \d/],
+    ['가격', /가격이 있(?!는지)|가격이 정해졌|참가비는\s*\d|가격은\s*\d/],
+    ['계약', /계약이 있(?!는지)|계약했다|계약을 맺/],
+    ['양조장', /양조장이 확정되었|확정된 양조장이 있(?!는지)|양조장을 정했다/],
+  ];
+  return rules.some(([topic, claim]) => supplement.includes(topic) && claim.test(text));
+}
+
 /**
  * Reflection return contract. An empty list means the required fields, the changes
  * array, and the grounds rules hold. It does not by itself mean the reflection is good.
@@ -1146,10 +1195,14 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
     const unchangedReason = typeof change.unchangedReason === 'string' ? change.unchangedReason.trim() : '';
     if (previous !== expectedPrevious[field]) errors.push(`follow_up_output_previous:${field}`);
     if (!founderAnswer) errors.push(`follow_up_output_founder_answer:${field}`);
+    else if (!citesSupplementOrChoice(founderAnswer, context)) errors.push(`follow_up_output_founder_answer_untraced:${field}`);
     if (updated !== expectedUpdated[field]) errors.push(`follow_up_output_updated:${field}`);
     const changed = updated !== previous;
     if (!grounds) errors.push(`follow_up_output_grounds:${field}`);
     else if (!citesFollowUpInput(grounds, context)) errors.push(`follow_up_output_grounds_untraced:${field}`);
+    else if (absentInputMarkers(context.supplement).length > 0 && !absentInputMarkers(context.supplement).some((marker) => grounds.includes(marker))) {
+      errors.push(`grounds_missing_supplement:${field}`);
+    }
     if (changed) {
       if (unchangedReason) errors.push(`follow_up_output_unchanged_reason:${field}`);
     } else if (!unchangedReason) errors.push(`follow_up_output_unchanged_reason:${field}`);
@@ -1169,7 +1222,28 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
       context.choiceLabel.includes('먼저') &&
       !context.choiceLabel.includes('마케팅을 먼저'),
   );
-  if (context.choiceLabel && compact(judgment) === compact(context.choiceLabel)) errors.push('choice_promoted_to_judgment');
+  const recordedGrounds = FOLLOW_UP_OUTPUT_FIELDS.map((field) => {
+    const change = changes?.find((item) => item && typeof item === 'object' && (item as Record<string, unknown>).field === field) as
+      | Record<string, unknown>
+      | undefined;
+    return typeof change?.grounds === 'string' ? change.grounds.trim() : '';
+  });
+  if (
+    context.choiceLabel &&
+    recordedGrounds.every((grounds) => grounds.length > 0 && choiceOnlyGrounds(grounds, context.choiceLabel ?? ''))
+  ) {
+    errors.push('grounds_repeated_choice');
+  }
+  if (judgmentRestatesChoice(judgment, context.choiceLabel)) errors.push('choice_promoted_to_judgment');
+  if (
+    unconfirmedHypotheses(context.previousHypotheses) &&
+    hypothesisLine(hypotheses) !== hypothesisLine(context.previousHypotheses) &&
+    forecastsDemand(hypotheses.join('\n'))
+  ) {
+    errors.push('hypothesis_demand_ungrounded');
+  }
+  const claimText = [judgment, hypotheses.join('\n'), nextVerification, nextQuestion, recordedGrounds.join('\n')].join('\n');
+  if (inventedPresence(claimText, context.supplement)) errors.push('absent_input_invented');
   if (experienceFirst && !nextVerification.includes('체험')) errors.push('next_verification_priority_missing');
   if (experienceFirst && /마케팅/.test(nextQuestion) && /효과|우선|먼저|검증/.test(nextQuestion)) errors.push('next_question_regressed');
   if (experienceFirst) {
@@ -1220,16 +1294,18 @@ function reviewSystemPrompt(): string {
     '각 원소는 previous, founderAnswer, updated, grounds, unchangedReason을 가진다.',
     'previous는 요청의 저장값을 그대로 적는다. hypotheses의 previous와 updated는 항목을 " / "로 잇는다.',
     'updated는 그 필드의 반환값과 같다.',
-    'grounds는 바꾼 항목과 바꾸지 않은 항목 모두 비어 있으면 실패다. grounds에는 선택 문장 전체 또는 추가 설명에 실제로 있는 연속된 말을 넣는다.',
+    'grounds가 비어 있으면 실패다. 네 필드의 grounds가 같은 선택 문장이면 실패다. 계획은 그 계획이 옳다는 근거가 아니다.',
+    '추가 설명에 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 말을 각 grounds에 넣는다. 그 없음은 수요가 있다는 근거가 아니다.',
     'updated가 previous와 다르면 unchangedReason은 빈 문자열이다.',
     'updated가 previous와 같으면 unchangedReason에 바꾸지 않은 이유를 적고, grounds에도 추가 설명과의 관계를 적는다.',
-    'founderAnswer에는 선택 문장과 추가 설명에서 가져온 정보만 적는다.',
-    'judgment는 선택 문장과 같으면 실패다. 선택 문장은 계획이다. 시장 수요가 있다는 판단으로 올리지 않는다.',
+    'founderAnswer에는 선택 문장과 추가 설명을 그대로 적는다. 새로 만든 판단이나 가설 문장을 founderAnswer에 넣지 않는다.',
+    'hypotheses가 미확인이면 그 문장을 유지한다. 수요가 존재할 것이라는 예상으로 바꾸지 않는다.',
+    'judgment는 저장 판단을 유지한다. 선택 문장이나 그 계획을 필요하다는 판단으로 옮기지 않는다.',
     'choiceTrace는 label, answerOrigin, role이다. 선택이 있으면 label은 그 문장 그대로이고 role은 plan이다.',
     'founderFacts에 선택 문장이나 추가 설명을 넣지 않는다.',
     'revenueModel은 저장값에 가설 표시가 있으면 그 표시를 유지한다. 가격, 예약, 계약이 확인되지 않았으면 확정된 수익으로 쓰지 않는다.',
     '추가 설명이 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 없음을 확인된 사실과 구분한다. hypotheses를 그대로 두면 grounds와 unchangedReason에 그 없음을 적는다.',
-    '선택이 체험을 먼저 검증하는 계획이면 nextVerification은 체험 확인으로 바꾸고 grounds에 선택 문장 전체를 넣는다.',
+    '선택이 체험을 먼저 검증하는 계획이면 nextVerification만 체험 확인으로 바꾼다. grounds에는 선택 문장과 추가 설명의 없음 문장을 함께 넣는다.',
     '그 선택이면 nextQuestion은 마케팅 효과를 다시 먼저 묻지 않는다. 추가 설명이 없다고 한 양조장, 가격, 예약, 계약 중 하나를 묻는다.',
     '가설이 강화되었다고 쓰지 않는다. 수요가 있다고 단정하지 않는다.',
   ].join(' ');
