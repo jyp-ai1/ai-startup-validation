@@ -621,6 +621,83 @@ export function buildQuality11CompareRequest(text = COMPARE_BUSINESS_INPUT): Cha
   };
 }
 
+export const QUALITY12_PROMPT_VERSION = 'quality-12-cpo-draft';
+
+function labeledValue(label: string, value: string): string[] {
+  return [`${label} 값:`, value];
+}
+
+/** Every contract field is on its own line. quality-11 dropped fields written on the label line. */
+export function quality12UserBlock(text: string): string {
+  const branch = quality10Branch(text);
+  return [
+    `프롬프트 버전 ${QUALITY12_PROMPT_VERSION}.`,
+    'JSON 객체만 반환한다. 각 칸의 다음 줄을 값으로 넣고, 칸을 빼지 않는다.',
+    ...labeledValue('summary', branch.summary),
+    ...labeledValue('customer', branch.customer),
+    ...labeledValue('problem', '미확인'),
+    ...labeledValue('value', '미확인'),
+    ...labeledValue('operatingModel', '구상'),
+    ...labeledValue('alternatives', '미확인'),
+    ...labeledValue('differentiation', '미확인'),
+    ...labeledValue('payer', '미확인'),
+    ...labeledValue('revenueModel', quality7RevenueString(text)),
+    ...labeledValue('market', '미확인'),
+    ...labeledValue('competition', '미확인'),
+    ...labeledValue('operations', '미확인'),
+    ...labeledValue('profitability', '미확인'),
+    ...labeledValue('strengths', '["미확인"]'),
+    ...labeledValue('risks', '["미확인"]'),
+    ...labeledValue('assumptions', '["미확인"]'),
+    ...labeledValue('evidenceToChange', '["미확인"]'),
+    ...labeledValue('founderFacts', JSON.stringify(quality8FounderFacts(text))),
+    ...labeledValue('inferences', JSON.stringify([quality9Inference(text)])),
+    ...labeledValue('judgment', '미확인'),
+    ...labeledValue('nextVerification', branch.question),
+    ...labeledValue('nextQuestion', branch.question),
+    ...labeledValue('nextQuestionReason', '입력만으로는 무엇을 먼저 확인할지 정해지지 않는다.'),
+    ...labeledValue('choices', JSON.stringify([...branch.choices])),
+    'choices는 JSON 배열이다. revenueModel은 문자열 한 줄 전체다.',
+    'nextQuestion에 선택지 문장을 넣지 않는다.',
+    branch.absent,
+    '가격, 매출, 고객 수, 계약, 제휴는 만들지 않는다.',
+  ].join('\n');
+}
+
+export const QUALITY12_SYSTEM_PROMPT = [
+  '프롬프트 버전 quality-12-cpo-draft.',
+  'JSON 객체만 반환한다.',
+  '사용자 메시지의 각 칸 다음 줄을 그대로 넣는다. 칸을 빼지 않는다.',
+  'choices는 배열이다. revenueModel은 문자열이다.',
+  '선택지 한 줄을 질문으로 쓰지 않는다. 수익 항목을 빼지 않는다.',
+  '입력에 없는 다른 사업 축, 가격, 매출, 고객 수, 계약, 제휴는 만들지 않는다.',
+].join('\n');
+
+export function buildQuality12CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
+  return {
+    model: AI_PM_REVIEW_MODEL,
+    temperature: 0.2,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: QUALITY12_SYSTEM_PROMPT },
+      { role: 'user', content: `사업 입력:\n${text}\n\n${quality12UserBlock(text)}` },
+    ],
+  };
+}
+
+export function buildQuality12InputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
+  return [
+    { inputId: 'brewery', text: COMPARE_BUSINESS_INPUT },
+    { inputId: 'experience', text: QUALITY9_EXPERIENCE_INPUT },
+    { inputId: 'supplier', text: QUALITY9_SUPPLIER_INPUT },
+  ].map((item) => ({
+    inputId: item.inputId,
+    promptVersion: `${QUALITY12_PROMPT_VERSION}:${item.inputId}`,
+    request: buildQuality12CompareRequest(item.text),
+  }));
+}
+
 export function buildQuality11InputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
   return [
     { inputId: 'brewery', text: COMPARE_BUSINESS_INPUT },

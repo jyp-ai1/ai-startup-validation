@@ -926,11 +926,50 @@ function expandShortAnalysis(input: {
   };
 }
 
+/**
+ * Fills omitted placeholders with 미확인. A missing question, a missing choice
+ * array, or a revenue value that is not a string stays a failure.
+ */
+function repairAbsentPlaceholders(parsed: Record<string, unknown>): Record<string, unknown> {
+  if (!Array.isArray(parsed.choices)) return parsed;
+  if (typeof parsed.revenueModel !== 'string' || !parsed.revenueModel.trim()) return parsed;
+  if (typeof parsed.nextQuestion !== 'string' || !parsed.nextQuestion.trim()) return parsed;
+  const next: Record<string, unknown> = { ...parsed };
+  const strings = [
+    'summary',
+    'customer',
+    'problem',
+    'value',
+    'operatingModel',
+    'payer',
+    'alternatives',
+    'differentiation',
+    'market',
+    'competition',
+    'operations',
+    'profitability',
+    'judgment',
+    'nextQuestionReason',
+  ] as const;
+  for (const key of strings) {
+    const value = next[key];
+    if (value == null || value === '') next[key] = '미확인';
+    else if (typeof value !== 'string') return parsed;
+  }
+  const lists = ['strengths', 'risks', 'assumptions', 'evidenceToChange'] as const;
+  for (const key of lists) {
+    const value = next[key];
+    if (value == null) next[key] = ['미확인'];
+    else if (typeof value !== 'string' && !Array.isArray(value)) return parsed;
+  }
+  return next;
+}
+
 export function parseSections(content: string, sourceText = ''): ReviewSections | null {
   const stripped = content.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
   try {
     const parsed = JSON.parse(stripped) as Record<string, unknown>;
-    const analysis = readBusinessAnalysis(parsed, sourceText);
+    const analysis = readBusinessAnalysis(repairAbsentPlaceholders(parsed), sourceText);
     if (analysis) return analysis;
     if (textField(parsed.summary) || Array.isArray(parsed.choices)) return null;
     const problem = textField(parsed.problem);
