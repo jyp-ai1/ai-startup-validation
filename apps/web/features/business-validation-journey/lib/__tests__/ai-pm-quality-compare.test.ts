@@ -167,14 +167,15 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-output-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('incremental-reflection-request.json');
-    expect(script).toContain('q1-incremental-structure-2026-10-29');
-    expect(script).not.toContain('q1-incremental-structure-2026-10-29.json');
+    expect(script).toContain('incremental-reflection-output-request.json');
+    expect(script).toContain('q1-incremental-reflection-2026-10-29');
+    expect(script).not.toContain('q1-incremental-reflection-2026-10-29.json');
+    expect(script).not.toContain('incremental-reflection-request.json');
     expect(script).not.toContain('incremental-structure-request.json');
     expect(script).not.toContain('quality-14-independent-request.json');
     expect(script).not.toContain('quality-13-independent-request.json');
@@ -979,9 +980,17 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(fixture.priorRunId).toBe('q1-incremental-structure-2026-10-29');
     expect(fixture.analysisContract).toBe('parsed-sections-1');
     expect(fixture.requests[0]?.promptVersion).toBe('parsed-sections-1:incremental-reflection:brewery');
-    expect(fixture.requests[0]?.request).toEqual(product.request);
-    expect(product.request.maxTokens).toBe(800);
-    const user = JSON.parse(product.request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+    const historicalRequest = fixture.requests[0]?.request as { maxTokens: number; messages: Array<{ role: string; content: string }> };
+    expect(historicalRequest.maxTokens).toBe(800);
+    expect(historicalRequest).not.toEqual(product.request);
+    const outputFixture = JSON.parse(
+      readFileSync(new URL('../incremental-reflection-output-request.json', import.meta.url), 'utf8'),
+    ) as { priorRunId: string; outputContract: string; requests: Array<{ promptVersion: string; request: unknown }> };
+    expect(outputFixture.priorRunId).toBe('q1-incremental-reflection-2026-10-29');
+    expect(outputFixture.outputContract).toBe('reflection-output-1');
+    expect(outputFixture.requests[0]?.promptVersion).toBe('reflection-output-1:brewery');
+    expect(outputFixture.requests[0]?.request).toEqual(product.request);
+    const user = JSON.parse(historicalRequest.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
       previousAnalysis: Record<string, unknown>;
       founderChoice: { label: string };
       answerOrigin: string;

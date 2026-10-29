@@ -15,12 +15,15 @@ import {
   assessFollowUpRevision,
   AI_PM_FIRST_PROMPT_VERSION,
   AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET,
+  AI_PM_FOLLOW_UP_MAX_TOKENS,
   buildFirstReviewRequest,
   buildFollowUpRequest,
   callReviewWithQuotaSwitch,
   estimateReviewTokens,
   FOLLOW_UP_ANALYSIS_CONTRACT,
   FOLLOW_UP_ANALYSIS_CONTRACT_NOTE,
+  FOLLOW_UP_OUTPUT_CONTRACT,
+  followUpOutputContractErrors,
   FOLLOW_UP_SEPARATION_RULES,
   buildSyntheticFollowUpRequest,
   followUpAnswerNotice,
@@ -64,6 +67,31 @@ function sections(): ReviewSections {
     answerHint: '제안한 적이 있으면 그 한 건을, 없으면 제안 전이라고 적습니다.',
     claimConfirmation: null,
   };
+}
+
+function validUngatedFollowUpRaw(previous: ReviewSections): string {
+  const line = previous.hypotheses.join(' / ');
+  const baselineVerification = previous.analysis?.nextVerification ?? '';
+  const nextVerification = baselineVerification || '추가 설명이 확인되기 전에는 기존 질문을 다시 확인한다.';
+  const change = (field: string, previousValue: string, updated: string) => ({
+    field,
+    previous: previousValue,
+    founderAnswer: '추가 설명은 아직 확인된 사실이 아니다.',
+    updated,
+    grounds: updated === previousValue ? '' : '추가 설명은 확인된 사실이 아니므로 확인 행동만 남긴다.',
+    unchangedReason: updated === previousValue ? '답변이 이 필드를 바꿀 근거를 주지 않았다.' : '',
+  });
+  return JSON.stringify({
+    ...previous,
+    nextVerification,
+    choiceTrace: null,
+    changes: [
+      change('judgment', previous.judgment, previous.judgment),
+      change('hypotheses', line, line),
+      change('nextVerification', baselineVerification, nextVerification),
+      change('nextQuestion', previous.nextQuestion, previous.nextQuestion),
+    ],
+  });
 }
 
 function reply(content: string, extra?: Partial<ChatResponse>): ChatResponse {
@@ -223,7 +251,9 @@ describe('AI PM first review', () => {
     for (const rule of FOLLOW_UP_SEPARATION_RULES) expect(system).toContain(rule);
     expect(buildFirstReviewRequest(evidence.businessInput).messages[0]?.content).not.toContain('통째로 다시 출력하지 않는다');
     expect(AI_PM_FIRST_PROMPT_VERSION).toBe('quality-2');
-    expect(request.maxTokens).toBe(800);
+    expect(request.maxTokens).toBe(AI_PM_FOLLOW_UP_MAX_TOKENS);
+    expect(request.messages.find((message) => message.role === 'system')?.content).toContain(FOLLOW_UP_OUTPUT_CONTRACT);
+    expect(buildFirstReviewRequest(evidence.businessInput).messages[0]?.content).not.toContain(FOLLOW_UP_OUTPUT_CONTRACT);
     expect(estimateReviewTokens(request.messages.map((message) => message.content).join('\n'))).toBeLessThan(
       AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET,
     );
@@ -332,6 +362,9 @@ describe('AI PM first review', () => {
     const sectionOf = (payload: Record<string, unknown>) => payload.previousAnalysis as Record<string, unknown>;
     const choiceOf = (payload: Record<string, unknown>) => payload.founderChoice as Record<string, unknown>;
     const requiredMismatches: Array<[string, (payload: Record<string, unknown>) => void]> = [
+      ['outputContract', (payload) => { payload.outputContract = 'short-keys-1'; }],
+      ['outputContract', (payload) => { payload.outputContract = ''; }],
+      ['outputContract', (payload) => { delete payload.outputContract; }],
       ['analysisContract', (payload) => { payload.analysisContract = 'raw-bytes-1'; }],
       ['analysisContract', (payload) => { payload.analysisContract = ''; }],
       ['analysisContract', (payload) => { delete payload.analysisContract; }],
@@ -523,6 +556,101 @@ describe('AI PM first review', () => {
     expect(JSON.parse(readFileSync(evidenceUrl, 'utf8'))).toEqual(frozen);
   });
 
+  it('rejects a follow-up reply that drops the reflection fields or the hypothesis label', () => {
+    const recorded = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-recorded.json', import.meta.url), 'utf8'),
+    ) as { report: { calls: Array<{ raw: string; userPrompt: string }> } };
+    const sent = JSON.parse(recorded.report.calls[0]?.userPrompt ?? '{}') as {
+      previousAnalysis: {
+        judgment: string;
+        hypotheses: string[];
+        nextQuestion: string;
+        revenueModel: string;
+        analysis: { nextVerification: string };
+      };
+      founderChoice: { label: string };
+      founderSupplement: string;
+    };
+    const context = {
+      previousJudgment: sent.previousAnalysis.judgment,
+      previousHypotheses: sent.previousAnalysis.hypotheses,
+      previousNextVerification: sent.previousAnalysis.analysis.nextVerification,
+      previousNextQuestion: sent.previousAnalysis.nextQuestion,
+      previousRevenueModel: sent.previousAnalysis.revenueModel,
+      choiceLabel: sent.founderChoice.label,
+      supplement: sent.founderSupplement,
+      answerOrigin: 'synthetic-test-data' as const,
+    };
+    const failed = followUpOutputContractErrors(recorded.report.calls[0]?.raw ?? '', context);
+    expect(failed).toEqual(
+      expect.arrayContaining([
+        'follow_up_output_missing_judgment',
+        'follow_up_output_missing_hypotheses',
+        'follow_up_output_missing_nextVerification',
+        'hypothesis_label_removed',
+        'choice_untraced',
+      ]),
+    );
+    const choice = sent.founderChoice.label;
+    const keptRevenue = '가설: 체험 프로그램 참가비 및 관련 상품 판매 수익(가설)';
+    const nextVerification = '확정된 양조장이 있는지부터 확인한다.';
+    const kept = {
+      judgment: sent.previousAnalysis.judgment,
+      hypotheses: sent.previousAnalysis.hypotheses,
+      nextVerification,
+      nextQuestion: '체험을 열 양조장이 정해져 있습니까?',
+      revenueModel: keptRevenue,
+      choiceTrace: { label: choice, answerOrigin: 'synthetic-test-data', role: 'plan' },
+      founderFacts: sent.previousAnalysis.analysis && 'founderFacts' in sent.previousAnalysis.analysis
+        ? (sent.previousAnalysis.analysis as { founderFacts?: string[] }).founderFacts
+        : [],
+      changes: [
+        {
+          field: 'judgment',
+          previous: context.previousJudgment,
+          founderAnswer: `${choice} ${sent.founderSupplement}`,
+          updated: sent.previousAnalysis.judgment,
+          grounds: '',
+          unchangedReason: '선택은 계획이고 추가 설명은 가격과 예약과 계약과 양조장이 없다고 해서 판단을 확정할 근거가 없다.',
+        },
+        {
+          field: 'hypotheses',
+          previous: context.previousHypotheses.join(' / '),
+          founderAnswer: `${choice} ${sent.founderSupplement}`,
+          updated: context.previousHypotheses.join(' / '),
+          grounds: '',
+          unchangedReason: '추가 설명이 준 것은 미확인이며 가설을 강화할 근거가 없다.',
+        },
+        {
+          field: 'nextVerification',
+          previous: context.previousNextVerification,
+          founderAnswer: choice,
+          updated: nextVerification,
+          grounds: `${choice} 추가 설명은 확정된 양조장이 없다고 해서 그 확인을 먼저 둔다.`,
+          unchangedReason: '',
+        },
+        {
+          field: 'nextQuestion',
+          previous: context.previousNextQuestion,
+          founderAnswer: choice,
+          updated: '체험을 열 양조장이 정해져 있습니까?',
+          grounds: `${choice} 어느 쪽을 먼저 볼지는 계획으로 답해졌고 양조장 확정은 아직 없다.`,
+          unchangedReason: '',
+        },
+      ],
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(kept), context)).toEqual([]);
+    expect(JSON.stringify(kept.founderFacts ?? [])).not.toContain(choice);
+    const promoted = { ...kept, revenueModel: '체험 프로그램 참가비 및 관련 상품 판매 수익' };
+    expect(followUpOutputContractErrors(JSON.stringify(promoted), context)).toContain('hypothesis_label_removed');
+    const copied = { ...kept, founderFacts: [choice] };
+    expect(followUpOutputContractErrors(JSON.stringify(copied), context)).toContain('choice_in_founder_facts');
+    const strengthened = { ...kept, judgment: '체험 수요 가설이 강화되었다.' };
+    expect(followUpOutputContractErrors(JSON.stringify(strengthened), context)).toContain('hypothesis_strengthened');
+    const untraced = { ...kept, choiceTrace: null };
+    expect(followUpOutputContractErrors(JSON.stringify(untraced), context)).toContain('choice_untraced');
+  });
+
   it('sends a typed note and the same file text through one review', async () => {
     const typed = reviewInputFromParts({ typed: PLAN });
     const file = reviewInputFromParts({ extracted: PLAN, fileName: 'plan.txt' });
@@ -647,7 +775,8 @@ describe('AI PM first review', () => {
     const seen: ChatRequest[] = [];
     const chat = async (request: ChatRequest) => {
       seen.push(request);
-      return reply(JSON.stringify(sections()), { model: seen.length === 1 ? 'gpt-4o-mini' : 'gpt-4o-mini-later' });
+      const body = seen.length > 1 ? validUngatedFollowUpRaw(sections()) : JSON.stringify(sections());
+      return reply(body, { model: seen.length === 1 ? 'gpt-4o-mini' : 'gpt-4o-mini-later' });
     };
     const first = await runFirstReview({
       projectId: 'project-test',
@@ -970,7 +1099,8 @@ describe('AI PM first review', () => {
         expect(content).toContain(accepted.view.sections?.nextQuestion);
         expect(content).toContain(answer);
         expect(content).not.toContain('UNIQUEPLANMARKER');
-        return reply(JSON.stringify(sections()));
+        expect(content).toContain(FOLLOW_UP_OUTPUT_CONTRACT);
+        return reply(validUngatedFollowUpRaw(sections()));
       },
       evidence: 'injected_http',
     });
@@ -1473,7 +1603,7 @@ describe('AI PM first review', () => {
         expect(payload.revision?.askFounder?.requiredMeaning).toBe('ask_what_core_is_missing');
         expect(payload.revision?.askFounder?.previousQuestion).toBe(previous.nextQuestion);
         expect(request.model).toBe('gpt-4o-mini');
-        expect(request.maxTokens).toBe(800);
+        expect(request.maxTokens).toBe(AI_PM_FOLLOW_UP_MAX_TOKENS);
         return reply(failedRaw);
       },
     });

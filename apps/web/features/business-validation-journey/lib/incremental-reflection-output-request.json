@@ -1,0 +1,51 @@
+{
+  "businessInput": "다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n검토 목적: 종합 사업성 검토\n현재 단계: 미확인\n가장 알고 싶은 것: 없음\n검토 계약: comprehensive-1",
+  "dataClass": "synthetic-test-data",
+  "notice": "테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.",
+  "analysisContract": "parsed-sections-1",
+  "outputContract": "reflection-output-1",
+  "baselineSource": "docs/evidence/ALABOM/AI-PM/sprint-q1-product-follow-up-request.json",
+  "priorRunId": "q1-incremental-reflection-2026-10-29",
+  "confounders": [
+    {
+      "id": "call_path",
+      "detail": "Preview build reads this frozen product request and calls the model directly. It does not call the product second-review route. productFollowUpInvoked false is not a Q10 pass."
+    },
+    {
+      "id": "data_class",
+      "detail": "테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다."
+    },
+    {
+      "id": "separate_record",
+      "detail": "This run is q1-incremental-reflection-output-2026-10-29. The failed reflection q1-incremental-reflection-2026-10-29 and the earlier direct call q1-incremental-structure-2026-10-29 stay RECORDED."
+    },
+    {
+      "id": "output_contract",
+      "detail": "The request asks for reflection-output-1. A changed sentence is not a reflection pass. Missing judgment, hypotheses, nextVerification, or nextQuestion is not success."
+    }
+  ],
+  "requests": [
+    {
+      "inputId": "brewery",
+      "promptVersion": "reflection-output-1:brewery",
+      "request": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.2,
+        "maxTokens": 1600,
+        "responseFormat": {
+          "type": "json_object"
+        },
+        "messages": [
+          {
+            "role": "system",
+            "content": "당신은 ALABOM의 AI PM이다. 입력에 없는 가격, 인원, 매출, 시장 규모는 만들지 않는다. JSON 객체만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다. 이전 1차 분석은 과거 출력이다. 새 분석과 구분하고 통째로 다시 출력하지 않는다. 선택한 답변과 추가 설명은 현재의 판단·정보이며 검증된 사실이 아니다. answerOrigin이 synthetic-test-data이면 테스트용 합성 데이터다. 실제 창업자 답변으로 취급하지 않는다. answerOrigin이 founder-input이어도 근거가 없으면 사실로 승격하지 않는다. 가설로 남긴다. 판단, 가설, 검증 우선순위는 답변 때문에 달라지는 부분만 갱신한다. 근거 없이 가설이 강화되었다고 쓰지 않는다. 반환 계약 reflection-output-1. 필수 키는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, choiceTrace, changes 이다. 필수 키가 없으면 실패다. hypotheses는 비어 있지 않은 문자열 배열이다. changes에는 judgment, hypotheses, nextVerification, nextQuestion이 각각 하나씩 있다. 각 change는 previous, founderAnswer, updated, grounds, unchangedReason을 가진다. previous는 요청의 저장값을 그대로 적는다. hypotheses의 previous와 updated는 항목을 \" / \"로 잇는다. updated는 그 필드의 반환값과 같다. updated가 previous와 같으면 unchangedReason만 적고 grounds는 빈 문자열이다. updated가 previous와 다르면 grounds만 적고 unchangedReason은 빈 문자열이다. founderAnswer에는 선택 문장과 추가 설명에서 가져온 정보만 적는다. 선택은 계획이면 role을 plan으로 두고, 검증된 수요나 강화된 가설로 쓰지 않는다. 가설이 강화되었다고 쓰지 않는다. 수요가 있다고 단정하지 않는다. choiceTrace는 label, answerOrigin, role이다. 선택이 있으면 label은 그 문장 그대로이고 role은 plan이다. founderFacts에 선택 문장이나 추가 설명을 넣지 않는다. revenueModel은 저장값에 가설 표시가 있으면 그 표시를 유지한다. 가격, 예약, 계약이 확인되지 않았으면 확정된 수익으로 쓰지 않는다. 선택이 무엇을 먼저 검증할지의 계획이면 nextVerification은 그 선택만 먼저 확인하는 행동으로 바꾼다. grounds에 선택 문장을 넣는다. 근거가 없는 판단과 가설은 바꾸지 않고 unchangedReason을 적는다."
+          },
+          {
+            "role": "user",
+            "content": "{\"analysisContract\":\"parsed-sections-1\",\"analysisContractNote\":\"previousAnalysis는 파서가 저장한 분석 섹션 전체다. 1차 모델 JSON 원문의 바이트 복사가 아니다. originalInput은 창업자 사업 원문 전체다.\",\"outputContract\":\"reflection-output-1\",\"outputContractNote\":\"반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion이다. 누락은 성공이 아니다. changes는 저장값, 답변이 준 정보, 바뀐 값, 근거 또는 그대로 둔 이유를 구분한다.\",\"answerOrigin\":\"synthetic-test-data\",\"answerOriginNotice\":\"테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.\",\"originalInput\":\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\\n\\n검토 목적: 종합 사업성 검토\\n현재 단계: 미확인\\n가장 알고 싶은 것: 없음\\n검토 계약: comprehensive-1\",\"previousAnalysis\":{\"customer\":\"다양한 관광객 중 전통주를 좋아하는 내국인 및 외국인\",\"problem\":\"개인별 다양한 경험을 중요시하는 관광객의 요구를 충족시키는 것\",\"market\":\"미확인\",\"revenueModel\":\"가설: 체험 프로그램 참가비 및 관련 상품 판매 수익(가설)\",\"execution\":\"양조장의 다양한 온라인 마케팅 지원을 통해 체험 프로그램 운영\",\"risks\":[\"미확인\"],\"uncertain\":[\"미확인\"],\"hypotheses\":[\"미확인\"],\"judgment\":\"전통주(양조장)를 좋아하는 내국인/외국인을 대상으로 양조장 체험을 안내하고 주변을 즐길 수 있는 사업을 구상 중이다.\",\"nextQuestion\":\"체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?\",\"nextQuestionReason\":\"사업의 성공을 위해 우선순위를 정해야 함\",\"answerHint\":\"선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.\",\"claimConfirmation\":null,\"analysis\":{\"summary\":\"전통주(양조장)를 좋아하는 내국인/외국인을 대상으로 양조장 체험을 안내하고 주변을 즐길 수 있는 사업을 구상 중이다.\",\"value\":\"양조장 체험과 주변 관광을 결합한 독특한 경험 제공\",\"operatingModel\":\"양조장의 다양한 온라인 마케팅 지원을 통해 체험 프로그램 운영\",\"payer\":\"미확인\",\"competition\":\"미확인\",\"operations\":\"미확인\",\"profitability\":\"미확인\",\"strengths\":[\"미확인\"],\"assumptions\":[\"미확인\"],\"evidenceToChange\":[\"미확인\"],\"founderFacts\":[\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다.\",\"우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길 수 있는 사업을 구상중이다.\",\"이는 양조장의 다양한 온라인 마케팅에서 시행될 수 있어서 우리는 그것을 지원하려 한다.\"],\"inferences\":[\"추론: 다양한 관광객의 증가로 개인별 경험의 중요성이 커지고 있다.\",\"추론: 전통주를 좋아하는 관광객을 대상으로 한 체험 프로그램이 필요하다.\",\"추론: 양조장 체험과 온라인 마케팅 지원이 결합된 사업 모델이 가능하다.\"],\"judgmentDetail\":\"미확인\",\"choices\":[{\"id\":\"c1\",\"label\":\"체험 프로그램을 먼저 검증할 것\"},{\"id\":\"c2\",\"label\":\"마케팅 지원을 먼저 검증할 것\"},{\"id\":\"c3\",\"label\":\"둘을 함께 검증할 것\"},{\"id\":\"other\",\"label\":\"아직 정하지 못함과 기타\"}],\"alternatives\":\"미확인\",\"differentiation\":\"미확인\",\"nextVerification\":\"체험 프로그램의 수요 검증 및 온라인 마케팅 효과 검증\"}},\"previousQuestion\":\"체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?\",\"founderChoice\":{\"answerOrigin\":\"synthetic-test-data\",\"choiceId\":\"c1\",\"label\":\"체험 프로그램을 먼저 검증할 것\",\"otherText\":\"\"},\"founderSupplement\":\"테스트용 합성 설명. 실제 창업자가 제공한 문장이 아니다. 예약 고객, 가격, 계약, 확정된 양조장은 없다.\",\"separationRules\":[\"이전 1차 분석은 과거 출력이다. 새 분석과 구분하고 통째로 다시 출력하지 않는다.\",\"선택한 답변과 추가 설명은 현재의 판단·정보이며 검증된 사실이 아니다.\",\"answerOrigin이 synthetic-test-data이면 테스트용 합성 데이터다. 실제 창업자 답변으로 취급하지 않는다.\",\"answerOrigin이 founder-input이어도 근거가 없으면 사실로 승격하지 않는다. 가설로 남긴다.\",\"판단, 가설, 검증 우선순위는 답변 때문에 달라지는 부분만 갱신한다. 근거 없이 가설이 강화되었다고 쓰지 않는다.\"],\"feedback\":{\"agreement\":\"need_info\",\"accuracy\":\"hard_to_compare\",\"revisionAreas\":[\"other\"],\"comment\":\"체험 프로그램을 먼저 검증할 것\",\"nextAction\":\"verify_hypotheses\",\"marks\":[],\"choiceAnswer\":{\"choiceId\":\"c1\",\"label\":\"체험 프로그램을 먼저 검증할 것\",\"otherText\":\"\"}},\"previousReview\":{\"problem\":\"개인별 다양한 경험을 중요시하는 관광객의 요구를 충족시키는 것\",\"target_customer\":\"다양한 관광객 중 전통주를 좋아하는 내국인 및 외국인\",\"solution\":\"양조장의 다양한 온라인 마케팅 지원을 통해 체험 프로그램 운영\",\"business_model\":\"가설: 체험 프로그램 참가비 및 관련 상품 판매 수익(가설)\",\"validation_metric\":\"미확인\",\"judgment\":\"전통주(양조장)를 좋아하는 내국인/외국인을 대상으로 양조장 체험을 안내하고 주변을 즐길 수 있는 사업을 구상 중이다.\",\"nextQuestion\":\"체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?\"},\"supplement\":\"테스트용 합성 설명. 실제 창업자가 제공한 문장이 아니다. 예약 고객, 가격, 계약, 확정된 양조장은 없다.\"}"
+          }
+        ]
+      }
+    }
+  ]
+}

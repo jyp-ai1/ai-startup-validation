@@ -23,6 +23,8 @@ export const AI_PM_REVIEW_MODEL = 'gpt-4o-mini';
 export const AI_PM_FIRST_PROMPT_VERSION = 'quality-2';
 export const AI_PM_GEMINI_FALLBACK_MODEL = 'gemini-3.1-flash-lite';
 export const AI_PM_REVIEW_MAX_TOKENS = 800;
+/** Follow-up output includes the four reflection fields and a change record for each. */
+export const AI_PM_FOLLOW_UP_MAX_TOKENS = 1600;
 export const AI_PM_REVIEW_FIRST_MAX_TOKENS = 2400;
 export const AI_PM_REVIEW_INPUT_TOKEN_BUDGET = 3_000;
 /** Follow-up JSON includes the stored analysis. The first-review budget would cut that object. */
@@ -39,6 +41,13 @@ export const FOLLOW_UP_ANALYSIS_CONTRACT_NOTE =
 
 export const FOLLOW_UP_ANSWER_ORIGINS = ['synthetic-test-data', 'founder-input'] as const;
 export type FollowUpAnswerOrigin = (typeof FOLLOW_UP_ANSWER_ORIGINS)[number];
+
+export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-1';
+
+export const FOLLOW_UP_OUTPUT_CONTRACT_NOTE =
+  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion이다. 누락은 성공이 아니다. changes는 저장값, 답변이 준 정보, 바뀐 값, 근거 또는 그대로 둔 이유를 구분한다.';
+
+export const FOLLOW_UP_OUTPUT_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'] as const;
 
 export const FOLLOW_UP_SEPARATION_RULES = [
   '이전 1차 분석은 과거 출력이다. 새 분석과 구분하고 통째로 다시 출력하지 않는다.',
@@ -400,6 +409,8 @@ export function buildFollowUpRequest(input: {
     ...(revision ? { revision } : {}),
     analysisContract: FOLLOW_UP_ANALYSIS_CONTRACT,
     analysisContractNote: FOLLOW_UP_ANALYSIS_CONTRACT_NOTE,
+    outputContract: FOLLOW_UP_OUTPUT_CONTRACT,
+    outputContractNote: FOLLOW_UP_OUTPUT_CONTRACT_NOTE,
     answerOrigin,
     answerOriginNotice: followUpAnswerNotice(answerOrigin),
     originalInput: input.originalInput,
@@ -440,7 +451,7 @@ export function buildFollowUpRequest(input: {
   return {
     model: AI_PM_REVIEW_MODEL,
     temperature: 0.2,
-    maxTokens: AI_PM_REVIEW_MAX_TOKENS,
+    maxTokens: AI_PM_FOLLOW_UP_MAX_TOKENS,
     responseFormat: { type: 'json_object' },
     messages: fitFollowUpMessages([
       { role: 'system', content: revision ? gatedFollowUpPrompt() : reviewSystemPrompt() },
@@ -488,6 +499,8 @@ export function followUpRequestMismatches(request: ChatRequest, source: FollowUp
   };
   differ('analysisContract', payload.analysisContract, FOLLOW_UP_ANALYSIS_CONTRACT);
   differ('analysisContractNote', payload.analysisContractNote, FOLLOW_UP_ANALYSIS_CONTRACT_NOTE);
+  differ('outputContract', payload.outputContract, FOLLOW_UP_OUTPUT_CONTRACT);
+  differ('outputContractNote', payload.outputContractNote, FOLLOW_UP_OUTPUT_CONTRACT_NOTE);
   differ('answerOrigin', payload.answerOrigin, source.answerOrigin);
   differ('answerOriginNotice', payload.answerOriginNotice, followUpAnswerNotice(source.answerOrigin));
   differ('originalInput', payload.originalInput, source.originalInput);
@@ -824,6 +837,14 @@ export async function runFollowUpReview(input: {
     }),
     chat: input.chat,
     gate: needsRevisionGate(marks) ? { previous: parent.sections, marks } : null,
+    outputContract: needsRevisionGate(marks)
+      ? null
+      : followUpOutputContext({
+          sections: parent.sections,
+          choiceLabel: feedback?.choiceAnswer?.label ?? null,
+          supplement,
+          answerOrigin: 'founder-input',
+        }),
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
 }
@@ -995,9 +1016,144 @@ function compact(text: string): string {
   return text.replace(/\s+/g, '').trim();
 }
 
+export type FollowUpOutputContext = {
+  previousJudgment: string;
+  previousHypotheses: string[];
+  previousNextVerification: string;
+  previousNextQuestion: string;
+  previousRevenueModel: string;
+  choiceLabel: string | null;
+  supplement: string;
+  answerOrigin: FollowUpAnswerOrigin;
+};
+
+export function followUpOutputContext(input: {
+  sections: ReviewSections;
+  choiceLabel: string | null;
+  supplement: string;
+  answerOrigin: FollowUpAnswerOrigin;
+}): FollowUpOutputContext {
+  return {
+    previousJudgment: input.sections.judgment,
+    previousHypotheses: [...input.sections.hypotheses],
+    previousNextVerification: input.sections.analysis?.nextVerification ?? '',
+    previousNextQuestion: input.sections.nextQuestion,
+    previousRevenueModel: input.sections.revenueModel,
+    choiceLabel: input.choiceLabel,
+    supplement: input.supplement,
+    answerOrigin: input.answerOrigin,
+  };
+}
+
+function hypothesisLine(value: readonly string[]): string {
+  return value.join(' / ');
+}
+
+/**
+ * Reflection return contract. An empty list means the required fields and change
+ * records are present. It does not by itself mean the reflection is good.
+ */
+export function followUpOutputContractErrors(raw: string, context: FollowUpOutputContext): string[] {
+  let parsed: Record<string, unknown> | null = null;
+  try {
+    const value = JSON.parse(raw) as unknown;
+    if (value && typeof value === 'object' && !Array.isArray(value)) parsed = value as Record<string, unknown>;
+  } catch {
+    parsed = null;
+  }
+  if (!parsed) return ['follow_up_output_unparsed'];
+  const errors: string[] = [];
+  const judgment = typeof parsed.judgment === 'string' ? parsed.judgment.trim() : '';
+  const nextVerification = typeof parsed.nextVerification === 'string' ? parsed.nextVerification.trim() : '';
+  const nextQuestion = typeof parsed.nextQuestion === 'string' ? parsed.nextQuestion.trim() : '';
+  const hypotheses = Array.isArray(parsed.hypotheses)
+    ? parsed.hypotheses.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+    : [];
+  if (!judgment) errors.push('follow_up_output_missing_judgment');
+  if (!Array.isArray(parsed.hypotheses) || hypotheses.length === 0) errors.push('follow_up_output_missing_hypotheses');
+  if (!nextVerification) errors.push('follow_up_output_missing_nextVerification');
+  if (!nextQuestion) errors.push('follow_up_output_missing_nextQuestion');
+  const revenue =
+    typeof parsed.revenueModel === 'string'
+      ? parsed.revenueModel.trim()
+      : typeof parsed.business_model === 'string'
+        ? parsed.business_model.trim()
+        : '';
+  if (!revenue) errors.push('follow_up_output_missing_revenueModel');
+  else if (context.previousRevenueModel.includes('가설') && !revenue.includes('가설')) errors.push('hypothesis_label_removed');
+  if (/가격[^。\n]{0,16}없/.test(context.supplement) && revenue && !revenue.includes('가설') && /참가비|수익/.test(revenue)) {
+    errors.push('hypothesis_label_removed');
+  }
+  const facts = Array.isArray(parsed.founderFacts) ? parsed.founderFacts.map((item) => String(item)) : [];
+  if (context.choiceLabel && facts.some((fact) => fact.includes(context.choiceLabel ?? ''))) errors.push('choice_in_founder_facts');
+  if (context.supplement && facts.some((fact) => fact.includes(context.supplement))) errors.push('supplement_in_founder_facts');
+  if (context.choiceLabel) {
+    const trace = parsed.choiceTrace;
+    const record = trace && typeof trace === 'object' && !Array.isArray(trace) ? (trace as Record<string, unknown>) : null;
+    if (!record || record.label !== context.choiceLabel || record.answerOrigin !== context.answerOrigin || record.role !== 'plan') {
+      errors.push('choice_untraced');
+    }
+  }
+  const changes = Array.isArray(parsed.changes) ? parsed.changes : null;
+  if (!changes) errors.push('follow_up_output_missing_changes');
+  const expectedPrevious: Record<(typeof FOLLOW_UP_OUTPUT_FIELDS)[number], string> = {
+    judgment: context.previousJudgment,
+    hypotheses: hypothesisLine(context.previousHypotheses),
+    nextVerification: context.previousNextVerification,
+    nextQuestion: context.previousNextQuestion,
+  };
+  const expectedUpdated: Record<(typeof FOLLOW_UP_OUTPUT_FIELDS)[number], string> = {
+    judgment,
+    hypotheses: hypothesisLine(hypotheses),
+    nextVerification,
+    nextQuestion,
+  };
+  const priorityChoice = Boolean(context.choiceLabel && /먼저|검증/.test(context.choiceLabel));
+  for (const field of FOLLOW_UP_OUTPUT_FIELDS) {
+    const change = changes?.find((item) => item && typeof item === 'object' && (item as Record<string, unknown>).field === field) as
+      | Record<string, unknown>
+      | undefined;
+    if (!change) {
+      errors.push(`follow_up_output_missing_change:${field}`);
+      continue;
+    }
+    const previous = typeof change.previous === 'string' ? change.previous : '';
+    const founderAnswer = typeof change.founderAnswer === 'string' ? change.founderAnswer.trim() : '';
+    const updated = typeof change.updated === 'string' ? change.updated : '';
+    const grounds = typeof change.grounds === 'string' ? change.grounds.trim() : '';
+    const unchangedReason = typeof change.unchangedReason === 'string' ? change.unchangedReason.trim() : '';
+    if (previous !== expectedPrevious[field]) errors.push(`follow_up_output_previous:${field}`);
+    if (!founderAnswer) errors.push(`follow_up_output_founder_answer:${field}`);
+    if (updated !== expectedUpdated[field]) errors.push(`follow_up_output_updated:${field}`);
+    if (updated === previous) {
+      if (!unchangedReason || grounds) errors.push(`follow_up_output_unchanged_reason:${field}`);
+    } else if (!grounds || unchangedReason) errors.push(`follow_up_output_grounds:${field}`);
+    if (priorityChoice && field === 'nextVerification') {
+      if (updated === previous) errors.push('next_verification_unchanged');
+      if (context.choiceLabel && !grounds.includes(context.choiceLabel)) errors.push('next_verification_choice_unmentioned');
+    }
+  }
+  const prose = [judgment, hypotheses.join('\n'), nextVerification, nextQuestion, JSON.stringify(changes ?? [])].join('\n');
+  if (/강화되었|강화됐다|수요가 확인되었|수요가 확인됐다|수요가 있다/.test(prose)) errors.push('hypothesis_strengthened');
+  return [...new Set(errors)];
+}
+
+function followUpBasePrompt(): string {
+  return [
+    '당신은 ALABOM의 AI PM이다.',
+    '입력에 없는 가격, 인원, 매출, 시장 규모는 만들지 않는다.',
+    'JSON 객체만 반환한다.',
+    '모델 이름이나 공급사 이름은 쓰지 않는다.',
+    ...FOLLOW_UP_SEPARATION_RULES,
+  ].join(' ');
+}
+
 function gatedFollowUpPrompt(): string {
   return [
-    reviewSystemPrompt(),
+    followUpBasePrompt(),
+    '키는 problem, target_customer, solution, business_model, validation_metric, nextQuestion 이다.',
+    'nextQuestion은 이 입력에서 창업자가 답해야 판단이 바뀌는 질문 하나다.',
+    '질문 목록의 문장을 복사하지 않는다.',
     '응답 JSON에 confirmation을 넣는다.',
     'confirmation.problem, confirmation.target_customer, confirmation.business_model은 unconfirmed다.',
     '그 세 문장은 확인 전이며 확정된 사실로 쓰지 않는다.',
@@ -1009,14 +1165,25 @@ function gatedFollowUpPrompt(): string {
 
 function reviewSystemPrompt(): string {
   return [
-    '당신은 ALABOM의 AI PM이다.',
-    '입력에 없는 가격, 인원, 매출, 시장 규모는 만들지 않는다.',
-    'JSON 객체만 반환한다.',
-    '키는 problem, target_customer, solution, business_model, validation_metric, nextQuestion 이다.',
-    'nextQuestion은 이 입력에서 창업자가 답해야 판단이 바뀌는 질문 하나다.',
-    '질문 목록의 문장을 복사하지 않는다.',
-    '모델 이름이나 공급사 이름은 쓰지 않는다.',
-    ...FOLLOW_UP_SEPARATION_RULES,
+    followUpBasePrompt(),
+    `반환 계약 ${FOLLOW_UP_OUTPUT_CONTRACT}.`,
+    '필수 키는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, choiceTrace, changes 이다.',
+    '필수 키가 없으면 실패다.',
+    'hypotheses는 비어 있지 않은 문자열 배열이다.',
+    'changes에는 judgment, hypotheses, nextVerification, nextQuestion이 각각 하나씩 있다.',
+    '각 change는 previous, founderAnswer, updated, grounds, unchangedReason을 가진다.',
+    'previous는 요청의 저장값을 그대로 적는다. hypotheses의 previous와 updated는 항목을 " / "로 잇는다.',
+    'updated는 그 필드의 반환값과 같다.',
+    'updated가 previous와 같으면 unchangedReason만 적고 grounds는 빈 문자열이다.',
+    'updated가 previous와 다르면 grounds만 적고 unchangedReason은 빈 문자열이다.',
+    'founderAnswer에는 선택 문장과 추가 설명에서 가져온 정보만 적는다.',
+    '선택은 계획이면 role을 plan으로 두고, 검증된 수요나 강화된 가설로 쓰지 않는다.',
+    '가설이 강화되었다고 쓰지 않는다. 수요가 있다고 단정하지 않는다.',
+    'choiceTrace는 label, answerOrigin, role이다. 선택이 있으면 label은 그 문장 그대로이고 role은 plan이다.',
+    'founderFacts에 선택 문장이나 추가 설명을 넣지 않는다.',
+    'revenueModel은 저장값에 가설 표시가 있으면 그 표시를 유지한다. 가격, 예약, 계약이 확인되지 않았으면 확정된 수익으로 쓰지 않는다.',
+    '선택이 무엇을 먼저 검증할지의 계획이면 nextVerification은 그 선택만 먼저 확인하는 행동으로 바꾼다. grounds에 선택 문장을 넣는다.',
+    '근거가 없는 판단과 가설은 바꾸지 않고 unchangedReason을 적는다.',
   ].join(' ');
 }
 
@@ -1055,16 +1222,19 @@ async function finishCall(input: {
   request: ChatRequest;
   chat: ReviewChat;
   gate?: { previous: ReviewSections; marks: ReviewMark[] } | null;
+  outputContract?: FollowUpOutputContext | null;
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const started = Date.now();
   try {
     const response = await input.chat(input.request);
     const sections = parseSections(response.content, input.input.text);
+    const outputErrors = input.outputContract ? followUpOutputContractErrors(response.content, input.outputContract) : [];
+    const outputError = outputErrors.length > 0 ? outputErrors.join(',') : null;
     const revisionGate =
       sections && input.gate && needsRevisionGate(input.gate.marks)
         ? assessFollowUpRevision({ previous: input.gate.previous, next: sections, marks: input.gate.marks })
         : null;
-    const accepted = Boolean(sections) && revisionGate?.pass !== false;
+    const accepted = Boolean(sections) && !outputError && revisionGate?.pass !== false;
     const usageKnown = response.usageKnown === true;
     const record = baseRecord({
       input: input.input,
@@ -1076,10 +1246,10 @@ async function finishCall(input: {
       status: accepted ? 'succeeded' : 'failed',
       evidence: input.input.evidence,
       callCount: 1,
-      error: sections ? (revisionGate && !revisionGate.pass ? 'revision_gate' : null) : reviewContractError(response.content),
+      error: outputError ?? (sections ? (revisionGate && !revisionGate.pass ? 'revision_gate' : null) : reviewContractError(response.content)),
       provider: response.provider === 'google' ? 'google' : response.provider === 'openai' ? 'openai' : null,
       model: response.model,
-      sections,
+      sections: outputError ? null : sections,
       revisionGate,
       rawContent: response.content,
       promptTokens: usageKnown ? response.usage.inputTokens : null,
