@@ -1382,6 +1382,88 @@ describe('AI PM first review', () => {
     expect(reasonParsed.changes.every((change) => change.evidenceStatus === 'unverified-input')).toBe(true);
     expect(reasonParsed.changes.find((change) => change.field === 'judgment')?.decision).toBe('retained');
     expect(reasonParsed.changes.find((change) => change.field === 'hypotheses')?.decision).toBe('retained');
+    const preserveCall = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-preserve-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as {
+      runId: string;
+      priorRunId: string;
+      gitSha: string;
+      startedAt: string;
+      finishedAt: string;
+      productFollowUpInvoked: boolean;
+      reflectionScored: boolean;
+      report: { calls: Array<{ raw: string; userPrompt: string; finishReason: string; model: string }> };
+    };
+    expect(preserveCall.runId).toBe('q1-incremental-reflection-preserve-2026-10-29');
+    expect(preserveCall.priorRunId).toBe('q1-incremental-reflection-reason-2026-10-29');
+    expect(preserveCall.gitSha).toBe('51d6e6aac0de456297db39d5e7c9636e9268c75b');
+    expect(preserveCall.startedAt).toBe('2026-10-29T14:09:53.710Z');
+    expect(preserveCall.finishedAt).toBe('2026-10-29T14:10:07.404Z');
+    expect(preserveCall.productFollowUpInvoked).toBe(false);
+    expect(preserveCall.reflectionScored).toBe(false);
+    expect(preserveCall.report.calls[0]?.model).toBe('gpt-4o-mini-2024-07-18');
+    expect(preserveCall.report.calls[0]?.finishReason).toBe('stop');
+    const preserveSent = JSON.parse(preserveCall.report.calls[0]?.userPrompt ?? '{}') as typeof sent;
+    const preserveContext = {
+      previousJudgment: preserveSent.previousAnalysis.judgment,
+      previousHypotheses: preserveSent.previousAnalysis.hypotheses,
+      previousNextVerification: preserveSent.previousAnalysis.analysis.nextVerification,
+      previousNextQuestion: preserveSent.previousAnalysis.nextQuestion,
+      previousRevenueModel: preserveSent.previousAnalysis.revenueModel,
+      choiceLabel: preserveSent.founderChoice.label,
+      supplement: preserveSent.founderSupplement,
+      answerOrigin: 'synthetic-test-data' as const,
+    };
+    expect(followUpOutputContractErrors(preserveCall.report.calls[0]?.raw ?? '', preserveContext)).toEqual([
+      'choice_untraced',
+      'choice_effect_missing:judgment',
+      'evidence_status:judgment',
+      'choice_effect_missing:hypotheses',
+      'reason_untraced:hypotheses',
+      'evidence_status:hypotheses',
+      'choice_effect_missing:nextVerification',
+      'reason_missing_supplement:nextVerification',
+      'evidence_status:nextVerification',
+      'choice_effect_missing:nextQuestion',
+      'evidence_status:nextQuestion',
+    ]);
+    const preserveParsed = JSON.parse(preserveCall.report.calls[0]?.raw ?? '{}') as {
+      judgment: string;
+      hypotheses: string[];
+      nextVerification: string;
+      nextQuestion: string;
+      revenueModel: string;
+      choiceTrace: { label?: string; answerOrigin?: string; role?: string; effect?: string };
+      changes: Array<{
+        field: string;
+        previous: string;
+        decision: string;
+        reason: string;
+        founderAnswer: { choice: string | null; supplement: string; source: string; status: string };
+        choiceTrace?: unknown;
+        evidenceStatus?: string;
+      }>;
+    };
+    expect(preserveParsed.revenueModel).toBe(preserveContext.previousRevenueModel);
+    expect(preserveParsed.choiceTrace).toEqual({
+      label: '체험 프로그램을 먼저 검증할 것',
+      effect: '체험 프로그램을 먼저 검증할 것은 계획이라 저장된 판단을 바꾸지 않는다.',
+    });
+    expect(preserveParsed.judgment).toBe(preserveContext.previousJudgment);
+    expect(preserveParsed.hypotheses).toEqual(['미확인']);
+    expect(preserveParsed.nextVerification).toBe(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
+    expect(preserveParsed.nextQuestion).toBe('양조장 후보가 있는가?');
+    expect(preserveParsed.changes.find((change) => change.field === 'nextQuestion')?.previous).toBe(preserveContext.previousNextQuestion);
+    expect(preserveParsed.changes.every((change) => change.founderAnswer.choice === '체험 프로그램을 먼저 검증할 것')).toBe(true);
+    expect(preserveParsed.changes.every((change) => change.founderAnswer.status === 'unverified-input')).toBe(true);
+    expect(preserveParsed.changes.every((change) => change.founderAnswer.source === 'synthetic-test-data')).toBe(true);
+    expect(preserveParsed.changes.every((change) => change.choiceTrace === undefined)).toBe(true);
+    expect(preserveParsed.changes.every((change) => change.evidenceStatus === undefined)).toBe(true);
+    expect(preserveParsed.changes.find((change) => change.field === 'judgment')?.decision).toBe('retained');
+    expect(preserveParsed.changes.find((change) => change.field === 'hypotheses')?.decision).toBe('retained');
   });
 
   it('sends a typed note and the same file text through one review', async () => {
