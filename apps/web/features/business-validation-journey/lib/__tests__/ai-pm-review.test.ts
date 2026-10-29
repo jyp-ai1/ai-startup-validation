@@ -649,6 +649,27 @@ describe('AI PM first review', () => {
     expect(followUpOutputContractErrors(JSON.stringify(strengthened), context)).toContain('hypothesis_strengthened');
     const untraced = { ...kept, choiceTrace: null };
     expect(followUpOutputContractErrors(JSON.stringify(untraced), context)).toContain('choice_untraced');
+    const outputCall = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-output-recorded.json', import.meta.url), 'utf8'),
+    ) as { report: { calls: Array<{ raw: string; userPrompt: string }> } };
+    const outputSent = JSON.parse(outputCall.report.calls[0]?.userPrompt ?? '{}') as typeof sent;
+    const outputContext = {
+      previousJudgment: outputSent.previousAnalysis.judgment,
+      previousHypotheses: outputSent.previousAnalysis.hypotheses,
+      previousNextVerification: outputSent.previousAnalysis.analysis.nextVerification,
+      previousNextQuestion: outputSent.previousAnalysis.nextQuestion,
+      previousRevenueModel: outputSent.previousAnalysis.revenueModel,
+      choiceLabel: outputSent.founderChoice.label,
+      supplement: outputSent.founderSupplement,
+      answerOrigin: 'synthetic-test-data' as const,
+    };
+    expect(followUpOutputContractErrors(outputCall.report.calls[0]?.raw ?? '', outputContext)).toEqual([
+      'follow_up_output_missing_changes',
+      'follow_up_output_missing_change:judgment',
+      'follow_up_output_missing_change:hypotheses',
+      'follow_up_output_missing_change:nextVerification',
+      'follow_up_output_missing_change:nextQuestion',
+    ]);
   });
 
   it('sends a typed note and the same file text through one review', async () => {

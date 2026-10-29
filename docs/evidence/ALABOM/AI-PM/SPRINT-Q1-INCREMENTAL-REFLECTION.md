@@ -1,6 +1,6 @@
 # Sprint Q1 incremental reflection
 
-제품 요청 구조 관문은 SHA `eed29780cf9b43f2f580bb003bd7c0142c053a77`에서 PASS다. 이 파일은 그 다음 실행이다. 증분 반영 기준으로는 충족되지 않았다. 문장이 달라졌다는 이유로 통과로 두지 않는다. 1차 검증 완료가 아니다. 기본값은 `quality-2`다. Production 잠금은 유지했다. 제품 2차 리뷰 경로는 호출하지 않았다.
+제품 요청 구조 관문은 SHA `eed29780cf9b43f2f580bb003bd7c0142c053a77`에서 PASS다. 이 파일은 그 다음 실행이다. 증분 반영 기준으로는 충족되지 않았다. 이후 반환 계약 재검증은 `SPRINT-Q1-INCREMENTAL-REFLECTION-OUTPUT.md`다. 그 호출도 통과가 아니다. 문장이 달라졌다는 이유로 통과로 두지 않는다. 1차 검증 완료가 아니다. 기본값은 `quality-2`다. Production 잠금은 유지했다. 제품 2차 리뷰 경로는 호출하지 않았다.
 
 ## 별도 기록
 
