@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/preview-quality-compare-once.mjs; next build",
+    "build": "sh scripts/run-web-build.sh",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",

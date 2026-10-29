@@ -93,7 +93,11 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(script).not.toContain('buildFollowUpRequest');
     expect(script).not.toContain('vitest');
     const packageJson = readFileSync(new URL('../../../../package.json', import.meta.url), 'utf8');
-    expect(packageJson).toContain('"build": "node scripts/preview-quality-compare-once.mjs; next build"');
+    expect(packageJson).toContain('"build": "sh scripts/run-web-build.sh"');
+    const buildScript = readFileSync(new URL('../../../../scripts/run-web-build.sh', import.meta.url), 'utf8');
+    expect(buildScript).toContain('node scripts/preview-quality-compare-once.mjs');
+    expect(buildScript).toContain('exec next build');
+    expect(buildScript).not.toContain('&&');
     const rootBuild = readFileSync(new URL('../../../../../../vercel.json', import.meta.url), 'utf8');
     const appBuild = readFileSync(new URL('../../../../vercel.json', import.meta.url), 'utf8');
     expect(rootBuild).toContain('"buildCommand": "pnpm --filter web build"');
