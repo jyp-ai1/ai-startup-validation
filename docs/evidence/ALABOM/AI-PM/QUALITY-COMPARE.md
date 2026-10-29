@@ -43,3 +43,5 @@
 Preview에 남아 있는 과거 OpenAI 호출은 제품 검토 라우트다. `executeQualityCompare()`가 아니고 `quality-3` 초안을 보내지 않는다. 그 경로로 대체하지 않았다.
 
 필요한 실행 환경은 위 클라우드 에이전트 환경에 `GPT_API_KEY`가 저장된 뒤 새로 부팅한 에이전트다. 그 프로세스에서 `pnpm --filter web test:ai-pm-compare`가 같은 함수를 실행한다. 제품 프롬프트와 제품 코드는 바꾸지 않았다.
+
+2026-10-29 13:13 KST. 같은 프로세스에서 `executeQualityCompare()`를 다시 호출하지 않았다. 비교 실행은 **BLOCKED**다. 필요한 권한은 클라우드 에이전트 환경 `316b619d-a743-11f1-a7d1-d6b4613131ce`의 부팅 비밀 `GPT_API_KEY`다. Preview 프로젝트 `jyp-ai1s-projects/ai-startup-validation`의 제품 서버는 그 이름으로 OpenAI 호출에 성공했지만, 그 서버는 `executeQualityCompare()`를 실행하지 않고 `quality-3-draft`를 보내지 않는다. 제품 라우트로 대체하지 않았다.
