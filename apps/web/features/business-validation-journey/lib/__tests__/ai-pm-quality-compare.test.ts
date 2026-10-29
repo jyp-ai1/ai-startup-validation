@@ -61,6 +61,7 @@ import {
   INCREMENTAL_STRUCTURE_VERSION,
   buildIncrementalStructureRequest,
   incrementalFieldDelta,
+  observeIncrementalReflection,
   incrementalStructureCoverage,
   incrementalStructureReady,
   productFollowUpStructureReport,
@@ -166,12 +167,15 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-structure-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('incremental-structure-request.json');
+    expect(script).toContain('incremental-reflection-request.json');
+    expect(script).toContain('q1-incremental-structure-2026-10-29');
+    expect(script).not.toContain('q1-incremental-structure-2026-10-29.json');
+    expect(script).not.toContain('incremental-structure-request.json');
     expect(script).not.toContain('quality-14-independent-request.json');
     expect(script).not.toContain('quality-13-independent-request.json');
     expect(script).not.toContain('quality-2-independent-request.json');
@@ -958,6 +962,76 @@ describe('quality-2 and quality-3 compare requests', () => {
     };
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(fixtureUrl, `${JSON.stringify(fixture, null, 2)}\n`);
     expect(JSON.parse(readFileSync(fixtureUrl, 'utf8'))).toEqual(fixture);
+  });
+
+  it('sends the stored product request on a separate reflection run and records field changes without a pass', () => {
+    const product = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-product-follow-up-request.json', import.meta.url), 'utf8'),
+    ) as { modelInvoked: boolean; request: { maxTokens: number; messages: Array<{ role: string; content: string }> } };
+    const fixture = JSON.parse(
+      readFileSync(new URL('../incremental-reflection-request.json', import.meta.url), 'utf8'),
+    ) as {
+      priorRunId: string;
+      analysisContract: string;
+      requests: Array<{ promptVersion: string; request: unknown }>;
+    };
+    expect(product.modelInvoked).toBe(false);
+    expect(fixture.priorRunId).toBe('q1-incremental-structure-2026-10-29');
+    expect(fixture.analysisContract).toBe('parsed-sections-1');
+    expect(fixture.requests[0]?.promptVersion).toBe('parsed-sections-1:incremental-reflection:brewery');
+    expect(fixture.requests[0]?.request).toEqual(product.request);
+    expect(product.request.maxTokens).toBe(800);
+    const user = JSON.parse(product.request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      previousAnalysis: Record<string, unknown>;
+      founderChoice: { label: string };
+      answerOrigin: string;
+    };
+    expect(user.answerOrigin).toBe('synthetic-test-data');
+    const choice = user.founderChoice.label;
+    const denied = observeIncrementalReflection({
+      previousAnalysis: user.previousAnalysis,
+      choiceLabel: choice,
+      nextRaw: JSON.stringify({
+        judgment: '체험을 먼저 보겠다는 현재 판단이 있다. 예약 고객, 가격, 계약, 확정된 양조장은 없다.',
+        hypotheses: ['가설: 체험을 먼저 검증한다는 계획은 아직 확인되지 않았다.'],
+        nextVerification: '확정된 양조장이 있는지부터 확인한다.',
+        nextQuestion: '체험을 열 양조장이 정해져 있습니까?',
+        founderFacts: user.previousAnalysis && typeof user.previousAnalysis.analysis === 'object'
+          ? (user.previousAnalysis.analysis as { founderFacts?: string[] }).founderFacts
+          : [],
+      }),
+    });
+    expect(denied.parsed).toBe(true);
+    expect(denied.defects).toEqual([]);
+    expect(denied.fields.map((field) => field.state)).toEqual(['changed', 'changed', 'changed', 'changed']);
+    const strengthened = observeIncrementalReflection({
+      previousAnalysis: user.previousAnalysis,
+      choiceLabel: choice,
+      nextRaw: JSON.stringify({
+        judgment: '체험 수요가 확인되었다.',
+        hypotheses: ['미확인'],
+        nextVerification: '체험 프로그램의 수요 검증 및 온라인 마케팅 효과 검증',
+        nextQuestion: '체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?',
+        hypothesisChange: '체험 프로그램의 수요에 대한 가설이 강화되었다.',
+        founderFacts: [choice, '예약 고객이 있다.'],
+      }),
+    });
+    expect(strengthened.defects).toEqual([
+      'hypothesis_strengthened',
+      'choice_in_founder_facts',
+      'supplement_in_founder_facts',
+      'reserved_customers_asserted',
+    ]);
+    expect(strengthened.fields.find((field) => field.field === 'hypotheses')?.state).toBe('unchanged');
+    expect(strengthened.fields.find((field) => field.field === 'nextQuestion')?.state).toBe('unchanged');
+    const shortKeys = observeIncrementalReflection({
+      previousAnalysis: user.previousAnalysis,
+      choiceLabel: choice,
+      nextRaw: JSON.stringify({ problem: '미확인', nextQuestion: '양조장이 정해져 있습니까?' }),
+    });
+    expect(shortKeys.fields.find((field) => field.field === 'judgment')?.state).toBe('absent');
+    expect(shortKeys.fields.find((field) => field.field === 'nextQuestion')?.state).toBe('changed');
+    expect(shortKeys.defects).not.toContain('pass');
   });
 
   it('fails the known brewery regressions and passes a hedged alternative', () => {

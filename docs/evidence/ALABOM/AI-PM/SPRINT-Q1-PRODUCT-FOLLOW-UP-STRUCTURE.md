@@ -1,6 +1,6 @@
 # Sprint Q1 product follow-up request
 
-제품 요청의 계약을 `parsed-sections-1`로 고정한 기록이다. 모델을 호출하지 않았다. 직접 호출 `q1-incremental-structure-2026-10-29`는 `RECORDED`로 두었고, 그 결과와 이 계약을 같은 검증으로 두지 않았다. 증분 반영은 구조 관문 승인 뒤에만 진행한다. 1차 검증 완료가 아니다. 기본값은 `quality-2`다. Production 잠금은 유지했다.
+제품 요청의 계약을 `parsed-sections-1`로 고정한 기록이다. 이 파일의 요청 객체는 모델을 호출하지 않는다. CPO는 2026-10-29 21:12 KST에 SHA `eed29780cf9b43f2f580bb003bd7c0142c053a77`의 구조 관문을 PASS했다. 직접 호출 `q1-incremental-structure-2026-10-29`는 `RECORDED`로 남고, 증분 반영 기록이 아니다. 1차 검증 완료가 아니다. 기본값은 `quality-2`다. Production 잠금은 유지했다.
 
 ## 계약
 
@@ -83,14 +83,14 @@
 | `ai-pm-quality-compare.test.ts` | 17 passed |
 | `ai-pm-quality-scenarios.test.ts` | 7 passed |
 
-2026-10-29 21:06 KST에 같은 세 파일을 `WRITE_COMPARE_FIXTURE` 없이 다시 실행했다. 43 passed. 픽스처의 `request`는 이전 객체와 같고, 추가된 칸은 `comparedKeys`다. `modelInvoked`는 false다. 로컬 `next build`는 실행하지 않았다. Preview 비교 run id는 `q1-incremental-structure-2026-10-29` 그대로다.
+2026-10-29 21:06 KST에 같은 세 파일을 `WRITE_COMPARE_FIXTURE` 없이 다시 실행했다. 43 passed. 픽스처의 `request`는 이전 객체와 같고, 추가된 칸은 `comparedKeys`다. `modelInvoked`는 false다. 로컬 `next build`는 실행하지 않았다. 그 시점의 Preview 비교 run id는 `q1-incremental-structure-2026-10-29`였다.
 
 ## 하지 않은 관문
 
 | 관문 | 상태 |
 |---|---|
-| 제품 요청 구조 | 계약 `parsed-sections-1`은 CPO가 적절하다고 보았다. 구현 확인은 `ai-pm-review.ts`의 `followUpRequestMismatches`와 위 테스트 원문이다. 구조 관문 판정은 CPO 재검토 전이다 |
-| 증분 반영 | **NOT RUN** |
+| 제품 요청 구조 | PASS. CPO 2026-10-29 21:12 KST. SHA `eed29780cf9b43f2f580bb003bd7c0142c053a77` |
+| 증분 반영 | 별도 run `q1-incremental-reflection-2026-10-29`. 이 파일의 요청 객체와 같다. 결과 기록 전 |
 | 2차 품질 | **NOT RUN** |
 | 저장·복원 | **NOT RUN** |
 | 화면 Q9·Q10 | **BLOCKED**. 2026-10-29 18:07 KST. Vercel CLI logged out. Preview `GET /workspace` HTTP 401 |

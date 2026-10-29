@@ -999,6 +999,87 @@ export function productFollowUpStructureReport(request: ChatRequest): { present:
   return { present, absent };
 }
 
+export const INCREMENTAL_REFLECTION_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'] as const;
+
+export type IncrementalReflectionFieldState = 'absent' | 'unchanged' | 'changed';
+
+export type IncrementalReflectionObservation = {
+  parsed: boolean;
+  fields: Array<{
+    field: (typeof INCREMENTAL_REFLECTION_FIELDS)[number];
+    baseline: unknown;
+    returned: unknown;
+    state: IncrementalReflectionFieldState;
+  }>;
+  /** Machine-readable defects. An empty list is not a pass. A changed sentence still needs grounds. */
+  defects: string[];
+};
+
+export function reflectionBaselineFromStoredAnalysis(previousAnalysis: Record<string, unknown>): Record<
+  (typeof INCREMENTAL_REFLECTION_FIELDS)[number],
+  unknown
+> {
+  const analysis = previousAnalysis.analysis;
+  const analysisRecord =
+    analysis && typeof analysis === 'object' && !Array.isArray(analysis) ? (analysis as Record<string, unknown>) : null;
+  return {
+    judgment: previousAnalysis.judgment ?? null,
+    hypotheses: previousAnalysis.hypotheses ?? null,
+    nextVerification: analysisRecord?.nextVerification ?? null,
+    nextQuestion: previousAnalysis.nextQuestion ?? null,
+  };
+}
+
+/**
+ * Compares the stored analysis the product request sent with the model JSON.
+ * Does not mark a field passed because its text changed.
+ */
+export function observeIncrementalReflection(input: {
+  previousAnalysis: Record<string, unknown>;
+  nextRaw: string;
+  choiceLabel: string;
+}): IncrementalReflectionObservation {
+  let next: Record<string, unknown> | null = null;
+  try {
+    const parsed = JSON.parse(input.nextRaw) as unknown;
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) next = parsed as Record<string, unknown>;
+  } catch {
+    next = null;
+  }
+  const baseline = reflectionBaselineFromStoredAnalysis(input.previousAnalysis);
+  if (!next) {
+    return {
+      parsed: false,
+      fields: INCREMENTAL_REFLECTION_FIELDS.map((field) => ({
+        field,
+        baseline: baseline[field],
+        returned: null,
+        state: 'absent',
+      })),
+      defects: ['unparsed'],
+    };
+  }
+  const fields = INCREMENTAL_REFLECTION_FIELDS.map((field) => {
+    if (!Object.hasOwn(next, field)) {
+      return { field, baseline: baseline[field], returned: null, state: 'absent' as const };
+    }
+    const returned = next[field];
+    const state = JSON.stringify(returned) === JSON.stringify(baseline[field]) ? ('unchanged' as const) : ('changed' as const);
+    return { field, baseline: baseline[field], returned, state };
+  });
+  const defects: string[] = [];
+  if (/가설[^.\n]{0,80}강화|강화되었|강화됐다/.test(input.nextRaw)) defects.push('hypothesis_strengthened');
+  const facts = Array.isArray(next.founderFacts) ? next.founderFacts.map((fact) => String(fact)) : [];
+  if (input.choiceLabel && facts.some((fact) => fact.includes(input.choiceLabel))) defects.push('choice_in_founder_facts');
+  if (/예약 고객|확정된 양조장|계약/.test(facts.join('\n'))) defects.push('supplement_in_founder_facts');
+  const asserted = JSON.stringify(next);
+  if (/예약 고객(?:이|은)?\s*(?:있|확보|확정)/.test(asserted)) defects.push('reserved_customers_asserted');
+  if (/계약(?:이|을)?\s*(?:체결|완료|있다)/.test(asserted)) defects.push('contract_asserted');
+  if (/양조장(?:이|은)?\s*확정/.test(asserted)) defects.push('brewery_confirmed');
+  if (/가격은\s*[0-9]/.test(asserted)) defects.push('price_asserted');
+  return { parsed: true, fields, defects };
+}
+
 /** Structural difference only. Not a quality score and not an incremental-reflection pass. */
 export function incrementalFieldDelta(
   previousRaw: string,

@@ -1,20 +1,22 @@
 /**
- * One incremental-structure call. The founder answer in the fixture is synthetic test data.
+ * One incremental-reflection call of the frozen product follow-up request.
+ * The founder answer in the fixture is synthetic test data.
  * Production builds return immediately. The product second-review route is not called.
- * Requests come from the frozen JSON checked against the builder. Results go to a
- * private Supabase bucket. Credentials are not written to the report or the log.
+ * The earlier structure object stays stored under its own run id and is not read or rewritten.
+ * Credentials are not written to the report or the log.
  */
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-structure-2026-10-29';
+export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-2026-10-29';
+export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-structure-2026-10-29';
 export const PREVIEW_COMPARE_BUCKET = 'ai-pm-quality-compare';
 export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(scriptDir, '..');
-const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-structure-request.json');
+const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-request.json');
 
 export function shouldRunPreviewQualityCompare(env) {
   return env.VERCEL_ENV === 'preview' && Boolean(env.VERCEL_GIT_COMMIT_REF) && env.VERCEL_GIT_COMMIT_REF !== 'main';
@@ -210,10 +212,15 @@ async function main() {
 
   const startedAt = new Date().toISOString();
   const fixture = JSON.parse(readFileSync(fixturePath, 'utf8'));
+  const request = fixture.requests?.[0]?.request;
+  if (!request?.messages || !Array.isArray(fixture.requests)) {
+    throw new Error('reflection_fixture_invalid');
+  }
   const apiKey = process.env.GPT_API_KEY?.trim() || '';
   console.log(`preview-quality-compare start run=${PREVIEW_COMPARE_RUN_ID} gpt_key=${apiKey ? 'present' : 'absent'}`);
   await writeStored(config, {
     runId: PREVIEW_COMPARE_RUN_ID,
+    priorRunId: PREVIEW_COMPARE_PRIOR_RUN_ID,
     status: 'started',
     startedAt,
     gitSha: process.env.VERCEL_GIT_COMMIT_SHA ?? null,
@@ -246,8 +253,10 @@ async function main() {
   }
 
   const status = apiKey ? 'RECORDED' : 'NOT RUN';
+  const maxTokens = request.maxTokens ?? null;
   await writeStored(config, {
     runId: PREVIEW_COMPARE_RUN_ID,
+    priorRunId: PREVIEW_COMPARE_PRIOR_RUN_ID,
     status,
     startedAt,
     finishedAt: new Date().toISOString(),
@@ -255,22 +264,24 @@ async function main() {
     gitRef: process.env.VERCEL_GIT_COMMIT_REF ?? null,
     error: apiKey ? null : 'GPT_API_KEY missing',
     productFollowUpInvoked: false,
-    model: 'gpt-4o-mini',
-    temperature: 0.2,
-    maxTokens: 2400,
+    reflectionScored: false,
+    model: request.model ?? 'gpt-4o-mini',
+    temperature: request.temperature ?? 0.2,
+    maxTokens,
     responseFormat: 'json_object',
     businessInput: fixture.businessInput,
     confounders: fixture.confounders,
     report: {
       status,
       reason: apiKey ? null : 'GPT_API_KEY missing',
-      model: 'gpt-4o-mini',
-      temperature: 0.2,
-      maxTokens: 2400,
+      model: request.model ?? 'gpt-4o-mini',
+      temperature: request.temperature ?? 0.2,
+      maxTokens,
       responseFormat: 'json_object',
       businessInput: fixture.businessInput,
       confounders: fixture.confounders,
       productFollowUpInvoked: false,
+      reflectionScored: false,
       calls,
     },
   });
