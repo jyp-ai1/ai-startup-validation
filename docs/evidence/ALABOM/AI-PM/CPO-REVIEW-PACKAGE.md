@@ -911,3 +911,11 @@ CPO는 1차 게이트 FAIL을 유지했다. 이번 실행은 프롬프트를 바
 | 양조장 1차 모델 호출 | **NOT RUN** |
 | 응답 품질, 저장, 복원, A/B | **NOT RUN** |
 | 1차 게이트 | **FAIL 유지** |
+
+## 33. 2026-10-29 11:59 KST 질의 품질 시나리오
+
+화면 검증 대신 양조장 답변 8개의 채점 규칙을 코드로 넣었다. 코드 커밋은 `6b9994a4341dcaca732bded614f9180c0b1e4251`다. 최초 프롬프트 버전은 `quality-2`, 시나리오 시뮬레이션 버전은 `scenario-sim-1`이다. 시뮬레이션 요청은 제품 follow-up과 다른 함수다. 이 테스트는 `POST /api/ai-pm-review/follow-up`을 호출하지 않았다.
+
+실제 모델 호출은 **NOT RUN**이다. 이 실행에 `GPT_API_KEY`가 없다. 단위 테스트는 사람이 적은 문장을 채점하며, 그 통과를 모델 품질 통과로 두지 않는다. 기록은 `docs/evidence/ALABOM/AI-PM/QUALITY-SCENARIOS.md`다.
+
+1차 게이트는 **FAIL**이다. Production 잠금과 PR #209 미병합은 유지한다.
