@@ -502,3 +502,450 @@ OpenRouter 최근 1개월 사용량 `$0.00`, Requests `0`은 이 코드 경로�
 | 후속 답변으로 질문이 바뀜 | **PASS** |
 | 브라우저에서 연 화면 | **없음** |
 | 전체 데이터 경로 | **기록함** |
+
+## 19. 2026-10-28 17:16 KST 한 화면 흐름
+
+문서가 있는 워크스페이스 본문은 규칙 판단, 이해 카드, 요약을 같이 두지 않는다. 스크립트 샘플 재생이 아닐 때 본문은 AI PM 검토 하나만 둔다. 순서는 결과 확인, 피드백, 수정된 판단, 다음 검증이다. 피드백 저장은 모델 호출이 아니다.
+
+로그인 전 데모는 `입력 원문 · 모델 검토 전`이다. 미확인 가설을 만들지 않고, 규칙 질문 문장을 보여 주지 않는다. 선택값은 이 브라우저에만 남는다.
+
+로그인한 세션에서 문서가 저장된 검토 입력과 같으면 `모델이 작성한 검토`로 표시한다. 선택값은 그 검토 행에 저장하고, 수정 화면은 그 선택을 제품 로직으로 반영한다. 다음 질문이 모델 질문이면 답을 보낼 때만 기존 후속 호출 한 번이 있다.
+
+로컬 `http://127.0.0.1:3000` 확인:
+
+| 항목 | 판정 |
+|---|---|
+| 로그인 전 데모, 규칙 표면 없음, 브라우저 저장, 답 반영 | **PASS** — 모델 호출 없음 |
+| QA 세션이 저장 검토를 연 화면 | **PASS** — `data-result-source=model-review`, 규칙 표면 0 |
+| 피드백 계정 저장 | **PASS** — `61e5a6ff-fd88-4a8f-bff1-f532e4e1ab8b`, 검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`, `marks` `evidence_unclear`, `modelCalls` 0. 시각 2026-10-28 17:16 KST |
+| 다음 질문 | **PASS** — 저장 행의 질문. 답 제출은 누르지 않음 |
+| QA 세션으로 주인집 13 | **열리지 않음** — `project_not_owned` 로 `/workspace` 이동 |
+| 이 커밋의 Preview SHA | **아직 아님** — 푸시 뒤 `/api/build-info` 를 다시 읽기 전 |
+
+## 20. 2026-10-28 18:26 KST Preview SHA와 저장 피드백
+
+`8382703667f1502442beeb72a0fe061ec59abb71`의 Preview는 배포되지 않았다. Vercel 상태 시각 2026-10-28 17:21 KST, 배포 `dpl_28e9sczgrsrGHqn81MbUB7gtG3EU`, 상태 failure. 로컬 `next build`는 `ai-pm-review-panel.tsx`가 `ReviewMark`를 가져오지만 그 모듈이 타입을 내보내지 않아 실패했다. 그 커밋을 실행 SHA로 두지 않는다.
+
+수정 커밋 `677dda3857cf045adc3af2f43c68f30c3ec996eb`은 타입을 내보내고, 같은 검토를 다시 열 때 계정에 저장된 마지막 선택값을 수정 화면에 되돌린다. 모델 호출은 없다. GitHub Vercel 상태는 2026-10-28 18:16 KST에 완료였다.
+
+실행 URL: `https://ai-startup-validation-git-cursor-ai-pm-62f67e-jyp-ai1s-projects.vercel.app`
+
+`/api/build-info`는 우회 헤더로 HTTP 200 `application/json`이었다. 헤더 값은 적지 않는다. `commit`은 `677dda3857cf045adc3af2f43c68f30c3ec996eb`, `branch`는 `cursor/ai-pm-single-flow-4b88`이다. 응답의 `environment` 값 `production`은 `NODE_ENV`다. `deployTime` 필드는 `2026-10-28T09:19:57.504Z`(18:19 KST)이고, `VERCEL_DEPLOYMENT_CREATED_AT`가 없으면 요청 시각이다. `83827036`과 일치하지 않는다.
+
+세션은 QA magic-link `cto-qa@launchlens.dev`다. CEO Google 로그인이 아니다. 모델 검토 POST와 후속 POST는 호출하지 않았다. `AI PM 1차 검토`와 `이 답으로 다음 검증`은 누르지 않았다.
+
+QA 사용자 프로젝트 169개의 붙여넣은 내용, 워크스페이스 문서, 요약을 저장 검토 입력(sha256 앞 12자 `41f6a59ed84d`, 정규화 길이 186)과 비교했다. 일치하는 필드는 없다. 연 프로젝트는 `33dc7045-6a8d-48ca-940e-2ba499b1027a`, 제목 가사 도우미 중개. HTTP 200. `data-result-source=input-only`, `data-step=result`. 저장 질문 `양조장 두 곳에 안내 비용을 제안한 적이 없는데`는 화면에 없었다. 양조장 검토는 붙지 않았다. 주인집 13 `e341ba90-a16c-4213-9888-3a2e4d59f727`은 열지 않았다.
+
+저장 검토가 보이는 경로는 데모 문서 주입이다. URL `/workspace?demo=guided&sample=custom&fresh=1`, 프로젝트 id `demo-my-qa-preview-3b13`. 세션 저장소에 저장 검토 입력 186자를 넣었다. 소유 프로젝트가 아니다. 로드 후 `data-result-source=model-review`, `data-step=result`. 이전 계정 선택 `evidence_unclear`를 해제하고 `understanding_wrong`, `core_missing`을 저장했다.
+
+저장 직후 `data-step=revised`. 화면에 `오류로 표시`, `빠진 핵심`, `이 검토 버전에 저장했습니다. 모델 호출은 없습니다.`가 있었다. 같은 URL을 다시 열고 문서를 다시 넣은 뒤 `data-result-source=model-review`, `data-step=result`. 두 문장이 남아 있었고 메시지는 `저장된 피드백을 다시 열었습니다. 모델 호출은 없습니다.`였다.
+
+`GET /api/ai-pm-review` HTTP 200. 검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`, status `ready`. 새 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`, 시각 2026-10-28 18:26 KST, marks `understanding_wrong`, `core_missing`. 저장 행 `modelCalls` 0. 이전 행 `61e5a6ff-fd88-4a8f-bff1-f532e4e1ab8b`, `e9957bb1-92d2-4d31-92f1-cc2289bfc9eb`는 `evidence_unclear`로 남아 있다.
+
+이후 모델 검토가 이 수정을 유지하는지는 확인하지 않았다. 모델 호출을 하지 않았다. 같은 검토를 다시 열 때 선택과 수정 문장이 남는 것까지만 확인했다.
+
+Production 잠금 `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`와 PR #207, #208, #209 미병합은 유지했다. Production 호스트는 호출하지 않았다.
+
+| 항목 | 판정 |
+|---|---|
+| `83827036`과 `/api/build-info` 일치 | **FAIL** — 그 커밋은 배포 실패. 실행 SHA는 `677dda38` |
+| 실행 Preview SHA | **PASS** — URL 위, commit `677dda3857cf045adc3af2f43c68f30c3ec996eb` |
+| 소유 프로젝트에 저장 검토 연결 | **BLOCKED** — 일치 문서 없음. 가사 도우미 중개는 입력 원문 |
+| 틀림·핵심 누락 저장, 재조회, 다시 열기 | **PASS** — 데모 문서 주입. 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`, `modelCalls` 0 |
+| 이후 모델 검토가 수정을 유지 | **하지 않음** — 모델 호출 없음 |
+| Production 배포 | **잠금 유지** |
+
+## 21. 2026-10-28 18:56 KST 소유 프로젝트와 저장 검토
+
+검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`에는 프로젝트 ID 컬럼이 없다. `ai_pm_reviews`의 연결 키는 `user_id`와 `input_sha`다. `record_json` 키에도 project가 없다. `input_origin`은 `typed`다. `input_sha`는 `41f6a59ed84d6dc63e791c4043668ac7e80eed269a42dd28de36865ef87dee47`이고, 정규화한 입력 길이는 186이다. 같은 입력의 검토 1~5버전은 모두 사용자 `37d541c8-fda7-4788-8ac2-1a449b00425c`다. 이 사용자는 QA magic-link `cto-qa@launchlens.dev`다. 피드백 세 행도 같은 사용자다.
+
+프로젝트 전체는 230개다. `summary`가 그 입력과 같은 프로젝트는 9개다. 주인집4, 주인집5, 주인집 6, 주인집 7, 주인집10, 주인집11 `e719bc33-e35b-40d9-9494-167e603a338e`, 주인집12, 주인집 13 `e341ba90-a16c-4213-9888-3a2e4d59f727`, 주인집 14. 소유자는 `8b023d94-dd5f-4cad-bd7e-76b6fbdf0674`다. Google 로그인 계정이고 QA 계정이 아니다. 문서 ID는 따로 없다. 문서 문자열은 `onboarding_context.v2Demo.pastedContent`와 `onboarding_context.v2Workspace.documentText`다.
+
+주인집 13의 요약은 검토 입력과 같다. 화면이 읽는 문서는 `프로젝트 이름: 주인집 13`과 `사업 설명:`이 앞에 붙은 210자다. 그 사업 설명 본문은 검토 입력과 같다. 원문 전체를 그대로 비교하면 끊긴다. 본문을 비교하면 같다. 검토 사용자와 프로젝트 소유자가 다르므로 QA 세션은 이 프로젝트를 열 수 없다. 이 검토 행을 Google 계정으로 옮기지 않았다.
+
+검토 사용자 소유의 프로젝트 `3a5fc4a0-2e90-45e6-8370-350beda67342`, 제목 양조장 체험 연결을 2026-10-28 18:43 KST에 저장했다. `is_demo`는 false다. 문서 형태는 주인집 13과 같다. 원문 sha256 앞 12자는 `61f7f83ac891`이고, 사업 설명 본문 sha256 앞 12자는 `41f6a59ed84d`다. 세션 저장소에 문서를 넣지 않았다.
+
+화면 비교는 사업 설명 본문을 쓴다. 실행 URL은 `https://ai-startup-validation-git-cursor-ai-pm-62f67e-jyp-ai1s-projects.vercel.app/workspace?project=3a5fc4a0-2e90-45e6-8370-350beda67342`다. `/api/build-info`는 HTTP 200 JSON이고 commit은 `f0a2a935e9fca08bf40f534d70b897e0f5ef526c`, branch는 `cursor/ai-pm-single-flow-4b88`이다. GitHub Vercel 완료 시각은 2026-10-28 18:56 KST다. `d6fd03b4`에서는 첫 화면의 수정 문장이 새로고침 뒤에 사라졌다. 그 SHA를 최종 실행으로 두지 않는다.
+
+QA 세션으로 연 결과, `data-result-source=model-review`, `data-step=result`. `오류로 표시`와 `빠진 핵심`이 보였고 메시지는 `저장된 피드백을 다시 열었습니다. 모델 호출은 없습니다.`였다. 같은 URL을 한 번 새로고침한 뒤에도 두 문장이 남았다. `AI PM 1차 검토`와 `이 답으로 다음 검증`은 누르지 않았다. 모델 호출은 없다.
+
+`GET /api/ai-pm-review`는 검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`, status `ready`다. 최신 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`, marks `understanding_wrong`, `core_missing`, 저장 행 `modelCalls` 0.
+
+이후 모델 검토가 이 수정을 유지하는지는 호출하지 않아 미검증이다. Production 잠금과 PR #207, #208, #209 미병합은 유지했다. `83827036`은 배포된 SHA가 아니다.
+
+| 항목 | 판정 |
+|---|---|
+| 검토 행의 연결 키 | **기록** — 프로젝트 ID 없음. 사용자 `37d541c8-fda7-4788-8ac2-1a449b00425c`, 입력 sha `41f6a59ed84d` |
+| 주인집 문서 본문 | **같음** — 소유자 `8b023d94-dd5f-4cad-bd7e-76b6fbdf0674`. 화면 원문은 제목 줄이 붙어 다름 |
+| 실행 SHA | **PASS** — `f0a2a935e9fca08bf40f534d70b897e0f5ef526c` |
+| 소유 프로젝트에서 저장 검토 | **PASS** — `3a5fc4a0-2e90-45e6-8370-350beda67342`, `model-review` |
+| 저장 피드백 복원과 새로고침 | **PASS** — `understanding_wrong`, `core_missing`, `modelCalls` 0 |
+| 수정 반영 후속 모델 검토 | **미검증** |
+| Production | **잠금 유지** |
+
+## 22. 2026-10-28 19:10 KST 후속 검토 1회
+
+기준선은 소유 프로젝트 연결 게이트의 Preview SHA `f0a2a935e9fca08bf40f534d70b897e0f5ef526c`, 프로젝트 `3a5fc4a0-2e90-45e6-8370-350beda67342`, 검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`, 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`다. 그 피드백의 marks는 `understanding_wrong`, `core_missing`이고 `modelCalls`는 0이다. 댓글은 `사업 이해가 틀림, 핵심 내용이 빠짐`이다. 대표가 적은 대체 사실은 없다.
+
+`f0a2a935`의 후속 요청에는 선택값과 매핑된 동의 필드가 있고, 수정 화면 문장 `오류로 표시`와 `빠진 핵심`은 없다. 그 문장을 요청에 넣는 커밋은 `6b485ac396c5306177ced9050bc8ef0894ca9094`다. GitHub 커밋 status `Vercel`은 success, 설명은 `Deployment has completed`, 시각은 2026-10-28 19:09 KST다. 대상은 `https://vercel.com/jyp-ai1s-projects/ai-startup-validation/24ViCL6V6aCscPf2oWCzL6Spxa3A`다. PR #209의 Vercel 댓글 `updated_at`도 같은 시각이고 `nextCommitStatus`는 `DEPLOYED`다. Preview 별칭은 `https://ai-startup-validation-git-cursor-ai-pm-62f67e-jyp-ai1s-projects.vercel.app`다.
+
+이 환경에서 인증 없는 `GET /api/build-info`는 HTTP 401 `Protected by Vercel Authentication`이다. 앱 JSON의 commit 필드는 이번 기록에서 다시 읽지 않았다. 저장 행의 `finished_at`은 배포 완료 기록보다 뒤다.
+
+후속 행은 `e31d62a4-0870-4cce-b655-9080a174ffc5`다. 부모는 5버전 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`이고, 5버전의 자식은 이 행 하나다. `source_feedback_id`는 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`다. `supplement_sha`는 `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`이고, 이는 빈 문자열의 sha256이다. status `succeeded`. evidence `live_network`. error는 없다. provider `openai`. model `gpt-4o-mini-2024-07-18`. `callCount` 1. prompt 659, completion 175, total 834. `finished_at` `2026-10-28T10:10:21.693Z`(19:10 KST). 사용자 앞 8자는 `37d541c8`다. 검토 행에는 프로젝트 ID가 없다. 입력 sha 앞 12자는 `41f6a59ed84d`다. 두 번째 후속 행은 없다. 와이어 HTTP 본문은 행에 저장되지 않는다.
+
+요청 입력은 그 커밋의 `buildFollowUpRequest`를 저장된 5버전 섹션과 위 피드백, 빈 supplement에 적용한 재구성이다. 시스템 문장은 `당신은 ALABOM의 AI PM이다. 입력에 없는 가격, 인원, 매출, 시장 규모는 만들지 않는다. JSON 객체만 반환한다. 키는 problem, target_customer, solution, business_model, validation_metric, nextQuestion 이다. nextQuestion은 이 입력에서 창업자가 답해야 판단이 바뀌는 질문 하나다. 질문 목록의 문장을 복사하지 않는다. 모델 이름이나 공급사 이름은 쓰지 않는다.`다. 사용자 문장은 이전 검토 JSON, 이전 다음 질문, 피드백 JSON, 아래 수정 문장, `추가 사실: (없음)`, 키 목록이다. 원문 사업 계획 전문은 들어가지 않는다. 수정 문장은 다음이다.
+
+```text
+수정된 사업 이해:
+사업 이해는 오류로 표시되었습니다. 이 문장을 확인된 사실로 두지 않습니다.
+빠진 핵심은 다음 검증에서 받습니다.
+오류로 표시된 이전 문장은 확인된 사실로 반복하지 않는다.
+빠진 핵심은 입력에 없으면 만들지 않고 다음 질문으로 받는다.
+```
+
+피드백 JSON의 marks는 `understanding_wrong`, `core_missing`이다. agreement `disagree`, accuracy `misstated`, revisionAreas `problem`, nextAction `verify_hypotheses`. 입력 예산 3000 안에서 OpenAI prompt 토큰은 659라 사용자 문장이 잘렸을 근거는 없다.
+
+모델 응답 `rawContent`는 다음이고, `nextQuestion`은 그 안에 있다.
+
+```json
+{"problem":"관광객들이 전통주 체험을 제공하는 양조장에 대한 정보와 접근성이 부족하다.","target_customer":"전통주를 좋아하는 내국인 및 외국인 관광객.","solution":"양조장 체험 프로그램을 제공하고, 이를 통해 관광객이 직접 전통주를 만들고 즐길 수 있도록 안내하며, 주변 관광명소도 함께 소개하는 서비스.","business_model":"양조장 체험 프로그램 참가비 및 온라인 마케팅 지원을 통한 수익 창출.","validation_metric":"프로그램 참가자 수 및 고객 만족도 조사 결과.","nextQuestion":"양조장 두 곳에 안내 비용을 제안한 적이 없는데, 어떻게 파트너십을 구축할 계획인가?"}
+```
+
+5버전 판단은 개인별 경험, 양조장 정보와 접근성 부족, 같은 고객, 참가비와 온라인 마케팅 수익이다. 5버전 다음 질문은 `양조장 두 곳에 안내 비용을 제안한 적이 없는데, 어떻게 파트너십을 구축할 계획인가?`다.
+
+6버전 problem과 judgment에서는 `개인별 다양한 경험을 중시하지만`이 빠졌다. 접근성 부족, 고객, 수익 가설, execution, market, nextQuestion, nextQuestionReason은 5버전과 같다. 오류로 표시된 이해를 확인된 사실에서 빼지 않았다. 빠진 핵심을 묻는 질문으로 바뀌지 않았다. 화면에 선택값이 남아 있는 것으로 통과로 두지 않는다.
+
+같은 사용자가 같은 입력을 여러 프로젝트에 저장하는 회귀는 이 기록에 없다.
+
+| 항목 | 판정 |
+|---|---|
+| 기준선 SHA `f0a2a935` | **고정** — 소유 프로젝트 연결 게이트의 실행 SHA |
+| 수정 문장을 넣은 커밋의 배포 기록 | **기록** — `6b485ac3`, Vercel 완료 19:09 KST. 이번 턴의 `/api/build-info` JSON은 401이라 미확인 |
+| 수정 문장이 요청 재구성에 포함 | **PASS** — 위 네 문장과 marks. 와이어 원문은 행에 없음 |
+| 호출 1회, 모델과 토큰 | **PASS** — `gpt-4o-mini-2024-07-18`, 659/175/834, `callCount` 1, 자식 행 1개 |
+| 프로젝트 ID | **기록** — `3a5fc4a0-2e90-45e6-8370-350beda67342`. 검토 행 자체에는 없음 |
+| 잘못 이해한 내용이 수정됨 | **FAIL** — 접근성 부족, 고객, 수익 가설이 판단으로 남음 |
+| 누락된 핵심이 보완됨 | **FAIL** — 다음 질문이 5버전과 같음 |
+| 후속 검토 게이트 | **BLOCKED** |
+| Production | **잠금 유지** |
+
+## 23. 2026-10-28 19:45 KST 비교 게이트와 후속 1회
+
+`understanding_wrong`은 문제, 고객, 수익 문장을 지우지 않고 재확인 대상으로 남긴다. 그 문장을 확정된 사실로 반복하면 통과하지 않는다. `core_missing`은 다음 질문이 이전 질문과 다르고 `빠진 핵심`을 묻게 한다. 그 공백을 새 주장으로 채우면 통과하지 않는다. 요청은 `originalInput`, `previousReview`, `feedback`, `supplement`, `revision`을 한 JSON의 별도 필드로 보낸다. 모델은 `gpt-4o-mini`, 입력 3000, 출력 800이다.
+
+회귀 테스트는 검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`의 문장과 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`의 두 표시를 쓴다. 6버전 응답은 `confirmed_reuse`, `question_unchanged`, `missing_core_not_asked`로 거절된다. 재확인 문구와 `이 검토에서 빠진 핵심은 무엇입니까?`는 통과한다. 거절된 응답은 같은 피드백과 빈 보충으로 다시 호출되지 않는다. `pnpm exec vitest run`으로 이 파일과 표시 파일, 15개가 통과했다.
+
+실행 SHA는 `ccca30c3e82d546c114bfe200c192d81df605a5a`다. `/api/build-info`는 HTTP 200 JSON, commit 그 값, branch `cursor/ai-pm-single-flow-4b88`이다. 그 다음에 `POST /api/ai-pm-review/follow-up` 1회. 본문은 `reviewId` `8602a92e-0fbd-4d93-a005-9c9f18410ac6`, `supplement` 빈 문자열. HTTP 200. `reused` false. 응답 `revision.pass` false. `sections`는 null이다.
+
+저장 행 `62b5588c-0d11-42c8-8fac-d24d25dc4f20`. version 7. status `failed`. 부모 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`. `source_feedback_id` `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`. `finished_at` `2026-10-28T10:45:41.6+00:00`(19:45 KST). provider `openai`. model `gpt-4o-mini-2024-07-18`. `callCount` 1. prompt 797, completion 192, total 989. error `revision_gate`. 5버전의 자식은 6버전과 이 7버전, 둘이다. 6버전 행은 그대로다.
+
+모델 응답 `rawContent`는 다음이다.
+
+```json
+{"problem":"재확인 대상: 관광객들이 개인별 다양한 경험을 중시하지만, 전통주 체험을 제공하는 양조장에 대한 정보와 접근성이 부족하다. 이 해석은 확정된 사실이 아니다.","target_customer":"전통주를 좋아하는 내국인 및 외국인 관광객.","solution":"양조장 체험 프로그램을 제공하고, 이를 통해 관광객이 직접 전통주를 만들고 즐길 수 있도록 안내하며, 주변 관광명소도 함께 소개하는 서비스.","business_model":"양조장 체험 프로그램 참가비 및 온라인 마케팅 지원을 통한 수익 창출.","validation_metric":"프로그램 참가자 수 및 고객 만족도 조사 결과.","nextQuestion":"어떤 방식으로 양조장과의 파트너십을 구체화할 계획인가?"}
+```
+
+문제 문장은 재확인 대상으로 남았다. 고객과 수익 가설은 5버전과 같은 확정 문장이다. 다음 질문은 5버전과 다르지만 `빠진 핵심`을 묻지 않는다. 비교 결과 `failures`는 `confirmed_reuse`, `missing_core_not_asked`다. 저장 요약은 `표시한 오해가 확정된 사실로 다시 남았습니다. 다음 질문이 빠진 핵심을 묻지 않습니다. 이 후속 검토는 반영하지 않았습니다.` HTTP `revision.summary`와 같다. 이 행은 준비된 검토가 아니다. 추가 호출은 하지 않았다.
+
+프로젝트 `3a5fc4a0-2e90-45e6-8370-350beda67342`. 검토 행에는 프로젝트 ID가 없다.
+
+| 항목 | 판정 |
+|---|---|
+| 실행 SHA | **기록** — `ccca30c3e82d546c114bfe200c192d81df605a5a`, build-info HTTP 200 |
+| 구조화된 요청과 비교 게이트 | **기록** — 거절된 응답은 준비된 검토가 아님 |
+| 회귀 테스트 | **PASS** — 6버전 문장 거절, 재확인 형태 통과, 재호출 없음. 테스트 15개 |
+| 후속 호출 1회 | **PASS** — `62b5588c-0d11-42c8-8fac-d24d25dc4f20`, `gpt-4o-mini-2024-07-18`, 797/192/989, `callCount` 1 |
+| 잘못 이해한 내용을 확정 사실로 반복하지 않음 | **FAIL** — 고객, 수익 가설이 5버전과 같음 |
+| 빠진 핵심을 다음 질문이 확인 | **FAIL** — `어떤 방식으로 양조장과의 파트너십을 구체화할 계획인가?` |
+| 저장 근거와 응답 일치 | **기록** — 행의 `revisionGate.summary`와 HTTP `revision.summary`가 같음 |
+| 후속 검토 게이트 | **BLOCKED** |
+| Production | **잠금 유지** |
+
+## 24. 2026-10-28 23:08 KST 문장 상태와 질문 의미
+
+비교 게이트는 유지한다. 이번 수정은 모델 호출이 아니다. 7버전 `62b5588c-0d11-42c8-8fac-d24d25dc4f20`은 `failed`로 둔다. 6버전 `e31d62a4-0870-4cce-b655-9080a174ffc5`는 덮어쓰지 않는다. 같은 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`와 빈 보충으로는 다시 호출하지 않는다.
+
+`understanding_wrong`은 문제, 고객, 수익 가설을 재확인 대상으로 본다. 가설을 담은 문장 자체가 확인 전이어야 한다. 문장을 그대로 두면 확정 사실이다. 다음 문장에만 재확인 문구를 붙여도 확정 사실이다. 그 가설을 지우면 실패다. 해결과 검증 문장은 삭제 대상이 아니고, 비우면 실패다.
+
+`core_missing`의 다음 질문은 누락된 핵심이 무엇인지 묻는다. `어떤 방식으로 양조장과의 파트너십을 구체화할 계획인가?`는 실패다. `빠진 핵심을 담아 파트너십을 어떻게 구축할 계획인가?`도 실패다.
+
+회귀는 검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`의 문장으로 돌렸다. 6버전 문장, 7버전 문장, 뒷문장에만 붙인 재확인, 파트너십 질문, 가설 삭제는 모두 거절된다. 세 가설을 같은 문장에서 확인 전으로 두고 `이 검토에서 빠진 핵심은 무엇입니까?`를 물은 형태만 비교를 통과한다. 그 형태는 테스트 입력이고 저장된 모델 응답이 아니다. `pnpm exec vitest run`으로 검토 파일과 표시 파일, 15개가 통과했다. 이 통과는 제품 사례의 실패를 상쇄하지 않는다.
+
+화면의 해석 제목은 문제, 고객, 수익 문장의 확인 전 표시와 같은 조건을 쓴다. 인증된 작업 공간은 다시 열지 않았다. 실패 행은 섹션을 보여 주지 않는다.
+
+이 기록의 커밋은 `/api/build-info`로 읽은 실행 SHA가 아니다. 마지막으로 읽은 실행 SHA는 `ccca30c3e82d546c114bfe200c192d81df605a5a`다. 모델과 토큰 한도는 `gpt-4o-mini`, 3000, 800이다.
+
+| 항목 | 판정 |
+|---|---|
+| 추가 모델 호출 | **없음** — 7버전 실패를 유지 |
+| 6버전 보존 | **유지** — `e31d62a4-0870-4cce-b655-9080a174ffc5` |
+| 고객·수익 가설을 확정 사실로 재사용 | **거절** — 기존 7버전 문장과 뒷문장 표식 |
+| 다음 질문이 누락된 핵심을 묻지 않음 | **거절** — 파트너십 계획 질문 |
+| 회귀 15개 | **기록** — 실패 재현. 제품 통과가 아님 |
+| 후속 검토 게이트 | **BLOCKED** |
+| Production | **잠금 유지** — `0b465226516e1a4f3eb9ce2087f8bca2c2c091da` |
+
+## 25. 2026-10-28 23:25 KST 확인 상태 필드
+
+후속 검토 게이트는 **BLOCKED**다. 이 절은 모델 호출이 아니다. 7버전 `62b5588c-0d11-42c8-8fac-d24d25dc4f20`은 `failed`로 둔다. 6버전 `e31d62a4-0870-4cce-b655-9080a174ffc5`는 덮어쓰지 않는다. 같은 피드백과 빈 보충은 다시 보내지 않는다. 실패로 저장된 검토는 화면 섹션을 받지 않는다.
+
+`understanding_wrong`의 응답은 `confirmation.problem`, `confirmation.target_customer`, `confirmation.business_model`을 가진다. 요구 값은 `unconfirmed`다. 값이 없으면 `confirmation_unset`이다. 값이 `confirmed`이면 `confirmed_reuse`다. 값이 `unconfirmed`여도 그 가설을 담은 문장이 확정 사실이면 `confirmed_reuse`다. 문장 표식만 있고 `confirmation`이 없으면 통과하지 않는다.
+
+`core_missing`은 질문 의미로 본다. 파트너십 질문은 거절한다. 누락된 핵심을 묻는 질문과 세 상태 `unconfirmed`, 그리고 확인 전 문장이 함께 있을 때만 비교가 통과한다. 그 형태는 테스트 픽스처다. 저장된 모델 응답이 아니다.
+
+회귀는 검토 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`의 6버전 문장, 7버전 문장, 뒷문장 표식, 파트너십 질문, 가설 삭제, 상태 없는 재확인 문장, 확정 문장에 `unconfirmed`를 붙인 응답, `confirmed`로 저장한 응답을 거절한다. 실패 뷰의 JSON에는 거절된 고객 문장이 없다. 픽스처가 통과하면 화면 모델은 문제, 고객, 수익을 각각 `확인 전`으로 읽는다. `pnpm exec vitest run`으로 검토 파일과 표시 파일, 15개가 통과했다. 유효한 저장 응답은 0개다. 이 통과는 제품 완성이 아니다.
+
+인증된 작업 화면은 열지 않았다. 통과한 저장 행이 없어서 실행 SHA의 화면 검증은 없다. 마지막으로 `/api/build-info`로 읽은 실행 SHA는 `ccca30c3e82d546c114bfe200c192d81df605a5a`다. `a16537b6`은 그 전의 문장 비교 규칙이다. 이 절의 커밋도 실행 SHA가 아니다.
+
+| 항목 | 판정 |
+|---|---|
+| 추가 모델 호출 | **없음** |
+| 6버전 보존과 실패 행 미노출 | **유지** |
+| 확인 상태 필드 | **기록** — 픽스처에서만 `unconfirmed` |
+| 유효한 저장 응답 | **0** |
+| 실행 SHA 화면 검증 | **없음** |
+| 후속 검토 게이트 | **BLOCKED** |
+| Production | **잠금 유지** — `0b465226516e1a4f3eb9ce2087f8bca2c2c091da` |
+
+## 26. 2026-10-28 23:45 KST 1차 검토 실행 경로
+
+범위는 ALABOM의 1차 최초 AI 사업성 검토다. 2차 후속 검토는 호출하지 않았고, 확인 상태 규칙을 바꾸지 않았다. 실패한 행을 성공으로 바꾸지 않았다.
+
+코드 경로는 다음이다. 워크스페이스 화면은 인증 사용자의 소유 프로젝트만 연다. 소유가 아니면 `/workspace`로 보낸다. 사업 본문이 8자 이상이고 데모 재생이 아니면 `AiPmReviewPanel`이 `POST /api/ai-pm-review`와 `GET /api/ai-pm-review`를 쓴다. 저장 테이블 `ai_pm_reviews`에는 워크스페이스 ID 열이 없다. 행은 `user_id`와 `input_sha`로 남고, 화면은 프로젝트 문서의 사업 설명과 그 해시를 맞춘다. 다른 사용자의 행은 조회 조건에 들어가지 않는다.
+
+이번 실행의 환경에는 `GPT_API_KEY`가 없다. 모델 호출은 하지 않았다. Preview `/api/build-info`는 인증 없이 HTTP 302였고, 실행 SHA는 읽지 못했다. 로컬 커밋 `a7dabe2f`는 실행 SHA가 아니다.
+
+저장된 1차 성공 행은 `0a13c604-9931-40c5-88a5-80f06687fd5a`, version 4, status `succeeded`다. 사용자 `37d541c8-fda7-4788-8ac2-1a449b00425c`. 프로젝트 `3a5fc4a0-2e90-45e6-8370-350beda67342`, 제목 `양조장 체험 연결`, `is_demo` false. 이 사용자의 프로젝트 170개 중 요약 해시 `41f6a59ed84d`는 이 프로젝트 하나다. 검토 행의 `input_sha`도 그 접두사다. 다른 사용자 `8b023d94-dd5f-4cad-bd7e-76b6fbdf0674`에게 같은 검토 ID와 같은 입력 해시는 0건이다.
+
+4버전은 2026-10-28 16:21 KST에 끝났다. provider `openai`, model `gpt-4o-mini-2024-07-18`, `callCount` 1, 토큰 228/175/403, evidence `live_network`. 문제, 고객, 해결, 수익, 검증지표가 비어 있지 않다. 후속 질문은 `어떤 방식으로 양조장과의 파트너십을 구축할 계획인가?`다. 이 호출은 이번 실행이 아니다.
+
+같은 입력의 최신 준비 행은 5버전 `8602a92e-0fbd-4d93-a005-9c9f18410ac6`이다. 부모는 4버전이고 `source_feedback_id`는 없다. 화면 코드는 준비된 행 중 마지막을 고르므로, 화면을 열면 4버전이 아니라 5버전이 앞에 나온다. 5버전은 2차 호출의 저장 결과다. 6버전은 DB에서 `succeeded`이고, 피드백 `cb7d0a54-6beb-4b46-bca9-b4e2f121dc84`의 `understanding_wrong`과 `core_missing` 때문에 조회 시 실패로 내린다. 7버전은 `failed`, error `revision_gate`다. 두 행 모두 덮어쓰지 않았다.
+
+| 테스트 | 판정 | 근거 |
+|---|---|---|
+| 1. 이번 실행의 실제 AI 응답 | **NOT RUN** | `GPT_API_KEY` 없음. 새 호출 없음 |
+| 2. DB 저장과 사용자·워크스페이스 연결 | **PASS** | 4버전이 위 사용자와 프로젝트 `3a5fc4a0`의 본문 해시에 연결. 워크스페이스 ID 열은 없음 |
+| 3. 새로고침·재인증 복원 | **NOT RUN** | 화면을 열지 않음 |
+| 4. 사용자·워크스페이스 격리의 HTTP 시도 | **NOT RUN** | DB에서는 다른 사용자 행 0건. 다른 계정으로 요청하지 않음 |
+| 5. 실패 화면 | **NOT RUN** | 실패 행은 DB에 남아 있다. 화면은 열지 않음 |
+| 실행 SHA | **NOT RUN** | `/api/build-info` HTTP 302, 본문 미확인 |
+| 1차 검토 게이트 | **BLOCKED** | 화면 복원과 이번 실행 SHA가 없음 |
+| Production | **잠금 유지** | `0b465226516e1a4f3eb9ce2087f8bca2c2c091da` |
+| PR #209 | **미병합** | 2차 후속 검토는 시작하지 않음 |
+
+## 27. 2026-10-29 00:16 KST Preview 실행
+
+2차 후속 검토는 호출하지 않았다. 7버전 `62b5588c-0d11-42c8-8fac-d24d25dc4f20`은 `failed`로 두었다. 4버전 `0a13c604-9931-40c5-88a5-80f06687fd5a`도 덮어쓰지 않았다.
+
+모델 호출 시각의 실행 SHA는 `a16537b6e433be534fee7c9eff724cfca5a99a4f`다. 인증된 Preview `/api/build-info`는 HTTP 200이고 branch는 `cursor/ai-pm-single-flow-4b88`이다. `962bbe7d`와 `e2301d14`는 배포가 실패해 실행 SHA가 아니다. 실패 원인은 확인 상태 표시의 반환 타입이 Next.js 타입 검사를 통과하지 못한 것이다. 로컬 `next build`로 그 오류를 고친 뒤 화면 SHA가 배포되었다.
+
+같은 본문의 최신 행이 7버전 실패여서, 1차 `POST /api/ai-pm-review`는 4버전을 재사용하지 않았다. HTTP 200. `reused` false. 새 행 `35137302-5a81-419f-bbc9-9fe16a360fed`. version 8. status `succeeded`. 부모 없음. 사용자 `37d541c8-fda7-4788-8ac2-1a449b00425c`. 입력 SHA 접두 `41f6a59ed84d`. `finished_at` `2026-10-28T14:58:59.868Z`(2026-10-28 23:58 KST). provider `openai`. model `gpt-4o-mini-2024-07-18`. `callCount` 1. 토큰 228/161/389. evidence `live_network`. latency 4566ms. 추가 호출은 없다.
+
+문제: 관광객들이 개인별 다양한 경험을 중요시하지만, 양조장 체험에 대한 정보와 접근성이 부족하다. 고객: 전통주를 좋아하는 내국인 및 외국인 관광객. 해결: 양조장 체험을 안내하고, 체험 후 주변 관광지를 즐길 수 있도록 지원하는 서비스 제공. 수익: 양조장과 제휴하여 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치하며 수익을 창출. 검증지표: 체험 프로그램 참여 고객 수 및 고객 만족도. 후속 질문: `어떤 방식으로 양조장과의 제휴를 진행할 계획인가?` 검토 행에는 워크스페이스 ID가 없다. 프로젝트 `3a5fc4a0-2e90-45e6-8370-350beda67342`의 사업 설명 길이는 186이고 이 입력과 같다.
+
+`a16537b6` 화면은 결과 단계라 검토 본문은 보였고 후속 질문 요소는 없었다. 이전 거절 문장 `이 후속 검토는 반영하지 않았습니다`가 위에 있었다. 새로고침과 같은 QA 사용자의 새 세션에서도 본문은 같고 질문은 없었다. 그 배포의 질문 표시는 FAIL이다.
+
+화면 실행 SHA는 `0b0e34a90bb34116b66e6dd82b9d12d7e708181e`다. 인증된 `/api/build-info`가 그 commit을 반환했다. GitHub Vercel 상태는 success이고 완료 시각은 `2026-10-28T15:16:16Z`(2026-10-29 00:16 KST)다. 대상은 `https://vercel.com/jyp-ai1s-projects/ai-startup-validation/BGySvQjjk3qJwZF5sCqxPVgWBsuo`다. 이 SHA에서 모델은 다시 호출하지 않았다. 프로젝트 `3a5fc4a0`을 열면 `다음에 확인할 질문`과 `어떤 방식으로 양조장과의 제휴를 진행할 계획인가?`가 보인다. `이 결과 확인`, `AI PM 1차 검토`, follow-up은 누르지 않았다. 새로고침 후에도 같고, 같은 QA 사용자의 새 매직링크 세션에서도 같다. 이전 거절 문장은 그 화면에 없다.
+
+계정 격리는 모델 호출 당시 SHA `a16537b6`에서 요청했다. 비인증 `GET /api/ai-pm-review`는 401 `login_required`다. 두 번째 `@launchlens.dev` 사용자 `d6e38fff-5773-402d-80c0-bdfa755ef963`의 검토 행은 0건이다. QA 검토 ID는 그 목록에 없다. 그 세션의 프로젝트 URL은 `/workspace`로 이동하고 양조장 본문은 보이지 않았다. `0b0e34a9`에서 이 HTTP를 다시 보내지는 않았다. 조회 조건은 사용자 ID이고 그 커밋은 그 조건을 바꾸지 않았다.
+
+같은 본문을 가진 두 번째 프로젝트는 만들지 않았다. 저장은 사용자 ID와 본문 해시다. 같은 사용자의 다른 프로젝트가 같은 본문을 가지면 같은 검토가 열린다. 이 사용자의 프로젝트 170개 중 이 본문은 `3a5fc4a0` 하나라서, 그 건수만으로 워크스페이스 격리가 보장되지는 않는다. 이번 단계의 최소 변경은 결과 화면에 저장된 질문을 보이는 것이다. `project_id` 열을 추가하는 저장 재작성은 하지 않았다.
+
+실패만 있는 화면은 다시 열지 않았다. 7버전은 `failed`로 남아 있고 섹션을 성공으로 올리지 않았다.
+
+| 테스트 | 판정 | 근거 |
+|---|---|---|
+| 실제 모델 호출 | **PASS** | `35137302-5a81-419f-bbc9-9fe16a360fed`. 실행 SHA `a16537b6e433be534fee7c9eff724cfca5a99a4f`. `gpt-4o-mini-2024-07-18`, 228/161/389, `callCount` 1 |
+| 검토 본문과 후속 질문 저장 | **PASS** | 위 다섯 문장과 질문. 부모 없음 |
+| 결과 화면의 질문 | **PASS** | 화면 SHA `0b0e34a90bb34116b66e6dd82b9d12d7e708181e`. `a16537b6`에서는 FAIL |
+| 새로고침·재인증 | **PASS** | 같은 질문이 유지. 추가 호출 없음 |
+| 계정 간 HTTP 격리 | **PASS** | `a16537b6`에서 401과 두 번째 사용자 0건. 화면 SHA에서 재실행은 없음 |
+| 실패만 있는 화면 | **NOT RUN** | 7버전은 `failed` 유지. 그 행만 있는 화면은 열지 않음 |
+| 같은 본문의 여러 워크스페이스 | **기록** | 저장 키는 사용자와 본문 해시. 열 추가는 하지 않음 |
+| 1차 검토 게이트 | **CPO 검수 전** | CTO가 완료를 선언하지 않음 |
+| Production | **잠금 유지** | `0b465226516e1a4f3eb9ce2087f8bca2c2c091da` |
+| PR #209 | **미병합** | 2차 후속 검토는 시작하지 않음 |
+
+## 28. 2026-10-29 08:40 KST 워크스페이스 귀속
+
+워크스페이스별 독립 저장은 FAIL이다. 이 절은 그 수정의 준비다. 공유 데이터베이스에는 `024_ai_pm_review_project.sql`을 적용하지 못했다. 이 환경에는 Postgres 접속 정보가 없다. Preview에서 두 워크스페이스를 나란히 실행한 증거는 없다.
+
+조회, 재사용, 저장은 `user_id + project_id + input_sha`다. `project_id`만으로 권한을 보지 않는다. 세션 사용자가 소유하지 않은 프로젝트는 읽기와 쓰기 모두 `403 project_forbidden`이다. 프로젝트 ID가 없으면 `400`이다. 화면은 현재 워크스페이스의 프로젝트 ID를 보낸다.
+
+기존 행은 소유 프로젝트의 본문 해시가 정확히 하나일 때만 연결한다. 없거나 둘 이상이면 `project_id`는 null이고 워크스페이스에 붙지 않는다. 이 연결은 아직 실행하지 않았다.
+
+`project_id`는 nullable이고 기본값이 없다. 마이그레이션 023의 열만 나열한 INSERT는 로컬 sqlite에서 `project_id` null로 성공했다. Production SHA `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`에는 `ai_pm_reviews` 저장소가 없다. 공유 Postgres에서 그 INSERT를 다시 실행하지는 못했다.
+
+같은 본문의 두 워크스페이스 분리는 로컬 저장 테스트에서 확인했다. 한쪽 검토와 피드백은 다른 쪽에 보이지 않고, 다른 프로젝트의 검토 ID로 피드백이나 후속 호출을 열면 모델 호출 전에 거절된다. 이 테스트는 Preview 실행이 아니다.
+
+프로젝트 삭제는 둘로 나눈다. 앱의 삭제는 `deleted_at`만 기록한다. 검토는 그 프로젝트에 남고 다른 워크스페이스에는 열리지 않는다. `startup_projects` 행을 실제로 지우면 `on delete cascade`로 그 검토가 지워지고, 검토 외래 키로 피드백이 지워진다. `project_id`가 null인 행은 어느 삭제에도 다른 워크스페이스로 붙지 않는다.
+
+`pnpm exec vitest run`으로 검토 파일과 표시 파일, 19개가 통과했다. `next build` 타입 검사도 통과했다. 2차 후속 검토 모델 호출은 하지 않았다. 이 커밋이 Preview에 올라가면 조회가 `project_id`를 사용한다. 열이 없으면 그 조회는 저장 오류가 된다.
+
+| 항목 | 판정 |
+|---|---|
+| 코드의 조회·재사용 범위 | **기록** — `user_id + project_id + input_sha` |
+| 타인 프로젝트 거부 | **기록** — 서버에서 소유 확인. Preview HTTP는 미실행 |
+| 기존 행을 하나만 연결 | **기록** — 함수 테스트. 공유 DB 갱신은 미실행 |
+| 023 INSERT 호환 | **부분** — sqlite에서 null 저장. 공유 Postgres는 미실행 |
+| 같은 본문 두 워크스페이스 | **NOT RUN** — Preview에서 만들지 않음 |
+| 삭제 정책 | **기록** — 소프트 삭제는 행을 유지. 하드 삭제는 cascade |
+| 공유 DB 마이그레이션 | **미적용** |
+| 1차 전체 게이트 | **미완료** |
+| Production / PR #209 | **잠금, 미병합** |
+
+## 29. 2026-10-29 08:50 KST 스키마와 두 워크스페이스
+
+CEO가 024 실행을 기록한 뒤, 스키마와 Preview를 따로 확인했다. 2차 후속 검토 경로는 호출하지 않았다.
+
+`project_id`는 OpenAPI에서 `ai_pm_reviews`의 필수 열이 아니다. 형식은 uuid이고 `startup_projects.id` 외래 키로 적혀 있다. 023 열만 넣은 INSERT는 HTTP 201이었고 `project_id`는 null이었다. 그 행은 바로 지웠다. 존재하지 않는 프로젝트 UUID를 넣으면 HTTP 409, 코드 `23503`이다. 확인용 프로젝트를 만들고 검토와 피드백을 연결한 뒤 그 프로젝트 행을 지우자 검토와 피드백이 함께 없어졌다. 앱의 일반 삭제는 여전히 `deleted_at`만 기록한다.
+
+`project_id`가 null이던 검토 8건은 소유 프로젝트가 하나씩만 맞아서 연결했다. 검토 `35137302-5a81-419f-bbc9-9fe16a360fed`는 프로젝트 `3a5fc4a0-2e90-45e6-8370-350beda67342`다. 맞지 않거나 둘 이상인 행은 없었다. 연결 후 null은 0건이다.
+
+실행 SHA는 `/api/build-info`의 `4806a21de5ac0aeeb93bdb9ee49649490d6137da`다. branch는 `cursor/ai-pm-single-flow-4b88`이다. GitHub Vercel은 success이고 완료 시각은 `2026-10-28T23:48:28Z`(2026-10-29 08:48 KST)다.
+
+같은 본문으로 프로젝트 `b09c85d4-93b6-4711-ae79-509f0f3e59f8`와 `cc9e8975-6c17-402d-8a52-95b049028b6d`를 만들었다. 1차 POST는 각각 한 번이다. A 검토 `1ada52ba-53ed-45b2-9f49-4c58cb8ed54c`, B 검토 `e1b030a7-5232-4155-86f6-d25d942238fd`. 둘 다 version 1, `succeeded`, 부모 없음, 사용자 `37d541c8-fda7-4788-8ac2-1a449b00425c`, `gpt-4o-mini-2024-07-18`, `callCount` 1이다. 토큰은 A 185/123/308, B 185/122/307이다. `reused`는 둘 다 false다.
+
+A 피드백 `a3628d1b-0553-49d0-97b2-85ed5e22b433`은 A에만 있다. A의 저장 질문만 `A 워크스페이스에서만 바꿀 확인 문장입니다.`로 바꿨다. B의 질문은 `이 예약 도구를 통해 예상되는 사용자 수는 얼마인가?`로 남았다. 새로고침과 같은 QA 사용자의 새 세션에서도 각 문장은 그대로였다. 양조장 화면에는 `어떤 방식으로 양조장과의 제휴를 진행할 계획인가?`가 보였다.
+
+다른 테스트 사용자 `d6e38fff-5773-402d-80c0-bdfa755ef963`의 A 프로젝트 GET과 POST는 403 `project_forbidden`이다. 비인증 GET은 401이다. 그 사용자의 검토 행은 0건이다.
+
+| 항목 | 판정 |
+|---|---|
+| `project_id` 존재, nullable, 외래 키 | **PASS** |
+| 하드 삭제 시 검토·피드백 삭제 | **PASS** — 확인용 행만 |
+| Preview 런타임 SHA | **PASS** — `4806a21de5ac0aeeb93bdb9ee49649490d6137da` |
+| 같은 본문 두 워크스페이스 | **PASS** — 검토 ID가 다름 |
+| A 수정이 B에 반영되지 않음 | **PASS** |
+| 새로고침·재인증 | **PASS** |
+| 타인 프로젝트 차단 | **PASS** |
+| 023 INSERT | **PASS** — null로 저장 후 삭제 |
+| 기존 양조장 질문 복원 | **PASS** |
+| 1차 전체 게이트 | **CPO 재검수 전** |
+| Production / PR #209 | **잠금, 미병합** |
+
+## 30. 2026-10-29 1차 검토 품질
+
+CEO 재검수에서 화면 흐름, 사업성 분석, 추가 질문, 답변 구조는 FAIL이었다. 저장·복원과 워크스페이스 독립은 PASS였고 그 저장 범위는 유지한다. 2차 후속 검토는 호출하지 않는다. Production 잠금과 PR #209 미병합은 유지한다.
+
+바뀐 1차 경로는 사업 본문과 검토 목적을 함께 저장한다. 현재 단계와 가장 알고 싶은 내용은 비워도 된다. 목적 줄이 해시에 들어가서, 같은 본문의 이전 성공 행을 그대로 재사용하지 않는다. 응답은 요약, 고객, 문제, 가치, 운영, 결제자, 수익모델, 시장·경쟁·운영·수익성, 강점, 위험, 미검증 가정, 판단을 바꿀 증거, 질문 하나, 선택지로 파싱한다. 원문에 없는 억·만·%·원·명 수치는 저장 전에 바꾼다. 선택 저장은 피드백 행이고 모델 호출이 없다. 화면은 확인된 답과 다음 방향을 보여 주고 follow-up URL을 호출하지 않는다. 사업 본문이 있는 워크스페이스에서는 내부 판정 표면을 같이 그리지 않는다.
+
+검증한 Preview 런타임은 `/api/build-info`의 `a022a72f66d1619f1e69326e032363c8d0e990a5`다. 주소는 `https://ai-startup-validation-git-cursor-ai-pm-62f67e-jyp-ai1s-projects.vercel.app/workspace?project=3a5fc4a0-2e90-45e6-8370-350beda67342`다. 양조장 프로젝트에 1차 POST는 한 번이었다. 검토 `3be5715e-7294-44bd-b163-f3af1dec4259`, `reused` false, 부모 없음, `gpt-4o-mini-2024-07-18`, 토큰 590/631/1221, `callCount` 1. 목적 줄은 종합 검토, 단계는 아이디어. follow-up은 호출하지 않았다.
+
+모델이 배열 칸을 문자열로 줘서 첫 배포 `453fe277`에서는 행이 `unstructured_response`로 남았고 화면은 실패 문구였다. `4a6c338b`부터 그 저장 원문을 다시 읽어 화면에 띄운다. 모델 호출은 추가하지 않았다. 답 저장은 `a022a72f`에서 피드백 POST 200이었다.
+
+화면에 보인 요약: `양조장 체험 연결은 전통주를 좋아하는 관광객을 대상으로 양조장 체험을 안내하고 지원하는 사업이다.`
+
+질문: `양조장과의 협력 가능성은 어떻게 되는가?`
+
+선택지: `양조장과의 협력 가능성이 높다.` / `양조장과의 협력 가능성이 낮다.` / `양조장과의 협력 여부는 미정이다.` / `기타 / 직접 입력`
+
+저장한 답: `양조장과의 협력 가능성이 높다.`
+
+다음 방향: `확인된 내용: 양조장과의 협력 가능성이 높다.. 다음 검토는 이 선택을 전제로 합니다. 양조장과의 협력 여부가 사업의 실행 가능성과 수익성에 큰 영향을 미칠 것이다. 후속 모델 검토는 실행하지 않습니다.`
+
+새로고침과 QA 재로그인 뒤 같은 요약, 질문, 선택지, 저장한 답이 다시 보였다. 시장 규모 숫자는 원문에 없었고, 응답도 규모를 확정하지 않았다. 수익 문장은 `양조장으로부터의 수수료 및 체험 참가비.`라서 가설보다 단정에 가깝다. 질문은 협력 가능성의 높고 낮음이라, 예시처럼 처음 풀 문제를 가르지는 않는다. 이 품질로 1차 게이트를 통과시키지 않는다.
+
+`453fe277`에서 A `b09c85d4-93b6-4711-ae79-509f0f3e59f8`와 B `cc9e8975-6c17-402d-8a52-95b049028b6d`는 검토 POST 없이 열었다. GET 질문은 각각 `A 워크스페이스에서만 바꿀 확인 문장입니다.`와 `이 예약 도구를 통해 예상되는 사용자 수는 얼마인가?`였다. 그 화면은 분석이 없는 이전 행이라 목적 입력으로 보였다. `a022a72f`에서 A·B를 다시 열지는 않았다.
+
+화면 파일은 QA 실행의 `qa-4a6c-analysis.png`, `qa-4a6c-choices.png`, `qa-a022-saved.png`, `qa-a022-refresh.png`, `qa-a022-reauth.png`다.
+
+| 항목 | 판정 |
+|---|---|
+| 로컬 단위 테스트와 `next build` | 통과. 이것만으로 1차 게이트를 통과시키지 않음 |
+| Preview 런타임 SHA | **기록** — `a022a72f66d1619f1e69326e032363c8d0e990a5` |
+| 양조장 1차 모델 호출 | **한 번** — `3be5715e`, 추가 호출 없음 |
+| 분석과 선택지 화면 | **보임** — 질문의 폭은 예시보다 좁음 |
+| 답 저장 | **보임** — 피드백 200, 모델 호출 없음 |
+| 새로고침·재인증 | **보임** — 같은 분석과 저장한 답 |
+| A·B 독립을 최종 SHA에서 다시 열기 | **NOT RUN** |
+| 2차 후속 검토 | **시작하지 않음** |
+| 1차 게이트 | **통과로 두지 않음** |
+| Production / PR #209 | **잠금, 미병합** |
+
+## 31. 2026-10-29 10:28 KST 종합 검토 계약
+
+코드 커밋은 `9e16de6b902984ea7f776640458e3b646f46dcd9`다. 이 절의 문서 커밋은 그 다음 SHA다. 둘을 같은 실행 SHA로 쓰지 않는다.
+
+바뀐 점:
+
+- 사업 본문만으로 제출된다. 목적을 비우면 `종합 사업성 검토`, 단계를 비우면 `미확인`이다. 저장 문자열에는 `검토 계약: comprehensive-1`이 들어간다.
+- 화면은 그 계약 줄이 있는 준비된 분석만 연다. `3be5715e`와 그 앞의 행은 지우지 않고, 현재 결과로 다시 그리지 않는다.
+- 프롬프트는 고객, 문제, 대안, 가치, 차별화, 이용자와 지불자, 수익, 시장, 운영, 경쟁, 위험, 가정 1~3개, 적은 비용의 확인, 가정 하나를 가르는 질문과 선택지를 요청한다. 높다/낮다/미정만의 선택지를 만들지 말라고 적는다.
+- 원문에 없는 수수료, 참가비, 이용료, 구독료는 저장 전에 가설이라고 붙인다. 원문에 없는 억·만·%·원·명 수치 처리는 유지한다.
+- 저장한 답의 다음 방향은 확인된 사실이 아니라 현재 가설이라고 적는다. 선택 저장은 피드백 행이고 모델 호출이 없다. follow-up 경로는 호출하지 않는다.
+- 1차 출력 상한은 2400 토큰이다. 후속 상한 800은 그대로다.
+
+로컬 `ai-pm-review` 단위 테스트 21건과 `next build`는 통과했다. 이것만으로 분석 품질을 통과로 두지 않는다.
+
+Preview 배포 `7401624594`는 2026-10-29 10:28 KST에 성공했다. URL은 `https://ai-startup-validation-l28h3ueei-jyp-ai1s-projects.vercel.app`이다. 별칭은 `https://ai-startup-validation-git-cursor-ai-pm-62f67e-jyp-ai1s-projects.vercel.app`이다. 이 런의 주입 비밀에는 `VERCEL_AUTOMATION_BYPASS_SECRET`이 없다. 별칭 `GET /api/build-info`는 HTTP 302로 Vercel SSO에 갔다. 배포 URL을 기존 Chrome 프로필로 열었고 `data-user-display`는 `logged-out`이었다. 앱 JSON의 `data.commit`은 읽지 못했다. Git SHA `9e16de6b`를 런타임 SHA로 기록하지 않는다.
+
+양조장 원문으로 새 1차 모델 호출은 하지 않았다. 분석 화면, 선택지, 답 저장, 새로고침, 재로그인, A·B 격리는 이 SHA에서 실행하지 않았다. 2차 후속 검토는 시작하지 않았다. Production `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`는 호출하지 않았다. PR #209는 병합하지 않는다.
+
+| 항목 | 판정 |
+|---|---|
+| 사업 본문만으로 요청을 조립 | **로컬 테스트 통과** — Preview 실행은 아님 |
+| 원문에 없는 수수료를 가설로 저장 | **로컬 테스트 통과** — 실제 모델 문장은 없음 |
+| Preview `/api/build-info` 런타임 SHA | **BLOCKED** — 우회 비밀 없음, SSO 302, Chrome 로그아웃 |
+| 양조장 1차 모델 호출 | **NOT RUN** |
+| 종합 분석·질문·선택지 화면 | **NOT RUN** |
+| 답 저장, 새로고침, 재로그인 | **NOT RUN** |
+| A·B 워크스페이스 격리 | **NOT RUN** |
+| 후속 모델 호출 없음 | **이 런에서 호출하지 않음** — 저장 경로는 단위 테스트에서 모델 호출 0 |
+| 1차 게이트 | **FAIL 유지** |
+| Production / PR #209 | **잠금, 미병합** |
+
+## 32. 2026-10-29 11:21 KST 런타임 확인 재시도
+
+CPO는 1차 게이트 FAIL을 유지했다. 이번 실행은 프롬프트를 바꾸지 않고, 배포된 Preview에서 `/api/build-info`와 양조장 1차 응답을 읽으려 했다.
+
+문서 커밋 `55d8e9d0`의 Preview 배포 `7401815072`는 2026-10-29 10:42 KST에 성공했다. URL은 `https://ai-startup-validation-aqm2qkhud-jyp-ai1s-projects.vercel.app`이다. 이 런의 주입 비밀에는 `VERCEL_AUTOMATION_BYPASS_SECRET`과 `VERCEL_TOKEN`이 없다.
+
+그 배포의 `/api/build-info`를 기존 Chrome 프로필로 열었다. 도착 주소는 `https://vercel.com/login`이고 화면은 Vercel 로그인이다. 앱 JSON은 없다. `data.commit`은 읽지 못했다. Git SHA를 런타임 SHA로 쓰지 않는다.
+
+양조장 본문 제출, 모델 호출, 선택 저장, 새로고침, 재로그인, A·B 격리는 시작하지 않았다. 후속 모델 검토는 호출하지 않았다. Production은 호출하지 않았다. PR #209는 병합하지 않는다.
+
+| 항목 | 판정 |
+|---|---|
+| Preview `/api/build-info` 런타임 SHA | **BLOCKED** — Vercel 로그인 화면 |
+| 양조장 1차 모델 호출 | **NOT RUN** |
+| 응답 품질, 저장, 복원, A/B | **NOT RUN** |
+| 1차 게이트 | **FAIL 유지** |
+
+## 33. 2026-10-29 11:59 KST 질의 품질 시나리오
+
+화면 검증 대신 양조장 답변 8개의 채점 규칙을 코드로 넣었다. 코드 커밋은 `6b9994a4341dcaca732bded614f9180c0b1e4251`다. 최초 프롬프트 버전은 `quality-2`, 시나리오 시뮬레이션 버전은 `scenario-sim-1`이다. 시뮬레이션 요청은 제품 follow-up과 다른 함수다. 이 테스트는 `POST /api/ai-pm-review/follow-up`을 호출하지 않았다.
+
+실제 모델 호출은 **NOT RUN**이다. 이 실행에 `GPT_API_KEY`가 없다. 단위 테스트는 사람이 적은 문장을 채점하며, 그 통과를 모델 품질 통과로 두지 않는다. 기록은 `docs/evidence/ALABOM/AI-PM/QUALITY-SCENARIOS.md`다.
+
+1차 게이트는 **FAIL**이다. Production 잠금과 PR #209 미병합은 유지한다.
+
+## 34. 2026-10-29 12:10 KST 품질 평가 체계
+
+코드 커밋 `98e73993d4ec25a0e9e3914ccaa0b9cecbec866a`. 평가 기준 버전은 `rubric-2`다. 고정 시나리오는 S1–S8이고, 기준 프롬프트 `quality-1`은 하니스에만 있다. 제품 최초 프롬프트는 `quality-2`다. 이번 실행은 제품 프롬프트, UI, follow-up 라우트를 바꾸지 않았다.
+
+`pnpm --filter web test:ai-pm-quality` 7건은 통과했다. 이것은 저장된 실패 문장과 사람이 넣은 JSON의 기계 채점이다. 실제 `gpt-4o-mini` 호출은 **NOT RUN**이다. `GPT_API_KEY`가 없다. 의미 항목 4개는 문자열 검색으로 PASS하지 않으며 전체 품질 PASS를 선언하지 않는다.
+
+실패 A(협력 가능성 높다/낮다/미정)와 실패 B(원문에 없는 수수료·체험 참가비)의 저장 문장은 기계 규칙에서 FAIL이고, 다른 항목 PASS로 상쇄되지 않는다. 같은 실패가 `quality-2` 새 응답에서 사라졌는지는 **NOT RUN**이다. 기준 응답을 보고 프롬프트를 최소 수정하는 단계도 **NOT RUN**이다.
+
+제품 `POST /api/ai-pm-review/follow-up`과 피드백 저장은 호출하지 않았다. Production은 호출하지 않았다. PR #209는 병합하지 않는다. 1차 게이트는 **FAIL**이다. 기록은 `docs/evidence/ALABOM/AI-PM/QUALITY-SCENARIOS.md`다.
+
+## 35. 2026-10-29 12:49 KST 기존 호출 추적
+
+새 OpenAI 호출은 없다. `ai_pm_reviews` 11행을 읽었다. 측정 토큰이 있는 행 8개의 합은 5,166이다. 사용량 화면의 3,403 tokens / 8 requests와 맞는 부분집합은 없다. 그 화면의 8건은 미분류다.
+
+`quality-2` 코드 시각은 2026-10-29 11:58 KST다. 저장된 마지막 모델 응답은 09:37 KST `3be5715e`다. `quality-2` 응답과 `quality-3` 응답은 **NOT RUN**이다. 둘의 품질 비교도 **NOT RUN**이다. `3be5715e`는 기타 응답이며 실패 A와 실패 B가 모두 FAIL이다.
+
+작업 C와 D는 이 턴에 실행하지 않았다. 1차 게이트는 **FAIL**이다. 표는 `docs/evidence/ALABOM/AI-PM/USAGE-TRACE-2026-10-29.md`다.
+
+## 36. 2026-10-29 12:54 KST 비교 호출 고정
+
+`quality-2` 제품 요청과 `quality-3` 초안을 같은 양조장 입력으로 고정했다. 파일은 `docs/evidence/ALABOM/AI-PM/quality-2-3-compare.json`이다. 두 호출 모두 `not_run`이고 응답 원문은 없다. 이 프로세스에 `GPT_API_KEY`가 없다. 모델 품질 비교는 **NOT RUN**이다. 1차 게이트는 **FAIL**이다.
+
+## 37. 2026-10-29 12:59 KST 실호출 환경
+
+`executeQualityCompare()`를 이 클라우드 에이전트에서 다시 실행했다. 반환은 `not_run` 두 건이다. 비교 작업은 **BLOCKED**다. 부팅 시 주입된 비밀 이름에 `GPT_API_KEY`가 없다. 셀프호스트 워커는 0대이고 Vercel CLI 토큰은 없다. 제품 라우트로 대체하지 않았다. 제품 프롬프트는 `quality-2` 그대로다. 1차 게이트는 **FAIL**이다. 진단은 `docs/evidence/ALABOM/AI-PM/QUALITY-COMPARE.md`다.
+
+## 38. 2026-10-29 13:13 KST 권한
+
+같은 프로세스에서 비교 함수를 다시 실행하지 않았다. 상태는 **BLOCKED**다. 필요한 권한은 클라우드 에이전트 환경 `316b619d-a743-11f1-a7d1-d6b4613131ce`에 부팅 시 주입되는 `GPT_API_KEY`다. Preview 제품 서버의 과거 성공 호출은 이 함수가 아니다. 1차 게이트는 **FAIL**이다.

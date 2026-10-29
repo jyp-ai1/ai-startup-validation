@@ -16,13 +16,14 @@ CREATE TABLE IF NOT EXISTS ai_pm_reviews (
   input_sha TEXT NOT NULL,
   version INTEGER NOT NULL,
   parent_review_id TEXT,
+  project_id TEXT,
   status TEXT NOT NULL,
   record_json TEXT NOT NULL,
   finished_at TEXT NOT NULL,
   PRIMARY KEY (user_id, review_id)
 );
 CREATE INDEX IF NOT EXISTS ai_pm_reviews_input
-  ON ai_pm_reviews (user_id, input_sha, version);
+  ON ai_pm_reviews (user_id, project_id, input_sha, version);
 CREATE TABLE IF NOT EXISTS ai_pm_feedback (
   user_id TEXT NOT NULL,
   feedback_id TEXT NOT NULL,
@@ -70,17 +71,42 @@ export type AiPmReviewStore = {
   insertReview: (record: StoredReview) => Promise<{ wrote: boolean }>;
   insertFeedback: (record: StoredFeedback) => Promise<{ wrote: boolean }>;
   readReview: (userId: string, reviewId: string) => Promise<StoredReview | null>;
-  latestForInput: (userId: string, inputSha: string) => Promise<StoredReview | null>;
+  latestForInput: (userId: string, inputSha: string, projectId: string) => Promise<StoredReview | null>;
   succeededChild: (
     userId: string,
     parentReviewId: string,
     sourceFeedbackId: string | null,
     supplementSha: string,
   ) => Promise<StoredReview | null>;
-  listReviews: (userId: string) => Promise<StoredReview[]>;
+  listReviews: (userId: string, projectId: string) => Promise<StoredReview[]>;
+  /** Local mirror of the project hard-delete cascade. Postgres uses the foreign key. */
+  deleteForProject: (userId: string, projectId: string) => Promise<void>;
   listFeedback: (userId: string, reviewId?: string) => Promise<StoredFeedback[]>;
   deleteOwnedRecords: (userId: string) => Promise<void>;
   close: () => void;
+};
+
+export type RevisionGateFailure =
+  | 'confirmed_reuse'
+  | 'confirmation_unset'
+  | 'discarded_interpretation'
+  | 'missing_core_not_asked'
+  | 'question_unchanged'
+  | 'invented_core';
+
+export type ClaimConfirmationState = 'unconfirmed' | 'confirmed';
+
+export type ClaimConfirmation = {
+  problem: ClaimConfirmationState | null;
+  customer: ClaimConfirmationState | null;
+  revenue: ClaimConfirmationState | null;
+};
+
+export type RevisionGate = {
+  pass: boolean;
+  summary: string;
+  changes: string[];
+  failures: RevisionGateFailure[];
 };
 
 export type StoredReview = {
@@ -90,6 +116,7 @@ export type StoredReview = {
   parentReviewId: string | null;
   sourceFeedbackId: string | null;
   supplementSha: string | null;
+  projectId: string | null;
   inputSha: string;
   inputText: string;
   inputOrigin: 'typed' | 'file' | 'file_and_typed';
@@ -100,6 +127,8 @@ export type StoredReview = {
   model: string | null;
   sections: ReviewSections | null;
   rawContent: string | null;
+  /** Set when a follow-up was compared with the previous review. Absent on older rows. */
+  revisionGate?: RevisionGate | null;
   promptTokens: number | null;
   completionTokens: number | null;
   totalTokens: number | null;
@@ -109,6 +138,39 @@ export type StoredReview = {
   error: string | null;
   requestedAt: string;
   finishedAt: string;
+};
+
+export type ReviewChoice = {
+  id: string;
+  label: string;
+};
+
+/** First-review business reading. Absent on rows stored before this contract. */
+export type BusinessAnalysis = {
+  summary: string;
+  value: string;
+  operatingModel: string;
+  payer: string;
+  competition: string;
+  operations: string;
+  profitability: string;
+  strengths: string[];
+  assumptions: string[];
+  evidenceToChange: string[];
+  founderFacts: string[];
+  inferences: string[];
+  judgmentDetail: string;
+  choices: ReviewChoice[];
+  /** Present when the model returned the comprehensive first-review fields. */
+  alternatives?: string;
+  differentiation?: string;
+  nextVerification?: string;
+};
+
+export type ChoiceAnswer = {
+  choiceId: string;
+  label: string;
+  otherText: string;
 };
 
 export type ReviewSections = {
@@ -124,6 +186,10 @@ export type ReviewSections = {
   nextQuestion: string;
   nextQuestionReason: string;
   answerHint: string;
+  /** Explicit confirmation for the problem, customer, and revenue claims. Null on a first review. */
+  claimConfirmation: ClaimConfirmation | null;
+  /** Set when the first review returned a business analysis and choices. */
+  analysis?: BusinessAnalysis | null;
 };
 
 export type Agreement = 'agree' | 'partial' | 'disagree' | 'need_info';
@@ -145,6 +211,14 @@ export type NextAction =
   | 'proceed'
   | 'hold';
 
+export type ReviewMark =
+  | 'understanding_accurate'
+  | 'understanding_wrong'
+  | 'core_missing'
+  | 'unnecessary'
+  | 'evidence_unclear'
+  | 'question_unfit';
+
 export type StoredFeedback = {
   feedbackId: string;
   reviewId: string;
@@ -154,6 +228,9 @@ export type StoredFeedback = {
   revisionAreas: RevisionArea[];
   comment: string;
   nextAction: NextAction;
+  marks: ReviewMark[];
+  /** Founder's choice on the first question. Saving it does not call a model. */
+  choiceAnswer?: ChoiceAnswer | null;
   submittedAt: string;
   modelCalls: 0;
 };
@@ -165,6 +242,7 @@ export function openAiPmReviewStore(filePath: string): AiPmReviewStore {
   protect(filePath);
   const db = new DatabaseSync(filePath);
   db.exec(SCHEMA);
+  ensureProjectColumn(db);
   protect(filePath);
   return {
     filePath,
@@ -173,15 +251,16 @@ export function openAiPmReviewStore(filePath: string): AiPmReviewStore {
     insertReview: async (record) => insertReview(db, record),
     insertFeedback: async (record) => insertFeedback(db, record),
     readReview: async (userId, reviewId) => readReview(db, userId, reviewId),
-    latestForInput: async (userId, inputSha) => latestForInput(db, userId, inputSha),
+    latestForInput: async (userId, inputSha, projectId) => latestForInput(db, userId, inputSha, projectId),
     succeededChild: async (userId, parentReviewId, sourceFeedbackId, supplementSha) =>
       succeededChild(db, userId, parentReviewId, sourceFeedbackId, supplementSha),
-    listReviews: async (userId) => listReviews(db, userId),
+    listReviews: async (userId, projectId) => listReviews(db, userId, projectId),
     listFeedback: async (userId, reviewId) => listFeedback(db, userId, reviewId),
     deleteOwnedRecords: async (userId) => {
       db.prepare('DELETE FROM ai_pm_feedback WHERE user_id = ?').run(userId);
       db.prepare('DELETE FROM ai_pm_reviews WHERE user_id = ?').run(userId);
     },
+    deleteForProject: async (userId, projectId) => deleteForProject(db, userId, projectId),
     close: () => {
       db.close();
       protect(filePath);
@@ -195,14 +274,15 @@ function insertReview(db: Sql, record: StoredReview): { wrote: boolean } {
   try {
     db.prepare(
       `INSERT INTO ai_pm_reviews
-        (user_id, review_id, input_sha, version, parent_review_id, status, record_json, finished_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        (user_id, review_id, input_sha, version, parent_review_id, project_id, status, record_json, finished_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).run(
       record.userId,
       record.reviewId,
       record.inputSha,
       record.version,
       record.parentReviewId,
+      record.projectId,
       record.status,
       JSON.stringify(record),
       record.finishedAt,
@@ -243,20 +323,20 @@ function insertFeedback(db: Sql, record: StoredFeedback): { wrote: boolean } {
 
 function readReview(db: Sql, userId: string, reviewId: string): StoredReview | null {
   const row = db
-    .prepare('SELECT record_json FROM ai_pm_reviews WHERE user_id = ? AND review_id = ?')
-    .get(userId, reviewId) as { record_json?: string } | undefined;
-  return row?.record_json ? (JSON.parse(row.record_json) as StoredReview) : null;
+    .prepare('SELECT record_json, project_id FROM ai_pm_reviews WHERE user_id = ? AND review_id = ?')
+    .get(userId, reviewId) as { record_json?: string; project_id?: string | null } | undefined;
+  return row?.record_json ? recordFromRow(row.record_json, row.project_id ?? null) : null;
 }
 
-function latestForInput(db: Sql, userId: string, inputSha: string): StoredReview | null {
+function latestForInput(db: Sql, userId: string, inputSha: string, projectId: string): StoredReview | null {
   const row = db
     .prepare(
-      `SELECT record_json FROM ai_pm_reviews
-       WHERE user_id = ? AND input_sha = ?
+      `SELECT record_json, project_id FROM ai_pm_reviews
+       WHERE user_id = ? AND project_id = ? AND input_sha = ?
        ORDER BY version DESC LIMIT 1`,
     )
-    .get(userId, inputSha) as { record_json?: string } | undefined;
-  return row?.record_json ? (JSON.parse(row.record_json) as StoredReview) : null;
+    .get(userId, projectId, inputSha) as { record_json?: string; project_id?: string | null } | undefined;
+  return row?.record_json ? recordFromRow(row.record_json, row.project_id ?? null) : null;
 }
 
 function succeededChild(
@@ -267,10 +347,10 @@ function succeededChild(
   supplementSha: string,
 ): StoredReview | null {
   const rows = db
-    .prepare('SELECT record_json FROM ai_pm_reviews WHERE user_id = ? AND parent_review_id = ? AND status = ?')
-    .all(userId, parentReviewId, 'succeeded') as Array<{ record_json: string }>;
+    .prepare('SELECT record_json, project_id FROM ai_pm_reviews WHERE user_id = ? AND parent_review_id = ? AND status = ?')
+    .all(userId, parentReviewId, 'succeeded') as Array<{ record_json: string; project_id: string | null }>;
   for (const row of rows) {
-    const record = JSON.parse(row.record_json) as StoredReview;
+    const record = recordFromRow(row.record_json, row.project_id);
     if (record.sourceFeedbackId === sourceFeedbackId && record.supplementSha === supplementSha) {
       return record;
     }
@@ -278,13 +358,35 @@ function succeededChild(
   return null;
 }
 
-function listReviews(db: Sql, userId: string): StoredReview[] {
+function listReviews(db: Sql, userId: string, projectId: string): StoredReview[] {
   const rows = db
     .prepare(
-      'SELECT record_json FROM ai_pm_reviews WHERE user_id = ? ORDER BY finished_at ASC, version ASC',
+      'SELECT record_json, project_id FROM ai_pm_reviews WHERE user_id = ? AND project_id = ? ORDER BY finished_at ASC, version ASC',
     )
-    .all(userId) as Array<{ record_json: string }>;
-  return rows.map((row) => JSON.parse(row.record_json) as StoredReview);
+    .all(userId, projectId) as Array<{ record_json: string; project_id: string | null }>;
+  return rows.map((row) => recordFromRow(row.record_json, row.project_id));
+}
+
+function deleteForProject(db: Sql, userId: string, projectId: string) {
+  const reviews = db
+    .prepare('SELECT review_id FROM ai_pm_reviews WHERE user_id = ? AND project_id = ?')
+    .all(userId, projectId) as Array<{ review_id: string }>;
+  for (const review of reviews) {
+    db.prepare('DELETE FROM ai_pm_feedback WHERE user_id = ? AND review_id = ?').run(userId, review.review_id);
+  }
+  db.prepare('DELETE FROM ai_pm_reviews WHERE user_id = ? AND project_id = ?').run(userId, projectId);
+}
+
+function recordFromRow(recordJson: string, projectId: string | null): StoredReview {
+  const record = JSON.parse(recordJson) as StoredReview;
+  return { ...record, projectId: projectId ?? record.projectId ?? null };
+}
+
+function ensureProjectColumn(db: Sql) {
+  const columns = db.prepare('PRAGMA table_info(ai_pm_reviews)').all() as Array<{ name: string }>;
+  if (!columns.some((column) => column.name === 'project_id')) {
+    db.exec('ALTER TABLE ai_pm_reviews ADD COLUMN project_id TEXT');
+  }
 }
 
 function listFeedback(db: Sql, userId: string, reviewId?: string): StoredFeedback[] {

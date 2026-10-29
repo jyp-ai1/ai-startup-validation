@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { dismissCookies } from './_helpers/v3-p0-e2e-helpers';
+import { expectSingleReviewLead, walkLocalFeedback } from './_helpers/ai-pm-single-flow';
 
 const ARTIFACT_DIR = '/opt/cursor/artifacts/screenshots';
 const SESSION_ID = 'silmulm01';
@@ -19,7 +20,7 @@ const LMULM = `LMULM은 교보문고 사내벤처에서 출발한 한정판 문�
 
 기존 대안은 중고나라·번개장터 같은 범용 중고 거래와 브랜드 공식 재입고다.`;
 
-test('S.I. V1 review surface leads after LMULM business input', async ({ page }) => {
+test('custom demo leads with one review flow instead of the rule judgment', async ({ page }) => {
   test.setTimeout(120_000);
   fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
 
@@ -36,23 +37,12 @@ test('S.I. V1 review surface leads after LMULM business input', async ({ page })
     waitUntil: 'domcontentloaded',
   });
   await dismissCookies(page);
+  await expectSingleReviewLead(page);
+  await expect(page.getByTestId('ai-pm-summary')).toContainText('LMULM');
+  await walkLocalFeedback(page, '재판매 등록 수는 아직 확인하지 못했다.');
 
-  const surface = page.getByTestId('si-review-surface');
-  await expect(surface).toBeVisible({ timeout: 60_000 });
-  await expect(page.getByTestId('si-verdict-label')).toContainText('사업화 가능성이 높음');
-  await expect(page.getByTestId('si-judgment-prose')).not.toContainText(/\d{2,3}\s*점/);
-  await expect(page.getByTestId('si-critical-unknown')).toContainText(/재판매|C2C/);
-  await expect(page.getByTestId('si-decision-evidence')).toContainText(/재판매|재구매|거래/);
-  await expect(page.getByTestId('si-validation-priority')).toBeVisible();
-
-  const decline = page.getByRole('button', { name: /Decline|거절|거부/i });
-  if (await decline.first().isVisible().catch(() => false)) {
-    await decline.first().click({ force: true });
-  }
-
-  await surface.screenshot({ path: path.join(ARTIFACT_DIR, 'si-v1-lmulm-review-surface.png') });
   await page.screenshot({
-    path: path.join(ARTIFACT_DIR, 'si-v1-lmulm-workspace.png'),
+    path: path.join(ARTIFACT_DIR, 'ai-pm-single-flow-lmulm.png'),
     fullPage: true,
   });
 });

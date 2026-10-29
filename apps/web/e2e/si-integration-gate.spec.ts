@@ -1,10 +1,10 @@
-import { expect, test } from '@playwright/test';
+import { test } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 
 import { CLINICFLOW_DOCUMENT, FITBRIDGE_DOCUMENT } from '../lib/demo/demo-seed-documents';
-import { SI_INTEGRATION_ANSWERS } from '../features/strategic-intelligence/lib/si-integration-answers';
 import { dismissCookies } from './_helpers/v3-p0-e2e-helpers';
+import { expectSingleReviewLead, walkLocalFeedback } from './_helpers/ai-pm-single-flow';
 
 const ARTIFACT_DIR = '/opt/cursor/artifacts/screenshots';
 
@@ -59,20 +59,8 @@ MZ와 FIT가 실제로 이 서비스를 원하는지는 조사되지 않았다.
   { id: 'fitbridge', title: '핏브릿지', documentText: FITBRIDGE_DOCUMENT },
 ] as const;
 
-function answerFromQuestion(questionText: string): string {
-  if (/재판매|재구매|두 번째/.test(questionText)) return SI_INTEGRATION_ANSWERS.repeat_loop.validated;
-  if (/쓰는 사람과 돈을 내는/.test(questionText)) return SI_INTEGRATION_ANSWERS.payer_split.validated;
-  if (/직무|돈을 내는 사람은 누구/.test(questionText)) {
-    return SI_INTEGRATION_ANSWERS.payer_job.validated;
-  }
-  if (/지목한 고객/.test(questionText)) return SI_INTEGRATION_ANSWERS.segment_proof.validated;
-  if (/유료로 제안/.test(questionText)) return SI_INTEGRATION_ANSWERS.paid_conversion.validated;
-  if (/고객은 누구/.test(questionText)) return SI_INTEGRATION_ANSWERS.customer_problem.validated;
-  return SI_INTEGRATION_ANSWERS.generic.validated;
-}
-
 for (const fixture of CASES) {
-  test(`S.I. Integration Gate — ${fixture.id} judgment leads and re-judges`, async ({ page }) => {
+  test(`custom demo single review flow — ${fixture.id}`, async ({ page }) => {
     test.setTimeout(120_000);
     fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
     const sessionId = `sigate${fixture.id}`.slice(0, 16);
@@ -91,48 +79,11 @@ for (const fixture of CASES) {
       waitUntil: 'domcontentloaded',
     });
     await dismissCookies(page);
-
-    const journey = page.getByTestId('si-journey-block');
-    const surface = page.getByTestId('si-review-surface');
-    const bind = page.getByTestId('si-ai-pm-bind-surface');
-    await expect(journey).toBeVisible({ timeout: 60_000 });
-    await expect(surface).toBeVisible();
-    await expect(bind).toBeVisible();
-
-    const surfaceBox = await surface.boundingBox();
-    const bindBox = await bind.boundingBox();
-    expect(surfaceBox && bindBox && surfaceBox.y < bindBox.y).toBeTruthy();
-
-    const loop = page.locator('#ai-pm-loop');
-    if (await loop.isVisible().catch(() => false)) {
-      const loopBox = await loop.boundingBox();
-      expect(journey && loopBox && (await journey.boundingBox())!.y < loopBox.y).toBeTruthy();
-      const loopText = (await loop.innerText()).trim();
-      expect(loopText.includes('이 사업은 누구에게 무엇을 제공하나요?')).toBe(false);
-    }
-
-    const question = page.getByTestId('si-ai-pm-question');
-    await expect(question).toContainText(/습니까|알려주세요/);
-    const questionText = (await question.innerText()).trim();
-    expect(questionText.includes('C2C 재판매가 한 번의 이벤트가 아니라')).toBe(false);
-
-    const beforeStage = await surface.getAttribute('data-si-stage');
-    const beforeUnknown = (await page.getByTestId('si-critical-unknown').innerText()).trim();
-
-    await page.getByTestId('si-ai-pm-answer').fill(answerFromQuestion(questionText));
-    await page.getByTestId('si-ai-pm-submit').click();
-
-    await expect(surface).toBeVisible();
-    const afterStage = await surface.getAttribute('data-si-stage');
-    const afterUnknown = (await page.getByTestId('si-critical-unknown').innerText()).trim();
-    const afterJudgment = (await page.getByTestId('si-judgment-prose').innerText()).trim();
-    expect(
-      afterStage !== beforeStage || afterUnknown !== beforeUnknown || afterJudgment.length > 0,
-    ).toBeTruthy();
-    expect(await journey.getAttribute('data-si-source')).toBe('business-input');
+    await expectSingleReviewLead(page);
+    await walkLocalFeedback(page, '결제 사실은 아직 확인하지 못했다.');
 
     await page.screenshot({
-      path: path.join(ARTIFACT_DIR, `si-integration-${fixture.id}.png`),
+      path: path.join(ARTIFACT_DIR, `ai-pm-single-flow-gate-${fixture.id}.png`),
       fullPage: true,
     });
   });
