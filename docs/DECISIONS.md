@@ -2309,6 +2309,50 @@ The stored first review could be a short field map and one free-text question. T
 
 ---
 
+## ADR-071: A business text alone starts the comprehensive first review
+
+**Status:** Accepted  
+**Date:** 2026-10-29  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+ADR-070 required a review purpose before the first call. The brewery reading on `a022a72f` still summarized the text, stated a fee and a participation charge that the source does not contain, and asked whether brewery cooperation was high, low, or undecided. The saved choice was written as a confirmed fact. That gate stays failed. Save, restore, and workspace scope stay as they are.
+
+### Decision
+
+1. The business body is enough. An omitted purpose is stored as 종합 사업성 검토, and an omitted stage as 미확인. The stored text also includes `검토 계약: comprehensive-1`. Lookup remains `user_id`, `project_id`, and the hash of that text. The screen restores only a ready analysis whose input contains that contract line. Older rows stay stored and are not overwritten.
+2. The first-review prompt asks for the customer, problem, alternatives, value, differentiation, payer versus user, revenue, market, operations, competition, risks, one to three assumptions, and one low-cost check. The one question must split a single unknown. Degree-only choices are not the requested shape. If the model omits an unknown option, the parser adds `아직 핵심을 정하지 못했다` before direct input.
+3. A fee, participation charge, usage fee, or subscription fee that is not in the source is stored with a hypothesis prefix. A saved choice is the founder's current hypothesis. Saving it still does not call a model, and the panel still does not call the follow-up route.
+4. This decision does not declare the first-review gate passed, start a second model review, unlock production, or merge PR #209. A live Preview response on this contract was not read in the run that recorded this ADR.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Keep requiring a purpose | The previous hash stays stable | The founder cannot start from the business text alone |
+| Show the previous brewery analysis until a new one exists | No empty intake | The failed reading would stay on screen |
+| Reject degree-only choices in the parser | A weak question would not be stored as success | The same hash would call the model again on the next click |
+
+### Consequences
+
+**Positive:**
+
+- A new purpose line and contract line make a new hash, so the thin brewery row is not reused.
+- An unstated fee is labeled as a hypothesis even if the model states it.
+
+**Negative:**
+
+- The same body on a workspace that already has the older review makes one new first-review call when the founder submits.
+- The prompt does not guarantee the question splits the business. That still has to be read from a live response.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #209 stays unmerged.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
