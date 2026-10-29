@@ -442,7 +442,8 @@ export async function saveReviewFeedback(input: {
 }): Promise<{ ok: true; feedback: StoredFeedback; view: AiPmReviewView } | { ok: false; error: 'feedback_incomplete' | 'review_missing' }> {
   const parsed = parseFeedbackBody(input.body);
   if (!parsed.ok) return parsed;
-  const review = await input.store.readReview(input.userId, parsed.value.reviewId);
+  const stored = await input.store.readReview(input.userId, parsed.value.reviewId);
+  const review = stored ? repairUnstructured(stored) : null;
   if (!review || review.status !== 'succeeded' || review.projectId !== input.projectId) {
     return { ok: false, error: 'review_missing' };
   }

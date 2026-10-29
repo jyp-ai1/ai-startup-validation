@@ -1277,6 +1277,53 @@ describe('first review analysis', () => {
     expect(repaired.status).toBe('ready');
     expect(repaired.sections?.analysis?.summary).toContain('양조장');
     expect(repaired.questionSource).toBe('model-review');
+    const store = openAiPmReviewStore(storePath());
+    await store.insertReview({
+      reviewId: 'review-live',
+      userId: 'user-a',
+      version: 1,
+      parentReviewId: null,
+      sourceFeedbackId: null,
+      supplementSha: null,
+      projectId: 'project-test',
+      inputSha: 'sha',
+      inputText: BREWERY,
+      inputOrigin: 'typed',
+      fileName: null,
+      status: 'failed',
+      evidence: 'live_network',
+      provider: 'openai',
+      model: 'gpt-4o-mini-2024-07-18',
+      sections: null,
+      rawContent: JSON.stringify(liveShape),
+      promptTokens: 590,
+      completionTokens: 631,
+      totalTokens: 1221,
+      usageKnown: true,
+      callCount: 1,
+      latencyMs: 1,
+      error: 'unstructured_response',
+      requestedAt: NOW,
+      finishedAt: NOW,
+    });
+    const saved = await saveReviewFeedback({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      now: NOW,
+      body: {
+        reviewId: 'review-live',
+        choiceId: 'c1',
+        choiceLabel: '양조장과의 협력 가능성이 높다.',
+        otherText: '',
+      },
+    });
+    expect(saved.ok).toBe(true);
+    if (!saved.ok) return;
+    expect(saved.feedback.modelCalls).toBe(0);
+    expect(saved.view.status).toBe('ready');
+    expect(saved.view.feedback.at(-1)?.choiceAnswer?.label).toContain('협력 가능성이 높다');
+    store.close();
   });
 
   it('asks from the review purpose and saves a choice without another model call', async () => {
