@@ -52,10 +52,13 @@ import {
   buildQuality11InputRequests,
   QUALITY12_PROMPT_VERSION,
   QUALITY13_PROMPT_VERSION,
+  QUALITY14_PROMPT_VERSION,
   buildIndependentInputRequests,
   buildQuality13InputRequests,
+  buildQuality14InputRequests,
   quality13DecisionCue,
   quality13UserBlock,
+  quality14UserBlock,
   buildQuality12CompareRequest,
   buildQuality12InputRequests,
   branchContractPass,
@@ -151,12 +154,13 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality13-independent-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality14-independent-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('quality-13-independent-request.json');
+    expect(script).toContain('quality-14-independent-request.json');
+    expect(script).not.toContain('quality-13-independent-request.json');
     expect(script).not.toContain('quality-2-independent-request.json');
     expect(script).not.toContain('quality-12-inputs-request.json');
     expect(script).not.toContain('quality-11-inputs-request.json');
@@ -525,6 +529,20 @@ describe('quality-2 and quality-3 compare requests', () => {
     };
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(openUrl, `${JSON.stringify(openFixture, null, 2)}\n`);
     expect(JSON.parse(readFileSync(openUrl, 'utf8'))).toEqual(openFixture);
+    const retry = quality14UserBlock(QUALITY9_EXPERIENCE_INPUT);
+    expect(retry).toContain(QUALITY14_PROMPT_VERSION);
+    expect(retry).toContain('질문을 가르는 답을 둘 이상 둔다');
+    expect(retry).not.toContain(QUALITY13_PROMPT_VERSION);
+    for (const line of banned) expect(retry).not.toContain(line);
+    expect(buildFirstReviewRequest(COMPARE_BUSINESS_INPUT).messages[0]?.content).not.toContain(QUALITY14_PROMPT_VERSION);
+    const retryUrl = new URL('../quality-14-independent-request.json', import.meta.url);
+    const retryFixture = {
+      businessInput: COMPARE_BUSINESS_INPUT,
+      baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality2-independent-recorded.json',
+      requests: buildQuality14InputRequests(),
+    };
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(retryUrl, `${JSON.stringify(retryFixture, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(retryUrl, 'utf8'))).toEqual(retryFixture);
   });
 
   it('accepts the same field contract on brewery, experience, and supplier inputs', () => {

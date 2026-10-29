@@ -745,6 +745,52 @@ export function buildQuality13CompareRequest(text = COMPARE_BUSINESS_INPUT): Cha
   };
 }
 
+export const QUALITY14_PROMPT_VERSION = 'quality-14-cpo-draft';
+
+/** quality-13 named only the fallback choices, so experience and supplier returned just those. */
+export function quality14UserBlock(text: string): string {
+  return [
+    quality13UserBlock(text).replaceAll(
+      `프롬프트 버전 ${QUALITY13_PROMPT_VERSION}.`,
+      `프롬프트 버전 ${QUALITY14_PROMPT_VERSION}.`,
+    ),
+    '아직 정하지 못함과 기타 / 직접 입력은 선택지의 마지막이다. 그 앞에 질문을 가르는 답을 둘 이상 둔다.',
+    '판매 수익, 유지비, 유지 관리라는 말을 쓰지 않는다. (가설)을 문장 끝에 붙이지 않는다.',
+    'inferences에 입력 문장을 그대로 또는 표현만 바꾸어 넣지 않는다. 추론: 이 없으면 ["미확인"]이다.',
+  ].join('\n');
+}
+
+export const QUALITY14_SYSTEM_PROMPT = [
+  '프롬프트 버전 quality-14-cpo-draft.',
+  ...QUALITY13_SYSTEM_PROMPT.split('\n').slice(1),
+  '선택지는 미결정과 기타만으로 끝내지 않는다. 질문을 가르는 답을 그 앞에 둔다.',
+].join('\n');
+
+export function buildQuality14CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
+  return {
+    model: AI_PM_REVIEW_MODEL,
+    temperature: 0.2,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: QUALITY14_SYSTEM_PROMPT },
+      { role: 'user', content: `사업 입력:\n${text}\n\n${quality14UserBlock(text)}` },
+    ],
+  };
+}
+
+export function buildQuality14InputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
+  return [
+    { inputId: 'brewery', text: COMPARE_BUSINESS_INPUT },
+    { inputId: 'experience', text: QUALITY9_EXPERIENCE_INPUT },
+    { inputId: 'supplier', text: QUALITY9_SUPPLIER_INPUT },
+  ].map((item) => ({
+    inputId: item.inputId,
+    promptVersion: `${QUALITY14_PROMPT_VERSION}:${item.inputId}`,
+    request: buildQuality14CompareRequest(item.text),
+  }));
+}
+
 export function buildQuality13InputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
   return [
     { inputId: 'brewery', text: COMPARE_BUSINESS_INPUT },

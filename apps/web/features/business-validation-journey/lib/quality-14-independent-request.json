@@ -1,0 +1,72 @@
+{
+  "businessInput": "다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n검토 목적: 종합 사업성 검토\n현재 단계: 미확인\n가장 알고 싶은 것: 없음\n검토 계약: comprehensive-1",
+  "baselineSource": "docs/evidence/ALABOM/AI-PM/sprint-q1-quality2-independent-recorded.json",
+  "requests": [
+    {
+      "inputId": "brewery",
+      "promptVersion": "quality-14-cpo-draft:brewery",
+      "request": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "responseFormat": {
+          "type": "json_object"
+        },
+        "messages": [
+          {
+            "role": "system",
+            "content": "프롬프트 버전 quality-14-cpo-draft.\nJSON 객체만 반환한다.\n입력에 없는 경력, 네트워크, 역량, 지불자, 매출, 계약, 제휴를 사실로 쓰지 않는다.\n지불자가 입력에 없으면 payer는 미확인이다.\n수익은 항목마다 가설: 또는 사실: 이다. 문장 끝의 (가설) 하나로는 부족하다.\n질문은 입력에 있는 갈림길이다. 선택지는 그 질문의 답이다.\n모르는 칸은 미확인이다.\n선택지는 미결정과 기타만으로 끝내지 않는다. 질문을 가르는 답을 그 앞에 둔다."
+          },
+          {
+            "role": "user",
+            "content": "사업 입력:\n다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n검토 목적: 종합 사업성 검토\n현재 단계: 미확인\n가장 알고 싶은 것: 없음\n검토 계약: comprehensive-1\n\n프롬프트 버전 quality-14-cpo-draft.\nJSON 객체만 반환한다. 질문 문장, 선택지 목록, 수익 문장, 추론 문장은 여기에 없다. 입력만 보고 직접 쓴다.\nfounderFacts는 입력 문장만 담은 배열이다. 경력, 네트워크, 역량은 입력에 없으면 쓰지 않는다.\ninferences는 배열이다. 입력에서 바로 나오는 해석만 적고 각 문장을 추론: 으로 시작한다. 근거가 없으면 [\"미확인\"]만 쓴다.\nstrengths는 입력에 강점이 없으면 [\"미확인\"]이다. 관심 증가, 매출 증대, 고객 확보는 입력에 없으면 쓰지 않는다.\npayer는 입력에 누가 돈을 내는지 없으면 미확인이다. 고객을 지불자로 단정하지 않는다.\nrevenueModel은 문자열이다. 입력에 없는 수익은 그 항목 바로 앞에 가설: 를 붙인다. 문장 끝의 (가설) 하나로는 부족하다. 판매 수익과 유지비는 입력에 없으면 만들지 않는다.\nalternatives, differentiation, market, competition, operations, profitability, judgment, problem, value는 입력에 없으면 미확인이다.\n이 입력에는 체험과 마케팅 지원이 함께 있다. 질문은 어느 쪽을 먼저 검증할지, 또는 둘을 어떻게 같이 검증할지다. 협력 방법만 묻지 않는다.\nchoices는 그 질문에 대한 서로 다른 답이다. 선택지를 물음표로 쓰지 않는다. 아직 정하지 못함과 기타 / 직접 입력을 포함한다.\nsummary는 입력에 있는 사업만 말한다.\n키: summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices\n아직 정하지 못함과 기타 / 직접 입력은 선택지의 마지막이다. 그 앞에 질문을 가르는 답을 둘 이상 둔다.\n판매 수익, 유지비, 유지 관리라는 말을 쓰지 않는다. (가설)을 문장 끝에 붙이지 않는다.\ninferences에 입력 문장을 그대로 또는 표현만 바꾸어 넣지 않는다. 추론: 이 없으면 [\"미확인\"]이다."
+          }
+        ]
+      }
+    },
+    {
+      "inputId": "experience",
+      "promptVersion": "quality-14-cpo-draft:experience",
+      "request": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "responseFormat": {
+          "type": "json_object"
+        },
+        "messages": [
+          {
+            "role": "system",
+            "content": "프롬프트 버전 quality-14-cpo-draft.\nJSON 객체만 반환한다.\n입력에 없는 경력, 네트워크, 역량, 지불자, 매출, 계약, 제휴를 사실로 쓰지 않는다.\n지불자가 입력에 없으면 payer는 미확인이다.\n수익은 항목마다 가설: 또는 사실: 이다. 문장 끝의 (가설) 하나로는 부족하다.\n질문은 입력에 있는 갈림길이다. 선택지는 그 질문의 답이다.\n모르는 칸은 미확인이다.\n선택지는 미결정과 기타만으로 끝내지 않는다. 질문을 가르는 답을 그 앞에 둔다."
+          },
+          {
+            "role": "user",
+            "content": "사업 입력:\n외국인 관광객에게 막걸리 만들기체험만 안내한다.\n\n프롬프트 버전 quality-14-cpo-draft.\nJSON 객체만 반환한다. 질문 문장, 선택지 목록, 수익 문장, 추론 문장은 여기에 없다. 입력만 보고 직접 쓴다.\nfounderFacts는 입력 문장만 담은 배열이다. 경력, 네트워크, 역량은 입력에 없으면 쓰지 않는다.\ninferences는 배열이다. 입력에서 바로 나오는 해석만 적고 각 문장을 추론: 으로 시작한다. 근거가 없으면 [\"미확인\"]만 쓴다.\nstrengths는 입력에 강점이 없으면 [\"미확인\"]이다. 관심 증가, 매출 증대, 고객 확보는 입력에 없으면 쓰지 않는다.\npayer는 입력에 누가 돈을 내는지 없으면 미확인이다. 고객을 지불자로 단정하지 않는다.\nrevenueModel은 문자열이다. 입력에 없는 수익은 그 항목 바로 앞에 가설: 를 붙인다. 문장 끝의 (가설) 하나로는 부족하다. 판매 수익과 유지비는 입력에 없으면 만들지 않는다.\nalternatives, differentiation, market, competition, operations, profitability, judgment, problem, value는 입력에 없으면 미확인이다.\n이 입력은 막걸리 만들기체험만 있다. 질문은 그 체험의 수요, 운영, 지불 중 입력에 없는 하나다. 다른 문화 체험을 더하지 않는다.\nchoices는 그 질문에 대한 서로 다른 답이다. 선택지를 물음표로 쓰지 않는다. 아직 정하지 못함과 기타 / 직접 입력을 포함한다.\nsummary는 입력에 있는 사업만 말한다.\n키: summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices\n아직 정하지 못함과 기타 / 직접 입력은 선택지의 마지막이다. 그 앞에 질문을 가르는 답을 둘 이상 둔다.\n판매 수익, 유지비, 유지 관리라는 말을 쓰지 않는다. (가설)을 문장 끝에 붙이지 않는다.\ninferences에 입력 문장을 그대로 또는 표현만 바꾸어 넣지 않는다. 추론: 이 없으면 [\"미확인\"]이다."
+          }
+        ]
+      }
+    },
+    {
+      "inputId": "supplier",
+      "promptVersion": "quality-14-cpo-draft:supplier",
+      "request": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "responseFormat": {
+          "type": "json_object"
+        },
+        "messages": [
+          {
+            "role": "system",
+            "content": "프롬프트 버전 quality-14-cpo-draft.\nJSON 객체만 반환한다.\n입력에 없는 경력, 네트워크, 역량, 지불자, 매출, 계약, 제휴를 사실로 쓰지 않는다.\n지불자가 입력에 없으면 payer는 미확인이다.\n수익은 항목마다 가설: 또는 사실: 이다. 문장 끝의 (가설) 하나로는 부족하다.\n질문은 입력에 있는 갈림길이다. 선택지는 그 질문의 답이다.\n모르는 칸은 미확인이다.\n선택지는 미결정과 기타만으로 끝내지 않는다. 질문을 가르는 답을 그 앞에 둔다."
+          },
+          {
+            "role": "user",
+            "content": "사업 입력:\n지역 공장에 온라인 마케팅 페이지 제작만 대행한다.\n\n프롬프트 버전 quality-14-cpo-draft.\nJSON 객체만 반환한다. 질문 문장, 선택지 목록, 수익 문장, 추론 문장은 여기에 없다. 입력만 보고 직접 쓴다.\nfounderFacts는 입력 문장만 담은 배열이다. 경력, 네트워크, 역량은 입력에 없으면 쓰지 않는다.\ninferences는 배열이다. 입력에서 바로 나오는 해석만 적고 각 문장을 추론: 으로 시작한다. 근거가 없으면 [\"미확인\"]만 쓴다.\nstrengths는 입력에 강점이 없으면 [\"미확인\"]이다. 관심 증가, 매출 증대, 고객 확보는 입력에 없으면 쓰지 않는다.\npayer는 입력에 누가 돈을 내는지 없으면 미확인이다. 고객을 지불자로 단정하지 않는다.\nrevenueModel은 문자열이다. 입력에 없는 수익은 그 항목 바로 앞에 가설: 를 붙인다. 문장 끝의 (가설) 하나로는 부족하다. 판매 수익과 유지비는 입력에 없으면 만들지 않는다.\nalternatives, differentiation, market, competition, operations, profitability, judgment, problem, value는 입력에 없으면 미확인이다.\n이 입력은 온라인 마케팅 페이지 제작 대행만 있다. 질문은 그 대행의 문제, 범위, 지불 중 입력에 없는 하나다. 관광 체험이나 추가 상품을 더하지 않는다.\nchoices는 그 질문에 대한 서로 다른 답이다. 선택지를 물음표로 쓰지 않는다. 아직 정하지 못함과 기타 / 직접 입력을 포함한다.\nsummary는 입력에 있는 사업만 말한다.\n키: summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices\n아직 정하지 못함과 기타 / 직접 입력은 선택지의 마지막이다. 그 앞에 질문을 가르는 답을 둘 이상 둔다.\n판매 수익, 유지비, 유지 관리라는 말을 쓰지 않는다. (가설)을 문장 끝에 붙이지 않는다.\ninferences에 입력 문장을 그대로 또는 표현만 바꾸어 넣지 않는다. 추론: 이 없으면 [\"미확인\"]이다."
+          }
+        ]
+      }
+    }
+  ]
+}
