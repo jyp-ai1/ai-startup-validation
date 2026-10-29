@@ -53,6 +53,16 @@ import {
   QUALITY12_PROMPT_VERSION,
   QUALITY13_PROMPT_VERSION,
   QUALITY14_PROMPT_VERSION,
+  INCREMENTAL_STRUCTURE_CHOICE,
+  INCREMENTAL_STRUCTURE_DATA_CLASS,
+  INCREMENTAL_STRUCTURE_NOTICE,
+  INCREMENTAL_STRUCTURE_SUPPLEMENT,
+  INCREMENTAL_STRUCTURE_VERSION,
+  buildIncrementalStructureRequest,
+  incrementalFieldDelta,
+  incrementalStructureCoverage,
+  incrementalStructureReady,
+  productFollowUpStructureReport,
   buildIndependentInputRequests,
   buildQuality13InputRequests,
   buildQuality14InputRequests,
@@ -154,12 +164,13 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality14-independent-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-structure-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('quality-14-independent-request.json');
+    expect(script).toContain('incremental-structure-request.json');
+    expect(script).not.toContain('quality-14-independent-request.json');
     expect(script).not.toContain('quality-13-independent-request.json');
     expect(script).not.toContain('quality-2-independent-request.json');
     expect(script).not.toContain('quality-12-inputs-request.json');
@@ -754,6 +765,186 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(reread[0]?.sections?.revenueModel).toBe(revenue);
     expect(reread[0]?.status).toBe('succeeded');
     store.close();
+  });
+
+  it('composes a second incremental call from the brewery reply and a synthetic answer', () => {
+    const evidenceUrl = new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json', import.meta.url);
+    const evidence = JSON.parse(readFileSync(evidenceUrl, 'utf8')) as {
+      gitSha: string;
+      report: { calls: Array<{ promptVersion: string; raw: string }> };
+    };
+    const previous = evidence.report.calls.find((call) => call.promptVersion === 'quality-14-cpo-draft:brewery');
+    expect(previous?.raw).toContain(INCREMENTAL_STRUCTURE_CHOICE);
+    const request = buildIncrementalStructureRequest({
+      originalInput: COMPARE_BUSINESS_INPUT,
+      previousAnalysisRaw: previous?.raw ?? '',
+      previousAnalysisSource: {
+        evidence: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json',
+        promptVersion: 'quality-14-cpo-draft:brewery',
+        executionSha: evidence.gitSha,
+      },
+    });
+    const coverage = incrementalStructureCoverage(request);
+    expect(coverage).toEqual({
+      originalInput: true,
+      previousAnalysis: true,
+      previousQuestion: true,
+      founderChoice: true,
+      founderSupplement: true,
+      separationRules: true,
+    });
+    expect(incrementalStructureReady(request)).toBe(true);
+    const user = JSON.parse(request.messages[1]?.content ?? '{}') as {
+      dataClass: string;
+      notice: string;
+      originalInput: string;
+      previousQuestion: string;
+      previousAnalysis: { nextQuestion: string; choices: string[] };
+      founderChoice: { label: string; dataClass: string; notice: string };
+      founderSupplement: string;
+      previousAnalysisSource: { executionSha: string; note: string };
+    };
+    expect(user.dataClass).toBe(INCREMENTAL_STRUCTURE_DATA_CLASS);
+    expect(user.notice).toBe(INCREMENTAL_STRUCTURE_NOTICE);
+    expect(user.originalInput).toBe(COMPARE_BUSINESS_INPUT);
+    expect(user.previousQuestion).toBe('체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?');
+    expect(user.previousQuestion).toBe(user.previousAnalysis.nextQuestion);
+    expect(user.previousAnalysis.choices).toContain(INCREMENTAL_STRUCTURE_CHOICE);
+    expect(user.founderChoice.label).toBe(INCREMENTAL_STRUCTURE_CHOICE);
+    expect(user.founderChoice.dataClass).toBe(INCREMENTAL_STRUCTURE_DATA_CLASS);
+    expect(user.founderChoice.notice).toBe(INCREMENTAL_STRUCTURE_NOTICE);
+    expect(user.founderSupplement).toBe(INCREMENTAL_STRUCTURE_SUPPLEMENT);
+    expect(user.previousAnalysisSource.executionSha).toBe('8c5968ed6023f04bfa2172884ddaf4a47c02127a');
+    expect(user.previousAnalysisSource.note).toContain('품질 통과가 아니다');
+    expect(request.messages[0]?.content).toContain(INCREMENTAL_STRUCTURE_VERSION);
+    expect(request.messages[0]?.content).not.toContain('프롬프트 버전 quality-2');
+    expect(request.maxTokens).toBe(2400);
+    expect(buildFirstReviewRequest(COMPARE_BUSINESS_INPUT).messages[0]?.content).not.toContain(INCREMENTAL_STRUCTURE_VERSION);
+    expect(AI_PM_FIRST_PROMPT_VERSION).toBe('quality-2');
+    expect(() =>
+      buildIncrementalStructureRequest({
+        originalInput: COMPARE_BUSINESS_INPUT,
+        previousAnalysisRaw: previous?.raw ?? '',
+        previousAnalysisSource: {
+          evidence: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json',
+          promptVersion: 'quality-14-cpo-draft:brewery',
+          executionSha: evidence.gitSha,
+        },
+        founderChoiceLabel: '실제 창업자가 고르지 않은 선택',
+      }),
+    ).toThrow('incremental_choice_not_in_previous');
+
+    const product = buildFollowUpRequest({
+      originalInput: COMPARE_BUSINESS_INPUT,
+      sections: {
+        customer: '관광객',
+        problem: '예약',
+        market: '미확인',
+        revenueModel: '가설',
+        execution: '구상',
+        risks: ['수요'],
+        uncertain: ['협력'],
+        hypotheses: ['협력'],
+        judgment: '보류',
+        nextQuestion: user.previousQuestion,
+        nextQuestionReason: '갈림길',
+        answerHint: '',
+        claimConfirmation: null,
+      },
+      feedback: {
+        feedbackId: 'feedback-synthetic',
+        reviewId: 'review-synthetic',
+        userId: 'user-synthetic',
+        agreement: 'need_info',
+        accuracy: 'hard_to_compare',
+        revisionAreas: ['other'],
+        comment: INCREMENTAL_STRUCTURE_CHOICE,
+        nextAction: 'verify_hypotheses',
+        marks: [],
+        choiceAnswer: { choiceId: 'choice-1', label: INCREMENTAL_STRUCTURE_CHOICE, otherText: INCREMENTAL_STRUCTURE_SUPPLEMENT },
+        submittedAt: '2026-10-29T09:20:00.000Z',
+        modelCalls: 0,
+      },
+      supplement: INCREMENTAL_STRUCTURE_SUPPLEMENT,
+    });
+    expect(productFollowUpStructureReport(product)).toEqual({
+      present: ['originalInput', 'previousQuestion', 'founderSupplement'],
+      absent: ['previousAnalysis', 'founderChoice', 'separationRules'],
+    });
+    expect(incrementalStructureReady(product)).toBe(false);
+    const productUser = product.messages.map((message) => message.content).join('\n');
+    expect(productUser).not.toContain('choiceAnswer');
+    expect(productUser).not.toContain(INCREMENTAL_STRUCTURE_VERSION);
+
+    const reviewSource = readFileSync(new URL('../ai-pm-review.ts', import.meta.url), 'utf8');
+    const saveStart = reviewSource.indexOf('export async function saveReviewFeedback');
+    const saveEnd = reviewSource.indexOf('export async function runFollowUpReview');
+    const saveSource = reviewSource.slice(saveStart, saveEnd);
+    expect(saveSource).toContain('modelCalls: 0');
+    expect(saveSource).not.toContain('chat(');
+    expect(saveSource).not.toContain('buildIncrementalStructureRequest');
+    expect(saveSource).not.toContain('buildFollowUpRequest');
+    const followStart = reviewSource.indexOf('export async function runFollowUpReview');
+    const followEnd = reviewSource.indexOf('export function needsRevisionGate');
+    const followSource = reviewSource.slice(followStart, followEnd);
+    expect(followSource).toContain('buildFollowUpRequest');
+    expect(followSource).not.toContain('buildIncrementalStructureRequest');
+    const panel = readFileSync(new URL('../../components/ai-pm-review-panel.tsx', import.meta.url), 'utf8');
+    const followRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/follow-up/route.ts', import.meta.url), 'utf8');
+    expect(panel).not.toContain('/api/ai-pm-review/follow-up');
+    expect(panel).not.toContain('buildIncrementalStructureRequest');
+    expect(panel).toContain('답을 저장했습니다. 모델 호출은 없습니다.');
+    expect(followRoute).toContain('runFollowUpReview');
+    expect(followRoute).not.toContain('buildIncrementalStructureRequest');
+    const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
+    expect(script).not.toContain('buildIncrementalStructureRequest');
+    expect(script).toContain('productFollowUpInvoked: false');
+
+    const changed = incrementalFieldDelta(
+      JSON.stringify({ judgment: '미확인', assumptions: '미확인', nextVerification: '미확인' }),
+      JSON.stringify({ judgment: '체험을 먼저 본다', assumptions: '가설: 체험 우선', nextVerification: '체험 수요' }),
+    );
+    expect(changed).toEqual({
+      parsed: true,
+      sameDocument: false,
+      judgmentChanged: true,
+      assumptionsChanged: true,
+      priorityChanged: true,
+    });
+    const same = incrementalFieldDelta('{"judgment":"미확인"}', '{"judgment":"미확인"}');
+    expect(same.sameDocument).toBe(true);
+    expect(same.judgmentChanged).toBe(false);
+    expect(incrementalFieldDelta('not-json', 'also-not').parsed).toBe(false);
+
+    const fixtureUrl = new URL('../incremental-structure-request.json', import.meta.url);
+    const fixture = {
+      businessInput: COMPARE_BUSINESS_INPUT,
+      dataClass: INCREMENTAL_STRUCTURE_DATA_CLASS,
+      notice: INCREMENTAL_STRUCTURE_NOTICE,
+      baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json',
+      confounders: [
+        {
+          id: 'call_path',
+          detail:
+            'Preview build reads this frozen JSON and calls the model directly. It does not call /api/ai-pm-review/follow-up. productFollowUpInvoked false is not a Q10 pass.',
+        },
+        { id: 'data_class', detail: INCREMENTAL_STRUCTURE_NOTICE },
+        {
+          id: 'product_composer',
+          detail:
+            'buildFollowUpRequest still omits the full previous analysis, the labeled choice, and the separation rules. This request does not replace it.',
+        },
+      ],
+      requests: [
+        {
+          inputId: 'brewery',
+          promptVersion: `${INCREMENTAL_STRUCTURE_VERSION}:brewery`,
+          request,
+        },
+      ],
+    };
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(fixtureUrl, `${JSON.stringify(fixture, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(fixtureUrl, 'utf8'))).toEqual(fixture);
   });
 
   it('fails the known brewery regressions and passes a hedged alternative', () => {

@@ -791,6 +791,230 @@ export function buildQuality14InputRequests(): Array<{ inputId: string; promptVe
   }));
 }
 
+/**
+ * Structure gate only. Not the product follow-up route and not a quality verdict.
+ * The founder choice and supplement are synthetic test data.
+ */
+export const INCREMENTAL_STRUCTURE_VERSION = 'incremental-structure-1';
+
+export const INCREMENTAL_STRUCTURE_DATA_CLASS = 'synthetic-test-data';
+
+export const INCREMENTAL_STRUCTURE_NOTICE =
+  '테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.';
+
+/** A choice the quality-14 brewery reply actually returned. Not a founder answer. */
+export const INCREMENTAL_STRUCTURE_CHOICE = '체험 프로그램을 먼저 검증할 것';
+
+export const INCREMENTAL_STRUCTURE_SUPPLEMENT =
+  '테스트용 합성 설명. 실제 창업자가 제공한 문장이 아니다. 예약 고객, 가격, 계약, 확정된 양조장은 없다. 체험을 먼저 보겠다는 선택은 2차 호출 구조를 만들기 위해 지정했다.';
+
+export const INCREMENTAL_STRUCTURE_RULES = [
+  '이전 1차 분석은 과거 출력이다. 새 분석과 구분하고 통째로 다시 출력하지 않는다.',
+  '창업자의 선택과 추가 설명은 현재의 판단과 정보이며 검증된 사실이 아니다.',
+  '답변이 불확실하거나 근거가 없으면 사실로 승격하지 않는다. founderFacts에 넣지 않는다.',
+  'judgment, assumptions, nextVerification이 이 답변 때문에 어떻게 달라지는지 새 값으로 적는다.',
+] as const;
+
+export const INCREMENTAL_STRUCTURE_SYSTEM_PROMPT = [
+  `프롬프트 버전 ${INCREMENTAL_STRUCTURE_VERSION}.`,
+  '이것은 2차 증분 호출의 구조 검증이다. 제품 화면의 2차 리뷰가 아니다.',
+  'JSON 객체만 반환한다.',
+  ...INCREMENTAL_STRUCTURE_RULES,
+  '바뀐 이유는 judgmentChange, hypothesisChange, priorityChange에 한 문장씩 적는다.',
+  '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, judgmentChange, hypothesisChange, priorityChange 이다.',
+  '모델 이름이나 공급사 이름은 쓰지 않는다.',
+].join('\n');
+
+export type IncrementalStructureSource = {
+  evidence: string;
+  promptVersion: string;
+  executionSha: string;
+};
+
+export type IncrementalStructureCoverage = {
+  originalInput: boolean;
+  previousAnalysis: boolean;
+  previousQuestion: boolean;
+  founderChoice: boolean;
+  founderSupplement: boolean;
+  separationRules: boolean;
+};
+
+function readPreviousAnalysis(raw: string): Record<string, unknown> {
+  const parsed = JSON.parse(raw) as unknown;
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error('incremental_previous_analysis_invalid');
+  }
+  const record = parsed as Record<string, unknown>;
+  if (typeof record.nextQuestion !== 'string' || !record.nextQuestion.trim()) {
+    throw new Error('incremental_previous_question_missing');
+  }
+  if (!Array.isArray(record.choices) || !record.choices.every((item) => typeof item === 'string')) {
+    throw new Error('incremental_previous_choices_invalid');
+  }
+  return record;
+}
+
+/** Composes one second call. runFollowUpReview does not use this function. */
+export function buildIncrementalStructureRequest(input: {
+  originalInput: string;
+  previousAnalysisRaw: string;
+  previousAnalysisSource: IncrementalStructureSource;
+  founderChoiceLabel?: string;
+  founderSupplement?: string;
+}): ChatRequest {
+  const previousAnalysis = readPreviousAnalysis(input.previousAnalysisRaw);
+  const founderChoiceLabel = input.founderChoiceLabel ?? INCREMENTAL_STRUCTURE_CHOICE;
+  const choices = previousAnalysis.choices as string[];
+  if (!choices.includes(founderChoiceLabel)) throw new Error('incremental_choice_not_in_previous');
+  const payload = {
+    dataClass: INCREMENTAL_STRUCTURE_DATA_CLASS,
+    notice: INCREMENTAL_STRUCTURE_NOTICE,
+    originalInput: input.originalInput,
+    previousAnalysis,
+    previousAnalysisSource: {
+      ...input.previousAnalysisSource,
+      note: '1차 모델 출력이다. 품질 통과가 아니다. 2차 호출의 이전 분석으로만 쓴다.',
+    },
+    previousQuestion: previousAnalysis.nextQuestion,
+    founderChoice: {
+      dataClass: INCREMENTAL_STRUCTURE_DATA_CLASS,
+      label: founderChoiceLabel,
+      notice: INCREMENTAL_STRUCTURE_NOTICE,
+    },
+    founderSupplement: input.founderSupplement ?? INCREMENTAL_STRUCTURE_SUPPLEMENT,
+    separationRules: [...INCREMENTAL_STRUCTURE_RULES],
+  };
+  return {
+    model: AI_PM_REVIEW_MODEL,
+    temperature: 0.2,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: INCREMENTAL_STRUCTURE_SYSTEM_PROMPT },
+      { role: 'user', content: JSON.stringify(payload) },
+    ],
+  };
+}
+
+export function incrementalStructureCoverage(request: ChatRequest): IncrementalStructureCoverage {
+  const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+  const user = request.messages.find((message) => message.role === 'user')?.content ?? '';
+  let payload: Record<string, unknown> = {};
+  try {
+    const parsed = JSON.parse(user) as unknown;
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) payload = parsed as Record<string, unknown>;
+  } catch {
+    payload = {};
+  }
+  const previous = payload.previousAnalysis;
+  const previousRecord =
+    previous && typeof previous === 'object' && !Array.isArray(previous) ? (previous as Record<string, unknown>) : null;
+  const choice = payload.founderChoice;
+  const choiceRecord = choice && typeof choice === 'object' && !Array.isArray(choice) ? (choice as Record<string, unknown>) : null;
+  const rules = Array.isArray(payload.separationRules) ? payload.separationRules.filter((item) => typeof item === 'string').join('\n') : '';
+  const ruleText = `${system}\n${rules}`;
+  return {
+    originalInput: typeof payload.originalInput === 'string' && payload.originalInput.includes('양조장'),
+    previousAnalysis: Boolean(
+      previousRecord &&
+        typeof previousRecord.judgment === 'string' &&
+        typeof previousRecord.revenueModel === 'string' &&
+        Array.isArray(previousRecord.choices) &&
+        Array.isArray(previousRecord.founderFacts),
+    ),
+    previousQuestion:
+      typeof payload.previousQuestion === 'string' &&
+      payload.previousQuestion.length > 0 &&
+      payload.previousQuestion === previousRecord?.nextQuestion,
+    founderChoice: Boolean(
+      choiceRecord &&
+        choiceRecord.dataClass === INCREMENTAL_STRUCTURE_DATA_CLASS &&
+        typeof choiceRecord.label === 'string' &&
+        choiceRecord.label.length > 0 &&
+        Array.isArray(previousRecord?.choices) &&
+        (previousRecord.choices as unknown[]).includes(choiceRecord.label),
+    ),
+    founderSupplement:
+      typeof payload.founderSupplement === 'string' &&
+      payload.founderSupplement.includes('테스트용 합성') &&
+      payload.notice === INCREMENTAL_STRUCTURE_NOTICE,
+    separationRules:
+      ruleText.includes('검증된 사실이 아니다') &&
+      ruleText.includes('사실로 승격하지 않는다') &&
+      ruleText.includes('다시 출력하지 않는다'),
+  };
+}
+
+export function incrementalStructureReady(request: ChatRequest): boolean {
+  return Object.values(incrementalStructureCoverage(request)).every(Boolean);
+}
+
+/** What the dormant product composer still omits. It is not switched over by this gate. */
+export function productFollowUpStructureReport(request: ChatRequest): { present: string[]; absent: string[] } {
+  const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+  const user = request.messages.find((message) => message.role === 'user')?.content ?? '';
+  let payload: Record<string, unknown> = {};
+  try {
+    const parsed = JSON.parse(user) as unknown;
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) payload = parsed as Record<string, unknown>;
+  } catch {
+    payload = {};
+  }
+  const previous = payload.previousReview;
+  const previousRecord =
+    previous && typeof previous === 'object' && !Array.isArray(previous) ? (previous as Record<string, unknown>) : null;
+  const present: string[] = [];
+  const absent: string[] = [];
+  const mark = (name: string, ok: boolean) => (ok ? present : absent).push(name);
+  mark('originalInput', typeof payload.originalInput === 'string' && payload.originalInput.length > 0);
+  mark(
+    'previousAnalysis',
+    Boolean(previousRecord && 'founderFacts' in previousRecord && 'choices' in previousRecord && 'revenueModel' in previousRecord),
+  );
+  mark('previousQuestion', typeof previousRecord?.nextQuestion === 'string' && previousRecord.nextQuestion.length > 0);
+  mark('founderChoice', 'founderChoice' in payload || Boolean(payload.feedback && typeof payload.feedback === 'object' && 'choiceAnswer' in payload.feedback));
+  mark('founderSupplement', typeof payload.supplement === 'string');
+  mark(
+    'separationRules',
+    `${system}\n${user}`.includes('검증된 사실이 아니다') && `${system}\n${user}`.includes('사실로 승격하지'),
+  );
+  return { present, absent };
+}
+
+/** Structural difference only. Not a quality score and not an incremental-reflection pass. */
+export function incrementalFieldDelta(
+  previousRaw: string,
+  nextRaw: string,
+): {
+  parsed: boolean;
+  sameDocument: boolean;
+  judgmentChanged: boolean | null;
+  assumptionsChanged: boolean | null;
+  priorityChanged: boolean | null;
+} {
+  try {
+    const previous = JSON.parse(previousRaw) as Record<string, unknown>;
+    const next = JSON.parse(nextRaw) as Record<string, unknown>;
+    const same = (key: string) => JSON.stringify(previous[key]) === JSON.stringify(next[key]);
+    return {
+      parsed: true,
+      sameDocument: previousRaw.trim() === nextRaw.trim(),
+      judgmentChanged: !same('judgment'),
+      assumptionsChanged: !same('assumptions'),
+      priorityChanged: !same('nextVerification'),
+    };
+  } catch {
+    return {
+      parsed: false,
+      sameDocument: previousRaw.trim() === nextRaw.trim(),
+      judgmentChanged: null,
+      assumptionsChanged: null,
+      priorityChanged: null,
+    };
+  }
+}
+
 export function buildQuality13InputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
   return [
     { inputId: 'brewery', text: COMPARE_BUSINESS_INPUT },
