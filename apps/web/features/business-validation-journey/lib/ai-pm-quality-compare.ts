@@ -686,6 +686,19 @@ export function buildQuality12CompareRequest(text = COMPARE_BUSINESS_INPUT): Cha
   };
 }
 
+/** Product prompt only. The user message is the business text, not a copy sheet. */
+export function buildIndependentInputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
+  return [
+    { inputId: 'brewery', text: COMPARE_BUSINESS_INPUT },
+    { inputId: 'experience', text: QUALITY9_EXPERIENCE_INPUT },
+    { inputId: 'supplier', text: QUALITY9_SUPPLIER_INPUT },
+  ].map((item) => ({
+    inputId: item.inputId,
+    promptVersion: `${AI_PM_FIRST_PROMPT_VERSION}:${item.inputId}`,
+    request: buildFirstReviewRequest(item.text),
+  }));
+}
+
 export function buildQuality12InputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
   return [
     { inputId: 'brewery', text: COMPARE_BUSINESS_INPUT },

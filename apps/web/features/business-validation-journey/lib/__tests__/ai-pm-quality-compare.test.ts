@@ -51,6 +51,7 @@ import {
   buildQuality11CompareRequest,
   buildQuality11InputRequests,
   QUALITY12_PROMPT_VERSION,
+  buildIndependentInputRequests,
   buildQuality12CompareRequest,
   buildQuality12InputRequests,
   branchContractPass,
@@ -146,12 +147,13 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality12-inputs-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality2-independent-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('quality-12-inputs-request.json');
+    expect(script).toContain('quality-2-independent-request.json');
+    expect(script).not.toContain('quality-12-inputs-request.json');
     expect(script).not.toContain('quality-11-inputs-request.json');
     expect(script).not.toContain('quality-10-inputs-request.json');
     expect(script).not.toContain('quality-compare-requests.json');
@@ -428,6 +430,41 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(JSON.parse(readFileSync(lineUrl, 'utf8'))).toEqual(lineFixture);
     expect(buildQuality12CompareRequest(QUALITY9_EXPERIENCE_INPUT).messages[1]?.content).not.toContain(QUALITY6_BREWERY_CHOICES[1]);
     expect(buildQuality12CompareRequest(QUALITY9_SUPPLIER_INPUT).messages[1]?.content).not.toContain(QUALITY6_BREWERY_CHOICES[0]);
+  });
+
+  it('asks the product prompt with the business text and no prescribed answers', () => {
+    const requests = buildIndependentInputRequests();
+    expect(AI_PM_FIRST_PROMPT_VERSION).toBe('quality-2');
+    expect(requests.map((item) => item.promptVersion)).toEqual(['quality-2:brewery', 'quality-2:experience', 'quality-2:supplier']);
+    const prescribed = [
+      ...QUALITY6_BREWERY_CHOICES,
+      ...QUALITY10_EXPERIENCE_CHOICES,
+      ...QUALITY10_SUPPLIER_CHOICES,
+      quality7RevenueString(COMPARE_BUSINESS_INPUT),
+      quality9Inference(COMPARE_BUSINESS_INPUT),
+      'nextQuestion 값:',
+      'revenueModel 값:',
+    ];
+    for (const item of requests) {
+      const system = item.request.messages[0]?.content ?? '';
+      const user = item.request.messages[1]?.content ?? '';
+      expect(system).toContain('프롬프트 버전 quality-2');
+      expect(system).not.toContain(QUALITY12_PROMPT_VERSION);
+      expect(user).not.toContain(QUALITY12_PROMPT_VERSION);
+      for (const line of prescribed) expect(user).not.toContain(line);
+    }
+    expect(requests[0]?.request.messages[1]?.content).toContain('양조장 체험');
+    expect(requests[1]?.request.messages[1]?.content).toContain(QUALITY9_EXPERIENCE_INPUT);
+    expect(requests[2]?.request.messages[1]?.content).toContain(QUALITY9_SUPPLIER_INPUT);
+    expect(buildFirstReviewRequest(COMPARE_BUSINESS_INPUT).messages[0]?.content).toContain('프롬프트 버전 quality-2');
+    const openUrl = new URL('../quality-2-independent-request.json', import.meta.url);
+    const openFixture = {
+      businessInput: COMPARE_BUSINESS_INPUT,
+      baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality12-inputs-recorded.json',
+      requests: buildIndependentInputRequests(),
+    };
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(openUrl, `${JSON.stringify(openFixture, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(openUrl, 'utf8'))).toEqual(openFixture);
   });
 
   it('accepts the same field contract on brewery, experience, and supplier inputs', () => {
