@@ -10,6 +10,7 @@ import {
   estimateReviewTokens,
   parseSections,
   readGptApiKey,
+  reviewContractError,
 } from './ai-pm-review';
 import { composeReviewInput } from './ai-pm-review-intake';
 
@@ -440,35 +441,58 @@ export const QUALITY10_SUPPLIER_CHOICES = [
   '기타 / 직접 입력',
 ] as const;
 
-export function quality10Branch(text: string): { question: string; choices: readonly string[]; absent: string } {
+export type QualityBranchKind = 'brewery' | 'experience' | 'supplier' | 'generic';
+
+export type QualityBranch = {
+  kind: QualityBranchKind;
+  question: string;
+  choices: readonly string[];
+  absent: string;
+  summary: string;
+  customer: string;
+};
+
+export function quality10Branch(text: string): QualityBranch {
   const body = text.split(/\n\s*검토 목적:/)[0] ?? text;
   const experience = /체험|만들고|마시고/.test(body);
   const support = /마케팅/.test(body);
   if (experience && support && /양조장/.test(body)) {
     return {
+      kind: 'brewery',
       question: '무엇을 먼저 검증할 것인가?',
       choices: QUALITY6_BREWERY_CHOICES,
       absent: '입력에 없는 막걸리 만들기 전용 문장이나 공장 페이지 전용 문장을 쓰지 않는다.',
+      summary: '관광객 대상 양조장 체험과 양조장 온라인 마케팅 지원을 함께 구상 중이다.',
+      customer: '전통주 양조장을 좋아하는 내국인·외국인 관광객',
     };
   }
   if (experience && !support && /막걸리/.test(body)) {
     return {
+      kind: 'experience',
       question: '막걸리 만들기체험에서 무엇을 먼저 확인할 것인가?',
       choices: QUALITY10_EXPERIENCE_CHOICES,
       absent: '공급자 마케팅 지원, 양조장, 온라인 페이지 대행은 질문과 선택지에 쓰지 않는다.',
+      summary: '외국인 관광객에게 막걸리 만들기체험만 안내하는 구상이다.',
+      customer: '외국인 관광객',
     };
   }
   if (support && !experience && /공장/.test(body) && /페이지/.test(body)) {
     return {
+      kind: 'supplier',
       question: '온라인 마케팅 페이지 대행에서 무엇을 먼저 확인할 것인가?',
       choices: QUALITY10_SUPPLIER_CHOICES,
       absent: '관광객 체험, 양조장, 막걸리 만들기는 질문과 선택지에 쓰지 않는다.',
+      summary: '지역 공장에 온라인 마케팅 페이지 제작만 대행하는 구상이다.',
+      customer: '지역 공장',
     };
   }
   return {
+    kind: 'generic',
     question: '무엇을 먼저 검증할 것인가?',
     choices: ['입력에 적힌 고객을 먼저 검증', '입력에 적힌 제공 방식을 먼저 검증', '누가 비용을 낼지 먼저 검증', '아직 우선순위를 결정하지 못함', '기타 / 직접 입력'],
     absent: '입력에 없는 체험 상품이나 마케팅 대행을 선택지에 넣지 않는다.',
+    summary: '입력에 적힌 사업 구상이다. 확인되지 않은 항목은 미확인이다.',
+    customer: '미확인',
   };
 }
 
@@ -524,6 +548,89 @@ export function buildQuality10CompareRequest(text = COMPARE_BUSINESS_INPUT): Cha
       { role: 'user', content: `사업 입력:\n${text}\n\n${quality10UserBlock(text)}` },
     ],
   };
+}
+
+export const QUALITY11_PROMPT_VERSION = 'quality-11-cpo-draft';
+
+/** Copy targets for one input. Branching picks the question. The model does not invent the other axis. */
+export function quality11UserBlock(text: string): string {
+  const branch = quality10Branch(text);
+  return [
+    `프롬프트 버전 ${QUALITY11_PROMPT_VERSION}.`,
+    'JSON 객체만 반환한다. 아래 칸의 값을 그대로 넣는다.',
+    'summary 값:',
+    branch.summary,
+    'customer 값:',
+    branch.customer,
+    'nextQuestion 값:',
+    branch.question,
+    'nextQuestionReason 값:',
+    '입력만으로는 무엇을 먼저 확인할지 정해지지 않는다.',
+    'choices 값:',
+    JSON.stringify([...branch.choices]),
+    'revenueModel 값:',
+    quality7RevenueString(text),
+    'founderFacts 값:',
+    JSON.stringify(quality8FounderFacts(text)),
+    'inferences 값:',
+    JSON.stringify([quality9Inference(text)]),
+    'strengths 값: ["미확인"]',
+    'risks 값: ["미확인"]',
+    'assumptions 값: ["미확인"]',
+    'evidenceToChange 값: ["미확인"]',
+    'payer 값: 미확인',
+    'operatingModel 값: 구상',
+    'problem 값: 미확인',
+    'value 값: 미확인',
+    'alternatives 값: 미확인',
+    'differentiation 값: 미확인',
+    'market 값: 미확인',
+    'competition 값: 미확인',
+    'operations 값: 미확인',
+    'profitability 값: 미확인',
+    'judgment 값: 미확인',
+    'nextVerification 값:',
+    branch.question,
+    'choices는 위 JSON 배열이다. 문자열로 쓰지 않는다.',
+    'nextQuestion은 위 질문 문장이다. 선택지 문장을 질문으로 쓰지 않는다.',
+    'revenueModel은 위 문자열 전체다. 한 항목만 남기지 않는다.',
+    branch.absent,
+    '가격, 매출, 고객 수, 계약, 제휴는 만들지 않는다.',
+  ].join('\n');
+}
+
+export const QUALITY11_SYSTEM_PROMPT = [
+  '프롬프트 버전 quality-11-cpo-draft.',
+  'JSON 객체만 반환한다.',
+  '사용자 메시지의 summary, customer, nextQuestion, choices, revenueModel, founderFacts, inferences, payer 칸을 그대로 쓴다.',
+  'choices는 배열이다. revenueModel은 문자열이다.',
+  '선택지 한 줄을 질문으로 쓰지 않는다. 수익 항목을 빼지 않는다.',
+  '입력에 없는 다른 사업 축, 가격, 매출, 고객 수, 계약, 제휴는 만들지 않는다.',
+].join('\n');
+
+export function buildQuality11CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
+  return {
+    model: AI_PM_REVIEW_MODEL,
+    temperature: 0.2,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: QUALITY11_SYSTEM_PROMPT },
+      { role: 'user', content: `사업 입력:\n${text}\n\n${quality11UserBlock(text)}` },
+    ],
+  };
+}
+
+export function buildQuality11InputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
+  return [
+    { inputId: 'brewery', text: COMPARE_BUSINESS_INPUT },
+    { inputId: 'experience', text: QUALITY9_EXPERIENCE_INPUT },
+    { inputId: 'supplier', text: QUALITY9_SUPPLIER_INPUT },
+  ].map((item) => ({
+    inputId: item.inputId,
+    promptVersion: `${QUALITY11_PROMPT_VERSION}:${item.inputId}`,
+    request: buildQuality11CompareRequest(item.text),
+  }));
 }
 
 export function buildQuality10InputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
@@ -588,6 +695,98 @@ export function scoreInferenceSeparation(
     return { separated: false, detail: copied[0] ?? unmarked[0] ?? '추론 없음' };
   }
   return { separated: true, detail: items.join(' / ') };
+}
+
+export type BranchContractScore = {
+  parserOk: boolean;
+  questionOk: boolean;
+  choicesOk: boolean;
+  axisOk: boolean;
+  summaryOk: boolean;
+  payerOk: boolean;
+  revenueOk: boolean;
+  factsOk: boolean;
+  inferencesOk: boolean;
+  detail: string;
+};
+
+function forbiddenAxis(kind: QualityBranchKind): RegExp | null {
+  if (kind === 'experience') return /공급자|마케팅 지원|양조장|페이지 대행|온라인 마케팅/;
+  if (kind === 'supplier') return /관광객|막걸리|양조장|체험/;
+  if (kind === 'brewery') return /막걸리 만들기|공장 페이지/;
+  return null;
+}
+
+function summaryMatchesBranch(kind: QualityBranchKind, summary: string): boolean {
+  if (kind === 'brewery') return /체험/.test(summary) && /마케팅/.test(summary);
+  if (kind === 'experience') return /체험|막걸리/.test(summary) && !/공급자|마케팅/.test(summary);
+  if (kind === 'supplier') return /페이지|마케팅/.test(summary) && !/체험|관광객|막걸리|양조장/.test(summary);
+  return summary.trim().length > 0;
+}
+
+/** Product contract for one input. This scores a stored string and does not call a model. */
+export function scoreBranchContract(raw: string | null, sourceText: string): BranchContractScore {
+  const fail = (detail: string): BranchContractScore => ({
+    parserOk: false,
+    questionOk: false,
+    choicesOk: false,
+    axisOk: false,
+    summaryOk: false,
+    payerOk: false,
+    revenueOk: false,
+    factsOk: false,
+    inferencesOk: false,
+    detail,
+  });
+  if (!raw?.trim()) return fail('원문 없음');
+  const contract = reviewContractError(raw);
+  const sections = parseSections(raw, sourceText);
+  const parserOk = contract === null && Boolean(sections?.analysis);
+  const branch = quality10Branch(sourceText);
+  const question = sections?.nextQuestion ?? '';
+  const labels = sections?.analysis?.choices.map((choice) => choice.label) ?? [];
+  const summary = sections?.analysis?.summary ?? '';
+  const questionOk = question === branch.question && !branch.choices.includes(question);
+  const choicesOk =
+    labels.length === branch.choices.length && labels.every((label, index) => label === branch.choices[index]);
+  const forbidden = forbiddenAxis(branch.kind);
+  const surface = `${summary}\n${question}\n${labels.join('\n')}`;
+  const axisOk = forbidden ? !forbidden.test(surface) : true;
+  const summaryOk = summaryMatchesBranch(branch.kind, summary);
+  const payer = sections?.analysis?.payer ?? '';
+  const payerOk = payer === '미확인' || payer.startsWith('미확인');
+  const revenue = scoreRevenueContract(raw, sourceText);
+  const revenueOk = revenue.typeOk && revenue.itemsOk;
+  const facts = sections?.analysis?.founderFacts ?? [];
+  const source = sourceText.replace(/\s+/g, '');
+  const factsOk = facts.length > 0 && facts.every((fact) => source.includes(fact.replace(/\s+/g, '')));
+  const inferencesOk = scoreInferenceSeparation(raw, sourceText).separated;
+  const detail = [
+    parserOk ? '파서 수용' : `파서 ${contract ?? '거절'}`,
+    questionOk ? '질문 일치' : `질문 ${question || '없음'}`,
+    choicesOk ? '선택지 일치' : `선택지 ${labels.join(' | ') || '없음'}`,
+    axisOk ? '없는 축 없음' : '입력에 없는 사업 축',
+    summaryOk ? '요약은 입력 축' : `요약 ${summary || '없음'}`,
+    payerOk ? '지불자 미확인' : `payer ${payer || '없음'}`,
+    revenueOk ? '수익 항목 가설' : revenue.detail,
+    factsOk ? '사실은 입력 문장' : 'founderFacts',
+    inferencesOk ? '추론 분리' : '추론 복사 또는 표시 없음',
+  ].join('; ');
+  return { parserOk, questionOk, choicesOk, axisOk, summaryOk, payerOk, revenueOk, factsOk, inferencesOk, detail };
+}
+
+export function branchContractPass(score: BranchContractScore): boolean {
+  return (
+    score.parserOk &&
+    score.questionOk &&
+    score.choicesOk &&
+    score.axisOk &&
+    score.summaryOk &&
+    score.payerOk &&
+    score.revenueOk &&
+    score.factsOk &&
+    score.inferencesOk
+  );
 }
 
 export function buildQuality5CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
