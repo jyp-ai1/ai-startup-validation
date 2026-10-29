@@ -1,5 +1,6 @@
 /**
- * One quality-2 / quality-3-draft compare during a Vercel Preview build.
+ * Quality-2 / quality-3-draft compare. A Preview build does not call the model
+ * unless AI_PM_COMPARE_ON_PREVIEW=1. CPO has not selected the compare pair.
  * Production builds return immediately. The product second-review route is not called.
  * Requests come from the frozen JSON checked against the builders. Results go to a
  * private Supabase bucket. Credentials are not written to the report or the log.
@@ -17,7 +18,7 @@ const webRoot = join(scriptDir, '..');
 const fixturePath = join(webRoot, 'features/business-validation-journey/lib/quality-compare-requests.json');
 
 export function shouldRunPreviewQualityCompare(env) {
-  return env.VERCEL_ENV === 'preview' && env.VERCEL_GIT_COMMIT_REF !== 'main';
+  return env.AI_PM_COMPARE_ON_PREVIEW === '1' && env.VERCEL_ENV === 'preview' && env.VERCEL_GIT_COMMIT_REF !== 'main';
 }
 
 export function redactComparePayload(value, secrets) {

@@ -82,7 +82,12 @@ describe('quality-2 and quality-3 compare requests', () => {
   });
 
   it('runs the compare only on a non-main preview build and strips secrets', () => {
-    expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'cursor/preview-quality-compare-4b88' })).toBe(true);
+    expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'cursor/preview-quality-compare-4b88' })).toBe(false);
+    expect(shouldRunPreviewQualityCompare({
+      AI_PM_COMPARE_ON_PREVIEW: '1',
+      VERCEL_ENV: 'preview',
+      VERCEL_GIT_COMMIT_REF: 'cursor/preview-quality-compare-4b88',
+    })).toBe(true);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
