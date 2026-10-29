@@ -919,3 +919,13 @@ CPO는 1차 게이트 FAIL을 유지했다. 이번 실행은 프롬프트를 바
 실제 모델 호출은 **NOT RUN**이다. 이 실행에 `GPT_API_KEY`가 없다. 단위 테스트는 사람이 적은 문장을 채점하며, 그 통과를 모델 품질 통과로 두지 않는다. 기록은 `docs/evidence/ALABOM/AI-PM/QUALITY-SCENARIOS.md`다.
 
 1차 게이트는 **FAIL**이다. Production 잠금과 PR #209 미병합은 유지한다.
+
+## 34. 2026-10-29 12:10 KST 품질 평가 체계
+
+코드 커밋 `98e73993d4ec25a0e9e3914ccaa0b9cecbec866a`. 평가 기준 버전은 `rubric-2`다. 고정 시나리오는 S1–S8이고, 기준 프롬프트 `quality-1`은 하니스에만 있다. 제품 최초 프롬프트는 `quality-2`다. 이번 실행은 제품 프롬프트, UI, follow-up 라우트를 바꾸지 않았다.
+
+`pnpm --filter web test:ai-pm-quality` 7건은 통과했다. 이것은 저장된 실패 문장과 사람이 넣은 JSON의 기계 채점이다. 실제 `gpt-4o-mini` 호출은 **NOT RUN**이다. `GPT_API_KEY`가 없다. 의미 항목 4개는 문자열 검색으로 PASS하지 않으며 전체 품질 PASS를 선언하지 않는다.
+
+실패 A(협력 가능성 높다/낮다/미정)와 실패 B(원문에 없는 수수료·체험 참가비)의 저장 문장은 기계 규칙에서 FAIL이고, 다른 항목 PASS로 상쇄되지 않는다. 같은 실패가 `quality-2` 새 응답에서 사라졌는지는 **NOT RUN**이다. 기준 응답을 보고 프롬프트를 최소 수정하는 단계도 **NOT RUN**이다.
+
+제품 `POST /api/ai-pm-review/follow-up`과 피드백 저장은 호출하지 않았다. Production은 호출하지 않았다. PR #209는 병합하지 않는다. 1차 게이트는 **FAIL**이다. 기록은 `docs/evidence/ALABOM/AI-PM/QUALITY-SCENARIOS.md`다.

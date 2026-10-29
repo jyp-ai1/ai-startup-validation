@@ -2353,6 +2353,50 @@ ADR-070 required a review purpose before the first call. The brewery reading on 
 
 ---
 
+## ADR-072: Score the first review in an independent harness
+
+**Status:** Accepted  
+**Date:** 2026-10-29  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The stored brewery reading asked only whether partnership likelihood was high, low, or undecided, and it stated a brewery fee and an experience charge that the source does not contain. Those two failures have to stay failed in a repeatable check. A string match is not a judgment that the model understood the business. The product follow-up route must stay unused until the first review is accepted.
+
+### Decision
+
+1. Scenarios S1–S8, criteria version `rubric-2`, and the frozen `quality-1` system prompt live in `apps/web/features/business-validation-journey/lib/ai-pm-quality-scenarios.ts`. The product route keeps `quality-2` and does not call the frozen prompt.
+2. Semantic criteria stay `not_run` until a person reads a real model response. Mechanical rules may fail the two known strings. Any mechanical fail or model error fails the row. Other passes do not offset it. No model call is `not_called`, not a pass.
+3. S2–S8 run only inside `executeQualityMatrix`, which passes the prior analysis and the founder answer into a simulation request. That request is not `buildFollowUpRequest` and does not call `POST /api/ai-pm-review/follow-up`.
+4. This decision does not declare the first-review gate passed, change the panel, deploy production, or merge PR #209. A live `quality-1` versus `quality-2` response pair was not collected in the run that recorded this ADR.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Reject degree-only choices in the product parser | A weak question would not be stored | The same input hash would call the model again on the next click |
+| Mark semantic criteria pass when keywords appear | The suite could report an overall pass | A keyword pass would be reported as model quality |
+| Call the product follow-up route for S2–S8 | The test would use the shipped path | That path is still closed until the first review is accepted |
+
+### Consequences
+
+**Positive:**
+
+- The two stored failure strings fail in unit tests without a network call.
+- A later live run can compare `quality-1` and `quality-2` on the same brewery body.
+
+**Negative:**
+
+- The harness cannot say the live model is clear of failure A or B until `GPT_API_KEY` is present and the raw responses are stored.
+- Mechanical context and next-step checks remain shallow.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #209 stays unmerged.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
