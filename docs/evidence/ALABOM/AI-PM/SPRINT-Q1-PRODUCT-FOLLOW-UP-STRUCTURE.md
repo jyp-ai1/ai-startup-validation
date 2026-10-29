@@ -92,7 +92,7 @@
 | 관문 | 상태 |
 |---|---|
 | 제품 요청 구조 | PASS. CPO 2026-10-29 21:12 KST. SHA `eed29780cf9b43f2f580bb003bd7c0142c053a77` |
-| 증분 반영 | FAIL. `q1-incremental-reflection-grounds-2026-10-29`는 `founderAnswer`가 선택만 담아 실패. 다음 호출 계약은 `reflection-output-4`. `SPRINT-Q1-INCREMENTAL-REFLECTION-GROUNDS.md` |
+| 증분 반영 | FAIL. `q1-incremental-reflection-source-2026-10-29`는 루트 `founderAnswer`만 채우고 변경 원소에는 없어 오류 5건. `SPRINT-Q1-INCREMENTAL-REFLECTION-SOURCE.md` |
 | 2차 품질 | **NOT RUN** |
 | 저장·복원 | **NOT RUN** |
 | 화면 Q9·Q10 | **BLOCKED**. 2026-10-29 18:07 KST. Vercel CLI logged out. Preview `GET /workspace` HTTP 401 |

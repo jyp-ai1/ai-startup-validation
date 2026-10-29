@@ -940,6 +940,64 @@ describe('AI PM first review', () => {
       '체험 프로그램을 먼저 검증할 것이라는 선택 문장.',
     ]);
     expect(groundsParsed.changes.every((change) => change.founderAnswer === '체험 프로그램을 먼저 검증할 것')).toBe(true);
+    const sourceCall = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-source-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as {
+      runId: string;
+      priorRunId: string;
+      gitSha: string;
+      productFollowUpInvoked: boolean;
+      reflectionScored: boolean;
+      report: { calls: Array<{ raw: string; userPrompt: string }> };
+    };
+    expect(sourceCall.runId).toBe('q1-incremental-reflection-source-2026-10-29');
+    expect(sourceCall.priorRunId).toBe('q1-incremental-reflection-grounds-2026-10-29');
+    expect(sourceCall.gitSha).toBe('62b689669d7da43266029c3b3c4692c606b8f8bb');
+    expect(sourceCall.productFollowUpInvoked).toBe(false);
+    expect(sourceCall.reflectionScored).toBe(false);
+    const sourceSent = JSON.parse(sourceCall.report.calls[0]?.userPrompt ?? '{}') as typeof sent;
+    const sourceContext = {
+      previousJudgment: sourceSent.previousAnalysis.judgment,
+      previousHypotheses: sourceSent.previousAnalysis.hypotheses,
+      previousNextVerification: sourceSent.previousAnalysis.analysis.nextVerification,
+      previousNextQuestion: sourceSent.previousAnalysis.nextQuestion,
+      previousRevenueModel: sourceSent.previousAnalysis.revenueModel,
+      choiceLabel: sourceSent.founderChoice.label,
+      supplement: sourceSent.founderSupplement,
+      answerOrigin: 'synthetic-test-data' as const,
+    };
+    expect(followUpOutputContractErrors(sourceCall.report.calls[0]?.raw ?? '', sourceContext)).toEqual([
+      'founder_answer_type:judgment',
+      'founder_answer_type:hypotheses',
+      'founder_answer_type:nextVerification',
+      'next_verification_choice_unmentioned',
+      'founder_answer_type:nextQuestion',
+    ]);
+    const sourceParsed = JSON.parse(sourceCall.report.calls[0]?.raw ?? '{}') as {
+      judgment: string;
+      hypotheses: string[];
+      nextVerification: string;
+      nextQuestion: string;
+      revenueModel: string;
+      founderAnswer: { choice: string; supplement: string; source: string; status: string };
+      changes: Array<{ grounds: string; founderAnswer?: unknown }>;
+    };
+    expect(sourceParsed.judgment).toBe(sourceContext.previousJudgment);
+    expect(sourceParsed.hypotheses).toEqual(['미확인']);
+    expect(sourceParsed.revenueModel).toContain('가설');
+    expect(sourceParsed.founderAnswer).toEqual({
+      choice: '체험 프로그램을 먼저 검증할 것',
+      supplement: '예약 고객, 가격, 계약, 확정된 양조장이 없다.',
+      source: 'synthetic-test-data',
+      status: 'unverified-input',
+    });
+    expect(sourceParsed.changes.every((change) => change.founderAnswer === undefined)).toBe(true);
+    expect(sourceParsed.nextVerification).toBe('체험 확인');
+    expect(sourceParsed.nextQuestion).toContain('양조장');
+    expect(sourceParsed.nextQuestion).not.toContain('마케팅 지원의 효과');
   });
 
   it('sends a typed note and the same file text through one review', async () => {
