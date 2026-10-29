@@ -97,12 +97,14 @@
 
 2026-10-29 23:50 KST에 같은 세 파일 45 passed. 모델 호출은 없다. `effect`는 선택 문장 원문과 그 필드의 영향을 함께 담아야 한다. 가설 `effect`가 선택을 수요 근거로 쓰면 실패한다. 검증 `effect`가 우선순위와 한계를 빠뜨리면 실패한다. 질문 `effect`가 양조장 후보와 연결되지 않으면 실패한다. 질문 `reason`이 선택만 있고 추가 설명의 없음을 빠뜨리면 실패한다. 그 뒤 Preview run `q1-incremental-reflection-link-2026-10-29`는 수익 가설과 `evidenceStatus`는 보존했으나 가설을 수요 문장으로 바꾸고 검증·질문의 effect와 reason이 한계와 없음을 빠뜨려 오류 6건이다. `SPRINT-Q1-INCREMENTAL-REFLECTION-LINK.md`.
 
+2026-10-30 00:16 KST에 같은 세 파일 45 passed. 모델 호출은 없다. 저장된 가설이 미확인이면 다른 문장으로 바꾸면 실패한다. `nextQuestion`이 물음표로 끝나지 않거나 지시 문장이면 실패한다. `effect`와 `reason`이 같으면 실패한다. 그 뒤 Preview run `q1-incremental-reflection-question-2026-10-29`는 가설 `미확인`, 질문 `양조장 후보가 있는가?`, 검증 문장, 수익 가설은 맞췄으나 세 원소의 선택과 추가 설명을 null로 두어 오류 13건이다. `SPRINT-Q1-INCREMENTAL-REFLECTION-QUESTION.md`.
+
 ## 하지 않은 관문
 
 | 관문 | 상태 |
 |---|---|
 | 제품 요청 구조 | PASS. CPO 2026-10-29 21:12 KST. SHA `eed29780cf9b43f2f580bb003bd7c0142c053a77` |
-| 증분 반영 | FAIL. `q1-incremental-reflection-link-2026-10-29`는 수익 가설과 `evidenceStatus`는 보존했으나 가설을 수요 문장으로 바꾸고 검증·질문의 effect와 reason이 한계와 없음을 빠뜨려 오류 6건. `SPRINT-Q1-INCREMENTAL-REFLECTION-LINK.md` |
+| 증분 반영 | FAIL. `q1-incremental-reflection-question-2026-10-29`는 가설 `미확인`과 질문 `양조장 후보가 있는가?`는 맞췄으나 세 원소의 선택과 추가 설명을 null로 두어 오류 13건. `SPRINT-Q1-INCREMENTAL-REFLECTION-QUESTION.md` |
 | 2차 품질 | **NOT RUN** |
 | 저장·복원 | **NOT RUN** |
 | 화면 Q9·Q10 | **BLOCKED**. 2026-10-29 18:07 KST. Vercel CLI logged out. Preview `GET /workspace` HTTP 401 |
