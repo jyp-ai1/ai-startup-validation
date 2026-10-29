@@ -378,11 +378,12 @@ export function buildFollowUpRequest(input: {
   sections: ReviewSections;
   feedback: StoredFeedback | null;
   supplement: string;
-  /** Distinguishes a synthetic contract fixture from a stored product input. Does not call a model. */
-  answerOrigin?: FollowUpAnswerOrigin;
+  /** Required. Omitting it must not become founder-input. Does not call a model. */
+  answerOrigin: FollowUpAnswerOrigin;
 }): ChatRequest {
-  const answerOrigin = input.answerOrigin ?? 'founder-input';
-  if (!FOLLOW_UP_ANSWER_ORIGINS.includes(answerOrigin)) throw new Error('follow_up_answer_origin_invalid');
+  if (!input.answerOrigin) throw new Error('follow_up_answer_origin_required');
+  if (!FOLLOW_UP_ANSWER_ORIGINS.includes(input.answerOrigin)) throw new Error('follow_up_answer_origin_invalid');
+  const answerOrigin = input.answerOrigin;
   const marks = normalizeMarks(input.feedback?.marks);
   const revision = revisionPayload(input.sections, marks);
   const choice = input.feedback?.choiceAnswer ?? null;
@@ -437,6 +438,83 @@ export function buildFollowUpRequest(input: {
   };
 }
 
+/** Synthetic fixtures must name the origin. A missing origin does not become founder-input. */
+export function buildSyntheticFollowUpRequest(
+  input: Omit<Parameters<typeof buildFollowUpRequest>[0], 'answerOrigin'> & { answerOrigin?: FollowUpAnswerOrigin },
+): ChatRequest {
+  if (input.answerOrigin !== 'synthetic-test-data') throw new Error('synthetic_answer_origin_required');
+  return buildFollowUpRequest({ ...input, answerOrigin: 'synthetic-test-data' });
+}
+
+export type FollowUpRequestSource = {
+  originalInput: string;
+  sections: ReviewSections;
+  feedback: StoredFeedback | null;
+  supplement: string;
+  answerOrigin: FollowUpAnswerOrigin;
+};
+
+/**
+ * Value contract. Empty means the request carries this source.
+ * followUpStructureCoverage does not do this comparison.
+ */
+export function followUpRequestMismatches(request: ChatRequest, source: FollowUpRequestSource): string[] {
+  const mismatches: string[] = [];
+  const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+  const userText = request.messages.find((message) => message.role === 'user')?.content ?? '';
+  let payload: Record<string, unknown>;
+  try {
+    const parsed = JSON.parse(userText) as unknown;
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return ['user_json'];
+    }
+    payload = parsed as Record<string, unknown>;
+  } catch {
+    return ['user_json'];
+  }
+  const differ = (name: string, left: unknown, right: unknown) => {
+    if (JSON.stringify(left) !== JSON.stringify(right)) mismatches.push(name);
+  };
+  differ('answerOrigin', payload.answerOrigin, source.answerOrigin);
+  differ('answerOriginNotice', payload.answerOriginNotice, followUpAnswerNotice(source.answerOrigin));
+  differ('originalInput', payload.originalInput, source.originalInput);
+  differ('previousQuestion', payload.previousQuestion, source.sections.nextQuestion);
+  differ('previousAnalysis', payload.previousAnalysis, followUpPreviousAnalysis(source.sections));
+  differ('founderSupplement', payload.founderSupplement, source.supplement);
+  differ('supplement', payload.supplement, source.supplement);
+  differ('separationRules', payload.separationRules, [...FOLLOW_UP_SEPARATION_RULES]);
+  for (const rule of FOLLOW_UP_SEPARATION_RULES) {
+    if (!system.includes(rule)) mismatches.push(`system:${rule}`);
+  }
+  const choice = source.feedback?.choiceAnswer ?? null;
+  const expectedChoice = choice
+    ? {
+        answerOrigin: source.answerOrigin,
+        choiceId: choice.choiceId,
+        label: choice.label,
+        otherText: choice.otherText,
+      }
+    : null;
+  differ('founderChoice', payload.founderChoice, expectedChoice);
+  const feedback = payload.feedback;
+  const feedbackRecord = feedback && typeof feedback === 'object' && !Array.isArray(feedback) ? (feedback as Record<string, unknown>) : null;
+  differ('feedback.choiceAnswer', feedbackRecord ? feedbackRecord.choiceAnswer ?? null : null, choice);
+  const previous = payload.previousAnalysis;
+  const previousRecord = previous && typeof previous === 'object' && !Array.isArray(previous) ? (previous as Record<string, unknown>) : null;
+  const analysis = previousRecord?.analysis;
+  const analysisRecord = analysis && typeof analysis === 'object' && !Array.isArray(analysis) ? (analysis as Record<string, unknown>) : null;
+  const facts = Array.isArray(analysisRecord?.founderFacts) ? analysisRecord.founderFacts : [];
+  const sourceFacts = source.sections.analysis?.founderFacts ?? [];
+  differ('founderFacts', facts, sourceFacts);
+  if (choice && choice.label && !sourceFacts.includes(choice.label) && facts.includes(choice.label)) {
+    mismatches.push('founderFacts.choice');
+  }
+  if (source.supplement && !sourceFacts.some((fact) => fact.includes(source.supplement)) && facts.some((fact) => String(fact).includes(source.supplement))) {
+    mismatches.push('founderFacts.supplement');
+  }
+  return mismatches;
+}
+
 export type FollowUpStructureCoverage = {
   originalInput: boolean;
   previousAnalysis: boolean;
@@ -447,7 +525,11 @@ export type FollowUpStructureCoverage = {
   answerOrigin: boolean;
 };
 
-/** Reads the request object the product composer returns. Not a model-quality score. */
+/**
+ * Shape check. A true flag means the key is present and internally consistent.
+ * It does not compare the values with the source text, the stored analysis, or the selected label.
+ * That comparison is followUpRequestMismatches. This is not a model-quality score.
+ */
 export function followUpStructureCoverage(request: ChatRequest): FollowUpStructureCoverage {
   const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
   const user = request.messages.find((message) => message.role === 'user')?.content ?? '';
@@ -700,6 +782,7 @@ export async function runFollowUpReview(input: {
       sections: parent.sections,
       feedback,
       supplement,
+      answerOrigin: 'founder-input',
     }),
     chat: input.chat,
     gate: needsRevisionGate(marks) ? { previous: parent.sections, marks } : null,

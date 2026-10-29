@@ -155,6 +155,7 @@ describe('quality-2 and quality-3 compare requests', () => {
       },
       feedback: null,
       supplement: '아직 협력 양조장이 없다.',
+      answerOrigin: 'founder-input',
     });
     const followText = follow.messages.map((message) => message.content).join('\n');
     expect(followText).not.toContain('프롬프트 버전 quality-3');
@@ -899,6 +900,7 @@ describe('quality-2 and quality-3 compare requests', () => {
     const followEnd = reviewSource.indexOf('export function needsRevisionGate');
     const followSource = reviewSource.slice(followStart, followEnd);
     expect(followSource).toContain('buildFollowUpRequest');
+    expect(followSource).toContain("answerOrigin: 'founder-input'");
     expect(followSource).not.toContain('buildIncrementalStructureRequest');
     const panel = readFileSync(new URL('../../components/ai-pm-review-panel.tsx', import.meta.url), 'utf8');
     const followRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/follow-up/route.ts', import.meta.url), 'utf8');

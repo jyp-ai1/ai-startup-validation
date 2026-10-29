@@ -20,7 +20,9 @@ import {
   callReviewWithQuotaSwitch,
   estimateReviewTokens,
   FOLLOW_UP_SEPARATION_RULES,
+  buildSyntheticFollowUpRequest,
   followUpAnswerNotice,
+  followUpRequestMismatches,
   followUpStructureCoverage,
   parseFeedbackBody,
   parseSections,
@@ -95,7 +97,7 @@ describe('AI PM first review', () => {
     const selected = sections?.analysis?.choices.find((choice) => choice.label === '체험 프로그램을 먼저 검증할 것');
     expect(selected?.id).toBeTruthy();
     const supplement = '테스트용 합성 설명. 실제 창업자가 제공한 문장이 아니다. 예약 고객, 가격, 계약, 확정된 양조장은 없다.';
-    const request = buildFollowUpRequest({
+    const request = buildSyntheticFollowUpRequest({
       originalInput: evidence.businessInput,
       sections: sections!,
       feedback: {
@@ -115,6 +117,27 @@ describe('AI PM first review', () => {
       supplement,
       answerOrigin: 'synthetic-test-data',
     });
+    const source = {
+      originalInput: evidence.businessInput,
+      sections: sections!,
+      feedback: {
+        feedbackId: 'feedback-structure',
+        reviewId: 'review-structure',
+        userId: 'user-structure',
+        agreement: 'need_info' as const,
+        accuracy: 'hard_to_compare' as const,
+        revisionAreas: ['other' as const],
+        comment: selected?.label ?? '',
+        nextAction: 'verify_hypotheses' as const,
+        marks: [],
+        choiceAnswer: { choiceId: selected?.id ?? '', label: selected?.label ?? '', otherText: '' },
+        submittedAt: NOW,
+        modelCalls: 0 as const,
+      },
+      supplement,
+      answerOrigin: 'synthetic-test-data' as const,
+    };
+    expect(followUpRequestMismatches(request, source)).toEqual([]);
     expect(followUpStructureCoverage(request)).toEqual({
       originalInput: true,
       previousAnalysis: true,
@@ -130,10 +153,38 @@ describe('AI PM first review', () => {
       originalInput: string;
       previousQuestion: string;
       previousAnalysis: {
-        nextQuestion: string;
+        customer: string;
+        problem: string;
+        market: string;
         revenueModel: string;
+        execution: string;
+        risks: string[];
+        uncertain: string[];
         hypotheses: string[];
-        analysis: { summary: string; founderFacts: string[]; choices: Array<{ id: string; label: string }>; judgmentDetail: string };
+        judgment: string;
+        nextQuestion: string;
+        nextQuestionReason: string;
+        answerHint: string;
+        claimConfirmation: null;
+        analysis: {
+          summary: string;
+          value: string;
+          operatingModel: string;
+          payer: string;
+          competition: string;
+          operations: string;
+          profitability: string;
+          strengths: string[];
+          assumptions: string[];
+          evidenceToChange: string[];
+          founderFacts: string[];
+          inferences: string[];
+          judgmentDetail: string;
+          choices: Array<{ id: string; label: string }>;
+          alternatives: string;
+          differentiation: string;
+          nextVerification: string;
+        };
       };
       founderChoice: { answerOrigin: string; choiceId: string; label: string; otherText: string };
       founderSupplement: string;
@@ -177,16 +228,87 @@ describe('AI PM first review', () => {
       sections: sections!,
       feedback: null,
       supplement: '',
+      answerOrigin: 'founder-input',
     });
     const storedUser = JSON.parse(stored.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
       answerOrigin: string;
       answerOriginNotice: string;
       founderChoice: null;
+      founderSupplement: string;
     };
     expect(storedUser.answerOrigin).toBe('founder-input');
     expect(storedUser.answerOriginNotice).toBe(followUpAnswerNotice('founder-input'));
     expect(storedUser.founderChoice).toBeNull();
+    expect(storedUser.founderSupplement).toBe('');
+    expect(
+      followUpRequestMismatches(stored, {
+        originalInput: evidence.businessInput,
+        sections: sections!,
+        feedback: null,
+        supplement: '',
+        answerOrigin: 'founder-input',
+      }),
+    ).toEqual([]);
+    const omitted = {
+      originalInput: evidence.businessInput,
+      sections: sections!,
+      feedback: null,
+      supplement: '테스트용 합성 설명',
+    };
+    expect(() => buildFollowUpRequest(omitted as Parameters<typeof buildFollowUpRequest>[0])).toThrow(
+      'follow_up_answer_origin_required',
+    );
+    expect(() => buildSyntheticFollowUpRequest(omitted)).toThrow('synthetic_answer_origin_required');
+    expect(() =>
+      buildSyntheticFollowUpRequest({
+        ...omitted,
+        answerOrigin: 'founder-input',
+      }),
+    ).toThrow('synthetic_answer_origin_required');
     expect(followUpStructureCoverage(stored).founderChoice).toBe(false);
+    const raw = JSON.parse(previous?.raw ?? '') as Record<string, unknown>;
+    expect(user.previousAnalysis.customer).toBe(raw.customer);
+    expect(user.previousAnalysis.problem).toBe(raw.problem);
+    expect(user.previousAnalysis.market).toBe(raw.market);
+    expect(user.previousAnalysis.revenueModel).toBe(raw.revenueModel);
+    expect(user.previousAnalysis.execution).toBe(raw.operatingModel);
+    expect(user.previousAnalysis.risks).toEqual([raw.risks]);
+    expect(user.previousAnalysis.uncertain).toEqual([raw.assumptions]);
+    expect(user.previousAnalysis.hypotheses).toEqual([raw.assumptions]);
+    expect(user.previousAnalysis.judgment).toBe(raw.summary);
+    expect(user.previousAnalysis.judgment).not.toBe(raw.judgment);
+    expect(user.previousAnalysis.nextQuestion).toBe(raw.nextQuestion);
+    expect(user.previousAnalysis.nextQuestionReason).toBe(raw.nextQuestionReason);
+    expect(user.previousAnalysis.answerHint).toBe('선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.');
+    expect(user.previousAnalysis.claimConfirmation).toBeNull();
+    expect(user.previousAnalysis.analysis.summary).toBe(raw.summary);
+    expect(user.previousAnalysis.analysis.value).toBe(raw.value);
+    expect(user.previousAnalysis.analysis.operatingModel).toBe(raw.operatingModel);
+    expect(user.previousAnalysis.analysis.payer).toBe(raw.payer);
+    expect(user.previousAnalysis.analysis.competition).toBe(raw.competition);
+    expect(user.previousAnalysis.analysis.operations).toBe(raw.operations);
+    expect(user.previousAnalysis.analysis.profitability).toBe(raw.profitability);
+    expect(user.previousAnalysis.analysis.strengths).toEqual(raw.strengths);
+    expect(user.previousAnalysis.analysis.assumptions).toEqual([raw.assumptions]);
+    expect(user.previousAnalysis.analysis.evidenceToChange).toEqual([raw.evidenceToChange]);
+    expect(user.previousAnalysis.analysis.founderFacts).toEqual(raw.founderFacts);
+    expect(user.previousAnalysis.analysis.inferences).toEqual(raw.inferences);
+    expect(user.previousAnalysis.analysis.judgmentDetail).toBe(raw.judgment);
+    expect(user.previousAnalysis.analysis.alternatives).toBe(raw.alternatives);
+    expect(user.previousAnalysis.analysis.differentiation).toBe(raw.differentiation);
+    expect(user.previousAnalysis.analysis.nextVerification).toBe(raw.nextVerification);
+    expect(user.previousAnalysis.analysis.choices.map((choice) => choice.label)).toEqual(raw.choices);
+    expect(user.previousAnalysis.analysis.founderFacts).not.toContain(selected?.label);
+    expect(user.previousAnalysis.analysis.founderFacts.join('\n')).not.toContain(supplement);
+    expect(user.separationRules).toHaveLength(5);
+    const wrongInput = buildSyntheticFollowUpRequest({
+      ...source,
+      originalInput: '다른 사업 원문이다.',
+      answerOrigin: 'synthetic-test-data',
+    });
+    expect(followUpStructureCoverage(wrongInput).originalInput).toBe(true);
+    expect(followUpRequestMismatches(wrongInput, source)).toContain('originalInput');
+    expect(followUpRequestMismatches(wrongInput, source)).not.toContain('previousAnalysis');
     const panel = readFileSync(new URL('../../components/ai-pm-review-panel.tsx', import.meta.url), 'utf8');
     const followRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/follow-up/route.ts', import.meta.url), 'utf8');
     expect(panel).not.toContain('/api/ai-pm-review/follow-up');
@@ -501,6 +623,7 @@ describe('AI PM first review', () => {
         modelCalls: 0,
       },
       supplement: '',
+      answerOrigin: 'founder-input',
     });
     expect(direct.messages.some((message) => message.content.includes('UNIQUEPLANMARKER'))).toBe(false);
     const corrected = buildFollowUpRequest({
@@ -520,6 +643,7 @@ describe('AI PM first review', () => {
         modelCalls: 0,
       },
       supplement: '',
+      answerOrigin: 'founder-input',
     });
     const correctedUser = corrected.messages.find((message) => message.role === 'user')?.content ?? '';
     const correctedPayload = JSON.parse(correctedUser) as {

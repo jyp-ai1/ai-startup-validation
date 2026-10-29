@@ -243,6 +243,7 @@ describe('brewery quality rubric', () => {
       },
       feedback: null,
       supplement: '아직 협력 양조장이 없다.',
+      answerOrigin: 'founder-input',
     });
     const followText = followUp.messages.map((message) => message.content).join('\n');
     expect(followText).not.toContain('품질 시뮬레이션');
