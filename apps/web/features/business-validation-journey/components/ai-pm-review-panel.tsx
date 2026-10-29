@@ -6,7 +6,8 @@ import { Button, Textarea } from '@repo/ui';
 
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 import { businessBodyForReviewMatch, stripReviewIntakeLines } from '@/lib/project/parse-intake-seed';
-import { reviewFailureCopy, type AiPmReviewView } from '../lib/ai-pm-review';
+import type { AiPmReviewView } from '../lib/ai-pm-review';
+import { reviewFailureCopy } from '../lib/ai-pm-review-failure-copy';
 import {
   REVIEW_FOCUS_PRESETS,
   REVIEW_PURPOSE_LABEL,

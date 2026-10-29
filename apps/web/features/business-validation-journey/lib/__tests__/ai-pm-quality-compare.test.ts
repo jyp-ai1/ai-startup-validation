@@ -14,8 +14,8 @@ import {
   parseSections,
   presentReview,
   reviewContractError,
-  reviewFailureCopy,
 } from '../ai-pm-review';
+import { reviewFailureCopy } from '../ai-pm-review-failure-copy';
 import { openAiPmReviewStore, type StoredReview } from '../ai-pm-review-store';
 import { KNOWN_FAILURE_A, KNOWN_FAILURE_B, scoreBreweryRegression } from '../ai-pm-quality-scenarios';
 import {

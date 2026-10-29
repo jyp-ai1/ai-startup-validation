@@ -262,15 +262,6 @@ function clientFailure(error: string | null): (typeof CLIENT_FAILURES)[number] |
   return CLIENT_FAILURES.find((code) => code === error) ?? null;
 }
 
-/** Copy for a failed review. A wrong field type is named instead of shown as an analysis. */
-export function reviewFailureCopy(failure: string | null): string {
-  if (failure === 'revenue_model_type') return '수익 구조가 문자열이 아니어서 분석으로 표시하지 않습니다.';
-  if (failure === 'invalid_json' || failure === 'unstructured_response') {
-    return '응답이 제품이 읽는 필드와 달라 분석으로 표시하지 않습니다.';
-  }
-  return '검토가 끝나기 전에 실패했습니다. 결과 원문은 없습니다.';
-}
-
 /** Why a model string cannot be stored as an analysis. Null means the product parser accepts it. */
 export function reviewContractError(raw: string): 'invalid_json' | 'revenue_model_type' | 'unstructured_response' | null {
   const stripped = raw.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
