@@ -36,9 +36,12 @@ import {
   QUALITY7_PROMPT_VERSION,
   QUALITY7_SYSTEM_PROMPT,
   QUALITY8_PROMPT_VERSION,
+  QUALITY9_EXPERIENCE_INPUT,
   QUALITY9_PROMPT_VERSION,
+  QUALITY9_SUPPLIER_INPUT,
   buildQuality6CompareRequest,
   buildQuality9CompareRequest,
+  buildQuality9InputRequests,
   quality9EvidenceBlock,
   quality9Inference,
   scoreInferenceSeparation,
@@ -126,13 +129,13 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality9-once-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality9-inputs-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('quality-9-request.json');
-    expect(script).not.toContain('quality-8-request.json');
+    expect(script).toContain('quality-9-inputs-request.json');
+    expect(script).not.toContain('quality-9-request.json');
     expect(script).not.toContain('quality-compare-requests.json');
     expect(script).not.toContain('/api/ai-pm-review/follow-up');
     expect(script).not.toContain('buildFollowUpRequest');
@@ -317,6 +320,19 @@ describe('quality-2 and quality-3 compare requests', () => {
     };
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(separatedUrl, `${JSON.stringify(separated, null, 2)}\n`);
     expect(JSON.parse(readFileSync(separatedUrl, 'utf8'))).toEqual(separated);
+    const inputsUrl = new URL('../quality-9-inputs-request.json', import.meta.url);
+    const inputs = {
+      businessInput: COMPARE_BUSINESS_INPUT,
+      baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality9-recorded.json',
+      requests: buildQuality9InputRequests(),
+    };
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(inputsUrl, `${JSON.stringify(inputs, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(inputsUrl, 'utf8'))).toEqual(inputs);
+    expect(inputs.requests.map((item) => item.inputId)).toEqual(['brewery', 'experience', 'supplier']);
+    expect(inputs.requests[1]?.request.messages[1]?.content).toContain(QUALITY9_EXPERIENCE_INPUT);
+    expect(inputs.requests[1]?.request.messages[1]?.content).not.toContain(QUALITY6_BREWERY_CHOICES[0]);
+    expect(inputs.requests[2]?.request.messages[1]?.content).toContain(QUALITY9_SUPPLIER_INPUT);
+    expect(inputs.requests[2]?.request.messages[1]?.content).not.toContain(QUALITY6_BREWERY_CHOICES[0]);
   });
 
   it('keeps quality-9 inferences from copying founder sentences', () => {

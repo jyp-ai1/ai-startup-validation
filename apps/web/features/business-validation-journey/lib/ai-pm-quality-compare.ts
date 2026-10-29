@@ -378,6 +378,22 @@ function factIncludes(text: string, trait: string): boolean {
 
 export const QUALITY9_PROMPT_VERSION = 'quality-9-cpo-draft';
 
+export const QUALITY9_EXPERIENCE_INPUT = '외국인 관광객에게 막걸리 만들기체험만 안내한다.';
+
+export const QUALITY9_SUPPLIER_INPUT = '지역 공장에 온라인 마케팅 페이지 제작만 대행한다.';
+
+export function buildQuality9InputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
+  return [
+    { inputId: 'brewery', text: COMPARE_BUSINESS_INPUT },
+    { inputId: 'experience', text: QUALITY9_EXPERIENCE_INPUT },
+    { inputId: 'supplier', text: QUALITY9_SUPPLIER_INPUT },
+  ].map((item) => ({
+    inputId: item.inputId,
+    promptVersion: `${QUALITY9_PROMPT_VERSION}:${item.inputId}`,
+    request: buildQuality9CompareRequest(item.text),
+  }));
+}
+
 /** One interpretation, or 미확인 when the input does not support a separate inference. */
 export function quality9Inference(text: string): string {
   const body = text.split(/\n\s*검토 목적:/)[0] ?? text;
