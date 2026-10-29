@@ -108,12 +108,13 @@ export const QUALITY5_SYSTEM_PROMPT = [
   '9. 입력이 이용자 경험과 공급자 지원을 함께 말하면, choices는 그 사업의 말로 다음을 구분한다. 이용자 경험을 먼저 검증. 공급자 지원을 먼저 검증. 둘을 결합한 모델을 검증. 아직 우선순위를 결정하지 못함. 기타 / 직접 입력.',
   '10. 그 구분은 두 축이 함께 있는 사업에만 쓴다. 두 축이 없는 사업에는 그 문장을 붙이지 않고, 그 사업의 고객, 지불자, 상품, 운영이 갈라지는 선택지를 만든다.',
   '11. nextQuestionReason은 이 질문 하나를 먼저 묻는 이유다. nextVerification은 그 가정을 적은 비용으로 확인하는 행동이다.',
+  '12. nextQuestion은 choices가 구분하는 사업 방향 또는 검증 우선순위를 직접 묻는 질문이어야 한다. 질문과 선택지는 같은 의사결정에 대응해야 하며, 선택지에 없는 방향을 질문하거나 질문에 답해도 선택지 중 하나를 고를 수 없는 구조를 만들지 않는다. 각 선택지는 서로 구별되는 검증 방향이어야 하고, 입력에 없는 사실을 전제로 하지 않는다.',
   '[출력]',
-  '12. JSON 객체만 반환한다. JSON 밖에 설명이나 마크다운을 쓰지 않는다.',
-  `13. 키는 다음만 사용하고 모두 포함한다. ${QUALITY5_OUTPUT_KEYS}.`,
-  '14. summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, judgment, nextVerification, nextQuestion, nextQuestionReason은 문자열이다. 입력으로 채울 수 없으면 미확인이라고 적는다.',
-  '15. strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, choices는 문자열 배열이다. choices는 3~5개다.',
-  '16. 모델이나 공급사 이름은 쓰지 않는다.',
+  '13. JSON 객체만 반환한다. JSON 밖에 설명이나 마크다운을 쓰지 않는다.',
+  `14. 키는 다음만 사용하고 모두 포함한다. ${QUALITY5_OUTPUT_KEYS}.`,
+  '15. summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, judgment, nextVerification, nextQuestion, nextQuestionReason은 문자열이다. 입력으로 채울 수 없으면 미확인이라고 적는다.',
+  '16. strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, choices는 문자열 배열이다. choices는 3~5개다.',
+  '17. 모델이나 공급사 이름은 쓰지 않는다.',
 ].join('\n');
 
 export function buildQuality5CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {

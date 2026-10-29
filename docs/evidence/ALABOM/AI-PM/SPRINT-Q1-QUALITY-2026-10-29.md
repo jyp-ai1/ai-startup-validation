@@ -35,12 +35,13 @@
 9. 입력이 이용자 경험과 공급자 지원을 함께 말하면, choices는 그 사업의 말로 다음을 구분한다. 이용자 경험을 먼저 검증. 공급자 지원을 먼저 검증. 둘을 결합한 모델을 검증. 아직 우선순위를 결정하지 못함. 기타 / 직접 입력.
 10. 그 구분은 두 축이 함께 있는 사업에만 쓴다. 두 축이 없는 사업에는 그 문장을 붙이지 않고, 그 사업의 고객, 지불자, 상품, 운영이 갈라지는 선택지를 만든다.
 11. nextQuestionReason은 이 질문 하나를 먼저 묻는 이유다. nextVerification은 그 가정을 적은 비용으로 확인하는 행동이다.
+12. nextQuestion은 choices가 구분하는 사업 방향 또는 검증 우선순위를 직접 묻는 질문이어야 한다. 질문과 선택지는 같은 의사결정에 대응해야 하며, 선택지에 없는 방향을 질문하거나 질문에 답해도 선택지 중 하나를 고를 수 없는 구조를 만들지 않는다. 각 선택지는 서로 구별되는 검증 방향이어야 하고, 입력에 없는 사실을 전제로 하지 않는다.
 [출력]
-12. JSON 객체만 반환한다. JSON 밖에 설명이나 마크다운을 쓰지 않는다.
-13. 키는 다음만 사용하고 모두 포함한다. summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices.
-14. summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, judgment, nextVerification, nextQuestion, nextQuestionReason은 문자열이다. 입력으로 채울 수 없으면 미확인이라고 적는다.
-15. strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, choices는 문자열 배열이다. choices는 3~5개다.
-16. 모델이나 공급사 이름은 쓰지 않는다.
+13. JSON 객체만 반환한다. JSON 밖에 설명이나 마크다운을 쓰지 않는다.
+14. 키는 다음만 사용하고 모두 포함한다. summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices.
+15. summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, judgment, nextVerification, nextQuestion, nextQuestionReason은 문자열이다. 입력으로 채울 수 없으면 미확인이라고 적는다.
+16. strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, choices는 문자열 배열이다. choices는 3~5개다.
+17. 모델이나 공급사 이름은 쓰지 않는다.
 ```
 
 양조장 종합 검토 입력이 들어간 사용자 전문:
@@ -64,11 +65,18 @@
 
 ## 3. 실제 모델 응답
 
-**NOT RUN.** 이 환경의 주입된 비밀 이름은 Supabase URL과 anon, service role뿐이다. `GPT_API_KEY`는 없다. `executeSprintQualityPair`는 키 없이 `NOT RUN`을 반환하고 `raw`는 null이다. 두 버전의 응답 원문, 요청 시각, 완료 ID는 없다. 응답을 만들지 않았다.
+CPO가 `quality-2`와 규칙 12가 들어간 `quality-5-cpo-draft`의 각 1회 호출을 승인했다. 2026-10-29 16:28 KST에 `executeSprintQualityPair`를 실행했다. 상태는 **NOT RUN**이다. 이유: `GPT_API_KEY missing`. 이 프로세스에 그 키가 없고, 주입된 비밀 이름은 Supabase URL과 anon, service role뿐이다.
+
+| 버전 | 요청 상태 | 모델 | temperature | max_tokens | 응답 원문 | 파싱 |
+|---|---|---|---|---|---|---|
+| `quality-2` | `not_run` | `gpt-4o-mini` | 0.2 | 2400 | 없음 | 하지 않음 |
+| `quality-5-cpo-draft` | `not_run` | `gpt-4o-mini` | 0.2 | 2400 | 없음 | 하지 않음 |
+
+시스템 문장과 사용자 문장은 `docs/evidence/ALABOM/AI-PM/sprint-q1-pair-not-run.json`에 있다. 완료 ID와 오류 원문은 없다. 호출이 네트워크에 나가지 않았다. 빈 원문을 모델 실패로 두지 않는다.
 
 ## 4. 품질 게이트
 
-라이브 응답이 없어 Q1~Q10은 모두 **NOT RUN**이다. 하드 게이트 Q1, Q2, Q5, Q6도 **NOT RUN**이다. 전체는 **BLOCKED**다.
+라이브 응답이 없어 Q1, Q2, Q5, Q6은 **NOT RUN**이다. 후보 FAIL이 아니다. Q3, Q4, Q7~Q10도 **NOT RUN**이다. 전체는 **BLOCKED**다.
 
 | ID | 상태 | 증거 |
 |---|---|---|
@@ -93,10 +101,11 @@
 
 - `apps/web/features/business-validation-journey/lib/ai-pm-quality-compare.ts`
 - `apps/web/features/business-validation-journey/lib/__tests__/ai-pm-quality-compare.test.ts`
+- `docs/evidence/ALABOM/AI-PM/sprint-q1-pair-not-run.json`
 - 이 문서
 
 `ai-pm-review.ts`의 제품 프롬프트는 바꾸지 않았다. 2차 모델 호출은 없다. Production은 호출하지 않았다.
 
 ## 7. CPO 검토
 
-후보 시스템 문장과 사용자 문장을 고치거나 이 문장으로 비교 호출을 확정하면, `GPT_API_KEY`가 있는 곳에서 `quality-2`와 `quality-5-cpo-draft`를 같은 양조장 입력으로 한 번씩 저장할 수 있다. 그 원문이 생기기 전에는 Q1~Q7을 채점하지 않는다.
+규칙 12는 후보에 반영했다. 승인된 두 호출은 키 부재로 **NOT RUN**이다. `GPT_API_KEY`가 이 프로세스에 들어오면 같은 입력으로 각 1회만 다시 실행하고 원문을 저장한다. 그 전에는 하드 게이트를 채점하지 않는다. 제품 기본값은 `quality-2`다.

@@ -160,6 +160,8 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(user).toContain('온라인 마케팅');
     expect(system).toContain('두 축이 없는 사업에는 그 문장을 붙이지 않고');
     expect(system).toContain('이용자 경험을 먼저 검증');
+    expect(system).toContain('질문과 선택지는 같은 의사결정에 대응해야 하며');
+    expect(system).toContain('\n13. JSON 객체만 반환한다.');
     expect(system).toContain('공급자 지원을 먼저 검증');
     expect(candidate.model).toBe(product.model);
     expect(candidate.temperature).toBe(product.temperature);
