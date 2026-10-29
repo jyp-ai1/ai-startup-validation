@@ -833,6 +833,62 @@ describe('AI PM first review', () => {
     expect(arrayParsed.changes.every((change) => change.grounds === '체험 프로그램을 먼저 검증할 것이라는 선택 문장.')).toBe(true);
     expect(arrayParsed.changes.some((change) => change.grounds.includes('확정된 양조장'))).toBe(false);
     expect(arrayParsed.nextQuestion).not.toContain('마케팅 지원의 효과');
+    const groundsCall = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-grounds-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as {
+      runId: string;
+      priorRunId: string;
+      gitSha: string;
+      productFollowUpInvoked: boolean;
+      reflectionScored: boolean;
+      report: { calls: Array<{ raw: string; userPrompt: string }> };
+    };
+    expect(groundsCall.runId).toBe('q1-incremental-reflection-grounds-2026-10-29');
+    expect(groundsCall.priorRunId).toBe('q1-incremental-reflection-array-2026-10-29');
+    expect(groundsCall.gitSha).toBe('51ac2cadf0d445e3f9b948781749359130d240c3');
+    expect(groundsCall.productFollowUpInvoked).toBe(false);
+    expect(groundsCall.reflectionScored).toBe(false);
+    const groundsSent = JSON.parse(groundsCall.report.calls[0]?.userPrompt ?? '{}') as typeof sent;
+    const groundsContext = {
+      previousJudgment: groundsSent.previousAnalysis.judgment,
+      previousHypotheses: groundsSent.previousAnalysis.hypotheses,
+      previousNextVerification: groundsSent.previousAnalysis.analysis.nextVerification,
+      previousNextQuestion: groundsSent.previousAnalysis.nextQuestion,
+      previousRevenueModel: groundsSent.previousAnalysis.revenueModel,
+      choiceLabel: groundsSent.founderChoice.label,
+      supplement: groundsSent.founderSupplement,
+      answerOrigin: 'synthetic-test-data' as const,
+    };
+    expect(followUpOutputContractErrors(groundsCall.report.calls[0]?.raw ?? '', groundsContext)).toEqual([
+      'follow_up_output_founder_answer_untraced:judgment',
+      'follow_up_output_grounds_untraced:judgment',
+      'follow_up_output_founder_answer_untraced:hypotheses',
+      'follow_up_output_founder_answer_untraced:nextVerification',
+      'follow_up_output_founder_answer_untraced:nextQuestion',
+    ]);
+    const groundsParsed = JSON.parse(groundsCall.report.calls[0]?.raw ?? '{}') as {
+      judgment: string;
+      hypotheses: string[];
+      nextVerification: string;
+      nextQuestion: string;
+      revenueModel: string;
+      changes: Array<{ field: string; grounds: string; founderAnswer: string }>;
+    };
+    expect(groundsParsed.judgment).toBe(groundsContext.previousJudgment);
+    expect(groundsParsed.hypotheses).toEqual(['미확인']);
+    expect(groundsParsed.nextVerification).toContain('확정된 양조장');
+    expect(groundsParsed.nextQuestion).toContain('양조장');
+    expect(groundsParsed.revenueModel).toContain('가설');
+    expect(groundsParsed.changes.map((change) => change.grounds)).not.toEqual([
+      '체험 프로그램을 먼저 검증할 것이라는 선택 문장.',
+      '체험 프로그램을 먼저 검증할 것이라는 선택 문장.',
+      '체험 프로그램을 먼저 검증할 것이라는 선택 문장.',
+      '체험 프로그램을 먼저 검증할 것이라는 선택 문장.',
+    ]);
+    expect(groundsParsed.changes.every((change) => change.founderAnswer === '체험 프로그램을 먼저 검증할 것')).toBe(true);
   });
 
   it('sends a typed note and the same file text through one review', async () => {
