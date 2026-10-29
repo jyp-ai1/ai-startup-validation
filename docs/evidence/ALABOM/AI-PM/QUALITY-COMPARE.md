@@ -50,10 +50,26 @@ Preview에 남아 있는 과거 OpenAI 호출은 제품 검토 라우트다. `ex
 
 | 조건 | 동작 |
 |---|---|
-| `VERCEL_ENV=preview` 이고 브랜치가 `main`이 아님 | `executeQualityCompare()` 1회 |
+| `VERCEL_ENV=preview` 이고 브랜치가 `main`이 아님 | 고정 JSON의 두 요청을 OpenAI에 각 1회 |
 | Production, `main`, 로컬 빌드 | 호출 없이 종료 |
 | 같은 run id의 최종 기록이 이미 있음 | 재호출 없음 |
 
 run id는 `q1-preview-brewery-2026-10-29`다. 요청은 고정된 `quality-2`와 `quality-3-draft`다. 사업 입력 전문을 보내고 제품 입력 예산으로 자르지 않는다. 제품 2차 검토 경로는 호출하지 않는다. 제품 프롬프트는 `quality-2`다. 키 값은 로그, 응답, Git에 넣지 않는다.
 
-결과 JSON은 비공개 버킷 `ai-pm-quality-compare`의 객체 `q1-preview-brewery-2026-10-29.json`에 저장한다. 이 문서를 쓰는 시점에는 그 객체에 응답 원문이 없다. 빌드가 기록을 남긴 뒤에 원문과 회귀 판정을 이 파일에 붙인다. 원문이 생기기 전에는 품질 비교를 적지 않는다.
+결과 JSON은 비공개 버킷 `ai-pm-quality-compare`의 객체 `q1-preview-brewery-2026-10-29.json`에 저장한다.
+
+## 2026-10-29 14:08 KST 실행 결과
+
+비교 호출은 **BLOCKED**다. 1차 품질 게이트는 **FAIL**이다. 응답 원문은 없다. 품질 비교와 회귀 A/B는 **NOT RUN**이다.
+
+Preview 배포가 비교 기록을 만들기 전에 실패했다. 비공개 버킷 객체는 만들지 않았다. 따라서 빌드 프로세스가 `GPT_API_KEY`를 읽었는지는 확인되지 않았다. 이 클라우드 에이전트 프로세스에는 그 키가 없고, Vercel 토큰도 없어 빌드 로그를 읽지 못했다. 배포 URL은 Vercel SSO로 막혀 있다.
+
+| 시각 KST | 커밋 | GitHub deployment | 상태 |
+|---|---|---|---|
+| 13:30 | `a740cd2e` | `7404087356` | failure. `dpl_y8E3JaZUzYToMd1sfcaD4Vy1fLLj` |
+| 13:52 | `e7c8396c` | `7404364983` | failure. `dpl_HAzLSxMXRM3RfU1tbMDY2PfUbyHP` |
+| 14:08 | `0a05ddc5` | `7404573527` | failure. `dpl_6fBbDXSu7jbVy7GtsSB4aabkhhG5` |
+
+마지막 성공 Preview는 `bdbd792e`, deployment `7403599728`, 12:52 KST다. 그 커밋에는 이번 비교 코드가 없다. 로컬 `pnpm run build`는 비교 스크립트를 건너뛴 뒤 타입 검사까지 통과했다. Vercel이 수 초 안에 failure를 남긴 이유의 로그는 이 프로세스에서 열리지 않는다. 같은 실패를 반복 호출하지 않았다.
+
+제품 프롬프트는 `quality-2`다. 제품 2차 검토는 호출하지 않았다. Production 잠금 `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`와 PR #209 미병합은 유지한다.
