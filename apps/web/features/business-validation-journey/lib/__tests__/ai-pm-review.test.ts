@@ -1492,6 +1492,79 @@ describe('AI PM first review', () => {
     expect(preserveParsed.changes.every((change) => change.evidenceStatus === undefined)).toBe(true);
     expect(preserveParsed.changes.find((change) => change.field === 'judgment')?.decision).toBe('retained');
     expect(preserveParsed.changes.find((change) => change.field === 'hypotheses')?.decision).toBe('retained');
+    const elementCall = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-element-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as {
+      runId: string;
+      priorRunId: string;
+      gitSha: string;
+      startedAt: string;
+      finishedAt: string;
+      productFollowUpInvoked: boolean;
+      reflectionScored: boolean;
+      report: { calls: Array<{ raw: string; userPrompt: string; finishReason: string; model: string }> };
+    };
+    expect(elementCall.runId).toBe('q1-incremental-reflection-element-2026-10-29');
+    expect(elementCall.priorRunId).toBe('q1-incremental-reflection-preserve-2026-10-29');
+    expect(elementCall.gitSha).toBe('92a663bd43f2a6e299b7fc317faac4899243a229');
+    expect(elementCall.startedAt).toBe('2026-10-29T14:36:39.233Z');
+    expect(elementCall.finishedAt).toBe('2026-10-29T14:36:57.160Z');
+    expect(elementCall.productFollowUpInvoked).toBe(false);
+    expect(elementCall.reflectionScored).toBe(false);
+    expect(elementCall.report.calls[0]?.model).toBe('gpt-4o-mini-2024-07-18');
+    expect(elementCall.report.calls[0]?.finishReason).toBe('stop');
+    const elementSent = JSON.parse(elementCall.report.calls[0]?.userPrompt ?? '{}') as typeof sent;
+    const elementContext = {
+      previousJudgment: elementSent.previousAnalysis.judgment,
+      previousHypotheses: elementSent.previousAnalysis.hypotheses,
+      previousNextVerification: elementSent.previousAnalysis.analysis.nextVerification,
+      previousNextQuestion: elementSent.previousAnalysis.nextQuestion,
+      previousRevenueModel: elementSent.previousAnalysis.revenueModel,
+      choiceLabel: elementSent.founderChoice.label,
+      supplement: elementSent.founderSupplement,
+      answerOrigin: 'synthetic-test-data' as const,
+    };
+    expect(followUpOutputContractErrors(elementCall.report.calls[0]?.raw ?? '', elementContext)).toEqual([
+      'choice_effect_unrelated:hypotheses',
+      'choice_effect_unrelated:nextVerification',
+      'choice_effect_unrelated:nextQuestion',
+      'reason_untraced:nextQuestion',
+      'next_question_choice_unmentioned',
+    ]);
+    const elementParsed = JSON.parse(elementCall.report.calls[0]?.raw ?? '{}') as {
+      judgment: string;
+      hypotheses: string[];
+      nextVerification: string;
+      nextQuestion: string;
+      revenueModel: string;
+      choiceTrace?: unknown;
+      changes: Array<{
+        field: string;
+        previous: string;
+        decision: string;
+        reason: string;
+        founderAnswer: { choice: string; supplement: string; source: string; status: string };
+        choiceTrace: { label: string; answerOrigin: string; role: string; effect: string };
+        evidenceStatus: string;
+      }>;
+    };
+    expect(elementParsed.choiceTrace).toBeUndefined();
+    expect(elementParsed.revenueModel).toBe(elementContext.previousRevenueModel);
+    expect(elementParsed.judgment).toBe(elementContext.previousJudgment);
+    expect(elementParsed.hypotheses).toEqual(['미확인']);
+    expect(elementParsed.nextVerification).toBe(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
+    expect(elementParsed.nextQuestion).toBe('양조장 후보가 있는가?');
+    expect(elementParsed.changes.find((change) => change.field === 'nextQuestion')?.previous).toBe(elementContext.previousNextQuestion);
+    expect(elementParsed.changes.every((change) => change.founderAnswer.choice === '체험 프로그램을 먼저 검증할 것')).toBe(true);
+    expect(elementParsed.changes.every((change) => change.evidenceStatus === 'unverified-input')).toBe(true);
+    expect(elementParsed.changes.every((change) => change.choiceTrace.role === 'plan')).toBe(true);
+    expect(elementParsed.changes.every((change) => change.choiceTrace.answerOrigin === 'synthetic-test-data')).toBe(true);
+    expect(elementParsed.changes.find((change) => change.field === 'hypotheses')?.reason).toContain('확정된 양조장');
+    expect(elementParsed.changes.find((change) => change.field === 'judgment')?.decision).toBe('retained');
+    expect(elementParsed.changes.find((change) => change.field === 'hypotheses')?.decision).toBe('retained');
   });
 
   it('sends a typed note and the same file text through one review', async () => {
