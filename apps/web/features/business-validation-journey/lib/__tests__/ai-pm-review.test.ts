@@ -1612,6 +1612,55 @@ describe('AI PM first review', () => {
     expect(elementParsed.changes.find((change) => change.field === 'hypotheses')?.reason).toContain('확정된 양조장');
     expect(elementParsed.changes.find((change) => change.field === 'judgment')?.decision).toBe('retained');
     expect(elementParsed.changes.find((change) => change.field === 'hypotheses')?.decision).toBe('retained');
+    const linkCall = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-link-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as typeof elementCall;
+    expect(linkCall.runId).toBe('q1-incremental-reflection-link-2026-10-29');
+    expect(linkCall.priorRunId).toBe('q1-incremental-reflection-element-2026-10-29');
+    expect(linkCall.gitSha).toBe('1fb52b05400b1f98ffc39788790b71456d49cf62');
+    expect(linkCall.startedAt).toBe('2026-10-29T14:52:23.070Z');
+    expect(linkCall.finishedAt).toBe('2026-10-29T14:52:46.835Z');
+    expect(linkCall.productFollowUpInvoked).toBe(false);
+    expect(linkCall.reflectionScored).toBe(false);
+    expect(linkCall.report.calls[0]?.model).toBe('gpt-4o-mini-2024-07-18');
+    expect(linkCall.report.calls[0]?.finishReason).toBe('stop');
+    const linkSent = JSON.parse(linkCall.report.calls[0]?.userPrompt ?? '{}') as typeof sent;
+    const linkContext = {
+      previousJudgment: linkSent.previousAnalysis.judgment,
+      previousHypotheses: linkSent.previousAnalysis.hypotheses,
+      previousNextVerification: linkSent.previousAnalysis.analysis.nextVerification,
+      previousNextQuestion: linkSent.previousAnalysis.nextQuestion,
+      previousRevenueModel: linkSent.previousAnalysis.revenueModel,
+      choiceLabel: linkSent.founderChoice.label,
+      supplement: linkSent.founderSupplement,
+      answerOrigin: 'synthetic-test-data' as const,
+    };
+    expect(followUpOutputContractErrors(linkCall.report.calls[0]?.raw ?? '', linkContext)).toEqual([
+      'choice_effect_unrelated:hypotheses',
+      'choice_effect_priority_unlinked:nextVerification',
+      'reason_missing_supplement:nextVerification',
+      'choice_effect_question_unlinked:nextQuestion',
+      'reason_missing_supplement:nextQuestion',
+      'hypothesis_demand_ungrounded',
+    ]);
+    const linkParsed = JSON.parse(linkCall.report.calls[0]?.raw ?? '{}') as typeof elementParsed;
+    expect(linkParsed.choiceTrace).toBeUndefined();
+    expect(linkParsed.revenueModel).toBe(linkContext.previousRevenueModel);
+    expect(linkParsed.judgment).toBe(linkContext.previousJudgment);
+    expect(linkParsed.hypotheses).toEqual([
+      '체험 프로그램의 수요가 있을 것이다. / 예약 고객, 가격, 계약, 확정된 양조장이 없다. 이 없음은 가설을 확정하지 못한다.',
+    ]);
+    expect(linkParsed.nextVerification).toBe(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
+    expect(linkParsed.nextQuestion).toBe(
+      '체험 프로그램을 먼저 검증할 것이므로 체험 운영을 검증하려면 협력 가능한 양조장 후보가 있는지 질문한다.',
+    );
+    expect(linkParsed.changes.every((change) => change.founderAnswer.choice === '체험 프로그램을 먼저 검증할 것')).toBe(true);
+    expect(linkParsed.changes.every((change) => change.evidenceStatus === 'unverified-input')).toBe(true);
+    expect(linkParsed.changes.find((change) => change.field === 'hypotheses')?.decision).toBe('changed');
+    expect(linkParsed.changes.find((change) => change.field === 'nextQuestion')?.previous).toBe(linkContext.previousNextQuestion);
   });
 
   it('sends a typed note and the same file text through one review', async () => {
