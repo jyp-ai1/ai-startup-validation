@@ -622,6 +622,10 @@ describe('AI PM first review', () => {
     expect(joined).toContain('모든 사업에 결제 여부를 먼저 묻지 않는다');
     expect(joined).toContain('시장 규모');
     expect(joined).not.toContain('UNIQUEPLANMARKER');
+    const breweryRequest = buildFirstReviewRequest(`${BREWERY}\n\n검토 목적: 종합 사업성 검토`);
+    const breweryJoined = breweryRequest.messages.map((message) => message.content).join('\n');
+    expect(breweryJoined).toContain('양조장 체험');
+    expect(breweryJoined).toContain('원문에 없는 수익 항목은 가설로 적는다');
     const short = {
       problem: '노출이 약하다.',
       target_customer: '양조장 대표',
@@ -1220,7 +1224,22 @@ describe('first review analysis', () => {
     };
     const parsed = parseSections(JSON.stringify(withFigure), BREWERY);
     expect(parsed?.analysis?.summary).toContain('양조장 체험');
-    expect(parsed?.analysis?.choices.map((choice) => choice.label)).toEqual(choices);
+    expect(parsed?.analysis?.choices.map((choice) => choice.label)).toEqual([
+      choices[0],
+      choices[1],
+      '아직 핵심을 정하지 못했다',
+      choices[2],
+    ]);
+    expect(parsed?.analysis?.nextVerification).toContain('관광객이 체험을 예약할 의사가 있다');
+    const priced = parseSections(
+      JSON.stringify({
+        ...withFigure,
+        revenueModel: '양조장 체험 수수료와 참가비로 수익을 낸다.',
+      }),
+      BREWERY,
+    );
+    expect(priced?.revenueModel).toContain('가설이며 원문에서 확인되지 않았다');
+    expect(priced?.revenueModel).toContain('수수료');
     expect(parsed?.analysis?.choices.at(-1)?.id).toBe('other');
     expect(parsed?.market).toContain('원문에 없는 수치');
     expect(parsed?.market).not.toContain('300억');
@@ -1418,7 +1437,12 @@ describe('first review analysis', () => {
       reason: '양조장의 현재 홍보를 확인합니다.',
     });
     expect(tourist).not.toBe(breweryPay);
+    expect(tourist).toContain('현재 가설');
     expect(tourist).toContain('후속 모델 검토는 실행하지 않습니다');
+    expect(composeReviewInput({ text: BREWERY, purpose: 'overall' })).toContain('종합 사업성 검토');
+    expect(composeReviewInput({ text: BREWERY, purpose: 'overall', stage: 'idea' })).toContain('아이디어 단계');
+    expect(composeReviewInput({ text: BREWERY, purpose: 'overall' })).toContain('검토 계약: comprehensive-1');
+    expect(composeReviewInput({ text: BREWERY })).toBe(BREWERY);
     const missingOther = parseFeedbackBody({
       reviewId: market.record.reviewId,
       choiceId: 'other',

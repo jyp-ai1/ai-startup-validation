@@ -19,15 +19,18 @@ export const REVIEW_PURPOSE_LABEL: Record<ReviewPurpose, string> = {
   customer: '고객 정의',
   execution: '실행계획 수립',
   funding: '투자·지원사업 준비',
-  overall: '종합 검토',
+  overall: '종합 사업성 검토',
 };
+
+/** Stored on new first reviews so an older thin analysis is not shown as the current result. */
+export const REVIEW_CONTRACT = 'comprehensive-1';
 
 export const REVIEW_STAGES = ['idea', 'customer_research', 'partners', 'pilot', 'revenue'] as const;
 
 export type ReviewStage = (typeof REVIEW_STAGES)[number];
 
 export const REVIEW_STAGE_LABEL: Record<ReviewStage, string> = {
-  idea: '아이디어',
+  idea: '아이디어 단계',
   customer_research: '고객 조사',
   partners: '제휴처 확보',
   pilot: '시범 운영',
@@ -60,14 +63,18 @@ export function composeReviewInput(input: {
   const body = normalizeReviewText(input.text);
   if (!input.purpose) return body;
   const purpose = REVIEW_PURPOSE_LABEL[input.purpose];
-  const stage = input.stage ? REVIEW_STAGE_LABEL[input.stage] : '없음';
+  const stage = input.stage ? REVIEW_STAGE_LABEL[input.stage] : '미확인';
   const focus = normalizeReviewText(input.focus ?? '') || '없음';
-  return `${body}\n\n검토 목적: ${purpose}\n현재 단계: ${stage}\n가장 알고 싶은 것: ${focus}`;
+  return `${body}\n\n검토 목적: ${purpose}\n현재 단계: ${stage}\n가장 알고 싶은 것: ${focus}\n검토 계약: ${REVIEW_CONTRACT}`;
+}
+
+export function isCurrentReviewContract(text: string): boolean {
+  return text.includes(`검토 계약: ${REVIEW_CONTRACT}`);
 }
 
 /** Local guidance after a saved choice. This does not ask a model for the next review. */
 export function nextDirectionAfterChoice(input: { label: string; otherText: string; reason: string }): string {
   const stated = /기타/.test(input.label) && input.otherText.trim() ? input.otherText.trim() : input.label;
   const reason = input.reason.trim() || '이 선택에서 아직 확인되지 않은 사실을 다음 검토의 출발점으로 둡니다.';
-  return `확인된 내용: ${stated}. 다음 검토는 이 선택을 전제로 합니다. ${reason} 후속 모델 검토는 실행하지 않습니다.`;
+  return `사용자가 고른 판단: ${stated}. 이것은 확인된 사실이 아니라 현재 가설입니다. 다음 검토는 이 가설을 전제로 핵심 가정을 좁힙니다. ${reason} 후속 모델 검토는 실행하지 않습니다.`;
 }

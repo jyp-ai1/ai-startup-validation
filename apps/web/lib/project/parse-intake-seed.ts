@@ -48,7 +48,7 @@ export function parseIntakeSeedDocument(text: string): ParsedIntakeSeed {
 export function stripReviewIntakeLines(text: string): string {
   return text
     .split('\n')
-    .filter((line) => !/^(검토 목적|현재 단계|가장 알고 싶은 것):/.test(line.trim()))
+    .filter((line) => !/^(검토 목적|현재 단계|가장 알고 싶은 것|검토 계약):/.test(line.trim()))
     .join('\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();

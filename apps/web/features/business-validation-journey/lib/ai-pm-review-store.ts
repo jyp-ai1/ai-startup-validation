@@ -161,6 +161,10 @@ export type BusinessAnalysis = {
   inferences: string[];
   judgmentDetail: string;
   choices: ReviewChoice[];
+  /** Present when the model returned the comprehensive first-review fields. */
+  alternatives?: string;
+  differentiation?: string;
+  nextVerification?: string;
 };
 
 export type ChoiceAnswer = {

@@ -14,6 +14,7 @@ import {
   REVIEW_STAGE_LABEL,
   REVIEW_STAGES,
   composeReviewInput,
+  isCurrentReviewContract,
   isReviewStage,
   nextDirectionAfterChoice,
   type ReviewPurpose,
@@ -172,13 +173,14 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
 
   async function startReview() {
     const body = stripReviewIntakeLines(text);
-    if (pending || !projectId || !purpose || body.trim().length < 8) return;
+    const selectedPurpose = purpose || 'overall';
+    if (pending || !projectId || body.trim().length < 8) return;
     setPending(true);
     setMessage('');
     void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.aiPmReviewRequested, {
       screen: '/business-validation',
       status: 'requested',
-      category: purpose,
+      category: selectedPurpose,
     });
     try {
       const form = new FormData();
@@ -187,7 +189,7 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
         'text',
         composeReviewInput({
           text: body,
-          purpose,
+          purpose: selectedPurpose,
           stage: stage || null,
           focus,
         }),
@@ -398,7 +400,7 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
 
       {pending ? (
         <p className="text-sm" data-testid="ai-pm-loading">
-          {analysis ? '답을 저장하고 있습니다. 모델 호출은 없습니다.' : '사업 원문과 검토 목적을 읽고 있습니다.'}
+          {analysis ? '답을 저장하고 있습니다. 모델 호출은 없습니다.' : '사업 원문으로 종합 사업성 검토를 읽고 있습니다.'}
         </p>
       ) : null}
 
@@ -481,14 +483,14 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
             </div>
           ) : (
             <p className="text-sm text-muted-foreground" data-testid="ai-pm-core">
-              검토 목적을 고르면 이 원문으로 사업성 검토를 시작합니다.
+              사업 내용만 입력해도 종합 사업성 검토를 시작합니다. 목적과 단계는 고르지 않아도 됩니다.
             </p>
           )}
           {analysis ? null : needsModelCall ? (
             <Button
               type="button"
               data-testid="ai-pm-submit"
-              disabled={pending || !projectId || !purpose || stripReviewIntakeLines(text).trim().length < 8}
+              disabled={pending || !projectId || stripReviewIntakeLines(text).trim().length < 8}
               onClick={() => void startReview()}
             >
               AI 사업성 검토
@@ -614,7 +616,10 @@ function IntakeFields(props: {
         />
       </label>
       <fieldset className="space-y-2" data-testid="ai-pm-purpose">
-        <legend className="text-sm font-medium">사업성 검토 목적</legend>
+        <legend className="text-sm font-medium">
+          사업성 검토 목적 <span className="text-xs font-normal text-muted-foreground">선택</span>
+        </legend>
+        <p className="text-xs text-muted-foreground">고르지 않으면 종합 사업성 검토로 진행합니다.</p>
         {REVIEW_PURPOSES.map((item) => (
           <label key={item} className="block text-sm">
             <input
@@ -704,35 +709,50 @@ function AnalysisBlock(props: {
         reason: sections.nextQuestionReason,
       })
     : '';
+  const selected = analysis.choices.find((choice) => choice.id === props.choiceId) ?? null;
+  const selectedText =
+    selected?.id === 'other' ? props.otherText.trim() || selected.label : (selected?.label ?? '');
+  const selectionChanged =
+    Boolean(selected) &&
+    (!props.saved || props.saved.choiceId !== selected?.id || (selected?.id === 'other' && props.otherText.trim() !== props.saved.otherText));
   return (
     <div className="space-y-4" data-testid="ai-pm-core">
       <div className="space-y-1">
         <p className="text-xs font-medium text-muted-foreground">사업 요약</p>
         <p data-testid="ai-pm-summary">{analysis.summary}</p>
       </div>
-      <dl className="space-y-2 text-sm">
-        <Fact label="목표 고객" value={sections.customer} />
+      <div className="space-y-1">
+        <p className="text-xs font-medium text-muted-foreground">예비 사업성 판단</p>
+        <p data-testid="ai-pm-judgment">{analysis.judgmentDetail}</p>
+      </div>
+      <StringList title="핵심 가정과 미확인 사항" items={analysis.assumptions} />
+      {analysis.nextVerification ? (
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-muted-foreground">다음 검증 행동</p>
+          <p data-testid="ai-pm-next-verification">{analysis.nextVerification}</p>
+        </div>
+      ) : null}
+      <div className="space-y-2 border-t border-border pt-3 text-sm">
+        <p className="font-medium">세부 분석</p>
+        <Fact label="핵심 고객" value={sections.customer} />
         <Fact label="해결하려는 문제" value={sections.problem} />
+        <Fact label="기존 대안" value={analysis.alternatives ?? ''} />
         <Fact label="제공 가치" value={analysis.value} />
+        <Fact label="차별화" value={analysis.differentiation ?? ''} />
         <Fact label="운영 방식" value={analysis.operatingModel} />
-        <Fact label="잠재 결제자" value={analysis.payer} />
-        <Fact label="수익모델" value={sections.revenueModel} />
-      </dl>
-      <div className="space-y-2 text-sm">
-        <p className="font-medium">근거와 판단</p>
+        <Fact label="이용자와 지불자" value={analysis.payer} />
+        <Fact label="수익 구조" value={sections.revenueModel} />
         <Fact label="시장성" value={sections.market} />
         <Fact label="경쟁" value={analysis.competition} />
-        <Fact label="운영 가능성" value={analysis.operations} />
+        <Fact label="실행 가능성" value={analysis.operations} />
         <Fact label="수익성" value={analysis.profitability} />
-        <p data-testid="ai-pm-judgment">{analysis.judgmentDetail}</p>
-        <p className="text-xs text-muted-foreground">원문에 없는 수치와 매출은 확정된 사실이 아닙니다.</p>
+        <StringList title="강점" items={analysis.strengths} />
+        <StringList title="주요 위험" items={sections.risks} />
+        <StringList title="판단을 바꿀 증거" items={analysis.evidenceToChange} />
+        <StringList title="입력에서 읽은 사실" items={analysis.founderFacts} />
+        <StringList title="추론" items={analysis.inferences} />
+        <p className="text-xs text-muted-foreground">원문에 없는 가격, 수수료, 시장 수치는 확정된 사실이 아닙니다.</p>
       </div>
-      <StringList title="강점" items={analysis.strengths} />
-      <StringList title="주요 위험" items={sections.risks} />
-      <StringList title="미검증 가정" items={analysis.assumptions} />
-      <StringList title="판단을 바꿀 증거" items={analysis.evidenceToChange} />
-      <StringList title="입력에서 읽은 사실" items={analysis.founderFacts} />
-      <StringList title="추정" items={analysis.inferences} />
       <form
         className="space-y-3"
         data-testid="ai-pm-next-question"
@@ -742,8 +762,11 @@ function AnalysisBlock(props: {
           props.onSave();
         }}
       >
-        <p className="text-sm font-medium">핵심 추가 질문</p>
-        <p className="text-xs text-muted-foreground">이 답이 저장되면, 무엇이 확인됐는지와 다음 검토 방향을 안내합니다.</p>
+        <p className="text-sm font-medium">첫 객관식 피드백</p>
+        <p className="text-xs text-muted-foreground">
+          이 선택은 확인된 사실이 아닙니다. 현재 판단으로 저장하면 다음 검토 방향을 안내합니다. 후속 모델 검토는 실행하지
+          않습니다.
+        </p>
         <p>{sections.nextQuestion}</p>
         <p data-testid="ai-pm-next-question-reason">{sections.nextQuestionReason}</p>
         <fieldset className="space-y-2">
@@ -770,6 +793,11 @@ function AnalysisBlock(props: {
             placeholder="기타 / 직접 입력"
           />
         ) : null}
+        {selectionChanged ? (
+          <p className="text-sm" data-testid="ai-pm-choice-preview">
+            저장할 답: {selectedText}
+          </p>
+        ) : null}
         <Button
           type="submit"
           data-testid="ai-pm-choice-submit"
@@ -780,7 +808,7 @@ function AnalysisBlock(props: {
       </form>
       {props.saved ? (
         <div className="space-y-2" data-testid="ai-pm-choice-saved">
-          <p className="text-sm font-medium">확인된 답</p>
+          <p className="text-sm font-medium">저장한 답</p>
           <p>{props.saved.otherText || props.saved.label}</p>
           <p className="text-sm" data-testid="ai-pm-next-direction">
             {direction}
@@ -843,8 +871,10 @@ function matchReview(reviews: AiPmReviewView[], text: string, projectId: string)
   );
   const needle = businessBodyForReviewMatch(text);
   const matched = needle ? ready.filter((review) => businessBodyForReviewMatch(review.inputText) === needle) : ready;
-  const analyzed = matched.filter((review) => review.sections?.analysis);
-  return analyzed.at(-1) ?? matched.at(-1) ?? null;
+  const analyzed = matched.filter(
+    (review) => review.sections?.analysis && isCurrentReviewContract(review.inputText),
+  );
+  return analyzed.at(-1) ?? null;
 }
 
 function latestChoice(review: AiPmReviewView | null): ChoiceAnswer | null {

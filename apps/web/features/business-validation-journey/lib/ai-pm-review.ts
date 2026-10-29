@@ -21,7 +21,7 @@ import type {
 export const AI_PM_REVIEW_MODEL = 'gpt-4o-mini';
 export const AI_PM_GEMINI_FALLBACK_MODEL = 'gemini-3.1-flash-lite';
 export const AI_PM_REVIEW_MAX_TOKENS = 800;
-export const AI_PM_REVIEW_FIRST_MAX_TOKENS = 1800;
+export const AI_PM_REVIEW_FIRST_MAX_TOKENS = 2400;
 export const AI_PM_REVIEW_INPUT_TOKEN_BUDGET = 3_000;
 export const AI_PM_REVIEW_INPUT_LIMIT = 24_000;
 
@@ -283,7 +283,7 @@ export function buildFirstReviewRequest(text: string): ChatRequest {
       { role: 'system', content: firstReviewSystemPrompt() },
       {
         role: 'user',
-        content: `사업 입력:\n${text}\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextQuestion, nextQuestionReason, choices.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다.`,
+        content: `사업 입력:\n${text}\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다.`,
       },
     ]),
   };
@@ -722,20 +722,16 @@ function reviewSystemPrompt(): string {
 
 function firstReviewSystemPrompt(): string {
   return [
-    '당신은 ALABOM의 AI PM이다. 사업 원문으로 1차 사업성 검토를 작성한다.',
-    '사용자가 적은 사실과 추정은 나눈다. 추정에는 추정이라고 적는다.',
-    '가격, 인원, 매출, 시장 규모, 수요 수치는 입력에 없으면 만들지 않는다. 없으면 원문만으로 확정할 수 없다고 적는다.',
-    '내부 점수나 상태 문구로 분석을 대체하지 않는다. 판단을 보류한다는 문장으로 분석을 끝내지 않는다.',
-    '첫 질문은 이 사업의 검토 목적과 가장 큰 불확실성에서 만든다.',
-    '모든 사업에 결제 여부를 먼저 묻지 않는다. 결제 확인은 수익모델이 그 불확실성일 때만 선택지에 넣는다.',
-    'JSON만 반환한다.',
-    '키는 summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextQuestion, nextQuestionReason, choices 이다.',
-    'summary는 사업 한 문장이다.',
-    'customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, judgment는 각각 한 단락이다.',
-    'strengths, risks, assumptions, evidenceToChange, founderFacts, inferences는 JSON 배열이다. 한 문장이면 원소가 하나인 배열로 둔다.',
-    'nextQuestion은 질문 하나다. nextQuestionReason은 이 답이 다음 판단을 어떻게 바꾸는지다.',
-    'choices는 이 원문에만 해당하는 문자열 3개에서 5개다. 마지막은 기타 / 직접 입력이다.',
-    '질문 목록의 문장을 복사하지 않는다. 모델 이름이나 공급사 이름은 쓰지 않는다.',
+    '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 말고 성립 조건과 가장 큰 불확실성을 분석한다.',
+    '사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다.',
+    '고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다.',
+    '가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다.',
+    '분석을 마친 뒤, 한 번의 답으로 불확실성이 가장 많이 줄어드는 미확인 가정 하나만 질문으로 만든다.',
+    '모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다.',
+    '선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다.',
+    'JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다.',
+    '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
+    'summary는 원문을 반영한 설명, judgment는 예비 판단과 근거, nextVerification은 적은 비용의 확인 행동이다. assumptions는 1개에서 3개다.',
   ].join(' ');
 }
 
@@ -979,8 +975,10 @@ function readBusinessAnalysis(parsed: Record<string, unknown>, sourceText: strin
   const problem = textField(parsed.problem);
   const value = textField(parsed.value);
   const operatingModel = textField(parsed.operatingModel);
-  const payer = textField(parsed.payer);
-  const revenueModel = textField(parsed.revenueModel);
+  const payer = markUnsourcedClaims(textField(parsed.payer), sourceText);
+  const revenueModel = markUnsourcedClaims(textField(parsed.revenueModel), sourceText);
+  const alternatives = textField(parsed.alternatives) ?? '';
+  const differentiation = textField(parsed.differentiation) ?? '';
   const market = scrubFigures(textField(parsed.market), sourceText);
   const competition = scrubFigures(textField(parsed.competition), sourceText);
   const operations = textField(parsed.operations);
@@ -1013,6 +1011,11 @@ function readBusinessAnalysis(parsed: Record<string, unknown>, sourceText: strin
     inferences: (stringList(parsed.inferences) ?? []).map((item) => scrubFigures(item, sourceText) ?? item),
     judgmentDetail,
     choices,
+    alternatives,
+    differentiation,
+    nextVerification:
+      textField(parsed.nextVerification) ??
+      (assumptions[0] ? `적은 비용으로 먼저 확인할 가정: ${assumptions[0]}` : ''),
   };
   return {
     customer,
@@ -1030,6 +1033,21 @@ function readBusinessAnalysis(parsed: Record<string, unknown>, sourceText: strin
     claimConfirmation: null,
     analysis,
   };
+}
+
+function ensureUnknownChoice(labels: string[]): string[] {
+  if (labels.some((label) => /아직|정하지 못|모르|미확인/.test(label))) return labels;
+  const unknown = '아직 핵심을 정하지 못했다';
+  const otherAt = labels.findIndex((label) => /기타|직접 입력/.test(label));
+  if (otherAt < 0) return [...labels, unknown];
+  return [...labels.slice(0, otherAt), unknown, ...labels.slice(otherAt)];
+}
+
+function markUnsourcedClaims(value: string | null, sourceText: string): string | null {
+  if (!value) return null;
+  const leaked = ['수수료', '참가비', '이용료', '구독료'].filter((term) => value.includes(term) && !sourceText.includes(term));
+  if (leaked.length === 0 || /가설|확인되지|원문에 없/.test(value)) return value;
+  return `가설이며 원문에서 확인되지 않았다(${leaked.join(', ')}). ${value}`;
 }
 
 function mergeDirectChoice(labels: string[]): string[] {
@@ -1053,7 +1071,9 @@ function readChoices(value: unknown): BusinessAnalysis['choices'] | null {
     .slice(0, 6);
   if (labels.length < 2) return null;
   const merged = mergeDirectChoice(labels);
-  const withOther = merged.some((label) => /기타|직접 입력/.test(label)) ? merged : [...merged, '기타 / 직접 입력'];
+  const withOther = ensureUnknownChoice(
+    merged.some((label) => /기타|직접 입력/.test(label)) ? merged : [...merged, '기타 / 직접 입력'],
+  );
   const otherIndex = withOther.reduce((found, label, index) => (/기타|직접 입력/.test(label) ? index : found), -1);
   return withOther.map((label, index) => ({
     id: index === otherIndex ? 'other' : `c${index + 1}`,
