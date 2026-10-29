@@ -46,7 +46,7 @@ Preview에 남아 있는 과거 OpenAI 호출은 제품 검토 라우트다. `ex
 
 ## Preview 빌드 1회 실행
 
-비교 함수를 클라우드 에이전트 프로세스가 아니라 Preview 빌드에서 실행한다. 스크립트는 `apps/web/scripts/preview-quality-compare-once.mjs`다.
+비교 함수를 클라우드 에이전트 프로세스가 아니라 Preview 빌드의 `pnpm --filter web build` 안에서 실행한다. 스크립트는 `apps/web/scripts/preview-quality-compare-once.mjs`다. 요청 본문은 `quality-compare-requests.json`에 고정했고, 빌더는 그 파일과 같아야 한다. 스크립트가 실패해도 `next build`는 이어서 실행된다. Production에서는 호출하지 않는다.
 
 | 조건 | 동작 |
 |---|---|

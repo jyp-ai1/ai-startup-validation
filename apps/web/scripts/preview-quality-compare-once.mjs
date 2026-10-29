@@ -1,11 +1,10 @@
 /**
- * One quality-2 / quality-3-draft compare on a Vercel Preview build.
+ * One quality-2 / quality-3-draft compare during a Vercel Preview build.
  * Production builds return immediately. The product second-review route is not called.
- * The raw report is stored in a private Supabase bucket so this agent can read it
- * without printing credentials.
+ * Requests come from the frozen JSON checked against the builders. Results go to a
+ * private Supabase bucket. Credentials are not written to the report or the log.
  */
-import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -15,8 +14,7 @@ export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(scriptDir, '..');
-const repoRoot = join(webRoot, '..', '..');
-const evidencePath = join(repoRoot, 'docs/evidence/ALABOM/AI-PM/quality-2-3-compare.json');
+const fixturePath = join(webRoot, 'features/business-validation-journey/lib/quality-compare-requests.json');
 
 export function shouldRunPreviewQualityCompare(env) {
   return env.VERCEL_ENV === 'preview' && env.VERCEL_GIT_COMMIT_REF !== 'main';
@@ -68,9 +66,7 @@ async function ensureBucket(config) {
   });
   if (response.ok) return;
   const body = await response.text();
-  if (!body.includes('BucketAlreadyExists')) {
-    throw new Error(`bucket_create_${response.status}`);
-  }
+  if (!body.includes('BucketAlreadyExists')) throw new Error(`bucket_create_${response.status}`);
 }
 
 async function readStored(config) {
@@ -92,6 +88,100 @@ async function writeStored(config, payload) {
 
 function completed(stored) {
   return stored && ['RECORDED', 'NOT RUN', 'failed'].includes(stored.status);
+}
+
+function messageContent(request, role) {
+  return request.messages.find((message) => message.role === role)?.content ?? '';
+}
+
+function jsonObject(raw) {
+  try {
+    const parsed = JSON.parse(raw);
+    return Boolean(parsed) && typeof parsed === 'object' && !Array.isArray(parsed);
+  } catch {
+    return false;
+  }
+}
+
+async function oneCall(apiKey, promptVersion, request) {
+  const prompts = {
+    systemPrompt: messageContent(request, 'system'),
+    userPrompt: messageContent(request, 'user'),
+  };
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: request.model,
+        messages: request.messages.map((message) => ({ role: message.role, content: message.content })),
+        temperature: request.temperature,
+        max_tokens: request.maxTokens,
+        stream: false,
+        response_format: { type: 'json_object' },
+      }),
+      signal: AbortSignal.timeout(90_000),
+    });
+    const requestId = response.headers.get('x-request-id');
+    const body = await response.text();
+    if (!response.ok) {
+      return {
+        promptVersion,
+        status: 'failed',
+        completionId: null,
+        requestId,
+        model: request.model,
+        finishReason: null,
+        promptTokens: null,
+        completionTokens: null,
+        totalTokens: null,
+        usageKnown: false,
+        jsonParsed: false,
+        error: safeLine(body).slice(0, 300),
+        ...prompts,
+        raw: null,
+      };
+    }
+    const data = JSON.parse(body);
+    const raw = data.choices?.[0]?.message?.content ?? '';
+    const usage = data.usage ?? {};
+    return {
+      promptVersion,
+      status: raw.trim() ? 'succeeded' : 'failed',
+      completionId: data.id ?? null,
+      requestId,
+      model: data.model ?? request.model,
+      finishReason: data.choices?.[0]?.finish_reason ?? null,
+      promptTokens: usage.prompt_tokens ?? null,
+      completionTokens: usage.completion_tokens ?? null,
+      totalTokens: usage.total_tokens ?? null,
+      usageKnown: typeof usage.total_tokens === 'number',
+      jsonParsed: jsonObject(raw),
+      error: raw.trim() ? null : 'empty_response',
+      ...prompts,
+      raw,
+    };
+  } catch (error) {
+    return {
+      promptVersion,
+      status: 'failed',
+      completionId: null,
+      requestId: null,
+      model: request.model,
+      finishReason: null,
+      promptTokens: null,
+      completionTokens: null,
+      totalTokens: null,
+      usageKnown: false,
+      jsonParsed: false,
+      error: safeLine(error instanceof Error ? error.message : 'model_error').slice(0, 300),
+      ...prompts,
+      raw: null,
+    };
+  }
 }
 
 async function main() {
@@ -119,6 +209,9 @@ async function main() {
   }
 
   const startedAt = new Date().toISOString();
+  const fixture = JSON.parse(readFileSync(fixturePath, 'utf8'));
+  const apiKey = process.env.GPT_API_KEY?.trim() || '';
+  console.log(`preview-quality-compare start run=${PREVIEW_COMPARE_RUN_ID} gpt_key=${apiKey ? 'present' : 'absent'}`);
   await writeStored(config, {
     runId: PREVIEW_COMPARE_RUN_ID,
     status: 'started',
@@ -126,41 +219,33 @@ async function main() {
     gitSha: process.env.VERCEL_GIT_COMMIT_SHA ?? null,
     gitRef: process.env.VERCEL_GIT_COMMIT_REF ?? null,
   });
-  console.log(`preview-quality-compare start run=${PREVIEW_COMPARE_RUN_ID} gpt_key=${process.env.GPT_API_KEY?.trim() ? 'present' : 'absent'}`);
 
-  rmSync(evidencePath, { force: true });
-  const child = spawnSync(
-    'pnpm',
-    ['exec', 'vitest', 'run', 'features/business-validation-journey/lib/__tests__/ai-pm-quality-compare.live.test.ts'],
-    {
-      cwd: webRoot,
-      env: {
-        ...process.env,
-        AI_PM_COMPARE_LIVE: '1',
-        AI_REQUEST_TIMEOUT_MS: process.env.AI_REQUEST_TIMEOUT_MS || '90000',
-        CI: '1',
-      },
-      encoding: 'utf8',
-      timeout: 240_000,
-    },
-  );
-  if (child.stdout) process.stdout.write(safeLine(child.stdout));
-  if (child.stderr) process.stderr.write(safeLine(child.stderr));
-
-  let report = null;
-  let error = null;
-  if (child.error) error = safeLine(child.error.message);
-  else if (!existsSync(evidencePath)) error = `evidence_file_missing exit=${child.status ?? 'null'}`;
-  else {
-    try {
-      report = JSON.parse(readFileSync(evidencePath, 'utf8'));
-    } catch {
-      error = 'evidence_file_unreadable';
+  const calls = [];
+  for (const item of fixture.requests) {
+    if (!apiKey) {
+      calls.push({
+        promptVersion: item.promptVersion,
+        status: 'not_run',
+        completionId: null,
+        requestId: null,
+        model: null,
+        finishReason: null,
+        promptTokens: null,
+        completionTokens: null,
+        totalTokens: null,
+        usageKnown: false,
+        jsonParsed: null,
+        error: null,
+        systemPrompt: messageContent(item.request, 'system'),
+        userPrompt: messageContent(item.request, 'user'),
+        raw: null,
+      });
+      continue;
     }
+    calls.push(await oneCall(apiKey, item.promptVersion, item.request));
   }
-  if (report && report.productFollowUpInvoked !== false) error = 'product_follow_up_invoked';
 
-  const status = error ? 'failed' : report.status;
+  const status = apiKey ? 'RECORDED' : 'NOT RUN';
   await writeStored(config, {
     runId: PREVIEW_COMPARE_RUN_ID,
     status,
@@ -168,9 +253,26 @@ async function main() {
     finishedAt: new Date().toISOString(),
     gitSha: process.env.VERCEL_GIT_COMMIT_SHA ?? null,
     gitRef: process.env.VERCEL_GIT_COMMIT_REF ?? null,
-    error,
+    error: apiKey ? null : 'GPT_API_KEY missing',
     productFollowUpInvoked: false,
-    report,
+    model: 'gpt-4o-mini',
+    temperature: 0.2,
+    maxTokens: 2400,
+    responseFormat: 'json_object',
+    businessInput: fixture.businessInput,
+    confounders: fixture.confounders,
+    report: {
+      status,
+      reason: apiKey ? null : 'GPT_API_KEY missing',
+      model: 'gpt-4o-mini',
+      temperature: 0.2,
+      maxTokens: 2400,
+      responseFormat: 'json_object',
+      businessInput: fixture.businessInput,
+      confounders: fixture.confounders,
+      productFollowUpInvoked: false,
+      calls,
+    },
   });
   console.log(`preview-quality-compare stored status=${status}`);
 }
@@ -178,6 +280,5 @@ async function main() {
 if (invokedDirectly()) {
   main().catch((error) => {
     console.log(`preview-quality-compare failed ${safeLine(error instanceof Error ? error.message : 'error')}`);
-    process.exitCode = 0;
   });
 }

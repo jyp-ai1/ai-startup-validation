@@ -136,9 +136,9 @@ export async function executeQualityCompare(env: Record<string, string | undefin
   const quality2 = buildQuality2CompareRequest();
   const quality3 = buildQuality3CompareRequest();
   const base = {
-    model: AI_PM_REVIEW_MODEL,
+    model: AI_PM_REVIEW_MODEL as typeof AI_PM_REVIEW_MODEL,
     temperature: 0.2 as const,
-    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS as typeof AI_PM_REVIEW_FIRST_MAX_TOKENS,
     responseFormat: 'json_object' as const,
     businessInput: COMPARE_BUSINESS_INPUT,
     confounders: compareConfounders(),

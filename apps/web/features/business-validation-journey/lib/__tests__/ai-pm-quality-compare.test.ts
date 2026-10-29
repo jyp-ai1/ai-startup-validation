@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
@@ -91,10 +91,13 @@ describe('quality-2 and quality-3 compare requests', () => {
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
     expect(script).not.toContain('/api/ai-pm-review/follow-up');
     expect(script).not.toContain('buildFollowUpRequest');
+    expect(script).not.toContain('vitest');
+    const packageJson = readFileSync(new URL('../../../../package.json', import.meta.url), 'utf8');
+    expect(packageJson).toContain('"build": "node scripts/preview-quality-compare-once.mjs; next build"');
     const rootBuild = readFileSync(new URL('../../../../../../vercel.json', import.meta.url), 'utf8');
     const appBuild = readFileSync(new URL('../../../../vercel.json', import.meta.url), 'utf8');
-    expect(rootBuild).toContain('preview-quality-compare-once.mjs');
-    expect(appBuild).toContain('preview-quality-compare-once.mjs');
+    expect(rootBuild).toContain('"buildCommand": "pnpm --filter web build"');
+    expect(appBuild).toContain('"buildCommand": "cd ../.. && pnpm --filter web build"');
     const child = spawnSync(process.execPath, [fileURLToPath(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url))], {
       env: { ...process.env, VERCEL_ENV: 'production', GPT_API_KEY: 'sk-testsecretvalue' },
       encoding: 'utf8',
@@ -102,6 +105,20 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(child.status).toBe(0);
     expect(child.stdout).toContain('preview-quality-compare skip');
     expect(child.stdout).not.toContain('sk-testsecretvalue');
+  });
+
+  it('keeps the preview request fixture equal to the builders', () => {
+    const fixtureUrl = new URL('../quality-compare-requests.json', import.meta.url);
+    const fresh = {
+      businessInput: COMPARE_BUSINESS_INPUT,
+      confounders: compareConfounders(),
+      requests: [
+        { promptVersion: AI_PM_FIRST_PROMPT_VERSION, request: buildQuality2CompareRequest() },
+        { promptVersion: QUALITY3_PROMPT_VERSION, request: buildQuality3CompareRequest() },
+      ],
+    };
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(fixtureUrl, `${JSON.stringify(fresh, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(fixtureUrl, 'utf8'))).toEqual(fresh);
   });
 
   it('fails the known brewery regressions and passes a hedged alternative', () => {
