@@ -19,6 +19,8 @@ import type {
 } from './ai-pm-review-store';
 
 export const AI_PM_REVIEW_MODEL = 'gpt-4o-mini';
+/** First-review prompt generation. Logged by the quality harness. Not a runtime SHA. */
+export const AI_PM_FIRST_PROMPT_VERSION = 'quality-2';
 export const AI_PM_GEMINI_FALLBACK_MODEL = 'gemini-3.1-flash-lite';
 export const AI_PM_REVIEW_MAX_TOKENS = 800;
 export const AI_PM_REVIEW_FIRST_MAX_TOKENS = 2400;
@@ -722,7 +724,8 @@ function reviewSystemPrompt(): string {
 
 function firstReviewSystemPrompt(): string {
   return [
-    '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 말고 성립 조건과 가장 큰 불확실성을 분석한다.',
+    `프롬프트 버전 ${AI_PM_FIRST_PROMPT_VERSION}. 당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 말고 성립 조건과 가장 큰 불확실성을 분석한다.`,
+    '창업자가 아직 고르지 않은 답을 사실로 만들지 않는다. 첫 질문은 정도(높다, 낮다)가 아니라 사업의 갈림길을 가른다.',
     '사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다.',
     '고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다.',
     '가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다.',
