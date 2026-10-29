@@ -253,6 +253,7 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
 
 /** Older succeeded follow-ups have no stored gate. Compare them on read and keep the row unchanged. */
 export function presentReview(record: StoredReview, feedback: StoredFeedback[], records: StoredReview[]): AiPmReviewView {
+  record = repairUnstructured(record);
   const source = feedback.find((item) => item.feedbackId === record.sourceFeedbackId) ?? null;
   const marks = normalizeMarks(source?.marks);
   const parent = records.find((item) => item.reviewId === record.parentReviewId) ?? null;
@@ -346,6 +347,14 @@ export async function runFirstReview(input: {
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const sha = sha256(input.text);
   const latest = await input.store.latestForInput(input.userId, sha, input.projectId);
+  const repaired = latest ? repairUnstructured(latest) : null;
+  if (repaired && repaired.status === 'succeeded' && latest?.status !== 'succeeded') {
+    return {
+      called: false,
+      record: repaired,
+      view: toAiPmReviewView(repaired, await input.store.listFeedback(input.userId, repaired.reviewId)),
+    };
+  }
   if (latest?.status === 'succeeded' || (latest?.status === 'not_run' && !input.chat)) {
     return {
       called: false,
@@ -722,7 +731,7 @@ function firstReviewSystemPrompt(): string {
     '키는 summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextQuestion, nextQuestionReason, choices 이다.',
     'summary는 사업 한 문장이다.',
     'customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, judgment는 각각 한 단락이다.',
-    'strengths, risks, assumptions, evidenceToChange, founderFacts, inferences는 문자열 배열이다.',
+    'strengths, risks, assumptions, evidenceToChange, founderFacts, inferences는 JSON 배열이다. 한 문장이면 원소가 하나인 배열로 둔다.',
     'nextQuestion은 질문 하나다. nextQuestionReason은 이 답이 다음 판단을 어떻게 바꾸는지다.',
     'choices는 이 원문에만 해당하는 문자열 3개에서 5개다. 마지막은 기타 / 직접 입력이다.',
     '질문 목록의 문장을 복사하지 않는다. 모델 이름이나 공급사 이름은 쓰지 않는다.',
@@ -1022,6 +1031,19 @@ function readBusinessAnalysis(parsed: Record<string, unknown>, sourceText: strin
   };
 }
 
+function mergeDirectChoice(labels: string[]): string[] {
+  const merged: string[] = [];
+  for (const label of labels) {
+    const previous = merged.at(-1);
+    if (previous && /^기타$/.test(previous) && /직접/.test(label)) {
+      merged[merged.length - 1] = '기타 / 직접 입력';
+      continue;
+    }
+    merged.push(label);
+  }
+  return merged;
+}
+
 function readChoices(value: unknown): BusinessAnalysis['choices'] | null {
   if (!Array.isArray(value)) return null;
   const labels = value
@@ -1029,8 +1051,9 @@ function readChoices(value: unknown): BusinessAnalysis['choices'] | null {
     .map((item) => item.trim())
     .slice(0, 6);
   if (labels.length < 2) return null;
-  const withOther = labels.some((label) => /기타/.test(label)) ? labels : [...labels, '기타 / 직접 입력'];
-  const otherIndex = withOther.reduce((found, label, index) => (/기타/.test(label) ? index : found), -1);
+  const merged = mergeDirectChoice(labels);
+  const withOther = merged.some((label) => /기타|직접 입력/.test(label)) ? merged : [...merged, '기타 / 직접 입력'];
+  const otherIndex = withOther.reduce((found, label, index) => (/기타|직접 입력/.test(label) ? index : found), -1);
   return withOther.map((label, index) => ({
     id: index === otherIndex ? 'other' : `c${index + 1}`,
     label,
@@ -1063,8 +1086,17 @@ function textField(value: unknown): string | null {
 }
 
 function stringList(value: unknown): string[] | null {
+  if (typeof value === 'string' && value.trim()) return [value.trim()];
   if (!Array.isArray(value)) return null;
   return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).map((item) => item.trim());
+}
+
+/** A stored model payload can be shown once the parser accepts it. This does not call the model. */
+function repairUnstructured(record: StoredReview): StoredReview {
+  if (record.status !== 'failed' || record.error !== 'unstructured_response' || !record.rawContent) return record;
+  const sections = parseSections(record.rawContent, record.inputText);
+  if (!sections?.analysis) return record;
+  return { ...record, status: 'succeeded', sections, error: null };
 }
 
 function oneOf<T extends string>(value: unknown, allowed: readonly T[]): T | null {

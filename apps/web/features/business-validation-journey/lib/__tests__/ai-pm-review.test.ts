@@ -1227,6 +1227,56 @@ describe('first review analysis', () => {
     expect(parsed?.judgment).toBe(parsed?.analysis?.summary);
     const fixed = '가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.';
     expect(parseSections(JSON.stringify(breweryAnalysis(fixed, choices)), BREWERY)).toBeNull();
+    const liveShape = {
+      ...breweryAnalysis(question, [
+        '양조장과의 협력 가능성이 높다.',
+        '양조장과의 협력 가능성이 낮다.',
+        '양조장과의 협력 여부는 미정이다.',
+        '기타',
+        '직접 입력',
+      ]),
+      evidenceToChange: '시장 조사 결과 및 관광객 피드백.',
+      founderFacts: '사업 아이디어 단계이며, 구체적인 실행 계획은 없음.',
+      inferences: '관광객의 수요와 양조장과의 협력 가능성이 사업 성공에 중요한 요소가 될 것이다.',
+    };
+    const accepted = parseSections(JSON.stringify(liveShape), BREWERY);
+    expect(accepted?.analysis?.evidenceToChange).toEqual(['시장 조사 결과 및 관광객 피드백.']);
+    expect(accepted?.analysis?.choices.at(-1)).toEqual({ id: 'other', label: '기타 / 직접 입력' });
+    const repaired = presentReview(
+      {
+        reviewId: 'review-live',
+        userId: 'user-a',
+        version: 1,
+        parentReviewId: null,
+        sourceFeedbackId: null,
+        supplementSha: null,
+        projectId: 'project-test',
+        inputSha: 'sha',
+        inputText: BREWERY,
+        inputOrigin: 'typed',
+        fileName: null,
+        status: 'failed',
+        evidence: 'live_network',
+        provider: 'openai',
+        model: 'gpt-4o-mini-2024-07-18',
+        sections: null,
+        rawContent: JSON.stringify(liveShape),
+        promptTokens: 590,
+        completionTokens: 631,
+        totalTokens: 1221,
+        usageKnown: true,
+        callCount: 1,
+        latencyMs: 1,
+        error: 'unstructured_response',
+        requestedAt: NOW,
+        finishedAt: NOW,
+      },
+      [],
+      [],
+    );
+    expect(repaired.status).toBe('ready');
+    expect(repaired.sections?.analysis?.summary).toContain('양조장');
+    expect(repaired.questionSource).toBe('model-review');
   });
 
   it('asks from the review purpose and saves a choice without another model call', async () => {
