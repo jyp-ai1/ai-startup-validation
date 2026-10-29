@@ -1,0 +1,44 @@
+{
+  "runId": "q1-quality9-once-2026-10-29",
+  "status": "RECORDED",
+  "startedAt": "2026-10-29T08:21:59.011Z",
+  "finishedAt": "2026-10-29T08:22:05.543Z",
+  "gitSha": "0a49cc3feb13dac4b8a189aec8a5c12dd2b218ea",
+  "gitRef": "cursor/preview-quality-compare-4b88",
+  "error": null,
+  "productFollowUpInvoked": false,
+  "model": "gpt-4o-mini",
+  "temperature": 0.2,
+  "maxTokens": 2400,
+  "responseFormat": "json_object",
+  "businessInput": "다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n검토 목적: 종합 사업성 검토\n현재 단계: 미확인\n가장 알고 싶은 것: 없음\n검토 계약: comprehensive-1",
+  "report": {
+    "status": "RECORDED",
+    "reason": null,
+    "model": "gpt-4o-mini",
+    "temperature": 0.2,
+    "maxTokens": 2400,
+    "responseFormat": "json_object",
+    "businessInput": "다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n검토 목적: 종합 사업성 검토\n현재 단계: 미확인\n가장 알고 싶은 것: 없음\n검토 계약: comprehensive-1",
+    "productFollowUpInvoked": false,
+    "calls": [
+      {
+        "promptVersion": "quality-9-cpo-draft",
+        "status": "succeeded",
+        "completionId": "chatcmpl-EeFgWFW881t4PjkSMzo0Fg0yBq7C7",
+        "requestId": "req_3fe2580edccd4f70a0bf8ae87d15bda8",
+        "model": "gpt-4o-mini-2024-07-18",
+        "finishReason": "stop",
+        "promptTokens": 1185,
+        "completionTokens": 568,
+        "totalTokens": 1753,
+        "usageKnown": true,
+        "jsonParsed": true,
+        "error": null,
+        "systemPrompt": "프롬프트 버전 quality-9-cpo-draft.\nJSON 객체만 반환한다.\n키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.\nsummary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, judgment, nextVerification, nextQuestion, nextQuestionReason은 문자열이다.\nstrengths, risks, assumptions, evidenceToChange, founderFacts, inferences, choices는 문자열 배열이다.\nrevenueModel의 JSON 타입은 string이다. 객체, 배열, 숫자로 쓰지 않는다.\n입력에 없는 체험 참가비, 수수료, 수익 공유, 마케팅 서비스 수수료는 그 문자열 안에서 항목마다 가설: 로 시작한다. 한 항목의 가설: 은 다른 항목에 적용되지 않는다. 입력에 적힌 수익만 사실: 로 시작한다.\ncustomer는 이용자다. payer는 비용을 내는 주체다. 입력에 지불자가 없으면 payer는 미확인이다. 이용자를 지불자로 쓰지 않는다.\nnextQuestion은 하나다. 협력 가능성이 높다, 낮다, 미정인지만 묻지 않는다. 질문과 choices는 같은 결정이다.\n모델이나 공급사 이름은 쓰지 않는다.\nfounderFacts는 입력 문장만 담는다. 입력에 없는 경력, 능력, 네트워크는 쓰지 않는다.\nstrengths에 입력에 없는 시장 관심 증가를 강점으로 쓰지 않는다. 근거가 없으면 미확인이다.\ninferences의 각 문자열은 추론: 으로 시작한다. 추론을 창업자 사실로 쓰지 않는다.\ninferences는 입력 문장에서 도출한 해석만 담는다. 입력 문장을 그대로 또는 표현만 바꾸어 다시 적지 않는다. 근거가 없으면 미확인이다.",
+        "userPrompt": "사업 입력:\n다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n검토 목적: 종합 사업성 검토\n현재 단계: 미확인\n가장 알고 싶은 것: 없음\n검토 계약: comprehensive-1\n\n프롬프트 버전 quality-9-cpo-draft.\n키: summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices.\n문자열 키는 문자열이고 revenueModel도 문자열이다.\n이 입력은 관광객 양조장 체험과 양조장 온라인 마케팅 지원이 함께 있다.\nnextQuestion은 무엇을 먼저 검증할 것인가? 만 쓴다.\nchoices는 [\"관광객 대상 양조장 체험 상품을 먼저 검증\",\"양조장 대상 온라인 마케팅 지원을 먼저 검증\",\"체험과 마케팅 지원을 결합한 모델을 먼저 검증\",\"아직 우선순위를 결정하지 못함\",\"기타 / 직접 입력\"] 만 쓴다.\n협력 가능성이 높다, 낮다, 미정은 쓰지 않는다.\n입력에 지불자가 없으면 payer는 미확인이다. 이용자를 지불자로 쓰지 않는다.\nrevenueModel의 JSON 타입은 string이다. 객체, 배열, 숫자로 쓰지 않는다.\nrevenueModel 값은 다음 문자열만 쓴다. 가설: 체험 참가비 — 입력에 없다. 가설: 수수료 — 입력에 없다. 가설: 수익 공유 — 입력에 없다. 가설: 마케팅 서비스 수수료 — 입력에 없다.\n각 가설: 과 사실: 은 바로 뒤의 항목 하나에만 적용된다.\noperatingModel은 구상이며 결합 모델을 확정 사실로 쓰지 않는다.\nfounderFacts는 [\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다.\",\"우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\"] 만 쓴다.\n입력에 없는 경력, 능력, 네트워크는 founderFacts에 쓰지 않는다.\nstrengths는 [\"미확인\"] 만 쓴다.\n관심 증가는 입력에 없으면 strengths에 쓰지 않는다.\ninferences는 [\"추론: 입력은 체험과 마케팅 지원을 함께 구상한다고 말한다. 어느 쪽을 먼저 검증할지는 입력에 없다.\"] 만 쓴다.\nfounderFacts의 문장을 inferences에 그대로 또는 표현만 바꾸어 다시 넣지 않는다.\n새 해석의 근거가 없으면 inferences는 [\"미확인\"] 만 쓴다.",
+        "raw": "{\n  \"summary\": \"양조장 체험과 온라인 마케팅 지원을 결합한 사업 구상.\",\n  \"customer\": \"관광객\",\n  \"problem\": \"관광객이 개인별 다양한 경험을 중요시 하지만, 양조장 체험에 대한 정보가 부족할 수 있다.\",\n  \"value\": \"양조장 체험을 통해 관광객에게 개인화된 경험을 제공하고, 양조장에는 온라인 마케팅 지원을 통해 고객 유치를 돕는다.\",\n  \"operatingModel\": \"구상\",\n  \"alternatives\": \"미확인\",\n  \"differentiation\": \"양조장 체험과 온라인 마케팅 지원을 결합한 독특한 서비스.\",\n  \"payer\": \"미확인\",\n  \"revenueModel\": \"가설: 체험 참가비 — 가설: 수수료 — 가설: 수익 공유 — 가설: 마케팅 서비스 수수료\",\n  \"market\": \"관광 및 체험 산업\",\n  \"competition\": \"미확인\",\n  \"operations\": \"미확인\",\n  \"profitability\": \"미확인\",\n  \"strengths\": [\"미확인\"],\n  \"risks\": [\"미확인\"],\n  \"assumptions\": [\"미확인\"],\n  \"evidenceToChange\": [\"미확인\"],\n  \"founderFacts\": [\n    \"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다.\",\n    \"우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\"\n  ],\n  \"inferences\": [\n    \"추론: 입력은 체험과 마케팅 지원을 함께 구상한다고 말한다. 어느 쪽을 먼저 검증할지는 입력에 없다.\"\n  ],\n  \"judgment\": \"미확인\",\n  \"nextVerification\": \"미확인\",\n  \"nextQuestion\": \"무엇을 먼저 검증할 것인가?\",\n  \"nextQuestionReason\": \"우선순위를 정하기 위해.\",\n  \"choices\": [\n    \"관광객 대상 양조장 체험 상품을 먼저 검증\",\n    \"양조장 대상 온라인 마케팅 지원을 먼저 검증\",\n    \"체험과 마케팅 지원을 결합한 모델을 먼저 검증\",\n    \"아직 우선순위를 결정하지 못함\",\n    \"기타 / 직접 입력\"\n  ]\n}"
+      }
+    ]
+  }
+}
