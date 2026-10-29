@@ -740,6 +740,48 @@ describe('AI PM first review', () => {
       'next_question_regressed',
       'next_question_unknown_missing',
     ]);
+    const arrayCall = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-array-recorded.json', import.meta.url), 'utf8'),
+    ) as {
+      runId: string;
+      priorRunId: string;
+      gitSha: string;
+      productFollowUpInvoked: boolean;
+      reflectionScored: boolean;
+      report: { calls: Array<{ raw: string; userPrompt: string }> };
+    };
+    expect(arrayCall.runId).toBe('q1-incremental-reflection-array-2026-10-29');
+    expect(arrayCall.priorRunId).toBe('q1-incremental-reflection-output-2026-10-29');
+    expect(arrayCall.gitSha).toBe('24a100b3809d32f05c2ca225ffdc7f9761baf7b4');
+    expect(arrayCall.productFollowUpInvoked).toBe(false);
+    expect(arrayCall.reflectionScored).toBe(false);
+    const arraySent = JSON.parse(arrayCall.report.calls[0]?.userPrompt ?? '{}') as typeof sent;
+    const arrayContext = {
+      previousJudgment: arraySent.previousAnalysis.judgment,
+      previousHypotheses: arraySent.previousAnalysis.hypotheses,
+      previousNextVerification: arraySent.previousAnalysis.analysis.nextVerification,
+      previousNextQuestion: arraySent.previousAnalysis.nextQuestion,
+      previousRevenueModel: arraySent.previousAnalysis.revenueModel,
+      choiceLabel: arraySent.founderChoice.label,
+      supplement: arraySent.founderSupplement,
+      answerOrigin: 'synthetic-test-data' as const,
+    };
+    expect(followUpOutputContractErrors(arrayCall.report.calls[0]?.raw ?? '', arrayContext)).toEqual([]);
+    const arrayParsed = JSON.parse(arrayCall.report.calls[0]?.raw ?? '{}') as {
+      judgment: string;
+      hypotheses: string[];
+      nextQuestion: string;
+      revenueModel: string;
+      changes: Array<{ grounds: string }>;
+    };
+    expect(Array.isArray(arrayParsed.changes)).toBe(true);
+    expect(arrayParsed.changes).toHaveLength(4);
+    expect(arrayParsed.revenueModel).toContain('가설');
+    expect(arrayParsed.judgment).not.toBe(arrayContext.previousJudgment);
+    expect(arrayParsed.hypotheses.join('\n')).toContain('수요가 존재');
+    expect(arrayParsed.changes.every((change) => change.grounds === '체험 프로그램을 먼저 검증할 것이라는 선택 문장.')).toBe(true);
+    expect(arrayParsed.changes.some((change) => change.grounds.includes('확정된 양조장'))).toBe(false);
+    expect(arrayParsed.nextQuestion).not.toContain('마케팅 지원의 효과');
   });
 
   it('sends a typed note and the same file text through one review', async () => {
