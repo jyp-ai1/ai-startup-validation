@@ -90,16 +90,11 @@ describe('quality-2 and quality-3 compare requests', () => {
   });
 
   it('runs the compare only on a non-main preview build and strips secrets', () => {
-    expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'cursor/preview-quality-compare-4b88' })).toBe(false);
-    expect(shouldRunPreviewQualityCompare({
-      AI_PM_COMPARE_ON_PREVIEW: '1',
-      VERCEL_ENV: 'preview',
-      VERCEL_GIT_COMMIT_REF: 'cursor/preview-quality-compare-4b88',
-    })).toBe(true);
+    expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'cursor/preview-quality-compare-4b88' })).toBe(true);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-preview-brewery-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality5-pair-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
@@ -142,7 +137,8 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(QUALITY4_SYSTEM_PROMPT.length).toBeLessThan(2200);
     const fixture = readFileSync(new URL('../quality-compare-requests.json', import.meta.url), 'utf8');
     expect(fixture).not.toContain('quality-4');
-    expect(fixture).not.toContain('quality-5');
+    expect(fixture).toContain('quality-5-cpo-draft');
+    expect(fixture).not.toContain('quality-3-draft');
   });
 
   it('keeps quality-5 as a candidate with the same keys in both messages', async () => {
@@ -228,7 +224,7 @@ describe('quality-2 and quality-3 compare requests', () => {
       confounders: compareConfounders(),
       requests: [
         { promptVersion: AI_PM_FIRST_PROMPT_VERSION, request: buildQuality2CompareRequest() },
-        { promptVersion: QUALITY3_PROMPT_VERSION, request: buildQuality3CompareRequest() },
+        { promptVersion: QUALITY5_PROMPT_VERSION, request: buildQuality5CompareRequest() },
       ],
     };
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(fixtureUrl, `${JSON.stringify(fresh, null, 2)}\n`);

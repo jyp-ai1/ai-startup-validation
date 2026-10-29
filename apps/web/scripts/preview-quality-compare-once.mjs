@@ -1,6 +1,6 @@
 /**
- * Quality-2 / quality-3-draft compare. A Preview build does not call the model
- * unless AI_PM_COMPARE_ON_PREVIEW=1. CPO has not selected the compare pair.
+ * One quality-2 and quality-5-cpo-draft call during a non-main Preview build.
+ * Production builds return immediately. The product second-review route is not called.
  * Production builds return immediately. The product second-review route is not called.
  * Requests come from the frozen JSON checked against the builders. Results go to a
  * private Supabase bucket. Credentials are not written to the report or the log.
@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PREVIEW_COMPARE_RUN_ID = 'q1-preview-brewery-2026-10-29';
+export const PREVIEW_COMPARE_RUN_ID = 'q1-quality5-pair-2026-10-29';
 export const PREVIEW_COMPARE_BUCKET = 'ai-pm-quality-compare';
 export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
@@ -18,7 +18,7 @@ const webRoot = join(scriptDir, '..');
 const fixturePath = join(webRoot, 'features/business-validation-journey/lib/quality-compare-requests.json');
 
 export function shouldRunPreviewQualityCompare(env) {
-  return env.AI_PM_COMPARE_ON_PREVIEW === '1' && env.VERCEL_ENV === 'preview' && env.VERCEL_GIT_COMMIT_REF !== 'main';
+  return env.VERCEL_ENV === 'preview' && Boolean(env.VERCEL_GIT_COMMIT_REF) && env.VERCEL_GIT_COMMIT_REF !== 'main';
 }
 
 export function redactComparePayload(value, secrets) {
@@ -88,7 +88,7 @@ async function writeStored(config, payload) {
 }
 
 function completed(stored) {
-  return stored && ['RECORDED', 'NOT RUN', 'failed'].includes(stored.status);
+  return stored && (stored.status === 'RECORDED' || stored.status === 'failed');
 }
 
 function messageContent(request, role) {
