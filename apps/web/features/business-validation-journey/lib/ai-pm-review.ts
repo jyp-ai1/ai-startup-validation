@@ -42,15 +42,15 @@ export const FOLLOW_UP_ANALYSIS_CONTRACT_NOTE =
 export const FOLLOW_UP_ANSWER_ORIGINS = ['synthetic-test-data', 'founder-input'] as const;
 export type FollowUpAnswerOrigin = (typeof FOLLOW_UP_ANSWER_ORIGINS)[number];
 
-export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-6';
+export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-7';
 
 export const FOLLOW_UP_FOUNDER_ANSWER_STATUS = 'unverified-input';
 
 export const FOLLOW_UP_BREWERY_VERIFICATION_PLAN =
-  '먼저 체험 프로그램을 제공할 수 있는 양조장 후보를 찾고, 실제 협력 가능 여부와 체험 운영 조건을 확인한다. 협력 가능 여부가 확인되기 전까지는 확정된 공급처로 간주하지 않는다. 이후 잠재 고객 인터뷰와 체험 참여 의향을 확인하고, 가격 수용도와 예약 전환은 별도로 검증한다.';
+  '체험 프로그램을 먼저 검증할 것. 먼저 체험 프로그램을 제공할 수 있는 양조장 후보를 찾고, 실제 협력 가능 여부와 체험 운영 조건을 확인한다. 협력 가능 여부가 확인되기 전까지는 확정된 공급처로 간주하지 않는다. 이후 잠재 고객 인터뷰와 체험 참여 의향을 확인하고, 가격 수용도와 예약 전환은 별도로 검증한다.';
 
 export const FOLLOW_UP_OUTPUT_CONTRACT_NOTE =
-  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion이다. changes 원소는 field, previous, current, decision, reason, founderAnswer, evidenceStatus를 가진다. reason이 비거나 새 정보가 없어 유지라고만 쓰면 실패다. nextQuestion.previous가 저장된 질문과 다르면 실패다. 양조장이 없다고 한 입력의 검증 문장은 후보와 협력 가능 여부를 확인하고, 그것을 확정된 공급처로 간주하지 않는다.';
+  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, choiceTrace, changes이다. founderAnswer.choice가 null이면 실패다. revenueModel은 저장된 가설 문장 그대로다. 원소 choiceTrace.effect는 그 필드에 미치는 영향이다. 선택 문장만 근거로 복사해도 실패하고, 선택 문장을 빼도 실패다.';
 
 export const FOLLOW_UP_OUTPUT_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'] as const;
 
@@ -1116,6 +1116,21 @@ function choiceOnlyGrounds(grounds: string, choice: string): boolean {
   return haystack.split(label).join('').length <= 12;
 }
 
+function choiceEffectErrors(field: string, value: unknown, context: FollowUpOutputContext): string[] {
+  if (!context.choiceLabel) return [];
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return [`choice_effect_missing:${field}`];
+  const record = value as Record<string, unknown>;
+  const label = typeof record.label === 'string' ? record.label : '';
+  const effect = typeof record.effect === 'string' ? record.effect.trim() : '';
+  const errors: string[] = [];
+  if (label !== context.choiceLabel) errors.push(`choice_effect_label:${field}`);
+  if (!effect) return [...errors, `choice_effect_missing:${field}`];
+  const cue = FIELD_REASON_CUES[field as (typeof FOLLOW_UP_OUTPUT_FIELDS)[number]];
+  if (!effect.includes(context.choiceLabel) || (cue && !cue.test(effect))) errors.push(`choice_effect_unrelated:${field}`);
+  if (choiceOnlyGrounds(effect, context.choiceLabel)) errors.push(`choice_effect_choice_only:${field}`);
+  return errors;
+}
+
 function judgmentRestatesChoice(judgment: string, choice: string | null): boolean {
   if (!choice) return false;
   const judged = compact(judgment);
@@ -1204,7 +1219,9 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
         ? parsed.business_model.trim()
         : '';
   if (!revenue) errors.push('follow_up_output_missing_revenueModel');
+  else if (context.previousRevenueModel.trim() && revenue !== context.previousRevenueModel.trim()) errors.push('revenue_hypothesis_replaced');
   else if (context.previousRevenueModel.includes('가설') && !revenue.includes('가설')) errors.push('hypothesis_label_removed');
+  if (!context.previousRevenueModel.trim() && revenue) errors.push('revenue_hypothesis_invented');
   if (/가격[^。\n]{0,16}없/.test(context.supplement) && revenue && !revenue.includes('가설') && /참가비|수익/.test(revenue)) {
     errors.push('hypothesis_label_removed');
   }
@@ -1250,6 +1267,7 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
     const evidenceStatus = typeof change.evidenceStatus === 'string' ? change.evidenceStatus.trim() : '';
     if (previous !== expectedPrevious[field]) errors.push(`follow_up_output_previous:${field}`);
     errors.push(...founderAnswerRecordErrors(field, change.founderAnswer, context));
+    errors.push(...choiceEffectErrors(field, change.choiceTrace, context));
     if (!Object.prototype.hasOwnProperty.call(change, 'current') || current !== expectedUpdated[field]) errors.push(`follow_up_output_current:${field}`);
     const changed = current !== previous;
     if (!decision) errors.push(`decision_missing:${field}`);
@@ -1272,6 +1290,9 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
       if (!changed) errors.push('next_verification_unchanged');
       if (context.choiceLabel && !reason.includes(context.choiceLabel)) errors.push('next_verification_choice_unmentioned');
     }
+    if (priorityChoice && field === 'nextQuestion' && context.choiceLabel && !reason.includes(context.choiceLabel)) {
+      errors.push('next_question_choice_unmentioned');
+    }
   }
   const experienceFirst = Boolean(
     context.choiceLabel &&
@@ -1286,6 +1307,17 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
     return typeof change?.reason === 'string' ? change.reason.trim() : '';
   });
   if (recordedReasons.every((reason) => reason.length > 0) && new Set(recordedReasons).size === 1) errors.push('reason_copied_across_fields');
+  const recordedEffects = FOLLOW_UP_OUTPUT_FIELDS.map((field) => {
+    const change = changes?.find((item) => item && typeof item === 'object' && (item as Record<string, unknown>).field === field) as
+      | Record<string, unknown>
+      | undefined;
+    const trace = change?.choiceTrace;
+    const record = trace && typeof trace === 'object' && !Array.isArray(trace) ? (trace as Record<string, unknown>) : null;
+    return typeof record?.effect === 'string' ? record.effect.trim() : '';
+  });
+  if (context.choiceLabel && recordedEffects.every((effect) => effect.length > 0) && new Set(recordedEffects).size === 1) {
+    errors.push('choice_effect_copied');
+  }
   if (
     context.choiceLabel &&
     recordedReasons.every((reason) => reason.length > 0 && choiceOnlyGrounds(reason, context.choiceLabel ?? ''))
@@ -1302,6 +1334,7 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
   }
   const claimText = [judgment, hypotheses.join('\n'), nextVerification, nextQuestion, recordedReasons.join('\n')].join('\n');
   if (inventedPresence(claimText, context.supplement)) errors.push('absent_input_invented');
+  if (experienceFirst && context.choiceLabel && !nextVerification.includes(context.choiceLabel)) errors.push('next_verification_choice_absent');
   if (experienceFirst && !nextVerification.includes('체험')) errors.push('next_verification_priority_missing');
   if (
     experienceFirst &&
@@ -1355,30 +1388,36 @@ function reviewSystemPrompt(): string {
     'hypotheses는 비어 있지 않은 문자열 배열이다.',
     'changes는 JSON 배열이다. 객체 맵, 문자열, 누락, 배열이 아닌 원소는 실패다.',
     '배열 원소는 네 개다. field는 judgment, hypotheses, nextVerification, nextQuestion 이다.',
-    '원소 키는 field, previous, current, decision, reason, founderAnswer, evidenceStatus 이다. updated, grounds, unchangedReason은 쓰지 않는다.',
+    '원소 키는 field, previous, current, decision, reason, founderAnswer, choiceTrace, evidenceStatus 이다. updated, grounds, unchangedReason은 쓰지 않는다.',
     'previous는 저장된 값 그대로다. nextQuestion.previous가 저장된 질문과 다르면 실패다.',
     'current는 그 필드의 반환값과 같다. hypotheses의 previous와 current는 항목을 " / "로 잇는다.',
     'decision은 current가 previous와 같으면 retained, 다르면 changed 이다.',
     'reason이 비어 있으면 실패다. retained여도 비어 있으면 실패다. 새 정보가 없어 유지, 바꾸지 않은 이유, 이전과 동일한 상태라고만 쓰면 실패다.',
-    'retained인 reason은 추가 설명의 없음이 왜 그 필드를 바꾸기에 부족한지 적는다.',
-    '네 필드의 reason이 같으면 실패다. judgment는 판단, hypotheses는 가설 또는 미확인, nextVerification은 검증, nextQuestion은 질문이라는 말을 그 reason에 넣는다.',
+    'retained인 reason은 추가 설명의 없음이 왜 그 필드를 바꾸기에 부족한지 적는다. 네 reason은 서로 다르다.',
+    'judgment의 reason에는 판단, hypotheses에는 가설 또는 미확인, nextVerification에는 검증, nextQuestion에는 질문이라는 말을 넣는다.',
     '판단의 reason이 선택 문장뿐이면 실패다. 선택은 그 계획이 옳다는 근거가 아니다.',
     'evidenceStatus는 unverified-input, confirmed-fact, unconfirmed 중 하나다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 unverified-input 이다. confirmed-fact로 쓰면 실패다.',
     '루트에 founderAnswer 키를 만들지 않는다. 루트 객체는 changes 원소를 통과시키지 않는다.',
     'founderAnswer는 각 원소 안의 객체다. choice, supplement, source, status를 구분한다.',
-    'founderAnswer.choice는 선택 문장 그대로다. 선택이 없으면 null이다.',
+    '선택이 있으면 founderAnswer.choice는 그 문장 그대로다. 선택이 있는데 null이면 실패다. 선택 입력이 없을 때만 null이다.',
     'founderAnswer.supplement는 추가 설명의 핵심이다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 네 말을 적는다.',
     'founderAnswer.source는 answerOrigin과 같다. founderAnswer.status는 unverified-input 이다.',
-    '예시 원소: {"field":"judgment","previous":"저장 판단","current":"저장 판단","decision":"retained","reason":"예약 고객, 가격, 계약, 확정된 양조장은 없다. 이 없음은 확인된 사실이 아니어서 저장된 판단을 바꾸지 않는다.","founderAnswer":{"choice":"체험 프로그램을 먼저 검증할 것","supplement":"예약 고객, 가격, 계약, 확정된 양조장은 없다","source":"synthetic-test-data","status":"unverified-input"},"evidenceStatus":"unverified-input"}',
+    '원소 choiceTrace.label은 선택 문장 그대로다. effect는 그 선택이 그 필드에만 미치는 영향이다. effect가 없거나 선택과 다르거나 선택 문장뿐이면 실패다. 네 effect가 같으면 실패다.',
+    'judgment의 effect는 그 선택이 계획이라 저장된 판단을 바꾸지 않는다고 적는다.',
+    'hypotheses의 effect는 그 선택이 가설의 수요 증거가 아니라고 적는다.',
+    'nextVerification의 effect는 그 선택 때문에 양조장 후보를 먼저 검증한다고 적는다.',
+    'nextQuestion의 effect는 그 선택 때문에 질문을 양조장 후보로 바꾼다고 적는다.',
+    '예시 원소: {"field":"judgment","previous":"저장 판단","current":"저장 판단","decision":"retained","reason":"예약 고객, 가격, 계약, 확정된 양조장은 없다. 이 없음은 확인된 사실이 아니어서 저장된 판단을 바꾸지 않는다.","founderAnswer":{"choice":"체험 프로그램을 먼저 검증할 것","supplement":"예약 고객, 가격, 계약, 확정된 양조장은 없다","source":"synthetic-test-data","status":"unverified-input"},"choiceTrace":{"label":"체험 프로그램을 먼저 검증할 것","effect":"체험 프로그램을 먼저 검증할 것은 계획이라 저장된 판단을 바꾸지 않는다."},"evidenceStatus":"unverified-input"}',
     'hypotheses는 미확인이면 retained다. reason은 그 없음이 수요의 근거가 아니어서 가설을 미확인으로 둔다고 적는다.',
     'judgment는 저장 판단을 유지한다. 선택이나 검증 계획을 판단으로 옮기지 않는다.',
     `nextVerification의 current는 이 문장이다. ${FOLLOW_UP_BREWERY_VERIFICATION_PLAN}`,
-    '그 문장은 검증 계획이다. 양조장이 확보됐거나 수요가 확인됐다는 뜻이 아니다. decision은 changed이고 reason에는 선택 문장, 없음, 검증이라는 말을 넣는다.',
-    'nextQuestion은 마케팅 효과를 다시 먼저 묻지 않는다. 양조장 후보가 있는지를 묻는다. previous는 저장된 질문 그대로이고, 질문을 바꾸면 decision은 changed이며 reason에 질문이라는 말과 바꾼 이유를 적는다.',
-    'choiceTrace는 label, answerOrigin, role이다. 선택이 있으면 label은 그 문장 그대로이고 role은 plan이다.',
+    '그 문장은 검증 계획이다. 양조장이 확보됐거나 수요가 확인됐다는 뜻이 아니다. decision은 changed이고 reason은 선택 문장으로 시작해 없음과 검증을 적는다.',
+    'nextQuestion은 마케팅 효과를 다시 먼저 묻지 않는다. 양조장 후보가 있는지를 묻는다. previous는 저장된 질문 그대로다. decision은 changed이고 reason은 선택 문장과 질문과 바꾼 이유를 적는다.',
+    '루트 choiceTrace는 label, answerOrigin, role이다. 선택이 있으면 label은 그 문장 그대로이고 role은 plan이다. 루트 choiceTrace만 있고 원소 choiceTrace가 없으면 실패다.',
+    'revenueModel은 previousAnalysis.revenueModel 문장을 그대로 복사한다. 빼거나 고치면 실패다. 가설 표시를 지우거나 확정 수익으로 바꾸지 않는다. 저장된 값이 없으면 새 문장을 만들지 않는다.',
     'founderFacts에 선택 문장이나 추가 설명을 넣지 않는다.',
-    'revenueModel은 저장값에 가설 표시가 있으면 그 표시를 유지한다. 가격, 예약, 계약이 확인되지 않았으면 확정된 수익으로 쓰지 않는다.',
     '가설이 강화되었다고 쓰지 않는다. 수요가 있다고 단정하지 않는다.',
+    '반환 뼈대는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, choiceTrace, changes를 모두 가진 객체다.',
   ].join(' ');
 }
 
