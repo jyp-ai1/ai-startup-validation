@@ -1077,6 +1077,12 @@ export function observeIncrementalReflection(input: {
   if (/계약(?:이|을)?\s*(?:체결|완료|있다)/.test(asserted)) defects.push('contract_asserted');
   if (/양조장(?:이|은)?\s*확정/.test(asserted)) defects.push('brewery_confirmed');
   if (/가격은\s*[0-9]/.test(asserted)) defects.push('price_asserted');
+  const baselineRevenue = typeof input.previousAnalysis.revenueModel === 'string' ? input.previousAnalysis.revenueModel : '';
+  const returnedRevenue =
+    typeof next.business_model === 'string' ? next.business_model : typeof next.revenueModel === 'string' ? next.revenueModel : '';
+  if (baselineRevenue.includes('가설') && returnedRevenue.length > 0 && !returnedRevenue.includes('가설') && !returnedRevenue.includes('미확인')) {
+    defects.push('hypothesis_label_removed');
+  }
   return { parsed: true, fields, defects };
 }
 

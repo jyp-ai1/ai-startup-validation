@@ -1032,6 +1032,60 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shortKeys.fields.find((field) => field.field === 'judgment')?.state).toBe('absent');
     expect(shortKeys.fields.find((field) => field.field === 'nextQuestion')?.state).toBe('changed');
     expect(shortKeys.defects).not.toContain('pass');
+    const droppedHypothesis = observeIncrementalReflection({
+      previousAnalysis: user.previousAnalysis,
+      choiceLabel: choice,
+      nextRaw: JSON.stringify({ business_model: '체험 프로그램 참가비 및 관련 상품 판매 수익', nextQuestion: '다른 질문인가?' }),
+    });
+    expect(droppedHypothesis.defects).toContain('hypothesis_label_removed');
+    const recorded = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-recorded.json', import.meta.url), 'utf8'),
+    ) as {
+      runId: string;
+      priorRunId: string;
+      status: string;
+      gitSha: string;
+      productFollowUpInvoked: boolean;
+      reflectionScored: boolean;
+      maxTokens: number;
+      report: { calls: Array<{ status: string; promptVersion: string; userPrompt: string; raw: string }> };
+    };
+    expect(recorded.runId).toBe('q1-incremental-reflection-2026-10-29');
+    expect(recorded.priorRunId).toBe('q1-incremental-structure-2026-10-29');
+    expect(recorded.status).toBe('RECORDED');
+    expect(recorded.gitSha).toBe('1f153fc754fc50533351593d40768949de951f91');
+    expect(recorded.productFollowUpInvoked).toBe(false);
+    expect(recorded.reflectionScored).toBe(false);
+    expect(recorded.maxTokens).toBe(800);
+    const call = recorded.report.calls[0];
+    expect(call?.status).toBe('succeeded');
+    expect(call?.promptVersion).toBe('parsed-sections-1:incremental-reflection:brewery');
+    const sent = JSON.parse(call?.userPrompt ?? '{}') as {
+      analysisContract: string;
+      answerOrigin: string;
+      previousAnalysis: Record<string, unknown> & { analysis: { nextVerification: string }; revenueModel: string };
+      founderChoice: { label: string };
+    };
+    expect(sent.analysisContract).toBe('parsed-sections-1');
+    expect(sent.answerOrigin).toBe('synthetic-test-data');
+    const live = observeIncrementalReflection({
+      previousAnalysis: sent.previousAnalysis,
+      choiceLabel: sent.founderChoice.label,
+      nextRaw: call?.raw ?? '',
+    });
+    expect(live.parsed).toBe(true);
+    expect(live.fields.map((field) => [field.field, field.state])).toEqual([
+      ['judgment', 'absent'],
+      ['hypotheses', 'absent'],
+      ['nextVerification', 'absent'],
+      ['nextQuestion', 'changed'],
+    ]);
+    expect(live.defects).toEqual(['hypothesis_label_removed']);
+    const returned = JSON.parse(call?.raw ?? '{}') as { validation_metric: string; business_model: string };
+    expect(returned.validation_metric).toBe(sent.previousAnalysis.analysis.nextVerification);
+    expect(sent.previousAnalysis.revenueModel.includes('가설')).toBe(true);
+    expect(returned.business_model.includes('가설')).toBe(false);
+    expect(call?.raw ?? '').not.toContain(sent.founderChoice.label);
   });
 
   it('fails the known brewery regressions and passes a hedged alternative', () => {
