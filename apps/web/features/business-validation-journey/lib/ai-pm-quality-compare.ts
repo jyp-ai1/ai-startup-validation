@@ -376,6 +376,88 @@ function factIncludes(text: string, trait: string): boolean {
   return text.includes(trait);
 }
 
+export const QUALITY9_PROMPT_VERSION = 'quality-9-cpo-draft';
+
+/** One interpretation, or 미확인 when the input does not support a separate inference. */
+export function quality9Inference(text: string): string {
+  const body = text.split(/\n\s*검토 목적:/)[0] ?? text;
+  const experience = /체험|만들고|마시고/.test(body);
+  const support = /마케팅/.test(body);
+  if (experience && support) {
+    return '추론: 입력은 체험과 마케팅 지원을 함께 구상한다고 말한다. 어느 쪽을 먼저 검증할지는 입력에 없다.';
+  }
+  return '미확인';
+}
+
+export function quality9EvidenceBlock(text: string): string {
+  const kept = quality8EvidenceBlock(text)
+    .split('\n')
+    .filter((line) => !line.startsWith('inferences의 각 문자열') && !line.startsWith('추론을 founderFacts'));
+  return [
+    ...kept,
+    `inferences는 ${JSON.stringify([quality9Inference(text)])} 만 쓴다.`,
+    'founderFacts의 문장을 inferences에 그대로 또는 표현만 바꾸어 다시 넣지 않는다.',
+    '새 해석의 근거가 없으면 inferences는 ["미확인"] 만 쓴다.',
+  ].join('\n');
+}
+
+export const QUALITY9_SYSTEM_PROMPT = [
+  QUALITY8_SYSTEM_PROMPT.replace('프롬프트 버전 quality-8-cpo-draft.', '프롬프트 버전 quality-9-cpo-draft.'),
+  'inferences는 입력 문장에서 도출한 해석만 담는다. 입력 문장을 그대로 또는 표현만 바꾸어 다시 적지 않는다. 근거가 없으면 미확인이다.',
+].join('\n');
+
+export function buildQuality9CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
+  const quality8 = buildQuality8CompareRequest(text);
+  const user = (quality8.messages[1]?.content ?? '')
+    .replace(`프롬프트 버전 ${QUALITY8_PROMPT_VERSION}.`, `프롬프트 버전 ${QUALITY9_PROMPT_VERSION}.`)
+    .replace(quality8EvidenceBlock(text), quality9EvidenceBlock(text));
+  return {
+    ...quality8,
+    messages: [
+      { role: 'system', content: QUALITY9_SYSTEM_PROMPT },
+      { role: 'user', content: user },
+    ],
+  };
+}
+
+function repeatsFounderFact(inference: string, fact: string): boolean {
+  const text = inference.replace(/\s+/g, '');
+  const source = fact.replace(/\s+/g, '');
+  if (!source) return false;
+  if (text.includes(source) || text.replace(/^추론:/, '') === source) return true;
+  for (let index = 0; index + 24 <= source.length; index += 8) {
+    if (text.includes(source.slice(index, index + 24))) return true;
+  }
+  return false;
+}
+
+/** True when inferences are interpretations, not a second copy of founder facts. */
+export function scoreInferenceSeparation(
+  raw: string | null,
+  sourceText: string,
+): { separated: boolean; detail: string } {
+  if (!raw?.trim()) return { separated: false, detail: '원문 없음' };
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return { separated: false, detail: 'JSON이 아니다' };
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return { separated: false, detail: 'JSON 객체가 아니다' };
+  }
+  const inferences = (parsed as Record<string, unknown>).inferences;
+  const items = Array.isArray(inferences) ? inferences.filter((item): item is string => typeof item === 'string') : [];
+  if (items.length === 1 && items[0] === '미확인') return { separated: true, detail: '미확인' };
+  const facts = quality8FounderFacts(sourceText);
+  const copied = items.filter((item) => facts.some((fact) => repeatsFounderFact(item, fact)));
+  const unmarked = items.filter((item) => !item.startsWith('추론:'));
+  if (items.length === 0 || copied.length > 0 || unmarked.length > 0) {
+    return { separated: false, detail: copied[0] ?? unmarked[0] ?? '추론 없음' };
+  }
+  return { separated: true, detail: items.join(' / ') };
+}
+
 export function buildQuality5CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
   return {
     model: AI_PM_REVIEW_MODEL,

@@ -36,7 +36,12 @@ import {
   QUALITY7_PROMPT_VERSION,
   QUALITY7_SYSTEM_PROMPT,
   QUALITY8_PROMPT_VERSION,
+  QUALITY9_PROMPT_VERSION,
   buildQuality6CompareRequest,
+  buildQuality9CompareRequest,
+  quality9EvidenceBlock,
+  quality9Inference,
+  scoreInferenceSeparation,
   buildQuality7CompareRequest,
   buildQuality8CompareRequest,
   quality6DecisionBlock,
@@ -121,13 +126,13 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality8-once-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality9-once-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('quality-8-request.json');
-    expect(script).not.toContain('quality-7-request.json');
+    expect(script).toContain('quality-9-request.json');
+    expect(script).not.toContain('quality-8-request.json');
     expect(script).not.toContain('quality-compare-requests.json');
     expect(script).not.toContain('/api/ai-pm-review/follow-up');
     expect(script).not.toContain('buildFollowUpRequest');
@@ -304,6 +309,56 @@ describe('quality-2 and quality-3 compare requests', () => {
     };
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(evidenceUrl, `${JSON.stringify(evidence, null, 2)}\n`);
     expect(JSON.parse(readFileSync(evidenceUrl, 'utf8'))).toEqual(evidence);
+    const separatedUrl = new URL('../quality-9-request.json', import.meta.url);
+    const separated = {
+      businessInput: COMPARE_BUSINESS_INPUT,
+      baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality8-recorded.json',
+      requests: [{ promptVersion: QUALITY9_PROMPT_VERSION, request: buildQuality9CompareRequest() }],
+    };
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(separatedUrl, `${JSON.stringify(separated, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(separatedUrl, 'utf8'))).toEqual(separated);
+  });
+
+  it('keeps quality-9 inferences from copying founder sentences', () => {
+    const request = buildQuality9CompareRequest();
+    const user = request.messages[1]?.content ?? '';
+    const system = request.messages[0]?.content ?? '';
+    const inference = quality9Inference(COMPARE_BUSINESS_INPUT);
+    expect(AI_PM_FIRST_PROMPT_VERSION).toBe('quality-2');
+    expect(system).toContain(QUALITY9_PROMPT_VERSION);
+    expect(system).not.toContain(QUALITY8_PROMPT_VERSION);
+    expect(user).toContain(QUALITY9_PROMPT_VERSION);
+    expect(user).not.toContain(QUALITY8_PROMPT_VERSION);
+    expect(user).toContain(inference);
+    expect(user).not.toContain('founderFacts의 문장 하나를 그대로 포함');
+    expect(user).toContain(quality7RevenueString(COMPARE_BUSINESS_INPUT));
+    for (const choice of QUALITY6_BREWERY_CHOICES) expect(user).toContain(choice);
+    expect(buildFirstReviewRequest(COMPARE_BUSINESS_INPUT).messages[0]?.content).not.toContain(QUALITY9_PROMPT_VERSION);
+
+    const experienceOnly = '외국인 관광객에게 막걸리 만들기체험만 안내한다.';
+    const supportOnly = '양조장 온라인 마케팅 페이지 제작만 대행한다.';
+    expect(quality9Inference(experienceOnly)).toBe('미확인');
+    expect(quality9Inference(supportOnly)).toBe('미확인');
+    expect(quality9EvidenceBlock(experienceOnly)).not.toContain(QUALITY6_BREWERY_CHOICES[0]);
+    expect(quality7UserBlock(supportOnly)).not.toContain(QUALITY6_BREWERY_CHOICES[0]);
+
+    const facts = quality8FounderFacts(COMPARE_BUSINESS_INPUT);
+    const copied = JSON.parse(analysisRaw(quality7RevenueString(COMPARE_BUSINESS_INPUT))) as { inferences: string[] };
+    copied.inferences = [`추론: ${facts[0]}`];
+    expect(scoreInferenceSeparation(JSON.stringify(copied), COMPARE_BUSINESS_INPUT).separated).toBe(false);
+    const distinct = JSON.parse(analysisRaw(quality7RevenueString(COMPARE_BUSINESS_INPUT))) as {
+      founderFacts: string[];
+      strengths: string[];
+      inferences: string[];
+    };
+    distinct.founderFacts = facts;
+    distinct.strengths = ['미확인'];
+    distinct.inferences = [inference];
+    const distinctRaw = JSON.stringify(distinct);
+    expect(scoreInferenceSeparation(distinctRaw, COMPARE_BUSINESS_INPUT).separated).toBe(true);
+    expect(scoreEvidenceIntegrity(distinctRaw, COMPARE_BUSINESS_INPUT).founderFactsOk).toBe(true);
+    expect(reviewContractError(distinctRaw)).toBeNull();
+    expect(parseSections(distinctRaw, COMPARE_BUSINESS_INPUT)?.revenueModel).toContain('가설: 체험 참가비');
   });
 
   it('keeps quality-8 founder facts inside the input and the brewery choices on the two-axis input', () => {
