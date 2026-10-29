@@ -16,11 +16,19 @@ import {
   QUALITY3_PROMPT_VERSION,
   QUALITY4_PROMPT_VERSION,
   QUALITY4_SYSTEM_PROMPT,
+  QUALITY5_OUTPUT_KEYS,
+  QUALITY5_PROMPT_VERSION,
+  QUALITY5_SYSTEM_PROMPT,
   buildQuality2CompareRequest,
   buildQuality3CompareRequest,
-  compareConfounders,
+  buildQuality5CompareRequest,
   executeQualityCompare,
+  executeSprintQualityPair,
+  scoreSprintGates,
+  sprintGateSummary,
+  compareConfounders,
 } from '../ai-pm-quality-compare';
+import { AI_PM_REVIEW_INPUT_TOKEN_BUDGET, clampReviewText, estimateReviewTokens, parseSections } from '../ai-pm-review';
 
 describe('quality-2 and quality-3 compare requests', () => {
   it('keeps quality-2 equal to the product first-review request', () => {
@@ -134,6 +142,81 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(QUALITY4_SYSTEM_PROMPT.length).toBeLessThan(2200);
     const fixture = readFileSync(new URL('../quality-compare-requests.json', import.meta.url), 'utf8');
     expect(fixture).not.toContain('quality-4');
+    expect(fixture).not.toContain('quality-5');
+  });
+
+  it('keeps quality-5 as a candidate with the same keys in both messages', async () => {
+    const product = buildFirstReviewRequest(COMPARE_BUSINESS_INPUT);
+    const candidate = buildQuality5CompareRequest();
+    const system = candidate.messages[0]?.content ?? '';
+    const user = candidate.messages[1]?.content ?? '';
+    expect(AI_PM_FIRST_PROMPT_VERSION).toBe('quality-2');
+    expect(product.messages[0]?.content).toContain('프롬프트 버전 quality-2');
+    expect(product.messages[0]?.content).not.toContain(QUALITY5_PROMPT_VERSION);
+    expect(system).toBe(QUALITY5_SYSTEM_PROMPT);
+    expect(system).toContain(`키는 다음만 사용하고 모두 포함한다. ${QUALITY5_OUTPUT_KEYS}.`);
+    expect(user).toContain(`키: ${QUALITY5_OUTPUT_KEYS}.`);
+    expect(user).toContain('양조장 체험');
+    expect(user).toContain('온라인 마케팅');
+    expect(system).toContain('두 축이 없는 사업에는 그 문장을 붙이지 않고');
+    expect(system).toContain('이용자 경험을 먼저 검증');
+    expect(system).toContain('공급자 지원을 먼저 검증');
+    expect(candidate.model).toBe(product.model);
+    expect(candidate.temperature).toBe(product.temperature);
+    expect(candidate.maxTokens).toBe(product.maxTokens);
+    expect(candidate.responseFormat).toEqual(product.responseFormat);
+    const room = AI_PM_REVIEW_INPUT_TOKEN_BUDGET - estimateReviewTokens(system);
+    expect(clampReviewText(user, room)).toBe(user);
+    const missingKey = await executeSprintQualityPair({});
+    expect(missingKey.status).toBe('NOT RUN');
+    expect(missingKey.productFollowUpInvoked).toBe(false);
+    expect(missingKey.calls.map((call) => call.promptVersion)).toEqual(['quality-2', QUALITY5_PROMPT_VERSION]);
+    expect(missingKey.calls.every((call) => call.raw === null)).toBe(true);
+    expect(sprintGateSummary(scoreSprintGates(null, COMPARE_BUSINESS_INPUT))).toBe('NOT RUN');
+    const failed = scoreSprintGates(
+      '{"revenueModel":"양조장으로부터의 수수료 및 체험 참가비.","nextQuestion":"양조장과의 협력 가능성은 어떻게 되는가?","choices":["높다","낮다","미정"]}',
+      COMPARE_BUSINESS_INPUT,
+    );
+    expect(failed.find((item) => item.id === 'Q2')?.status).toBe('fail');
+    expect(sprintGateSummary(failed)).toBe('FAIL');
+    const shaped = {
+      summary: '관광객의 양조장 체험과 양조장의 온라인 마케팅 지원을 함께 구상한다.',
+      customer: '전통주를 좋아하는 내국인·외국인 관광객',
+      problem: '미확인',
+      value: '미확인',
+      operatingModel: '미확인',
+      alternatives: '미확인',
+      differentiation: '미확인',
+      payer: '미확인',
+      revenueModel: '수익원은 가설이며 원문에서 확인되지 않았다.',
+      market: '미확인',
+      competition: '미확인',
+      operations: '미확인',
+      profitability: '미확인',
+      strengths: ['두 축이 한 입력에 있다'],
+      risks: ['지불자가 확인되지 않았다'],
+      assumptions: ['무엇을 먼저 검증할지 정하지 않았다'],
+      evidenceToChange: ['한쪽을 먼저 검증하겠다는 대표자 답'],
+      founderFacts: ['체험과 마케팅 지원을 구상 중이다'],
+      inferences: ['추론: 두 축의 우선순위는 아직 없다'],
+      judgment: '예비 판단. 우선 검증 축이 미확인이다.',
+      nextVerification: '양조장 몇 곳에 마케팅 지원의 필요를 묻는다.',
+      nextQuestion: '무엇을 먼저 검증할 것인가?',
+      nextQuestionReason: '우선순위가 다음 검증 대상을 바꾼다.',
+      choices: [
+        '관광객 체험을 먼저 검증',
+        '양조장 마케팅 지원을 먼저 검증',
+        '체험과 마케팅 지원을 결합해 검증',
+        '아직 우선순위를 결정하지 못함',
+        '기타 / 직접 입력',
+      ],
+    };
+    expect(parseSections(JSON.stringify(shaped), COMPARE_BUSINESS_INPUT)?.analysis?.differentiation).toBe('미확인');
+    const scored = scoreSprintGates(JSON.stringify(shaped), COMPARE_BUSINESS_INPUT);
+    expect(scored.find((item) => item.id === 'Q1')?.status).toBe('pass');
+    expect(scored.find((item) => item.id === 'Q6')?.status).toBe('pass');
+    expect(scored.find((item) => item.id === 'Q8')?.status).toBe('not_run');
+    expect(sprintGateSummary(scored)).toBe('BLOCKED');
   });
 
   it('keeps the preview request fixture equal to the builders', () => {

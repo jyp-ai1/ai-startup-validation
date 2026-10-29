@@ -8,6 +8,7 @@ import {
   buildFirstReviewRequest,
   clampReviewText,
   estimateReviewTokens,
+  parseSections,
   readGptApiKey,
 } from './ai-pm-review';
 import { composeReviewInput } from './ai-pm-review-intake';
@@ -76,6 +77,152 @@ export const QUALITY3_SYSTEM_PROMPT = [
   '17. judgment에는 예비 사업성 판단, 핵심 근거, 판단의 한계 및 판단을 바꿀 핵심 조건을 포함한다. summary는 원문을 충실하게 반영한 사업 설명으로 작성한다.',
   '18. 모델이나 공급사의 이름을 사업 분석 내용에 포함하지 않는다.',
 ].join('\n');
+
+export const QUALITY5_PROMPT_VERSION = 'quality-5-cpo-draft';
+
+/** Same key list in the quality-5 system text and the quality-5 user text. */
+export const QUALITY5_OUTPUT_KEYS =
+  'summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices';
+
+/**
+ * CPO candidate for this brewery review. Not the product prompt.
+ * The product route keeps buildFirstReviewRequest on quality-2.
+ * A missing key or invalid JSON stays unparsed. parseSections returns null,
+ * and the product stores that as unstructured_response. Fees and figures
+ * absent from the input are marked by markUnsourcedClaims and scrubFigures.
+ */
+export const QUALITY5_SYSTEM_PROMPT = [
+  '프롬프트 버전 quality-5-cpo-draft.',
+  '당신은 초기 창업자의 1차 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 않는다.',
+  '[보존]',
+  '1. summary는 입력에 있는 사업 축을 빠뜨리지 않는다. 이용자가 경험하는 활동과 공급자에 대한 지원이 함께 있으면 둘 다 적는다.',
+  '2. 입력에 없는 상품 판매, 계약, 제휴, 지역, 가격을 이미 결정된 사실로 추가하지 않는다.',
+  '[사실]',
+  '3. founderFacts에는 입력 문장으로 확인되는 내용만 적는다.',
+  '4. inferences에는 추론이라고 표시한다.',
+  '5. assumptions는 사업 성립을 좌우하는 미검증 가정 1~3개다.',
+  '6. revenueModel에서 입력에 없는 수익원은 가설이라고 적고, 누가 왜 낼 수 있는지를 가정으로 구분한다. 시장 통계, 가격, 수수료, 매출, 계약을 근거 없이 만들지 않는다.',
+  '7. customer는 경험을 쓰는 이용자다. payer는 돈을 낼 수 있는 주체다. 입력에 지불자가 없으면 payer는 미확인이라고 적는다.',
+  '[질문]',
+  '8. nextQuestion은 하나다. 다음 의사결정을 바꾸는 미확인 가정 하나만 묻는다. 협력·수요·가능성이 높다, 낮다, 미정인지만 묻지 않는다.',
+  '9. 입력이 이용자 경험과 공급자 지원을 함께 말하면, choices는 그 사업의 말로 다음을 구분한다. 이용자 경험을 먼저 검증. 공급자 지원을 먼저 검증. 둘을 결합한 모델을 검증. 아직 우선순위를 결정하지 못함. 기타 / 직접 입력.',
+  '10. 그 구분은 두 축이 함께 있는 사업에만 쓴다. 두 축이 없는 사업에는 그 문장을 붙이지 않고, 그 사업의 고객, 지불자, 상품, 운영이 갈라지는 선택지를 만든다.',
+  '11. nextQuestionReason은 이 질문 하나를 먼저 묻는 이유다. nextVerification은 그 가정을 적은 비용으로 확인하는 행동이다.',
+  '[출력]',
+  '12. JSON 객체만 반환한다. JSON 밖에 설명이나 마크다운을 쓰지 않는다.',
+  `13. 키는 다음만 사용하고 모두 포함한다. ${QUALITY5_OUTPUT_KEYS}.`,
+  '14. summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, judgment, nextVerification, nextQuestion, nextQuestionReason은 문자열이다. 입력으로 채울 수 없으면 미확인이라고 적는다.',
+  '15. strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, choices는 문자열 배열이다. choices는 3~5개다.',
+  '16. 모델이나 공급사 이름은 쓰지 않는다.',
+].join('\n');
+
+export function buildQuality5CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
+  return {
+    model: AI_PM_REVIEW_MODEL,
+    temperature: 0.2,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: QUALITY5_SYSTEM_PROMPT },
+      {
+        role: 'user',
+        content: `사업 입력:\n${text}\n\n프롬프트 버전 ${QUALITY5_PROMPT_VERSION}.\n키: ${QUALITY5_OUTPUT_KEYS}.\n시스템 지시의 키와 같다. 문자열 키는 문자열, 배열 키는 배열로 둔다. choices는 3~5개의 문자열이다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다.`,
+      },
+    ],
+  };
+}
+
+export type SprintGateStatus = 'pass' | 'fail' | 'not_run';
+
+export type SprintGateResult = {
+  id: 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'Q5' | 'Q6' | 'Q7' | 'Q8' | 'Q9' | 'Q10';
+  status: SprintGateStatus;
+  evidence: string;
+};
+
+/** Scores a stored model string. A missing string stays not_run. This does not call a model. */
+export function scoreSprintGates(raw: string | null, sourceText: string): SprintGateResult[] {
+  if (!raw?.trim()) {
+    return (['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10'] as const).map((id) => ({
+      id,
+      status: 'not_run' as const,
+      evidence: '모델 응답 원문 없음',
+    }));
+  }
+  const sections = parseSections(raw, sourceText);
+  const analysis = sections?.analysis ?? null;
+  const summary = analysis?.summary ?? '';
+  const choices = analysis?.choices.map((choice) => choice.label) ?? [];
+  const choiceText = choices.join('\n');
+  const keepsExperience = /체험|만들고|마시고/.test(summary);
+  const keepsMarketing = /마케팅/.test(summary);
+  const fee = /수수료|참가비/.test(raw) && !sourceText.includes('수수료') && !/가설|확인되지|원문에 없/.test(raw);
+  const payer = analysis?.payer ?? '';
+  const customer = sections?.customer ?? '';
+  const mixedDemand = /수요가 입증|검증된 수요|시장이 증명/.test(raw) && !/가설|사례|미확인/.test(raw);
+  const oneQuestion = Boolean(sections?.nextQuestion) && !raw.includes('1. 사업의 핵심 수익원');
+  const reason = Boolean(sections?.nextQuestionReason);
+  const directions = [
+    /체험/.test(choiceText),
+    /마케팅/.test(choiceText),
+    /결합|함께|둘/.test(choiceText),
+    /아직|정하지 못/.test(choiceText),
+    /기타|직접 입력/.test(choiceText),
+  ];
+  const polarity = /협력 가능성/.test(sections?.nextQuestion ?? '') && /높다/.test(choiceText) && /낮다/.test(choiceText);
+  return [
+    {
+      id: 'Q1',
+      status: analysis ? (keepsExperience && keepsMarketing ? 'pass' : 'fail') : 'not_run',
+      evidence: analysis ? summary : '파싱된 summary 없음',
+    },
+    {
+      id: 'Q2',
+      status: fee ? 'fail' : 'pass',
+      evidence: fee ? '원문에 없는 수수료 또는 참가비가 가설 없이 있다.' : '가설 없는 수수료·참가비 단정이 보이지 않는다.',
+    },
+    {
+      id: 'Q3',
+      status: analysis ? (payer.includes('미확인') || (payer !== customer && /양조|지불|부담/.test(payer)) ? 'pass' : 'fail') : 'not_run',
+      evidence: analysis ? `customer=${customer} payer=${payer}` : '파싱된 payer 없음',
+    },
+    {
+      id: 'Q4',
+      status: mixedDemand ? 'fail' : 'pass',
+      evidence: mixedDemand ? '외부 수요를 이 사업의 검증된 수요처럼 적는다.' : '검증된 수요 단정 문구가 보이지 않는다.',
+    },
+    {
+      id: 'Q5',
+      status: analysis ? (polarity ? 'fail' : keepsExperience && keepsMarketing && /검증|먼저|우선/.test(`${sections?.nextQuestion ?? ''}\n${choiceText}`) ? 'pass' : 'fail') : 'not_run',
+      evidence: sections?.nextQuestion ?? '질문 없음',
+    },
+    {
+      id: 'Q6',
+      status: analysis ? (directions.every(Boolean) && !polarity ? 'pass' : 'fail') : 'not_run',
+      evidence: choiceText || '선택지 없음',
+    },
+    {
+      id: 'Q7',
+      status: analysis ? (oneQuestion && reason ? 'pass' : 'fail') : 'not_run',
+      evidence: sections?.nextQuestionReason ?? '이유 없음',
+    },
+    {
+      id: 'Q8',
+      status: 'not_run',
+      evidence: analysis ? '파서는 이 원문을 읽었다. 저장과 재조회는 이 함수가 하지 않는다.' : '파서가 사업 분석을 만들지 못했다. 저장·재조회는 실행하지 않았다.',
+    },
+    { id: 'Q9', status: 'not_run', evidence: '브라우저 새로고침·재인증을 실행하지 않았다.' },
+    { id: 'Q10', status: 'not_run', evidence: '선택 저장과 후속 호출 부재를 브라우저에서 확인하지 않았다.' },
+  ];
+}
+
+export function sprintGateSummary(results: SprintGateResult[]): 'FAIL' | 'BLOCKED' | 'NOT RUN' {
+  const hard = results.filter((result) => result.id === 'Q1' || result.id === 'Q2' || result.id === 'Q5' || result.id === 'Q6');
+  if (hard.some((result) => result.status === 'fail')) return 'FAIL';
+  if (results.every((result) => result.status === 'not_run')) return 'NOT RUN';
+  if (hard.some((result) => result.status === 'not_run') || results.some((result) => result.status !== 'pass')) return 'BLOCKED';
+  return 'BLOCKED';
+}
 
 const FULL_KEYS =
   'summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices.';
@@ -157,6 +304,42 @@ export function compareConfounders(): CompareConfounder[] {
           : `quality-3 시스템 문장을 제품 buildFirstReviewRequest 예산에 넣으면 사용자 문장이 ${quality3User.length}자에서 ${clamped.length}자로 잘린다. 이 비교 호출은 그 자르기를 쓰지 않고 전문을 보낸다.`,
     },
   ];
+}
+
+/** quality-2 and quality-5-cpo-draft only. Does not call the product follow-up. */
+export async function executeSprintQualityPair(
+  env: Record<string, string | undefined> = process.env,
+): Promise<CompareReport> {
+  const quality2 = buildQuality2CompareRequest();
+  const quality5 = buildQuality5CompareRequest();
+  const base = {
+    model: AI_PM_REVIEW_MODEL as typeof AI_PM_REVIEW_MODEL,
+    temperature: 0.2 as const,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS as typeof AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: 'json_object' as const,
+    businessInput: COMPARE_BUSINESS_INPUT,
+    confounders: compareConfounders(),
+    productFollowUpInvoked: false as const,
+  };
+  const apiKey = readGptApiKey(env);
+  if (!apiKey) {
+    return {
+      ...base,
+      status: 'NOT RUN',
+      reason: 'GPT_API_KEY missing',
+      calls: [notRunCall(AI_PM_FIRST_PROMPT_VERSION, quality2), notRunCall(QUALITY5_PROMPT_VERSION, quality5)],
+    };
+  }
+  const chat = (request: ChatRequest) => new OpenAIProviderAdapter({ apiKey }).chat(request);
+  return {
+    ...base,
+    status: 'RECORDED',
+    reason: null,
+    calls: [
+      await oneCall(chat, AI_PM_FIRST_PROMPT_VERSION, quality2),
+      await oneCall(chat, QUALITY5_PROMPT_VERSION, quality5),
+    ],
+  };
 }
 
 export async function executeQualityCompare(env: Record<string, string | undefined> = process.env): Promise<CompareReport> {
