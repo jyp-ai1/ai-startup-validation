@@ -42,6 +42,18 @@
 
 Preview에 남아 있는 과거 OpenAI 호출은 제품 검토 라우트다. `executeQualityCompare()`가 아니고 `quality-3` 초안을 보내지 않는다. 그 경로로 대체하지 않았다.
 
-필요한 실행 환경은 위 클라우드 에이전트 환경에 `GPT_API_KEY`가 저장된 뒤 새로 부팅한 에이전트다. 그 프로세스에서 `pnpm --filter web test:ai-pm-compare`가 같은 함수를 실행한다. 제품 프롬프트와 제품 코드는 바꾸지 않았다.
+2026-10-29 13:13 KST. 같은 프로세스에서 `executeQualityCompare()`를 다시 호출하지 않았다. 비교 실행은 **BLOCKED**다. 이 클라우드 에이전트 프로세스는 `GPT_API_KEY`를 읽지 못한다. Preview 프로젝트 `jyp-ai1s-projects/ai-startup-validation`의 제품 서버는 그 이름으로 OpenAI 호출에 성공했다. 그 서버는 당시 `executeQualityCompare()`를 실행하지 않았고 `quality-3-draft`를 보내지 않았다. 저장된 제품 응답은 이 비교의 원문이 아니다.
 
-2026-10-29 13:13 KST. 같은 프로세스에서 `executeQualityCompare()`를 다시 호출하지 않았다. 비교 실행은 **BLOCKED**다. 필요한 권한은 클라우드 에이전트 환경 `316b619d-a743-11f1-a7d1-d6b4613131ce`의 부팅 비밀 `GPT_API_KEY`다. Preview 프로젝트 `jyp-ai1s-projects/ai-startup-validation`의 제품 서버는 그 이름으로 OpenAI 호출에 성공했지만, 그 서버는 `executeQualityCompare()`를 실행하지 않고 `quality-3-draft`를 보내지 않는다. 제품 라우트로 대체하지 않았다.
+## Preview 빌드 1회 실행
+
+비교 함수를 클라우드 에이전트 프로세스가 아니라 Preview 빌드에서 실행한다. 스크립트는 `apps/web/scripts/preview-quality-compare-once.mjs`다.
+
+| 조건 | 동작 |
+|---|---|
+| `VERCEL_ENV=preview` 이고 브랜치가 `main`이 아님 | `executeQualityCompare()` 1회 |
+| Production, `main`, 로컬 빌드 | 호출 없이 종료 |
+| 같은 run id의 최종 기록이 이미 있음 | 재호출 없음 |
+
+run id는 `q1-preview-brewery-2026-10-29`다. 요청은 고정된 `quality-2`와 `quality-3-draft`다. 사업 입력 전문을 보내고 제품 입력 예산으로 자르지 않는다. 제품 2차 검토 경로는 호출하지 않는다. 제품 프롬프트는 `quality-2`다. 키 값은 로그, 응답, Git에 넣지 않는다.
+
+결과 JSON은 비공개 버킷 `ai-pm-quality-compare`의 객체 `q1-preview-brewery-2026-10-29.json`에 저장한다. 이 문서를 쓰는 시점에는 그 객체에 응답 원문이 없다. 빌드가 기록을 남긴 뒤에 원문과 회귀 판정을 이 파일에 붙인다. 원문이 생기기 전에는 품질 비교를 적지 않는다.

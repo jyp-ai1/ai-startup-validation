@@ -559,3 +559,27 @@ function excerptAround(raw: string, needle: string): string {
   if (at < 0) return needle;
   return raw.slice(Math.max(0, at - 30), at + needle.length + 50).replace(/\s+/g, ' ');
 }
+
+export function scoreBreweryRegression(raw: string | null, sourceText: string): {
+  regressionA: 'pass' | 'fail' | 'not_run';
+  regressionB: 'pass' | 'fail' | 'not_run';
+  evidenceA: string;
+  evidenceB: string;
+} {
+  if (!raw?.trim()) {
+    return {
+      regressionA: 'not_run',
+      regressionB: 'not_run',
+      evidenceA: '응답 원문 없음',
+      evidenceB: '응답 원문 없음',
+    };
+  }
+  const failureA = regressionA(raw);
+  const failureB = regressionB(raw, sourceText);
+  return {
+    regressionA: failureA.status === 'fail' ? 'fail' : 'pass',
+    regressionB: failureB.status === 'fail' ? 'fail' : 'pass',
+    evidenceA: failureA.evidence,
+    evidenceB: failureB.evidence,
+  };
+}

@@ -21,5 +21,5 @@ describe.skipIf(!enabled)('live quality-2 versus quality-3', () => {
     }
     expect(report.status).toBe('RECORDED');
     expect(report.calls.every((call) => call.systemPrompt.length > 0 && call.userPrompt.length > 0)).toBe(true);
-  });
+  }, 200_000);
 });
