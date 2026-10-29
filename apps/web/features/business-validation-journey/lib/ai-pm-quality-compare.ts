@@ -687,6 +687,76 @@ export function buildQuality12CompareRequest(text = COMPARE_BUSINESS_INPUT): Cha
 }
 
 /** Product prompt only. The user message is the business text, not a copy sheet. */
+export const QUALITY13_PROMPT_VERSION = 'quality-13-cpo-draft';
+
+/** One constraint for the decision already present in the input. Not a choice list. */
+export function quality13DecisionCue(kind: QualityBranchKind): string {
+  if (kind === 'brewery') {
+    return '이 입력에는 체험과 마케팅 지원이 함께 있다. 질문은 어느 쪽을 먼저 검증할지, 또는 둘을 어떻게 같이 검증할지다. 협력 방법만 묻지 않는다.';
+  }
+  if (kind === 'experience') {
+    return '이 입력은 막걸리 만들기체험만 있다. 질문은 그 체험의 수요, 운영, 지불 중 입력에 없는 하나다. 다른 문화 체험을 더하지 않는다.';
+  }
+  if (kind === 'supplier') {
+    return '이 입력은 온라인 마케팅 페이지 제작 대행만 있다. 질문은 그 대행의 문제, 범위, 지불 중 입력에 없는 하나다. 관광 체험이나 추가 상품을 더하지 않는다.';
+  }
+  return '질문은 입력에 이미 적힌 갈림길 하나다. 입력에 없는 사업을 더하지 않는다.';
+}
+
+/** Rules for the six quality-2 failures. The user message does not contain the answer text. */
+export function quality13UserBlock(text: string): string {
+  const branch = quality10Branch(text);
+  return [
+    `프롬프트 버전 ${QUALITY13_PROMPT_VERSION}.`,
+    'JSON 객체만 반환한다. 질문 문장, 선택지 목록, 수익 문장, 추론 문장은 여기에 없다. 입력만 보고 직접 쓴다.',
+    'founderFacts는 입력 문장만 담은 배열이다. 경력, 네트워크, 역량은 입력에 없으면 쓰지 않는다.',
+    'inferences는 배열이다. 입력에서 바로 나오는 해석만 적고 각 문장을 추론: 으로 시작한다. 근거가 없으면 ["미확인"]만 쓴다.',
+    'strengths는 입력에 강점이 없으면 ["미확인"]이다. 관심 증가, 매출 증대, 고객 확보는 입력에 없으면 쓰지 않는다.',
+    'payer는 입력에 누가 돈을 내는지 없으면 미확인이다. 고객을 지불자로 단정하지 않는다.',
+    'revenueModel은 문자열이다. 입력에 없는 수익은 그 항목 바로 앞에 가설: 를 붙인다. 문장 끝의 (가설) 하나로는 부족하다. 판매 수익과 유지비는 입력에 없으면 만들지 않는다.',
+    'alternatives, differentiation, market, competition, operations, profitability, judgment, problem, value는 입력에 없으면 미확인이다.',
+    quality13DecisionCue(branch.kind),
+    'choices는 그 질문에 대한 서로 다른 답이다. 선택지를 물음표로 쓰지 않는다. 아직 정하지 못함과 기타 / 직접 입력을 포함한다.',
+    'summary는 입력에 있는 사업만 말한다.',
+    `키: ${QUALITY5_OUTPUT_KEYS}`,
+  ].join('\n');
+}
+
+export const QUALITY13_SYSTEM_PROMPT = [
+  '프롬프트 버전 quality-13-cpo-draft.',
+  'JSON 객체만 반환한다.',
+  '입력에 없는 경력, 네트워크, 역량, 지불자, 매출, 계약, 제휴를 사실로 쓰지 않는다.',
+  '지불자가 입력에 없으면 payer는 미확인이다.',
+  '수익은 항목마다 가설: 또는 사실: 이다. 문장 끝의 (가설) 하나로는 부족하다.',
+  '질문은 입력에 있는 갈림길이다. 선택지는 그 질문의 답이다.',
+  '모르는 칸은 미확인이다.',
+].join('\n');
+
+export function buildQuality13CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
+  return {
+    model: AI_PM_REVIEW_MODEL,
+    temperature: 0.2,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: QUALITY13_SYSTEM_PROMPT },
+      { role: 'user', content: `사업 입력:\n${text}\n\n${quality13UserBlock(text)}` },
+    ],
+  };
+}
+
+export function buildQuality13InputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
+  return [
+    { inputId: 'brewery', text: COMPARE_BUSINESS_INPUT },
+    { inputId: 'experience', text: QUALITY9_EXPERIENCE_INPUT },
+    { inputId: 'supplier', text: QUALITY9_SUPPLIER_INPUT },
+  ].map((item) => ({
+    inputId: item.inputId,
+    promptVersion: `${QUALITY13_PROMPT_VERSION}:${item.inputId}`,
+    request: buildQuality13CompareRequest(item.text),
+  }));
+}
+
 export function buildIndependentInputRequests(): Array<{ inputId: string; promptVersion: string; request: ChatRequest }> {
   return [
     { inputId: 'brewery', text: COMPARE_BUSINESS_INPUT },

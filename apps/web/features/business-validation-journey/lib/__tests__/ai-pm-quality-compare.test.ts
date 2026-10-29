@@ -51,7 +51,11 @@ import {
   buildQuality11CompareRequest,
   buildQuality11InputRequests,
   QUALITY12_PROMPT_VERSION,
+  QUALITY13_PROMPT_VERSION,
   buildIndependentInputRequests,
+  buildQuality13InputRequests,
+  quality13DecisionCue,
+  quality13UserBlock,
   buildQuality12CompareRequest,
   buildQuality12InputRequests,
   branchContractPass,
@@ -147,12 +151,13 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality2-independent-2026-10-29');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-quality13-independent-2026-10-29');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('quality-2-independent-request.json');
+    expect(script).toContain('quality-13-independent-request.json');
+    expect(script).not.toContain('quality-2-independent-request.json');
     expect(script).not.toContain('quality-12-inputs-request.json');
     expect(script).not.toContain('quality-11-inputs-request.json');
     expect(script).not.toContain('quality-10-inputs-request.json');
@@ -462,6 +467,61 @@ describe('quality-2 and quality-3 compare requests', () => {
       businessInput: COMPARE_BUSINESS_INPUT,
       baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality12-inputs-recorded.json',
       requests: buildIndependentInputRequests(),
+    };
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(openUrl, `${JSON.stringify(openFixture, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(openUrl, 'utf8'))).toEqual(openFixture);
+  });
+
+  it('keeps quality-13 on the business text and names the quality-2 gaps', () => {
+    const product = buildFirstReviewRequest(COMPARE_BUSINESS_INPUT).messages[0]?.content ?? '';
+    expect(product).toContain('가능한 수익은 가설이라고 적는다');
+    expect(product).toContain('불확실성이 가장 많이 줄어드는');
+    expect(product).not.toContain('경력');
+    expect(product).not.toContain('네트워크');
+    expect(product).not.toContain('고객을 지불자로');
+    expect(product).not.toContain('항목마다 가설:');
+    expect(AI_PM_FIRST_PROMPT_VERSION).toBe('quality-2');
+
+    const requests = buildQuality13InputRequests();
+    expect(requests.map((item) => item.promptVersion)).toEqual([
+      'quality-13-cpo-draft:brewery',
+      'quality-13-cpo-draft:experience',
+      'quality-13-cpo-draft:supplier',
+    ]);
+    const banned = [
+      ...QUALITY6_BREWERY_CHOICES,
+      ...QUALITY10_EXPERIENCE_CHOICES,
+      ...QUALITY10_SUPPLIER_CHOICES,
+      quality7RevenueString(COMPARE_BUSINESS_INPUT),
+      quality9Inference(COMPARE_BUSINESS_INPUT),
+      'nextQuestion 값:',
+    ].filter((line) => line !== '아직 우선순위를 결정하지 못함' && line !== '기타 / 직접 입력');
+    expect(quality13UserBlock(COMPARE_BUSINESS_INPUT)).toContain(quality13DecisionCue('brewery'));
+    expect(quality13UserBlock(QUALITY9_EXPERIENCE_INPUT)).toContain('다른 문화 체험을 더하지 않는다');
+    expect(quality13UserBlock(QUALITY9_SUPPLIER_INPUT)).toContain('추가 상품을 더하지 않는다');
+    expect(quality13UserBlock(QUALITY9_EXPERIENCE_INPUT)).not.toContain('마케팅 지원이 함께');
+    for (const item of requests) {
+      const user = item.request.messages[1]?.content ?? '';
+      const system = item.request.messages[0]?.content ?? '';
+      expect(system).toContain(QUALITY13_PROMPT_VERSION);
+      expect(system).not.toContain('프롬프트 버전 quality-2');
+      expect(user).toContain(QUALITY13_PROMPT_VERSION);
+      for (const line of banned) expect(user).not.toContain(line);
+    }
+    const invented = JSON.parse(contractRaw(COMPARE_BUSINESS_INPUT)) as {
+      founderFacts: string;
+      payer: string;
+      revenueModel: string;
+    };
+    invented.founderFacts = '창업자는 관광 및 주류 산업에 대한 경험이 있으며, 양조장과의 네트워크를 보유하고 있다.';
+    invented.payer = '양조장 체험에 참여하는 관광객';
+    invented.revenueModel = '체험 참가비, 양조장에서의 판매 수익 (가설)';
+    expect(reviewContractError(JSON.stringify(invented))).toBeNull();
+    const openUrl = new URL('../quality-13-independent-request.json', import.meta.url);
+    const openFixture = {
+      businessInput: COMPARE_BUSINESS_INPUT,
+      baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality2-independent-recorded.json',
+      requests: buildQuality13InputRequests(),
     };
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(openUrl, `${JSON.stringify(openFixture, null, 2)}\n`);
     expect(JSON.parse(readFileSync(openUrl, 'utf8'))).toEqual(openFixture);
