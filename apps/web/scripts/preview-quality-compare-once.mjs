@@ -1,5 +1,5 @@
 /**
- * One quality-7-cpo-draft call during a non-main Preview build.
+ * One quality-8-cpo-draft call during a non-main Preview build.
  * Production builds return immediately. The product second-review route is not called.
  * Requests come from the frozen JSON checked against the builders. Results go to a
  * private Supabase bucket. Credentials are not written to the report or the log.
@@ -8,13 +8,13 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PREVIEW_COMPARE_RUN_ID = 'q1-quality7-once-2026-10-29';
+export const PREVIEW_COMPARE_RUN_ID = 'q1-quality8-once-2026-10-29';
 export const PREVIEW_COMPARE_BUCKET = 'ai-pm-quality-compare';
 export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(scriptDir, '..');
-const fixturePath = join(webRoot, 'features/business-validation-journey/lib/quality-7-request.json');
+const fixturePath = join(webRoot, 'features/business-validation-journey/lib/quality-8-request.json');
 
 export function shouldRunPreviewQualityCompare(env) {
   return env.VERCEL_ENV === 'preview' && Boolean(env.VERCEL_GIT_COMMIT_REF) && env.VERCEL_GIT_COMMIT_REF !== 'main';

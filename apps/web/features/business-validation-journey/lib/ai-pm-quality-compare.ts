@@ -275,6 +275,107 @@ export function scoreRevenueContract(
   return { typeOk: true, itemsOk: missing.length === 0, detail: missing.length ? `표시 없는 항목: ${missing.join(', ')}` : value };
 }
 
+export const QUALITY8_PROMPT_VERSION = 'quality-8-cpo-draft';
+
+const INVENTED_TRAITS = ['산업 경험', '운영 관리', '마케팅 능력', '네트워크', '관심 증가', '주류 산업'] as const;
+
+/** Sentences before the intake lines. Intake labels are not founder facts. */
+export function quality8FounderFacts(text: string): string[] {
+  const body = text.split(/\n\s*검토 목적:/)[0]?.trim() ?? '';
+  const pieces = body
+    .split(/(?<=다\.)\s+/)
+    .map((piece) => piece.trim())
+    .filter(Boolean);
+  return pieces.length > 0 ? pieces : body ? [body] : [];
+}
+
+export function quality8EvidenceBlock(text: string): string {
+  const facts = quality8FounderFacts(text);
+  const body = text.split(/\n\s*검토 목적:/)[0] ?? text;
+  const strengths = body.includes('강점')
+    ? 'strengths는 입력에서 강점이라고 적은 문장만 쓴다.'
+    : 'strengths는 ["미확인"] 만 쓴다.';
+  return [
+    `founderFacts는 ${JSON.stringify(facts)} 만 쓴다.`,
+    '입력에 없는 경력, 능력, 네트워크는 founderFacts에 쓰지 않는다.',
+    strengths,
+    '관심 증가는 입력에 없으면 strengths에 쓰지 않는다.',
+    'inferences의 각 문자열은 추론: 으로 시작하고 founderFacts의 문장 하나를 그대로 포함한다.',
+    '추론을 founderFacts나 검증된 시장 사실로 옮기지 않는다.',
+  ].join('\n');
+}
+
+export const QUALITY8_SYSTEM_PROMPT = [
+  '프롬프트 버전 quality-8-cpo-draft.',
+  ...QUALITY7_SYSTEM_PROMPT.split('\n').slice(1),
+  'founderFacts는 입력 문장만 담는다. 입력에 없는 경력, 능력, 네트워크는 쓰지 않는다.',
+  'strengths에 입력에 없는 시장 관심 증가를 강점으로 쓰지 않는다. 근거가 없으면 미확인이다.',
+  'inferences의 각 문자열은 추론: 으로 시작한다. 추론을 창업자 사실로 쓰지 않는다.',
+].join('\n');
+
+export function buildQuality8CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
+  const quality7 = buildQuality7CompareRequest(text);
+  const priorUser = (quality7.messages[1]?.content ?? '').replace(
+    `프롬프트 버전 ${QUALITY7_PROMPT_VERSION}.`,
+    `프롬프트 버전 ${QUALITY8_PROMPT_VERSION}.`,
+  );
+  return {
+    ...quality7,
+    messages: [
+      { role: 'system', content: QUALITY8_SYSTEM_PROMPT },
+      { role: 'user', content: `${priorUser}\n${quality8EvidenceBlock(text)}` },
+    ],
+  };
+}
+
+/** Founder facts, strengths, and inference marks. This does not call a model. */
+export function scoreEvidenceIntegrity(
+  raw: string | null,
+  sourceText: string,
+): { founderFactsOk: boolean; strengthsOk: boolean; inferencesOk: boolean; detail: string } {
+  if (!raw?.trim()) {
+    return { founderFactsOk: false, strengthsOk: false, inferencesOk: false, detail: '원문 없음' };
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return { founderFactsOk: false, strengthsOk: false, inferencesOk: false, detail: 'JSON이 아니다' };
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return { founderFactsOk: false, strengthsOk: false, inferencesOk: false, detail: 'JSON 객체가 아니다' };
+  }
+  const record = parsed as Record<string, unknown>;
+  const facts = Array.isArray(record.founderFacts) ? record.founderFacts.filter((item): item is string => typeof item === 'string') : [];
+  const strengths = Array.isArray(record.strengths) ? record.strengths.filter((item): item is string => typeof item === 'string') : [];
+  const inferences = Array.isArray(record.inferences) ? record.inferences.filter((item): item is string => typeof item === 'string') : [];
+  const source = sourceText.replace(/\s+/g, '');
+  const invented = INVENTED_TRAITS.filter((trait) => !sourceText.includes(trait));
+  const founderFactsOk =
+    facts.length > 0 &&
+    facts.every((fact) => source.includes(fact.replace(/\s+/g, '')) && !invented.some((trait) => fact.includes(trait)));
+  const strengthsOk =
+    strengths.length > 0 &&
+    strengths.every((item) => item === '미확인' || item.includes('가설') || source.includes(item.replace(/\s+/g, ''))) &&
+    !strengths.some((item) => invented.some((trait) => factIncludes(item, trait) && item !== '미확인' && !item.includes('가설')));
+  const allowed = quality8FounderFacts(sourceText);
+  const inferencesOk =
+    inferences.length > 0 &&
+    inferences.every(
+      (item) => item.startsWith('추론:') && allowed.some((fact) => item.includes(fact)) && !invented.some((trait) => item.includes(trait)),
+    );
+  const detail = [
+    founderFactsOk ? 'founderFacts는 입력 문장이다' : `founderFacts ${facts.join(' / ') || '없음'}`,
+    strengthsOk ? 'strengths는 미확인이거나 입력 문장이다' : `strengths ${strengths.join(' / ') || '없음'}`,
+    inferencesOk ? 'inferences는 추론으로 표시됐다' : `inferences ${inferences.join(' / ') || '없음'}`,
+  ].join('. ');
+  return { founderFactsOk, strengthsOk, inferencesOk, detail };
+}
+
+function factIncludes(text: string, trait: string): boolean {
+  return text.includes(trait);
+}
+
 export function buildQuality5CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
   return {
     model: AI_PM_REVIEW_MODEL,
