@@ -1171,6 +1171,75 @@ describe('AI PM first review', () => {
     expect(traceParsed.changes.every((change) => change.founderAnswer.source === 'synthetic-test-data')).toBe(true);
     expect(traceParsed.changes.every((change) => change.founderAnswer.supplement.includes('확정된 양조장'))).toBe(true);
     expect(traceParsed.changes.every((change) => change.unchangedReason === '')).toBe(true);
+    const reasonCall = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-reason-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as {
+      runId: string;
+      priorRunId: string;
+      gitSha: string;
+      productFollowUpInvoked: boolean;
+      reflectionScored: boolean;
+      report: { calls: Array<{ raw: string; userPrompt: string }> };
+    };
+    expect(reasonCall.runId).toBe('q1-incremental-reflection-reason-2026-10-29');
+    expect(reasonCall.priorRunId).toBe('q1-incremental-reflection-trace-2026-10-29');
+    expect(reasonCall.gitSha).toBe('ab1aa7c40e539732a05576c85b60c708b12f3f52');
+    expect(reasonCall.productFollowUpInvoked).toBe(false);
+    expect(reasonCall.reflectionScored).toBe(false);
+    const reasonSent = JSON.parse(reasonCall.report.calls[0]?.userPrompt ?? '{}') as typeof sent;
+    const reasonContext = {
+      previousJudgment: reasonSent.previousAnalysis.judgment,
+      previousHypotheses: reasonSent.previousAnalysis.hypotheses,
+      previousNextVerification: reasonSent.previousAnalysis.analysis.nextVerification,
+      previousNextQuestion: reasonSent.previousAnalysis.nextQuestion,
+      previousRevenueModel: reasonSent.previousAnalysis.revenueModel,
+      choiceLabel: reasonSent.founderChoice.label,
+      supplement: reasonSent.founderSupplement,
+      answerOrigin: 'synthetic-test-data' as const,
+    };
+    expect(followUpOutputContractErrors(reasonCall.report.calls[0]?.raw ?? '', reasonContext)).toEqual([
+      'follow_up_output_missing_revenueModel',
+      'choice_untraced',
+      'founder_answer_choice:judgment',
+      'founder_answer_choice:hypotheses',
+      'reason_untraced:hypotheses',
+      'founder_answer_choice:nextVerification',
+      'reason_untraced:nextVerification',
+      'next_verification_choice_unmentioned',
+      'founder_answer_choice:nextQuestion',
+      'reason_untraced:nextQuestion',
+    ]);
+    const reasonParsed = JSON.parse(reasonCall.report.calls[0]?.raw ?? '{}') as {
+      judgment: string;
+      hypotheses: string[];
+      nextVerification: string;
+      nextQuestion: string;
+      revenueModel?: string;
+      choiceTrace?: unknown;
+      changes: Array<{
+        field: string;
+        previous: string;
+        decision: string;
+        reason: string;
+        founderAnswer: { choice: string | null; supplement: string; source: string; status: string };
+        evidenceStatus: string;
+      }>;
+    };
+    expect(reasonParsed.revenueModel).toBeUndefined();
+    expect(reasonParsed.choiceTrace).toBeUndefined();
+    expect(reasonParsed.judgment).toBe(reasonContext.previousJudgment);
+    expect(reasonParsed.hypotheses).toEqual(['미확인']);
+    expect(reasonParsed.nextVerification).toContain('양조장 후보');
+    expect(reasonParsed.nextVerification).toContain('확정된 공급처로 간주하지');
+    expect(reasonParsed.nextQuestion).toBe('양조장 후보가 있는가?');
+    expect(reasonParsed.changes.find((change) => change.field === 'nextQuestion')?.previous).toBe(reasonContext.previousNextQuestion);
+    expect(reasonParsed.changes.every((change) => change.founderAnswer.choice === null)).toBe(true);
+    expect(reasonParsed.changes.every((change) => change.evidenceStatus === 'unverified-input')).toBe(true);
+    expect(reasonParsed.changes.find((change) => change.field === 'judgment')?.decision).toBe('retained');
+    expect(reasonParsed.changes.find((change) => change.field === 'hypotheses')?.decision).toBe('retained');
   });
 
   it('sends a typed note and the same file text through one review', async () => {
