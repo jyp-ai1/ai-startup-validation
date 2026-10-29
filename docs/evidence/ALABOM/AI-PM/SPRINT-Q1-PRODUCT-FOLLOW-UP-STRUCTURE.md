@@ -1,14 +1,43 @@
 # Sprint Q1 product follow-up request
 
-제품 요청 객체의 값을 계약 테스트로 비교한 기록이다. 모델을 호출하지 않았다. 직접 호출 `q1-incremental-structure-2026-10-29`는 `RECORDED`로 두었고 통과로 바꾸지 않았다. 증분 반영, 2차 품질, 저장·복원, 화면 검증은 하지 않았다. 1차 검증 완료가 아니다. 기본값은 `quality-2`다. Production 잠금은 유지했다.
+제품 요청의 계약을 `parsed-sections-1`로 고정한 기록이다. 모델을 호출하지 않았다. 직접 호출 `q1-incremental-structure-2026-10-29`는 `RECORDED`로 두었고, 그 결과와 이 계약을 같은 검증으로 두지 않았다. 증분 반영은 구조 관문 승인 뒤에만 진행한다. 1차 검증 완료가 아니다. 기본값은 `quality-2`다. Production 잠금은 유지했다.
 
-요청 파일 `sprint-q1-product-follow-up-request.json`의 `modelInvoked`는 false다. 테스트가 그 파일과 `buildSyntheticFollowUpRequest`의 반환을 같다로 비교한다. 1차 원문은 quality-14 양조장 출력 SHA `8c5968ed6023f04bfa2172884ddaf4a47c02127a`다. 그 출력의 품질 통과가 아니다. 답변 구분은 `synthetic-test-data`다.
+## 계약
 
-## 두 함수의 검증 수준
+2차 모델에 넘기는 분석은 파서가 저장한 섹션 전체다. 1차 모델 JSON 원문의 바이트 복사는 이 계약이 아니다.
 
-`followUpStructureCoverage`는 형태 확인이다. 키가 있고 서로 모순되지 않으면 true다. 원문, 1차 분석, 선택 문장이 입력과 같은지는 보지 않는다. 테스트는 원문을 `다른 사업 원문이다.`로 바꾼 요청에서도 `originalInput: true`인 것을 확인한다.
+| 칸 | 계약 |
+|---|---|
+| `originalInput` | 창업자가 넣은 사업 원문 전체. 모델 원문이 아니다 |
+| `previousAnalysis` | `parseSections`가 저장한 `ReviewSections` 전체. `analysis`가 있으면 그 객체도 포함한다 |
+| `analysisContract` | `parsed-sections-1` |
+| 1차 모델 JSON 원문 | 요청에 넣지 않는다. 저장 행의 `rawContent`로 남는다 |
 
-값 비교는 `followUpRequestMismatches`다. 합성 요청과 소스의 불일치 목록은 `[]`다. 원문을 바꾼 요청의 목록에는 `originalInput`이 있고 `previousAnalysis`는 없다.
+요청 문장: `previousAnalysis는 파서가 저장한 분석 섹션 전체다. 1차 모델 JSON 원문의 바이트 복사가 아니다. originalInput은 창업자 사업 원문 전체다.`
+
+파서가 바꾸는 값은 저장 계약이다. 문자열 `미확인`은 배열이 되고, 섹션 `judgment`는 요약 문장이고, 모델의 `judgment`는 `analysis.judgmentDetail`에 있다. 선택 라벨은 유지되고 id가 붙는다. `answerHint`는 제품 고정 문장이다. 이 요청이 모델 원문과 바이트가 다른 것은 이 계약에서 누락이 아니다.
+
+## 불일치 검사
+
+`followUpStructureCoverage`는 형태만 본다. 원문을 다른 문장으로 바꿔도 `originalInput`이 true다.
+
+`followUpRequestMismatches`는 값이다. 맞는 요청의 목록은 `[]`다. 같은 테스트가 아래 칸을 바꾼 값, 빈 값, 없는 키로 각각 실패하는지 본다.
+
+`analysisContract`, `originalInput`, `previousQuestion`, `previousAnalysis.customer`, `previousAnalysis.problem`, `previousAnalysis.revenueModel`, `previousAnalysis.judgment`, `previousAnalysis.nextQuestion`, `previousAnalysis.hypotheses`, `previousAnalysis.analysis`, `previousAnalysis.analysis.summary`, `previousAnalysis.analysis.founderFacts`, `previousAnalysis.analysis.choices`, `previousAnalysis.analysis.judgmentDetail`, `founderChoice`, `founderChoice.label`, `founderChoice.answerOrigin`, `founderChoice.otherText`, `founderSupplement`, `separationRules`, `answerOrigin`, `answerOriginNotice`.
+
+`previousAnalysis` 객체 자체를 지우면 이름은 `previousAnalysis`다. 원문만 바꾸면 `originalInput`만 해당하고 `previousAnalysis`는 남지 않는다.
+
+## 출처
+
+합성 생성 `buildSyntheticFollowUpRequest`는 `answerOrigin`이 `synthetic-test-data`가 아니면 `synthetic_answer_origin_required`를 던진다. `founder-input`도 던진다.
+
+`buildFollowUpRequest`는 출처가 없으면 `follow_up_answer_origin_required`를 던진다. 조용히 `founder-input`이 되지 않는다.
+
+저장된 피드백 경로 `runFollowUpReview`만 `answerOrigin: 'founder-input'`을 직접 넘긴다. 그 함수는 `buildSyntheticFollowUpRequest`를 쓰지 않는다. 이번 턴에 그 경로를 호출하지 않았다.
+
+두 출처의 고지는 다르다. 합성은 실제 창업자 답변이 아니라고 적고, 저장된 입력은 검증된 사실이 아니라고 적는다. 다섯 규칙도 둘 다 사실로 올리지 말라고 한다. 합성 선택 문장과 추가 설명은 `founderFacts`에 없다.
+
+요청 파일 `sprint-q1-product-follow-up-request.json`의 `modelInvoked`는 false다. 테스트가 그 파일과 `buildSyntheticFollowUpRequest`의 반환을 같다로 비교한다. 비교에 쓴 1차 출력은 quality-14 양조장 SHA `8c5968ed6023f04bfa2172884ddaf4a47c02127a`다. 그 출력의 품질 통과가 아니다. 답변 구분은 `synthetic-test-data`다. 화면은 `/api/ai-pm-review/follow-up`을 호출하지 않는다. 답 저장의 `modelCalls`는 0이다.
 
 ## 요청에 들어 있는 다섯 규칙
 
@@ -38,14 +67,6 @@
 
 추가 설명이 빈 문자열이면 `founderSupplement`도 빈 문자열이다. 선택이 없으면 `founderChoice`는 `null`이다.
 
-## 출처를 빼면 실패한다
-
-`buildFollowUpRequest`는 `answerOrigin`이 없으면 `follow_up_answer_origin_required`를 던진다. `founder-input`으로 바꾸지 않는다.
-
-`buildSyntheticFollowUpRequest`는 `answerOrigin`이 `synthetic-test-data`가 아니면 `synthetic_answer_origin_required`를 던진다. `founder-input`을 넘겨도 던진다.
-
-저장된 제품 피드백을 읽는 `runFollowUpReview`만 `answerOrigin: 'founder-input'`을 직접 넘긴다. 그 경로는 이번 턴에 호출하지 않았다. 화면은 `/api/ai-pm-review/follow-up`을 호출하지 않는다. 답 저장의 `modelCalls`는 0이다.
-
 ## 테스트
 
 모델 호출이 아니다.
@@ -62,7 +83,7 @@
 
 | 관문 | 상태 |
 |---|---|
-| 제품 요청 구조 | 값 비교와 출처 누락 실패를 제출한다. CPO 재검토 전 |
+| 제품 요청 구조 | 계약 `parsed-sections-1`과 칸별 불일치 검사를 제출한다. CPO 재검토 전 |
 | 증분 반영 | **NOT RUN** |
 | 2차 품질 | **NOT RUN** |
 | 저장·복원 | **NOT RUN** |

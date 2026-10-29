@@ -28,6 +28,15 @@ export const AI_PM_REVIEW_INPUT_TOKEN_BUDGET = 3_000;
 /** Follow-up JSON includes the stored analysis. The first-review budget would cut that object. */
 export const AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET = 8_000;
 
+/**
+ * Follow-up sends the parser's stored sections, not a byte copy of the first model JSON.
+ * originalInput is the founder's business text. The model raw stays on the stored review row.
+ */
+export const FOLLOW_UP_ANALYSIS_CONTRACT = 'parsed-sections-1';
+
+export const FOLLOW_UP_ANALYSIS_CONTRACT_NOTE =
+  'previousAnalysis는 파서가 저장한 분석 섹션 전체다. 1차 모델 JSON 원문의 바이트 복사가 아니다. originalInput은 창업자 사업 원문 전체다.';
+
 export const FOLLOW_UP_ANSWER_ORIGINS = ['synthetic-test-data', 'founder-input'] as const;
 export type FollowUpAnswerOrigin = (typeof FOLLOW_UP_ANSWER_ORIGINS)[number];
 
@@ -389,6 +398,8 @@ export function buildFollowUpRequest(input: {
   const choice = input.feedback?.choiceAnswer ?? null;
   const payload = {
     ...(revision ? { revision } : {}),
+    analysisContract: FOLLOW_UP_ANALYSIS_CONTRACT,
+    analysisContractNote: FOLLOW_UP_ANALYSIS_CONTRACT_NOTE,
     answerOrigin,
     answerOriginNotice: followUpAnswerNotice(answerOrigin),
     originalInput: input.originalInput,
@@ -475,14 +486,36 @@ export function followUpRequestMismatches(request: ChatRequest, source: FollowUp
   const differ = (name: string, left: unknown, right: unknown) => {
     if (JSON.stringify(left) !== JSON.stringify(right)) mismatches.push(name);
   };
+  differ('analysisContract', payload.analysisContract, FOLLOW_UP_ANALYSIS_CONTRACT);
+  differ('analysisContractNote', payload.analysisContractNote, FOLLOW_UP_ANALYSIS_CONTRACT_NOTE);
   differ('answerOrigin', payload.answerOrigin, source.answerOrigin);
   differ('answerOriginNotice', payload.answerOriginNotice, followUpAnswerNotice(source.answerOrigin));
   differ('originalInput', payload.originalInput, source.originalInput);
   differ('previousQuestion', payload.previousQuestion, source.sections.nextQuestion);
-  differ('previousAnalysis', payload.previousAnalysis, followUpPreviousAnalysis(source.sections));
   differ('founderSupplement', payload.founderSupplement, source.supplement);
   differ('supplement', payload.supplement, source.supplement);
   differ('separationRules', payload.separationRules, [...FOLLOW_UP_SEPARATION_RULES]);
+  const expectedAnalysis = followUpPreviousAnalysis(source.sections);
+  const previous = payload.previousAnalysis;
+  const previousRecord = previous && typeof previous === 'object' && !Array.isArray(previous) ? (previous as Record<string, unknown>) : null;
+  if (!previousRecord) mismatches.push('previousAnalysis');
+  else {
+    for (const key of Object.keys(expectedAnalysis)) {
+      if (key === 'analysis') continue;
+      differ(`previousAnalysis.${key}`, previousRecord[key], expectedAnalysis[key]);
+    }
+    if (!('analysis' in previousRecord)) mismatches.push('previousAnalysis.analysis');
+    else if (expectedAnalysis.analysis == null) differ('previousAnalysis.analysis', previousRecord.analysis, null);
+    else if (!previousRecord.analysis || typeof previousRecord.analysis !== 'object' || Array.isArray(previousRecord.analysis)) {
+      mismatches.push('previousAnalysis.analysis');
+    } else {
+      const expectedRecord = expectedAnalysis.analysis as Record<string, unknown>;
+      const actualRecord = previousRecord.analysis as Record<string, unknown>;
+      for (const key of Object.keys(expectedRecord)) {
+        differ(`previousAnalysis.analysis.${key}`, actualRecord[key], expectedRecord[key]);
+      }
+    }
+  }
   for (const rule of FOLLOW_UP_SEPARATION_RULES) {
     if (!system.includes(rule)) mismatches.push(`system:${rule}`);
   }
@@ -496,14 +529,19 @@ export function followUpRequestMismatches(request: ChatRequest, source: FollowUp
       }
     : null;
   differ('founderChoice', payload.founderChoice, expectedChoice);
+  if (expectedChoice && payload.founderChoice && typeof payload.founderChoice === 'object' && !Array.isArray(payload.founderChoice)) {
+    const actualChoice = payload.founderChoice as Record<string, unknown>;
+    differ('founderChoice.label', actualChoice.label, expectedChoice.label);
+    differ('founderChoice.choiceId', actualChoice.choiceId, expectedChoice.choiceId);
+    differ('founderChoice.answerOrigin', actualChoice.answerOrigin, expectedChoice.answerOrigin);
+    differ('founderChoice.otherText', actualChoice.otherText, expectedChoice.otherText);
+  }
   const feedback = payload.feedback;
   const feedbackRecord = feedback && typeof feedback === 'object' && !Array.isArray(feedback) ? (feedback as Record<string, unknown>) : null;
   differ('feedback.choiceAnswer', feedbackRecord ? feedbackRecord.choiceAnswer ?? null : null, choice);
-  const previous = payload.previousAnalysis;
-  const previousRecord = previous && typeof previous === 'object' && !Array.isArray(previous) ? (previous as Record<string, unknown>) : null;
   const analysis = previousRecord?.analysis;
   const analysisRecord = analysis && typeof analysis === 'object' && !Array.isArray(analysis) ? (analysis as Record<string, unknown>) : null;
-  const facts = Array.isArray(analysisRecord?.founderFacts) ? analysisRecord.founderFacts : [];
+  const facts = Array.isArray(analysisRecord?.founderFacts) ? (analysisRecord.founderFacts as string[]) : [];
   const sourceFacts = source.sections.analysis?.founderFacts ?? [];
   differ('founderFacts', facts, sourceFacts);
   if (choice && choice.label && !sourceFacts.includes(choice.label) && facts.includes(choice.label)) {

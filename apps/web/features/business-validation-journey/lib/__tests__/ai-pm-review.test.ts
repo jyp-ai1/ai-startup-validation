@@ -19,6 +19,8 @@ import {
   buildFollowUpRequest,
   callReviewWithQuotaSwitch,
   estimateReviewTokens,
+  FOLLOW_UP_ANALYSIS_CONTRACT,
+  FOLLOW_UP_ANALYSIS_CONTRACT_NOTE,
   FOLLOW_UP_SEPARATION_RULES,
   buildSyntheticFollowUpRequest,
   followUpAnswerNotice,
@@ -148,6 +150,8 @@ describe('AI PM first review', () => {
       answerOrigin: true,
     });
     const user = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      analysisContract: string;
+      analysisContractNote: string;
       answerOrigin: string;
       answerOriginNotice: string;
       originalInput: string;
@@ -309,6 +313,76 @@ describe('AI PM first review', () => {
     expect(followUpStructureCoverage(wrongInput).originalInput).toBe(true);
     expect(followUpRequestMismatches(wrongInput, source)).toContain('originalInput');
     expect(followUpRequestMismatches(wrongInput, source)).not.toContain('previousAnalysis');
+    expect(user.analysisContract).toBe(FOLLOW_UP_ANALYSIS_CONTRACT);
+    expect(user.analysisContractNote).toBe(FOLLOW_UP_ANALYSIS_CONTRACT_NOTE);
+    expect(JSON.stringify(user.previousAnalysis)).not.toBe(previous?.raw);
+    expect(Object.hasOwn(user, 'rawContent')).toBe(false);
+    const mutate = (apply: (payload: Record<string, unknown>) => void) => {
+      const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as Record<string, unknown>;
+      apply(payload);
+      return {
+        ...request,
+        messages: request.messages.map((message) =>
+          message.role === 'user' ? { ...message, content: JSON.stringify(payload) } : message,
+        ),
+      };
+    };
+    const analysisOf = (payload: Record<string, unknown>) =>
+      (payload.previousAnalysis as Record<string, unknown>).analysis as Record<string, unknown>;
+    const sectionOf = (payload: Record<string, unknown>) => payload.previousAnalysis as Record<string, unknown>;
+    const choiceOf = (payload: Record<string, unknown>) => payload.founderChoice as Record<string, unknown>;
+    const requiredMismatches: Array<[string, (payload: Record<string, unknown>) => void]> = [
+      ['analysisContract', (payload) => { payload.analysisContract = 'raw-bytes-1'; }],
+      ['analysisContract', (payload) => { payload.analysisContract = ''; }],
+      ['analysisContract', (payload) => { delete payload.analysisContract; }],
+      ['originalInput', (payload) => { payload.originalInput = '다른 사업 원문이다.'; }],
+      ['originalInput', (payload) => { payload.originalInput = ''; }],
+      ['originalInput', (payload) => { delete payload.originalInput; }],
+      ['previousQuestion', (payload) => { payload.previousQuestion = '다른 질문인가?'; }],
+      ['previousQuestion', (payload) => { payload.previousQuestion = ''; }],
+      ['previousQuestion', (payload) => { delete payload.previousQuestion; }],
+      ['previousAnalysis.customer', (payload) => { sectionOf(payload).customer = '다른 고객'; }],
+      ['previousAnalysis.customer', (payload) => { sectionOf(payload).customer = ''; }],
+      ['previousAnalysis.customer', (payload) => { delete sectionOf(payload).customer; }],
+      ['previousAnalysis.problem', (payload) => { sectionOf(payload).problem = ''; }],
+      ['previousAnalysis.revenueModel', (payload) => { sectionOf(payload).revenueModel = '다른 수익'; }],
+      ['previousAnalysis.revenueModel', (payload) => { sectionOf(payload).revenueModel = ''; }],
+      ['previousAnalysis.judgment', (payload) => { sectionOf(payload).judgment = '다른 판단'; }],
+      ['previousAnalysis.judgment', (payload) => { sectionOf(payload).judgment = ''; }],
+      ['previousAnalysis.nextQuestion', (payload) => { sectionOf(payload).nextQuestion = ''; }],
+      ['previousAnalysis.hypotheses', (payload) => { sectionOf(payload).hypotheses = []; }],
+      ['previousAnalysis.hypotheses', (payload) => { delete sectionOf(payload).hypotheses; }],
+      ['previousAnalysis.analysis.summary', (payload) => { analysisOf(payload).summary = '다른 요약'; }],
+      ['previousAnalysis.analysis.summary', (payload) => { analysisOf(payload).summary = ''; }],
+      ['previousAnalysis.analysis.founderFacts', (payload) => { analysisOf(payload).founderFacts = ['합성 선택을 사실로 넣었다']; }],
+      ['previousAnalysis.analysis.founderFacts', (payload) => { analysisOf(payload).founderFacts = []; }],
+      ['previousAnalysis.analysis.founderFacts', (payload) => { delete analysisOf(payload).founderFacts; }],
+      ['previousAnalysis.analysis.choices', (payload) => { analysisOf(payload).choices = []; }],
+      ['previousAnalysis.analysis.judgmentDetail', (payload) => { analysisOf(payload).judgmentDetail = '사실로 올린 판단'; }],
+      ['previousAnalysis.analysis.judgmentDetail', (payload) => { analysisOf(payload).judgmentDetail = ''; }],
+      ['previousAnalysis.analysis', (payload) => { sectionOf(payload).analysis = null; }],
+      ['previousAnalysis', (payload) => { delete payload.previousAnalysis; }],
+      ['founderChoice.label', (payload) => { choiceOf(payload).label = '다른 선택'; }],
+      ['founderChoice.label', (payload) => { choiceOf(payload).label = ''; }],
+      ['founderChoice.answerOrigin', (payload) => { choiceOf(payload).answerOrigin = 'founder-input'; }],
+      ['founderChoice.otherText', (payload) => { choiceOf(payload).otherText = '합성 직접 입력'; }],
+      ['founderChoice', (payload) => { payload.founderChoice = null; }],
+      ['founderChoice', (payload) => { delete payload.founderChoice; }],
+      ['founderSupplement', (payload) => { payload.founderSupplement = '다른 설명'; }],
+      ['founderSupplement', (payload) => { payload.founderSupplement = ''; }],
+      ['founderSupplement', (payload) => { delete payload.founderSupplement; }],
+      ['separationRules', (payload) => { payload.separationRules = []; }],
+      ['separationRules', (payload) => { payload.separationRules = [...FOLLOW_UP_SEPARATION_RULES].slice(0, 4); }],
+      ['separationRules', (payload) => { delete payload.separationRules; }],
+      ['answerOrigin', (payload) => { payload.answerOrigin = 'founder-input'; }],
+      ['answerOrigin', (payload) => { delete payload.answerOrigin; }],
+      ['answerOriginNotice', (payload) => { payload.answerOriginNotice = followUpAnswerNotice('founder-input'); }],
+      ['answerOriginNotice', (payload) => { payload.answerOriginNotice = ''; }],
+      ['answerOriginNotice', (payload) => { delete payload.answerOriginNotice; }],
+    ];
+    for (const [name, apply] of requiredMismatches) {
+      expect(followUpRequestMismatches(mutate(apply), source), name).toContain(name);
+    }
     const panel = readFileSync(new URL('../../components/ai-pm-review-panel.tsx', import.meta.url), 'utf8');
     const followRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/follow-up/route.ts', import.meta.url), 'utf8');
     expect(panel).not.toContain('/api/ai-pm-review/follow-up');
@@ -318,6 +392,8 @@ describe('AI PM first review', () => {
     const frozen = {
       kind: 'product-follow-up-request-object',
       modelInvoked: false,
+      analysisContract: FOLLOW_UP_ANALYSIS_CONTRACT,
+      analysisContractNote: FOLLOW_UP_ANALYSIS_CONTRACT_NOTE,
       answerOrigin: 'synthetic-test-data',
       notice: followUpAnswerNotice('synthetic-test-data'),
       previousAnalysisSource: {
