@@ -22,6 +22,7 @@ import {
   estimateReviewTokens,
   FOLLOW_UP_ANALYSIS_CONTRACT,
   FOLLOW_UP_ANALYSIS_CONTRACT_NOTE,
+  FOLLOW_UP_BREWERY_VERIFICATION_PLAN,
   FOLLOW_UP_OUTPUT_CONTRACT,
   followUpOutputContractErrors,
   FOLLOW_UP_SEPARATION_RULES,
@@ -81,13 +82,22 @@ function validUngatedFollowUpRaw(previous: ReviewSections, supplement = '양조�
   };
   const change = (field: string, previousValue: string, updated: string) => {
     const same = updated === previousValue;
+    const reason =
+      field === 'judgment'
+        ? `${supplement} 이 말은 확인된 사실이 아니어서 저장된 판단을 바꾸지 않는다.`
+        : field === 'hypotheses'
+          ? `${supplement} 이 말은 가설을 바꿀 근거가 아니어서 미확인으로 둔다.`
+          : field === 'nextVerification'
+            ? `${supplement} 이 말은 검증 문장을 바꾸기에 충분하지 않다.`
+            : `${supplement} 이 말은 질문을 바꾸기에 충분하지 않다.`;
     return {
       field,
       previous: previousValue,
+      current: updated,
+      decision: same ? 'retained' : 'changed',
+      reason,
       founderAnswer,
-      updated,
-      grounds: same ? `${supplement} 이 말은 이 필드를 바꿀 확인된 사실이 아니다.` : `${supplement} 확인된 사실이 아니므로 확인 행동만 남긴다.`,
-      unchangedReason: same ? `${supplement} 이 설명만으로는 저장된 문장을 바꾸지 않는다.` : '',
+      evidenceStatus: 'unverified-input',
     };
   };
   return JSON.stringify({
@@ -265,8 +275,10 @@ describe('AI PM first review', () => {
     expect(followSystem).toContain(FOLLOW_UP_OUTPUT_CONTRACT);
     expect(followSystem).toContain('changes는 JSON 배열이다');
     expect(followSystem).toContain('객체 맵');
-    expect(followSystem).toContain('같은 선택 문장');
-    expect(followSystem).toContain('수요가 존재할 것이라는 예상으로 바꾸지 않는다');
+    expect(followSystem).toContain('판단의 reason이 선택 문장뿐이면 실패다');
+    expect(followSystem).toContain('수요가 있다고 단정하지 않는다');
+    expect(followSystem).toContain(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
+    expect(followSystem).toContain('reason이 비어 있으면 실패다');
     expect(followSystem).not.toContain('grounds는 빈 문자열이다');
     expect(buildFirstReviewRequest(evidence.businessInput).messages[0]?.content).not.toContain(FOLLOW_UP_OUTPUT_CONTRACT);
     expect(estimateReviewTokens(request.messages.map((message) => message.content).join('\n'))).toBeLessThan(
@@ -609,8 +621,14 @@ describe('AI PM first review', () => {
     const choice = sent.founderChoice.label;
     const keptRevenue = '가설: 체험 프로그램 참가비 및 관련 상품 판매 수익(가설)';
     const cited = '예약 고객, 가격, 계약, 확정된 양조장은 없다';
-    const nextVerification = '체험을 열 확정된 양조장이 있는지부터 확인한다.';
-    const nextQuestion = '체험을 열 양조장이 정해져 있습니까?';
+    const nextVerification = FOLLOW_UP_BREWERY_VERIFICATION_PLAN;
+    const nextQuestion = '체험을 제공할 수 있는 양조장 후보가 있습니까?';
+    const founderAnswer = {
+      choice,
+      supplement: cited,
+      source: 'synthetic-test-data' as const,
+      status: 'unverified-input' as const,
+    };
     const kept = {
       judgment: sent.previousAnalysis.judgment,
       hypotheses: sent.previousAnalysis.hypotheses,
@@ -625,54 +643,38 @@ describe('AI PM first review', () => {
         {
           field: 'judgment',
           previous: context.previousJudgment,
-          founderAnswer: {
-            choice,
-            supplement: cited,
-            source: 'synthetic-test-data',
-            status: 'unverified-input',
-          },
-          updated: sent.previousAnalysis.judgment,
-          grounds: `${cited}. 이 없음은 확인된 수요가 아니어서 저장된 판단을 확정하지 않는다.`,
-          unchangedReason: `${cited} 이므로 선택 계획을 판단으로 올리지 않고 그대로 둔다.`,
+          current: sent.previousAnalysis.judgment,
+          decision: 'retained',
+          reason: `${cited}. 이 없음은 확인된 사실이 아니어서 저장된 판단을 바꾸지 않는다.`,
+          founderAnswer,
+          evidenceStatus: 'unverified-input',
         },
         {
           field: 'hypotheses',
           previous: context.previousHypotheses.join(' / '),
-          founderAnswer: {
-            choice,
-            supplement: cited,
-            source: 'synthetic-test-data',
-            status: 'unverified-input',
-          },
-          updated: context.previousHypotheses.join(' / '),
-          grounds: `${cited}. 추가 설명은 가설을 강화할 확인된 사실을 주지 않는다.`,
-          unchangedReason: `${cited} 이므로 가설을 유지한다.`,
+          current: context.previousHypotheses.join(' / '),
+          decision: 'retained',
+          reason: `${cited}. 이 없음은 수요의 근거가 아니어서 가설은 미확인으로 둔다.`,
+          founderAnswer,
+          evidenceStatus: 'unverified-input',
         },
         {
           field: 'nextVerification',
           previous: context.previousNextVerification,
-          founderAnswer: {
-            choice,
-            supplement: cited,
-            source: 'synthetic-test-data',
-            status: 'unverified-input',
-          },
-          updated: nextVerification,
-          grounds: `${choice} ${cited} 그래서 체험을 열 양조장 확인을 먼저 둔다.`,
-          unchangedReason: '',
+          current: nextVerification,
+          decision: 'changed',
+          reason: `${choice}. ${cited}. 확정된 양조장이 없으므로 양조장 후보와 협력 가능 여부를 먼저 검증하고, 가격과 예약은 별도로 둔다.`,
+          founderAnswer,
+          evidenceStatus: 'unverified-input',
         },
         {
           field: 'nextQuestion',
           previous: context.previousNextQuestion,
-          founderAnswer: {
-            choice,
-            supplement: cited,
-            source: 'synthetic-test-data',
-            status: 'unverified-input',
-          },
-          updated: nextQuestion,
-          grounds: `${choice} 어느 쪽을 먼저 볼지는 계획으로 답해졌고 ${cited}.`,
-          unchangedReason: '',
+          current: nextQuestion,
+          decision: 'changed',
+          reason: `${choice}. ${cited}. 저장된 질문을 양조장 후보 질문으로 바꾼다.`,
+          founderAnswer,
+          evidenceStatus: 'unverified-input',
         },
       ],
     };
@@ -729,25 +731,26 @@ describe('AI PM first review', () => {
     ]);
     const copiedChoiceGrounds = {
       ...kept,
-      changes: kept.changes.map((change) => (change.field === 'judgment' ? { ...change, grounds: choice } : change)),
+      changes: kept.changes.map((change) => (change.field === 'judgment' ? { ...change, reason: choice } : change)),
     };
     expect(followUpOutputContractErrors(JSON.stringify(copiedChoiceGrounds), context)).toEqual([
-      'grounds_missing_supplement:judgment',
-      'grounds_choice_copied:judgment',
+      'reason_missing_supplement:judgment',
+      'reason_not_field_specific:judgment',
+      'reason_choice_copied:judgment',
     ]);
     const repeatedChoice = '체험 프로그램을 먼저 검증할 것이라는 선택 문장.';
     const repeatedGrounds = {
       ...kept,
-      changes: kept.changes.map((change) => ({ ...change, grounds: repeatedChoice })),
+      changes: kept.changes.map((change) => ({ ...change, reason: repeatedChoice })),
     };
-    expect(followUpOutputContractErrors(JSON.stringify(repeatedGrounds), context)).toContain('grounds_repeated_choice');
+    expect(followUpOutputContractErrors(JSON.stringify(repeatedGrounds), context)).toContain('reason_repeated_choice');
     const demandLine = '체험 프로그램의 수요가 존재할 것이다.';
     const demandForecast = {
       ...kept,
       hypotheses: [demandLine],
       changes: kept.changes.map((change) =>
         change.field === 'hypotheses'
-          ? { ...change, updated: demandLine, grounds: `${choice} ${cited}`, unchangedReason: '' }
+          ? { ...change, current: demandLine, decision: 'changed', reason: `${choice} ${cited} 가설을 수요 존재 예상으로 바꿨다.` }
           : change,
       ),
     };
@@ -756,7 +759,7 @@ describe('AI PM first review', () => {
       ...kept,
       changes: kept.changes.map((change) =>
         change.field === 'judgment'
-          ? { ...change, grounds: `${cited} 그러나 예약 고객이 있고 가격이 정해졌으며 계약이 있다.` }
+          ? { ...change, reason: `${cited} 그러나 예약 고객이 있고 가격이 정해졌으며 계약이 있다. 판단은 그대로다.` }
           : change,
       ),
     };
@@ -767,7 +770,7 @@ describe('AI PM first review', () => {
       judgment: planJudgment,
       changes: kept.changes.map((change) =>
         change.field === 'judgment'
-          ? { ...change, updated: planJudgment, grounds: `${choice} ${cited}`, unchangedReason: '' }
+          ? { ...change, current: planJudgment, decision: 'changed', reason: `${choice} ${cited} 그래서 판단을 바꿨다.` }
           : change,
       ),
     };
@@ -793,28 +796,44 @@ describe('AI PM first review', () => {
     );
     const emptyChangedGrounds = {
       ...kept,
-      changes: kept.changes.map((change) => (change.field === 'nextVerification' ? { ...change, grounds: '' } : change)),
+      changes: kept.changes.map((change) => (change.field === 'nextVerification' ? { ...change, reason: '' } : change)),
     };
-    expect(followUpOutputContractErrors(JSON.stringify(emptyChangedGrounds), context)).toContain('follow_up_output_grounds:nextVerification');
+    expect(followUpOutputContractErrors(JSON.stringify(emptyChangedGrounds), context)).toContain('reason_missing:nextVerification');
     const emptyUnchangedGrounds = {
       ...kept,
-      changes: kept.changes.map((change) => (change.field === 'hypotheses' ? { ...change, grounds: '' } : change)),
+      changes: kept.changes.map((change) => (change.field === 'hypotheses' ? { ...change, reason: '' } : change)),
     };
-    expect(followUpOutputContractErrors(JSON.stringify(emptyUnchangedGrounds), context)).toContain('follow_up_output_grounds:hypotheses');
+    expect(followUpOutputContractErrors(JSON.stringify(emptyUnchangedGrounds), context)).toContain('reason_missing:hypotheses');
     const genericHold = {
       ...kept,
-      changes: kept.changes.map((change) =>
-        change.field === 'hypotheses' ? { ...change, grounds: '이전과 동일한 상태', unchangedReason: '이전과 동일한 상태' } : change,
-      ),
+      changes: kept.changes.map((change) => (change.field === 'hypotheses' ? { ...change, reason: '새 정보가 없어 유지' } : change)),
     };
     const genericErrors = followUpOutputContractErrors(JSON.stringify(genericHold), context);
-    expect(genericErrors).toContain('follow_up_output_grounds_untraced:hypotheses');
-    expect(genericErrors).toContain('hypothesis_unchanged_unrelated');
+    expect(genericErrors).toContain('reason_generic:hypotheses');
+    const staleQuestion = {
+      ...kept,
+      changes: kept.changes.map((change) => (change.field === 'nextQuestion' ? { ...change, previous: '다른 질문' } : change)),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(staleQuestion), context)).toContain('follow_up_output_previous:nextQuestion');
+    const thinVerification = '체험 확인';
+    const thinPlan = {
+      ...kept,
+      nextVerification: thinVerification,
+      changes: kept.changes.map((change) =>
+        change.field === 'nextVerification' ? { ...change, current: thinVerification, decision: 'changed' } : change,
+      ),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(thinPlan), context)).toContain('next_verification_not_executable');
+    const promotedStatus = {
+      ...kept,
+      changes: kept.changes.map((change) => ({ ...change, evidenceStatus: 'confirmed-fact' })),
+    };
+    expect(followUpOutputContractErrors(JSON.stringify(promotedStatus), context)).toContain('evidence_status_promoted:judgment');
     const promotedJudgment = {
       ...kept,
       judgment: choice,
       changes: kept.changes.map((change) =>
-        change.field === 'judgment' ? { ...change, updated: choice, grounds: `${choice} ${cited}`, unchangedReason: '' } : change,
+        change.field === 'judgment' ? { ...change, current: choice, decision: 'changed', reason: `${choice} ${cited} 판단을 선택으로 바꿨다.` } : change,
       ),
     };
     expect(followUpOutputContractErrors(JSON.stringify(promotedJudgment), context)).toContain('choice_promoted_to_judgment');
@@ -823,7 +842,7 @@ describe('AI PM first review', () => {
       ...kept,
       nextQuestion: marketingQuestion,
       changes: kept.changes.map((change) =>
-        change.field === 'nextQuestion' ? { ...change, updated: marketingQuestion, grounds: `${choice} ${cited}` } : change,
+        change.field === 'nextQuestion' ? { ...change, current: marketingQuestion, decision: 'changed', reason: `${choice} ${cited} 질문을 바꿨다.` } : change,
       ),
     };
     const regressedErrors = followUpOutputContractErrors(JSON.stringify(regressed), context);
@@ -859,7 +878,7 @@ describe('AI PM first review', () => {
       'follow_up_output_missing_change:nextVerification',
       'follow_up_output_missing_change:nextQuestion',
       'choice_promoted_to_judgment',
-      'next_verification_input_unused',
+      'next_verification_not_executable',
       'next_question_regressed',
       'next_question_unknown_missing',
     ]);
@@ -891,18 +910,29 @@ describe('AI PM first review', () => {
     };
     expect(followUpOutputContractErrors(arrayCall.report.calls[0]?.raw ?? '', arrayContext)).toEqual([
       'founder_answer_type:judgment',
-      'grounds_missing_supplement:judgment',
-      'grounds_choice_copied:judgment',
+      'follow_up_output_current:judgment',
+      'decision_missing:judgment',
+      'reason_missing:judgment',
+      'evidence_status:judgment',
       'founder_answer_type:hypotheses',
-      'grounds_missing_supplement:hypotheses',
+      'follow_up_output_current:hypotheses',
+      'decision_missing:hypotheses',
+      'reason_missing:hypotheses',
+      'evidence_status:hypotheses',
       'founder_answer_type:nextVerification',
-      'grounds_missing_supplement:nextVerification',
+      'follow_up_output_current:nextVerification',
+      'decision_missing:nextVerification',
+      'reason_missing:nextVerification',
+      'evidence_status:nextVerification',
+      'next_verification_choice_unmentioned',
       'founder_answer_type:nextQuestion',
-      'grounds_missing_supplement:nextQuestion',
-      'grounds_repeated_choice',
+      'follow_up_output_current:nextQuestion',
+      'decision_missing:nextQuestion',
+      'reason_missing:nextQuestion',
+      'evidence_status:nextQuestion',
       'choice_promoted_to_judgment',
       'hypothesis_demand_ungrounded',
-      'next_verification_input_unused',
+      'next_verification_not_executable',
     ]);
     const arrayParsed = JSON.parse(arrayCall.report.calls[0]?.raw ?? '{}') as {
       judgment: string;
@@ -950,10 +980,27 @@ describe('AI PM first review', () => {
     };
     expect(followUpOutputContractErrors(groundsCall.report.calls[0]?.raw ?? '', groundsContext)).toEqual([
       'founder_answer_type:judgment',
-      'follow_up_output_grounds_untraced:judgment',
+      'follow_up_output_current:judgment',
+      'decision_missing:judgment',
+      'reason_missing:judgment',
+      'evidence_status:judgment',
       'founder_answer_type:hypotheses',
+      'follow_up_output_current:hypotheses',
+      'decision_missing:hypotheses',
+      'reason_missing:hypotheses',
+      'evidence_status:hypotheses',
       'founder_answer_type:nextVerification',
+      'follow_up_output_current:nextVerification',
+      'decision_missing:nextVerification',
+      'reason_missing:nextVerification',
+      'evidence_status:nextVerification',
+      'next_verification_choice_unmentioned',
       'founder_answer_type:nextQuestion',
+      'follow_up_output_current:nextQuestion',
+      'decision_missing:nextQuestion',
+      'reason_missing:nextQuestion',
+      'evidence_status:nextQuestion',
+      'next_verification_not_executable',
     ]);
     const groundsParsed = JSON.parse(groundsCall.report.calls[0]?.raw ?? '{}') as {
       judgment: string;
@@ -1006,11 +1053,27 @@ describe('AI PM first review', () => {
     };
     expect(followUpOutputContractErrors(sourceCall.report.calls[0]?.raw ?? '', sourceContext)).toEqual([
       'founder_answer_type:judgment',
+      'follow_up_output_current:judgment',
+      'decision_missing:judgment',
+      'reason_missing:judgment',
+      'evidence_status:judgment',
       'founder_answer_type:hypotheses',
+      'follow_up_output_current:hypotheses',
+      'decision_missing:hypotheses',
+      'reason_missing:hypotheses',
+      'evidence_status:hypotheses',
       'founder_answer_type:nextVerification',
+      'follow_up_output_current:nextVerification',
+      'decision_missing:nextVerification',
+      'reason_missing:nextVerification',
+      'evidence_status:nextVerification',
       'next_verification_choice_unmentioned',
       'founder_answer_type:nextQuestion',
-      'next_verification_input_unused',
+      'follow_up_output_current:nextQuestion',
+      'decision_missing:nextQuestion',
+      'reason_missing:nextQuestion',
+      'evidence_status:nextQuestion',
+      'next_verification_not_executable',
     ]);
     const sourceParsed = JSON.parse(sourceCall.report.calls[0]?.raw ?? '{}') as {
       judgment: string;
@@ -1064,11 +1127,25 @@ describe('AI PM first review', () => {
       answerOrigin: 'synthetic-test-data' as const,
     };
     expect(followUpOutputContractErrors(traceCall.report.calls[0]?.raw ?? '', traceContext)).toEqual([
-      'follow_up_output_unchanged_reason:judgment',
-      'follow_up_output_unchanged_reason:hypotheses',
+      'follow_up_output_current:judgment',
+      'decision_missing:judgment',
+      'reason_missing:judgment',
+      'evidence_status:judgment',
+      'follow_up_output_current:hypotheses',
+      'decision_missing:hypotheses',
+      'reason_missing:hypotheses',
+      'evidence_status:hypotheses',
+      'follow_up_output_current:nextVerification',
+      'decision_missing:nextVerification',
+      'reason_missing:nextVerification',
+      'evidence_status:nextVerification',
+      'next_verification_choice_unmentioned',
       'follow_up_output_previous:nextQuestion',
-      'follow_up_output_unchanged_reason:nextQuestion',
-      'next_verification_input_unused',
+      'follow_up_output_current:nextQuestion',
+      'decision_missing:nextQuestion',
+      'reason_missing:nextQuestion',
+      'evidence_status:nextQuestion',
+      'next_verification_not_executable',
     ]);
     const traceParsed = JSON.parse(traceCall.report.calls[0]?.raw ?? '{}') as {
       judgment: string;

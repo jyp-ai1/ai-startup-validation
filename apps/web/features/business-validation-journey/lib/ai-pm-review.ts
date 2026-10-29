@@ -42,12 +42,15 @@ export const FOLLOW_UP_ANALYSIS_CONTRACT_NOTE =
 export const FOLLOW_UP_ANSWER_ORIGINS = ['synthetic-test-data', 'founder-input'] as const;
 export type FollowUpAnswerOrigin = (typeof FOLLOW_UP_ANSWER_ORIGINS)[number];
 
-export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-5';
+export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-6';
 
 export const FOLLOW_UP_FOUNDER_ANSWER_STATUS = 'unverified-input';
 
+export const FOLLOW_UP_BREWERY_VERIFICATION_PLAN =
+  '먼저 체험 프로그램을 제공할 수 있는 양조장 후보를 찾고, 실제 협력 가능 여부와 체험 운영 조건을 확인한다. 협력 가능 여부가 확인되기 전까지는 확정된 공급처로 간주하지 않는다. 이후 잠재 고객 인터뷰와 체험 참여 의향을 확인하고, 가격 수용도와 예약 전환은 별도로 검증한다.';
+
 export const FOLLOW_UP_OUTPUT_CONTRACT_NOTE =
-  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion이다. founderAnswer는 changes 원소 안의 객체다. 루트 founderAnswer는 그 원소를 통과시키지 않는다. choice, supplement, source, status를 구분한다. supplement가 입력과 연결되지 않으면 실패다. 선택 문장만 판단 근거이면 실패다.';
+  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion이다. changes 원소는 field, previous, current, decision, reason, founderAnswer, evidenceStatus를 가진다. reason이 비거나 새 정보가 없어 유지라고만 쓰면 실패다. nextQuestion.previous가 저장된 질문과 다르면 실패다. 양조장이 없다고 한 입력의 검증 문장은 후보와 협력 가능 여부를 확인하고, 그것을 확정된 공급처로 간주하지 않는다.';
 
 export const FOLLOW_UP_OUTPUT_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'] as const;
 
@@ -1132,6 +1135,33 @@ function forecastsDemand(text: string): boolean {
   return /수요/.test(text) && /존재|있을|있다|예상/.test(text);
 }
 
+const FIELD_REASON_CUES: Record<(typeof FOLLOW_UP_OUTPUT_FIELDS)[number], RegExp> = {
+  judgment: /판단/,
+  hypotheses: /가설|미확인/,
+  nextVerification: /검증|양조장/,
+  nextQuestion: /질문/,
+};
+
+const EVIDENCE_STATUSES = new Set(['confirmed-fact', 'unverified-input', 'unconfirmed']);
+
+function reasonIsGeneric(reason: string): boolean {
+  const text = compact(reason).replace(/[.]/g, '');
+  return ['바꾸지않은이유', '새정보가없어유지', '이전과동일한상태', '이전과동일', '유지'].includes(text);
+}
+
+function explainsInsufficiency(reason: string): boolean {
+  return /충분하지|바꾸지 않|확인된 사실이 아니|근거가 아니|부족|확정하지/.test(reason);
+}
+
+function verificationPlanReady(text: string): boolean {
+  return (
+    text.includes('양조장 후보') &&
+    text.includes('협력 가능') &&
+    text.includes('확정된 공급처로 간주하지') &&
+    text.includes('별도')
+  );
+}
+
 function inventedPresence(text: string, supplement: string): boolean {
   if (!supplement.includes('없')) return false;
   const rules: Array<[string, RegExp]> = [
@@ -1214,32 +1244,33 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
       continue;
     }
     const previous = typeof change.previous === 'string' ? change.previous : '';
-    const updated = typeof change.updated === 'string' ? change.updated : '';
-    const grounds = typeof change.grounds === 'string' ? change.grounds.trim() : '';
-    const unchangedReason = typeof change.unchangedReason === 'string' ? change.unchangedReason.trim() : '';
+    const current = typeof change.current === 'string' ? change.current : '';
+    const decision = typeof change.decision === 'string' ? change.decision.trim() : '';
+    const reason = typeof change.reason === 'string' ? change.reason.trim() : '';
+    const evidenceStatus = typeof change.evidenceStatus === 'string' ? change.evidenceStatus.trim() : '';
     if (previous !== expectedPrevious[field]) errors.push(`follow_up_output_previous:${field}`);
     errors.push(...founderAnswerRecordErrors(field, change.founderAnswer, context));
-    if (updated !== expectedUpdated[field]) errors.push(`follow_up_output_updated:${field}`);
-    const changed = updated !== previous;
-    if (!grounds) errors.push(`follow_up_output_grounds:${field}`);
-    else if (!citesFollowUpInput(grounds, context)) errors.push(`follow_up_output_grounds_untraced:${field}`);
-    else if (absentInputMarkers(context.supplement).length > 0 && !absentInputMarkers(context.supplement).some((marker) => grounds.includes(marker))) {
-      errors.push(`grounds_missing_supplement:${field}`);
+    if (!Object.prototype.hasOwnProperty.call(change, 'current') || current !== expectedUpdated[field]) errors.push(`follow_up_output_current:${field}`);
+    const changed = current !== previous;
+    if (!decision) errors.push(`decision_missing:${field}`);
+    else if (decision !== (changed ? 'changed' : 'retained')) errors.push(`decision_mismatch:${field}`);
+    if (!reason) errors.push(`reason_missing:${field}`);
+    else if (reasonIsGeneric(reason)) errors.push(`reason_generic:${field}`);
+    else if (!citesFollowUpInput(reason, context)) errors.push(`reason_untraced:${field}`);
+    else if (absentInputMarkers(context.supplement).length > 0 && !absentInputMarkers(context.supplement).some((marker) => reason.includes(marker))) {
+      errors.push(`reason_missing_supplement:${field}`);
+    } else if (!changed && !explainsInsufficiency(reason)) errors.push(`reason_insufficient:${field}`);
+    if (reason && !FIELD_REASON_CUES[field].test(reason)) errors.push(`reason_not_field_specific:${field}`);
+    if (field === 'judgment' && context.choiceLabel && reason && choiceOnlyGrounds(reason, context.choiceLabel)) {
+      errors.push('reason_choice_copied:judgment');
     }
-    if (field === 'judgment' && context.choiceLabel && grounds && choiceOnlyGrounds(grounds, context.choiceLabel)) {
-      errors.push('grounds_choice_copied:judgment');
-    }
-    if (changed) {
-      if (unchangedReason) errors.push(`follow_up_output_unchanged_reason:${field}`);
-    } else if (!unchangedReason) errors.push(`follow_up_output_unchanged_reason:${field}`);
-    if (!changed && field === 'hypotheses') {
-      const markers = absentInputMarkers(context.supplement);
-      const reason = `${grounds}\n${unchangedReason}`;
-      if (markers.length > 0 && !markers.some((marker) => reason.includes(marker))) errors.push('hypothesis_unchanged_unrelated');
+    if (!evidenceStatus || !EVIDENCE_STATUSES.has(evidenceStatus)) errors.push(`evidence_status:${field}`);
+    else if (absentInputMarkers(context.supplement).length > 0 && evidenceStatus !== FOLLOW_UP_FOUNDER_ANSWER_STATUS) {
+      errors.push(`evidence_status_promoted:${field}`);
     }
     if (priorityChoice && field === 'nextVerification') {
       if (!changed) errors.push('next_verification_unchanged');
-      if (context.choiceLabel && !grounds.includes(context.choiceLabel)) errors.push('next_verification_choice_unmentioned');
+      if (context.choiceLabel && !reason.includes(context.choiceLabel)) errors.push('next_verification_choice_unmentioned');
     }
   }
   const experienceFirst = Boolean(
@@ -1248,17 +1279,18 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
       context.choiceLabel.includes('먼저') &&
       !context.choiceLabel.includes('마케팅을 먼저'),
   );
-  const recordedGrounds = FOLLOW_UP_OUTPUT_FIELDS.map((field) => {
+  const recordedReasons = FOLLOW_UP_OUTPUT_FIELDS.map((field) => {
     const change = changes?.find((item) => item && typeof item === 'object' && (item as Record<string, unknown>).field === field) as
       | Record<string, unknown>
       | undefined;
-    return typeof change?.grounds === 'string' ? change.grounds.trim() : '';
+    return typeof change?.reason === 'string' ? change.reason.trim() : '';
   });
+  if (recordedReasons.every((reason) => reason.length > 0) && new Set(recordedReasons).size === 1) errors.push('reason_copied_across_fields');
   if (
     context.choiceLabel &&
-    recordedGrounds.every((grounds) => grounds.length > 0 && choiceOnlyGrounds(grounds, context.choiceLabel ?? ''))
+    recordedReasons.every((reason) => reason.length > 0 && choiceOnlyGrounds(reason, context.choiceLabel ?? ''))
   ) {
-    errors.push('grounds_repeated_choice');
+    errors.push('reason_repeated_choice');
   }
   if (judgmentRestatesChoice(judgment, context.choiceLabel)) errors.push('choice_promoted_to_judgment');
   if (
@@ -1268,15 +1300,15 @@ export function followUpOutputContractErrors(raw: string, context: FollowUpOutpu
   ) {
     errors.push('hypothesis_demand_ungrounded');
   }
-  const claimText = [judgment, hypotheses.join('\n'), nextVerification, nextQuestion, recordedGrounds.join('\n')].join('\n');
+  const claimText = [judgment, hypotheses.join('\n'), nextVerification, nextQuestion, recordedReasons.join('\n')].join('\n');
   if (inventedPresence(claimText, context.supplement)) errors.push('absent_input_invented');
   if (experienceFirst && !nextVerification.includes('체험')) errors.push('next_verification_priority_missing');
   if (
     experienceFirst &&
     absentInputMarkers(context.supplement).some((marker) => marker.includes('양조장')) &&
-    !nextVerification.includes('양조장')
+    !verificationPlanReady(nextVerification)
   ) {
-    errors.push('next_verification_input_unused');
+    errors.push('next_verification_not_executable');
   }
   if (experienceFirst && /마케팅/.test(nextQuestion) && /효과|우선|먼저|검증/.test(nextQuestion)) errors.push('next_question_regressed');
   if (experienceFirst) {
@@ -1323,30 +1355,29 @@ function reviewSystemPrompt(): string {
     'hypotheses는 비어 있지 않은 문자열 배열이다.',
     'changes는 JSON 배열이다. 객체 맵, 문자열, 누락, 배열이 아닌 원소는 실패다.',
     '배열 원소는 네 개다. field는 judgment, hypotheses, nextVerification, nextQuestion 이다.',
+    '원소 키는 field, previous, current, decision, reason, founderAnswer, evidenceStatus 이다. updated, grounds, unchangedReason은 쓰지 않는다.',
+    'previous는 저장된 값 그대로다. nextQuestion.previous가 저장된 질문과 다르면 실패다.',
+    'current는 그 필드의 반환값과 같다. hypotheses의 previous와 current는 항목을 " / "로 잇는다.',
+    'decision은 current가 previous와 같으면 retained, 다르면 changed 이다.',
+    'reason이 비어 있으면 실패다. retained여도 비어 있으면 실패다. 새 정보가 없어 유지, 바꾸지 않은 이유, 이전과 동일한 상태라고만 쓰면 실패다.',
+    'retained인 reason은 추가 설명의 없음이 왜 그 필드를 바꾸기에 부족한지 적는다.',
+    '네 필드의 reason이 같으면 실패다. judgment는 판단, hypotheses는 가설 또는 미확인, nextVerification은 검증, nextQuestion은 질문이라는 말을 그 reason에 넣는다.',
+    '판단의 reason이 선택 문장뿐이면 실패다. 선택은 그 계획이 옳다는 근거가 아니다.',
+    'evidenceStatus는 unverified-input, confirmed-fact, unconfirmed 중 하나다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 unverified-input 이다. confirmed-fact로 쓰면 실패다.',
     '루트에 founderAnswer 키를 만들지 않는다. 루트 객체는 changes 원소를 통과시키지 않는다.',
-    'founderAnswer는 각 changes 원소 안의 객체다. 문자열이면 실패다.',
+    'founderAnswer는 각 원소 안의 객체다. choice, supplement, source, status를 구분한다.',
     'founderAnswer.choice는 선택 문장 그대로다. 선택이 없으면 null이다.',
-    'founderAnswer.supplement는 추가 설명의 핵심이다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 네 말을 적는다. 추가 설명 전체를 복사하지 않는다.',
-    'founderAnswer.source는 answerOrigin과 같다.',
-    'founderAnswer.status는 unverified-input 이다. 검증된 시장 사실이 아니다.',
-    'choice만 있고 supplement가 없으면 실패다. supplement가 입력 문장과 연결되지 않으면 실패다. source가 answerOrigin과 다르면 실패다.',
-    '예시 원소: {"field":"judgment","previous":"저장 판단","founderAnswer":{"choice":"체험 프로그램을 먼저 검증할 것","supplement":"예약 고객, 가격, 계약, 확정된 양조장은 없다","source":"synthetic-test-data","status":"unverified-input"},"updated":"저장 판단","grounds":"체험 프로그램을 먼저 검증할 것. 추가 설명은 예약 고객, 가격, 계약, 확정된 양조장은 없다. 이 없음은 판단을 바꾸지 않는다.","unchangedReason":"선택은 계획이고 수요를 확인한 문장이 아니다."}',
-    '나머지 세 원소도 같은 founderAnswer 객체를 원소 안에 넣는다. previous, updated, grounds, unchangedReason은 그 필드 값이다.',
-    'previous는 요청의 저장값을 그대로 적는다. hypotheses의 previous와 updated는 항목을 " / "로 잇는다.',
-    'updated는 그 필드의 반환값과 같다.',
-    'grounds가 비어 있으면 실패다. 판단의 grounds가 선택 문장뿐이면 실패다. 네 필드의 grounds가 같은 선택 문장이면 실패다. 계획은 그 계획이 옳다는 근거가 아니다.',
-    '추가 설명에 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 말을 각 grounds에 넣는다. 그 없음은 수요가 있다는 근거가 아니다.',
-    'updated가 previous와 다르면 unchangedReason은 빈 문자열이다.',
-    'updated가 previous와 같으면 unchangedReason에 바꾸지 않은 이유를 적고, grounds에도 추가 설명과의 관계를 적는다.',
-    '새로 만든 판단이나 가설 문장을 founderAnswer에 넣지 않는다. 선택, 추가 설명, 출처, 미검증 상태를 칸으로 나눈다.',
-    'hypotheses가 미확인이면 그 문장을 유지한다. 수요가 존재할 것이라는 예상으로 바꾸지 않는다.',
-    'judgment는 저장 판단을 유지한다. 선택 문장이나 그 계획을 필요하다는 판단으로 옮기지 않는다.',
+    'founderAnswer.supplement는 추가 설명의 핵심이다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 네 말을 적는다.',
+    'founderAnswer.source는 answerOrigin과 같다. founderAnswer.status는 unverified-input 이다.',
+    '예시 원소: {"field":"judgment","previous":"저장 판단","current":"저장 판단","decision":"retained","reason":"예약 고객, 가격, 계약, 확정된 양조장은 없다. 이 없음은 확인된 사실이 아니어서 저장된 판단을 바꾸지 않는다.","founderAnswer":{"choice":"체험 프로그램을 먼저 검증할 것","supplement":"예약 고객, 가격, 계약, 확정된 양조장은 없다","source":"synthetic-test-data","status":"unverified-input"},"evidenceStatus":"unverified-input"}',
+    'hypotheses는 미확인이면 retained다. reason은 그 없음이 수요의 근거가 아니어서 가설을 미확인으로 둔다고 적는다.',
+    'judgment는 저장 판단을 유지한다. 선택이나 검증 계획을 판단으로 옮기지 않는다.',
+    `nextVerification의 current는 이 문장이다. ${FOLLOW_UP_BREWERY_VERIFICATION_PLAN}`,
+    '그 문장은 검증 계획이다. 양조장이 확보됐거나 수요가 확인됐다는 뜻이 아니다. decision은 changed이고 reason에는 선택 문장, 없음, 검증이라는 말을 넣는다.',
+    'nextQuestion은 마케팅 효과를 다시 먼저 묻지 않는다. 양조장 후보가 있는지를 묻는다. previous는 저장된 질문 그대로이고, 질문을 바꾸면 decision은 changed이며 reason에 질문이라는 말과 바꾼 이유를 적는다.',
     'choiceTrace는 label, answerOrigin, role이다. 선택이 있으면 label은 그 문장 그대로이고 role은 plan이다.',
     'founderFacts에 선택 문장이나 추가 설명을 넣지 않는다.',
     'revenueModel은 저장값에 가설 표시가 있으면 그 표시를 유지한다. 가격, 예약, 계약이 확인되지 않았으면 확정된 수익으로 쓰지 않는다.',
-    '추가 설명이 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 없음을 확인된 사실과 구분한다. hypotheses를 그대로 두면 grounds와 unchangedReason에 그 없음을 적는다.',
-    '선택이 체험을 먼저 검증하는 계획이면 nextVerification은 체험을 열 확정된 양조장이 있는지부터 확인한다. 체험 확인처럼 짧은 말만 쓰지 않는다. grounds에는 선택 문장과 추가 설명의 없음 문장을 함께 넣는다.',
-    '그 선택이면 nextQuestion은 마케팅 효과를 다시 먼저 묻지 않는다. 추가 설명이 없다고 한 양조장, 가격, 예약, 계약 중 하나를 묻는다.',
     '가설이 강화되었다고 쓰지 않는다. 수요가 있다고 단정하지 않는다.',
   ].join(' ');
 }
