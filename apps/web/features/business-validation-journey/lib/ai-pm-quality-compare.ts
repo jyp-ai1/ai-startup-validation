@@ -950,7 +950,7 @@ export function incrementalStructureReady(request: ChatRequest): boolean {
   return Object.values(incrementalStructureCoverage(request)).every(Boolean);
 }
 
-/** What the dormant product composer still omits. It is not switched over by this gate. */
+/** Product request fields. A full present list is a contract check, not a model call. */
 export function productFollowUpStructureReport(request: ChatRequest): { present: string[]; absent: string[] } {
   const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
   const user = request.messages.find((message) => message.role === 'user')?.content ?? '';
@@ -961,23 +961,40 @@ export function productFollowUpStructureReport(request: ChatRequest): { present:
   } catch {
     payload = {};
   }
-  const previous = payload.previousReview;
+  const previous = payload.previousAnalysis;
   const previousRecord =
     previous && typeof previous === 'object' && !Array.isArray(previous) ? (previous as Record<string, unknown>) : null;
+  const choice = payload.founderChoice;
+  const choiceRecord = choice && typeof choice === 'object' && !Array.isArray(choice) ? (choice as Record<string, unknown>) : null;
+  const rules = Array.isArray(payload.separationRules) ? payload.separationRules.join('\n') : '';
   const present: string[] = [];
   const absent: string[] = [];
   const mark = (name: string, ok: boolean) => (ok ? present : absent).push(name);
   mark('originalInput', typeof payload.originalInput === 'string' && payload.originalInput.length > 0);
   mark(
     'previousAnalysis',
-    Boolean(previousRecord && 'founderFacts' in previousRecord && 'choices' in previousRecord && 'revenueModel' in previousRecord),
+    Boolean(
+      previousRecord &&
+        typeof previousRecord.revenueModel === 'string' &&
+        typeof previousRecord.judgment === 'string' &&
+        Array.isArray(previousRecord.hypotheses) &&
+        'analysis' in previousRecord,
+    ),
   );
-  mark('previousQuestion', typeof previousRecord?.nextQuestion === 'string' && previousRecord.nextQuestion.length > 0);
-  mark('founderChoice', 'founderChoice' in payload || Boolean(payload.feedback && typeof payload.feedback === 'object' && 'choiceAnswer' in payload.feedback));
-  mark('founderSupplement', typeof payload.supplement === 'string');
+  mark(
+    'previousQuestion',
+    typeof payload.previousQuestion === 'string' && payload.previousQuestion === previousRecord?.nextQuestion,
+  );
+  mark(
+    'founderChoice',
+    Boolean(choiceRecord && typeof choiceRecord.label === 'string' && choiceRecord.label.length > 0 && choiceRecord.answerOrigin === payload.answerOrigin),
+  );
+  mark('founderSupplement', typeof payload.founderSupplement === 'string');
   mark(
     'separationRules',
-    `${system}\n${user}`.includes('검증된 사실이 아니다') && `${system}\n${user}`.includes('사실로 승격하지'),
+    `${system}\n${rules}`.includes('다시 출력하지 않는다') &&
+      `${system}\n${rules}`.includes('검증된 사실이 아니다') &&
+      `${system}\n${rules}`.includes('사실로 승격하지 않는다'),
   );
   return { present, absent };
 }

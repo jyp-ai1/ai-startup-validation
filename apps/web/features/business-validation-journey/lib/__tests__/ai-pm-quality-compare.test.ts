@@ -11,6 +11,7 @@ import {
   AI_PM_REVIEW_MODEL,
   buildFirstReviewRequest,
   buildFollowUpRequest,
+  followUpStructureCoverage,
   parseSections,
   presentReview,
   reviewContractError,
@@ -866,15 +867,25 @@ describe('quality-2 and quality-3 compare requests', () => {
         modelCalls: 0,
       },
       supplement: INCREMENTAL_STRUCTURE_SUPPLEMENT,
+      answerOrigin: 'synthetic-test-data',
     });
     expect(productFollowUpStructureReport(product)).toEqual({
-      present: ['originalInput', 'previousQuestion', 'founderSupplement'],
-      absent: ['previousAnalysis', 'founderChoice', 'separationRules'],
+      present: ['originalInput', 'previousAnalysis', 'previousQuestion', 'founderChoice', 'founderSupplement', 'separationRules'],
+      absent: [],
     });
-    expect(incrementalStructureReady(product)).toBe(false);
-    const productUser = product.messages.map((message) => message.content).join('\n');
-    expect(productUser).not.toContain('choiceAnswer');
-    expect(productUser).not.toContain(INCREMENTAL_STRUCTURE_VERSION);
+    expect(followUpStructureCoverage(product).answerOrigin).toBe(true);
+    expect(followUpStructureCoverage(product).founderChoice).toBe(true);
+    const productUser = JSON.parse(product.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      answerOrigin: string;
+      founderChoice: { label: string; answerOrigin: string };
+      previousAnalysis: { analysis: null; judgment: string };
+    };
+    expect(productUser.answerOrigin).toBe('synthetic-test-data');
+    expect(productUser.founderChoice.label).toBe(INCREMENTAL_STRUCTURE_CHOICE);
+    expect(productUser.founderChoice.answerOrigin).toBe('synthetic-test-data');
+    expect(productUser.previousAnalysis.analysis).toBeNull();
+    expect(productUser.previousAnalysis.judgment).toBe('보류');
+    expect(product.messages.map((message) => message.content).join('\n')).not.toContain(INCREMENTAL_STRUCTURE_VERSION);
 
     const reviewSource = readFileSync(new URL('../ai-pm-review.ts', import.meta.url), 'utf8');
     const saveStart = reviewSource.indexOf('export async function saveReviewFeedback');
@@ -932,7 +943,7 @@ describe('quality-2 and quality-3 compare requests', () => {
         {
           id: 'product_composer',
           detail:
-            'buildFollowUpRequest still omits the full previous analysis, the labeled choice, and the separation rules. This request does not replace it.',
+            'This frozen file is the earlier direct call. The product composer is a separate request object and this script does not send it.',
         },
       ],
       requests: [

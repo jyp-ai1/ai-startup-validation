@@ -14,7 +14,7 @@
     },
     {
       "id": "product_composer",
-      "detail": "buildFollowUpRequest still omits the full previous analysis, the labeled choice, and the separation rules. This request does not replace it."
+      "detail": "This frozen file is the earlier direct call. The product composer is a separate request object and this script does not send it."
     }
   ],
   "requests": [

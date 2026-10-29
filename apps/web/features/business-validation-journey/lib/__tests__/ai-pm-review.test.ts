@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -13,10 +13,15 @@ import {
   AI_PM_REVIEW_INPUT_TOKEN_BUDGET,
   AI_PM_REVIEW_FIRST_MAX_TOKENS,
   assessFollowUpRevision,
+  AI_PM_FIRST_PROMPT_VERSION,
+  AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET,
   buildFirstReviewRequest,
   buildFollowUpRequest,
   callReviewWithQuotaSwitch,
   estimateReviewTokens,
+  FOLLOW_UP_SEPARATION_RULES,
+  followUpAnswerNotice,
+  followUpStructureCoverage,
   parseFeedbackBody,
   parseSections,
   presentReview,
@@ -72,6 +77,139 @@ function reply(content: string, extra?: Partial<ChatResponse>): ChatResponse {
 }
 
 describe('AI PM first review', () => {
+  it('puts the stored analysis and the answer origin on the product follow-up request', () => {
+    const evidence = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as {
+      gitSha: string;
+      businessInput: string;
+      report: { calls: Array<{ promptVersion: string; raw: string }> };
+    };
+    const previous = evidence.report.calls.find((call) => call.promptVersion === 'quality-14-cpo-draft:brewery');
+    const sections = parseSections(previous?.raw ?? '', evidence.businessInput);
+    expect(sections?.analysis?.founderFacts.length).toBeGreaterThan(0);
+    expect(sections?.nextQuestion).toBe('체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?');
+    const selected = sections?.analysis?.choices.find((choice) => choice.label === '체험 프로그램을 먼저 검증할 것');
+    expect(selected?.id).toBeTruthy();
+    const supplement = '테스트용 합성 설명. 실제 창업자가 제공한 문장이 아니다. 예약 고객, 가격, 계약, 확정된 양조장은 없다.';
+    const request = buildFollowUpRequest({
+      originalInput: evidence.businessInput,
+      sections: sections!,
+      feedback: {
+        feedbackId: 'feedback-structure',
+        reviewId: 'review-structure',
+        userId: 'user-structure',
+        agreement: 'need_info',
+        accuracy: 'hard_to_compare',
+        revisionAreas: ['other'],
+        comment: selected?.label ?? '',
+        nextAction: 'verify_hypotheses',
+        marks: [],
+        choiceAnswer: { choiceId: selected?.id ?? '', label: selected?.label ?? '', otherText: '' },
+        submittedAt: NOW,
+        modelCalls: 0,
+      },
+      supplement,
+      answerOrigin: 'synthetic-test-data',
+    });
+    expect(followUpStructureCoverage(request)).toEqual({
+      originalInput: true,
+      previousAnalysis: true,
+      previousQuestion: true,
+      founderChoice: true,
+      founderSupplement: true,
+      separationRules: true,
+      answerOrigin: true,
+    });
+    const user = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      answerOrigin: string;
+      answerOriginNotice: string;
+      originalInput: string;
+      previousQuestion: string;
+      previousAnalysis: {
+        nextQuestion: string;
+        revenueModel: string;
+        hypotheses: string[];
+        analysis: { summary: string; founderFacts: string[]; choices: Array<{ id: string; label: string }>; judgmentDetail: string };
+      };
+      founderChoice: { answerOrigin: string; choiceId: string; label: string; otherText: string };
+      founderSupplement: string;
+      separationRules: string[];
+      supplement: string;
+      feedback: { choiceAnswer: { label: string } };
+    };
+    expect(user.answerOrigin).toBe('synthetic-test-data');
+    expect(user.answerOriginNotice).toBe(followUpAnswerNotice('synthetic-test-data'));
+    expect(user.originalInput).toBe(evidence.businessInput);
+    expect(user.previousQuestion).toBe(sections?.nextQuestion);
+    expect(user.previousAnalysis.nextQuestion).toBe(sections?.nextQuestion);
+    expect(user.previousAnalysis.revenueModel).toBe(sections?.revenueModel);
+    expect(user.previousAnalysis.hypotheses).toEqual(sections?.hypotheses);
+    expect(user.previousAnalysis.analysis.founderFacts).toEqual(sections?.analysis?.founderFacts);
+    expect(user.previousAnalysis.analysis.choices.map((choice) => choice.label)).toEqual(
+      sections?.analysis?.choices.map((choice) => choice.label),
+    );
+    expect(user.previousAnalysis.analysis.summary).toBe(sections?.analysis?.summary);
+    expect(user.previousAnalysis.analysis.judgmentDetail).toBe(sections?.analysis?.judgmentDetail);
+    expect(user.founderChoice).toEqual({
+      answerOrigin: 'synthetic-test-data',
+      choiceId: selected?.id,
+      label: '체험 프로그램을 먼저 검증할 것',
+      otherText: '',
+    });
+    expect(user.feedback.choiceAnswer.label).toBe('체험 프로그램을 먼저 검증할 것');
+    expect(user.founderSupplement).toBe(supplement);
+    expect(user.supplement).toBe(supplement);
+    expect(user.separationRules).toEqual([...FOLLOW_UP_SEPARATION_RULES]);
+    const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+    for (const rule of FOLLOW_UP_SEPARATION_RULES) expect(system).toContain(rule);
+    expect(buildFirstReviewRequest(evidence.businessInput).messages[0]?.content).not.toContain('통째로 다시 출력하지 않는다');
+    expect(AI_PM_FIRST_PROMPT_VERSION).toBe('quality-2');
+    expect(request.maxTokens).toBe(800);
+    expect(estimateReviewTokens(request.messages.map((message) => message.content).join('\n'))).toBeLessThan(
+      AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET,
+    );
+    const stored = buildFollowUpRequest({
+      originalInput: evidence.businessInput,
+      sections: sections!,
+      feedback: null,
+      supplement: '',
+    });
+    const storedUser = JSON.parse(stored.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      answerOrigin: string;
+      answerOriginNotice: string;
+      founderChoice: null;
+    };
+    expect(storedUser.answerOrigin).toBe('founder-input');
+    expect(storedUser.answerOriginNotice).toBe(followUpAnswerNotice('founder-input'));
+    expect(storedUser.founderChoice).toBeNull();
+    expect(followUpStructureCoverage(stored).founderChoice).toBe(false);
+    const panel = readFileSync(new URL('../../components/ai-pm-review-panel.tsx', import.meta.url), 'utf8');
+    const followRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/follow-up/route.ts', import.meta.url), 'utf8');
+    expect(panel).not.toContain('/api/ai-pm-review/follow-up');
+    expect(followRoute).toContain('runFollowUpReview');
+    expect(followRoute).not.toContain('answerOrigin');
+    const evidenceUrl = new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-product-follow-up-request.json', import.meta.url);
+    const frozen = {
+      kind: 'product-follow-up-request-object',
+      modelInvoked: false,
+      answerOrigin: 'synthetic-test-data',
+      notice: followUpAnswerNotice('synthetic-test-data'),
+      previousAnalysisSource: {
+        evidence: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json',
+        promptVersion: 'quality-14-cpo-draft:brewery',
+        executionSha: evidence.gitSha,
+        note: '1차 모델 출력이다. 품질 통과가 아니다. 이 파일은 제품 요청 객체이며 모델을 호출하지 않는다.',
+      },
+      request,
+    };
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(evidenceUrl, `${JSON.stringify(frozen, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(evidenceUrl, 'utf8'))).toEqual(frozen);
+  });
+
   it('sends a typed note and the same file text through one review', async () => {
     const typed = reviewInputFromParts({ typed: PLAN });
     const file = reviewInputFromParts({ extracted: PLAN, fileName: 'plan.txt' });

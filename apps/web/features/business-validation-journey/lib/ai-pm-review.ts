@@ -25,6 +25,19 @@ export const AI_PM_GEMINI_FALLBACK_MODEL = 'gemini-3.1-flash-lite';
 export const AI_PM_REVIEW_MAX_TOKENS = 800;
 export const AI_PM_REVIEW_FIRST_MAX_TOKENS = 2400;
 export const AI_PM_REVIEW_INPUT_TOKEN_BUDGET = 3_000;
+/** Follow-up JSON includes the stored analysis. The first-review budget would cut that object. */
+export const AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET = 8_000;
+
+export const FOLLOW_UP_ANSWER_ORIGINS = ['synthetic-test-data', 'founder-input'] as const;
+export type FollowUpAnswerOrigin = (typeof FOLLOW_UP_ANSWER_ORIGINS)[number];
+
+export const FOLLOW_UP_SEPARATION_RULES = [
+  '이전 1차 분석은 과거 출력이다. 새 분석과 구분하고 통째로 다시 출력하지 않는다.',
+  '선택한 답변과 추가 설명은 현재의 판단·정보이며 검증된 사실이 아니다.',
+  'answerOrigin이 synthetic-test-data이면 테스트용 합성 데이터다. 실제 창업자 답변으로 취급하지 않는다.',
+  'answerOrigin이 founder-input이어도 근거가 없으면 사실로 승격하지 않는다. 가설로 남긴다.',
+  '판단, 가설, 검증 우선순위는 답변 때문에 달라지는 부분만 갱신한다. 근거 없이 가설이 강화되었다고 쓰지 않는다.',
+] as const;
 export const AI_PM_REVIEW_INPUT_LIMIT = 24_000;
 
 const AGREEMENTS = ['agree', 'partial', 'disagree', 'need_info'] as const;
@@ -116,13 +129,21 @@ export function clampReviewText(text: string, budget: number): string {
 }
 
 function fitReviewMessages(messages: ChatRequest['messages']): ChatRequest['messages'] {
+  return fitMessages(messages, AI_PM_REVIEW_INPUT_TOKEN_BUDGET);
+}
+
+function fitFollowUpMessages(messages: ChatRequest['messages']): ChatRequest['messages'] {
+  return fitMessages(messages, AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET);
+}
+
+function fitMessages(messages: ChatRequest['messages'], budget: number): ChatRequest['messages'] {
   const systemTokens = estimateReviewTokens(
     messages
       .filter((message) => message.role !== 'user')
       .map((message) => message.content)
       .join('\n'),
   );
-  const room = AI_PM_REVIEW_INPUT_TOKEN_BUDGET - systemTokens;
+  const room = budget - systemTokens;
   let remaining = room;
   return messages.map((message) => {
     if (message.role !== 'user') return message;
@@ -315,16 +336,73 @@ export function buildFirstReviewRequest(text: string): ChatRequest {
   };
 }
 
+export function followUpAnswerNotice(origin: FollowUpAnswerOrigin): string {
+  if (origin === 'synthetic-test-data') {
+    return '테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.';
+  }
+  return '저장된 입력이다. 현재의 판단·정보이며 검증된 사실이 아니다.';
+}
+
+function followUpPreviousAnalysis(sections: ReviewSections): Record<string, unknown> {
+  const analysis = sections.analysis;
+  return {
+    customer: sections.customer,
+    problem: sections.problem,
+    market: sections.market,
+    revenueModel: sections.revenueModel,
+    execution: sections.execution,
+    risks: [...sections.risks],
+    uncertain: [...sections.uncertain],
+    hypotheses: [...sections.hypotheses],
+    judgment: sections.judgment,
+    nextQuestion: sections.nextQuestion,
+    nextQuestionReason: sections.nextQuestionReason,
+    answerHint: sections.answerHint,
+    claimConfirmation: sections.claimConfirmation,
+    analysis: analysis
+      ? {
+          ...analysis,
+          strengths: [...analysis.strengths],
+          assumptions: [...analysis.assumptions],
+          evidenceToChange: [...analysis.evidenceToChange],
+          founderFacts: [...analysis.founderFacts],
+          inferences: [...analysis.inferences],
+          choices: analysis.choices.map((choice) => ({ ...choice })),
+        }
+      : null,
+  };
+}
+
 export function buildFollowUpRequest(input: {
   originalInput: string;
   sections: ReviewSections;
   feedback: StoredFeedback | null;
   supplement: string;
+  /** Distinguishes a synthetic contract fixture from a stored product input. Does not call a model. */
+  answerOrigin?: FollowUpAnswerOrigin;
 }): ChatRequest {
+  const answerOrigin = input.answerOrigin ?? 'founder-input';
+  if (!FOLLOW_UP_ANSWER_ORIGINS.includes(answerOrigin)) throw new Error('follow_up_answer_origin_invalid');
   const marks = normalizeMarks(input.feedback?.marks);
   const revision = revisionPayload(input.sections, marks);
+  const choice = input.feedback?.choiceAnswer ?? null;
   const payload = {
     ...(revision ? { revision } : {}),
+    answerOrigin,
+    answerOriginNotice: followUpAnswerNotice(answerOrigin),
+    originalInput: input.originalInput,
+    previousAnalysis: followUpPreviousAnalysis(input.sections),
+    previousQuestion: input.sections.nextQuestion,
+    founderChoice: choice
+      ? {
+          answerOrigin,
+          choiceId: choice.choiceId,
+          label: choice.label,
+          otherText: choice.otherText,
+        }
+      : null,
+    founderSupplement: input.supplement,
+    separationRules: [...FOLLOW_UP_SEPARATION_RULES],
     feedback: input.feedback
       ? {
           agreement: input.feedback.agreement,
@@ -333,6 +411,7 @@ export function buildFollowUpRequest(input: {
           comment: input.feedback.comment,
           nextAction: input.feedback.nextAction,
           marks,
+          choiceAnswer: choice,
         }
       : null,
     previousReview: {
@@ -344,7 +423,6 @@ export function buildFollowUpRequest(input: {
       judgment: input.sections.judgment,
       nextQuestion: input.sections.nextQuestion,
     },
-    originalInput: input.originalInput,
     supplement: input.supplement,
   };
   return {
@@ -352,10 +430,84 @@ export function buildFollowUpRequest(input: {
     temperature: 0.2,
     maxTokens: AI_PM_REVIEW_MAX_TOKENS,
     responseFormat: { type: 'json_object' },
-    messages: fitReviewMessages([
+    messages: fitFollowUpMessages([
       { role: 'system', content: revision ? gatedFollowUpPrompt() : reviewSystemPrompt() },
       { role: 'user', content: JSON.stringify(payload) },
     ]),
+  };
+}
+
+export type FollowUpStructureCoverage = {
+  originalInput: boolean;
+  previousAnalysis: boolean;
+  previousQuestion: boolean;
+  founderChoice: boolean;
+  founderSupplement: boolean;
+  separationRules: boolean;
+  answerOrigin: boolean;
+};
+
+/** Reads the request object the product composer returns. Not a model-quality score. */
+export function followUpStructureCoverage(request: ChatRequest): FollowUpStructureCoverage {
+  const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+  const user = request.messages.find((message) => message.role === 'user')?.content ?? '';
+  let payload: Record<string, unknown> = {};
+  try {
+    const parsed = JSON.parse(user) as unknown;
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) payload = parsed as Record<string, unknown>;
+  } catch {
+    payload = {};
+  }
+  const previous = payload.previousAnalysis;
+  const previousRecord =
+    previous && typeof previous === 'object' && !Array.isArray(previous) ? (previous as Record<string, unknown>) : null;
+  const analysis = previousRecord?.analysis;
+  const analysisRecord =
+    analysis && typeof analysis === 'object' && !Array.isArray(analysis) ? (analysis as Record<string, unknown>) : null;
+  const choice = payload.founderChoice;
+  const choiceRecord = choice && typeof choice === 'object' && !Array.isArray(choice) ? (choice as Record<string, unknown>) : null;
+  const rules = Array.isArray(payload.separationRules) ? payload.separationRules.filter((item) => typeof item === 'string').join('\n') : '';
+  const ruleText = `${system}\n${rules}`;
+  const origin = payload.answerOrigin;
+  const originOk = origin === 'synthetic-test-data' || origin === 'founder-input';
+  const fullAnalysis = Boolean(
+    previousRecord &&
+      typeof previousRecord.customer === 'string' &&
+      typeof previousRecord.problem === 'string' &&
+      typeof previousRecord.revenueModel === 'string' &&
+      typeof previousRecord.judgment === 'string' &&
+      typeof previousRecord.nextQuestion === 'string' &&
+      Array.isArray(previousRecord.hypotheses) &&
+      'analysis' in previousRecord &&
+      (analysis === null ||
+        Boolean(
+          analysisRecord &&
+            typeof analysisRecord.summary === 'string' &&
+            Array.isArray(analysisRecord.founderFacts) &&
+            Array.isArray(analysisRecord.choices),
+        )),
+  );
+  return {
+    originalInput: typeof payload.originalInput === 'string' && payload.originalInput.length > 0,
+    previousAnalysis: fullAnalysis,
+    previousQuestion:
+      typeof payload.previousQuestion === 'string' &&
+      payload.previousQuestion.length > 0 &&
+      payload.previousQuestion === previousRecord?.nextQuestion,
+    founderChoice: Boolean(
+      choiceRecord &&
+        typeof choiceRecord.label === 'string' &&
+        choiceRecord.label.length > 0 &&
+        typeof choiceRecord.choiceId === 'string' &&
+        choiceRecord.answerOrigin === origin,
+    ),
+    founderSupplement: typeof payload.founderSupplement === 'string',
+    separationRules:
+      ruleText.includes('다시 출력하지 않는다') &&
+      ruleText.includes('검증된 사실이 아니다') &&
+      ruleText.includes('사실로 승격하지 않는다') &&
+      ruleText.includes('가설이 강화되었다고 쓰지 않는다'),
+    answerOrigin: originOk && payload.answerOriginNotice === followUpAnswerNotice(origin),
   };
 }
 
@@ -743,6 +895,7 @@ function reviewSystemPrompt(): string {
     'nextQuestion은 이 입력에서 창업자가 답해야 판단이 바뀌는 질문 하나다.',
     '질문 목록의 문장을 복사하지 않는다.',
     '모델 이름이나 공급사 이름은 쓰지 않는다.',
+    ...FOLLOW_UP_SEPARATION_RULES,
   ].join(' ');
 }
 
