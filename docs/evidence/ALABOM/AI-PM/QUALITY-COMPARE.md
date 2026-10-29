@@ -73,3 +73,31 @@ Preview 배포가 비교 기록을 만들기 전에 실패했다. 비공개 버�
 마지막 성공 Preview는 `bdbd792e`, deployment `7403599728`, 12:52 KST다. 그 커밋에는 이번 비교 코드가 없다. 로컬 `pnpm run build`는 비교 스크립트를 건너뛴 뒤 타입 검사까지 통과했다. Vercel이 수 초 안에 failure를 남긴 이유의 로그는 이 프로세스에서 열리지 않는다. 같은 실패를 반복 호출하지 않았다.
 
 제품 프롬프트는 `quality-2`다. 제품 2차 검토는 호출하지 않았다. Production 잠금 `0b465226516e1a4f3eb9ce2087f8bca2c2c091da`와 PR #209 미병합은 유지한다.
+
+## 2026-10-29 15:41 KST 실패 원인 분리
+
+실패 단계는 **BLOCKED**다. 확인했다고 적지 않는다. 모델 호출은 **NOT RUN**이다. 추적 식별자는 없다. 품질 비교와 회귀 A/B는 **NOT RUN**이다.
+
+연 로그는 없다.
+
+| 표면 | 결과 |
+|---|---|
+| GitHub deployment 설명 | `Deployment has failed — run this Vercel CLI command: npx vercel inspect <id> --logs`. 실패한 단계 이름은 없다 |
+| GitHub check | `Vercel Preview Comments`만 있고 빌드 로그는 없다 |
+| GitHub Actions | 실행 없음 |
+| Vercel API `v13/deployments` | HTTP 403. 인증 토큰 없음 |
+| 배포 URL | Vercel 로그인으로 이동. `x-vercel-error` 없음 |
+| 이 프로세스 | `VERCEL_TOKEN`, `VERCEL_AUTOMATION_BYPASS_SECRET`, `GPT_API_KEY` 없음 |
+
+배포 시각과 커밋 시각의 간격만 기록한다. 간격은 실패 단계가 아니다.
+
+| 커밋 | 커밋 UTC | failure UTC | 간격 |
+|---|---|---|---|
+| `a740cd2e` | 04:30:18 | 04:30:28 | 10초 |
+| `e7c8396c` | 04:51:57 | 04:52:04 | 7초 |
+| `0a05ddc5` | 05:08:18 | 05:08:25 | 7초 |
+| `2f7b2f15` | 05:25:48 | 05:25:56 | 8초 |
+
+네 배포 모두 KST로는 13:30, 13:52, 14:08, 14:25다. 비교 스크립트, 환경변수, 스토리지, TypeScript, Next.js 중 어디서 멈췄는지는 로그 없이 나누지 않는다.
+
+비공개 객체 `q1-preview-brewery-2026-10-29.json`은 2026-10-29 15:41 KST에도 없다. 저장된 원문은 없다. 원문과 추적 식별자를 만들지 않았다. 비교 호출은 다시 보내지 않았다. 실행 경로도 다른 환경으로 옮기지 않았다.
