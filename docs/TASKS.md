@@ -6,7 +6,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 1차 검토와 피드백
 
-**상태:** 1차 화면은 사업 본문과 검토 목적을 받고, 분석과 선택지 하나를 저장한다. 답변 저장은 모델 호출이 아니다. 후속 검토 라우트는 화면에서 호출하지 않는다. 저장 범위는 `user_id` + `project_id` + `input_sha`다. 1차 게이트는 단위 테스트로 통과시키지 않는다. 2026-10-29 12:10 KST에 S1–S8 평가 기준 `rubric-2`를 하니스에 고정했다. 실제 `gpt-4o-mini` 행렬은 NOT RUN이다. 사용자 화면의 이름은 AI PM이다. 1차 검토 엔진은 서버의 OpenAI 어댑터이고, 이 경로의 키 이름은 `GPT_API_KEY`다. `OPENAI_API_KEY`는 이 경로를 열지 않는다. 키가 없으면 `not_run`과 내부 사유 `gpt_api_key_missing`만 저장하고 검토 문장은 만들지 않는다. 실모델 원문·토큰·응답 시간은 NOT RUN이다.  
+**상태:** 1차 화면은 사업 본문과 검토 목적을 받고, 분석과 선택지 하나를 저장한다. 답변 저장은 모델 호출이 아니다. 후속 검토 라우트는 화면에서 호출하지 않는다. 저장 범위는 `user_id` + `project_id` + `input_sha`다. 1차 게이트는 단위 테스트로 통과시키지 않는다. 2026-10-29 12:10 KST에 S1–S8 평가 기준 `rubric-2`를 하니스에 고정했다. 2026-10-29 12:49 KST에 저장된 검토 11행을 읽었다. 측정 토큰 합 5,166은 사용량 화면 3,403 / 8 requests와 맞지 않는다. `quality-2`와 `quality-3` 원문은 NOT RUN이다. 사용자 화면의 이름은 AI PM이다. 1차 검토 엔진은 서버의 OpenAI 어댑터이고, 이 경로의 키 이름은 `GPT_API_KEY`다. `OPENAI_API_KEY`는 이 경로를 열지 않는다. 키가 없으면 `not_run`과 내부 사유 `gpt_api_key_missing`만 저장하고 검토 문장은 만들지 않는다. 실모델 원문·토큰·응답 시간은 NOT RUN이다.  
 **Branch:** `cursor/ai-pm-first-review-4b88`  
 **저장:** 서비스 롤이 있으면 검토 API는 `SupabaseAiPmReviewRepository`를 쓰고 성공 응답의 `storage.durable`은 true다. 없으면 sqlite이고 `durable`은 false다. 저장 실패는 `storage_unavailable`이며 성공으로 보고하지 않는다. 023은 미적용이다. 설정된 Supabase 호스트는 공개 DNS 레코드가 없다. `user_id`는 `auth.users` 삭제가 원문·검토·피드백을 함께 지우도록 `on delete cascade`다. 다른 사용자 행은 조회·피드백·추가 검증에서 막는다. `business_plans`는 이 저장소가 아니다.  
 **Production 잠금:** `0b465226` 유지. 병합하지 않음.  

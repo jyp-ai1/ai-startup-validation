@@ -929,3 +929,11 @@ CPO는 1차 게이트 FAIL을 유지했다. 이번 실행은 프롬프트를 바
 실패 A(협력 가능성 높다/낮다/미정)와 실패 B(원문에 없는 수수료·체험 참가비)의 저장 문장은 기계 규칙에서 FAIL이고, 다른 항목 PASS로 상쇄되지 않는다. 같은 실패가 `quality-2` 새 응답에서 사라졌는지는 **NOT RUN**이다. 기준 응답을 보고 프롬프트를 최소 수정하는 단계도 **NOT RUN**이다.
 
 제품 `POST /api/ai-pm-review/follow-up`과 피드백 저장은 호출하지 않았다. Production은 호출하지 않았다. PR #209는 병합하지 않는다. 1차 게이트는 **FAIL**이다. 기록은 `docs/evidence/ALABOM/AI-PM/QUALITY-SCENARIOS.md`다.
+
+## 35. 2026-10-29 12:49 KST 기존 호출 추적
+
+새 OpenAI 호출은 없다. `ai_pm_reviews` 11행을 읽었다. 측정 토큰이 있는 행 8개의 합은 5,166이다. 사용량 화면의 3,403 tokens / 8 requests와 맞는 부분집합은 없다. 그 화면의 8건은 미분류다.
+
+`quality-2` 코드 시각은 2026-10-29 11:58 KST다. 저장된 마지막 모델 응답은 09:37 KST `3be5715e`다. `quality-2` 응답과 `quality-3` 응답은 **NOT RUN**이다. 둘의 품질 비교도 **NOT RUN**이다. `3be5715e`는 기타 응답이며 실패 A와 실패 B가 모두 FAIL이다.
+
+작업 C와 D는 이 턴에 실행하지 않았다. 1차 게이트는 **FAIL**이다. 표는 `docs/evidence/ALABOM/AI-PM/USAGE-TRACE-2026-10-29.md`다.
