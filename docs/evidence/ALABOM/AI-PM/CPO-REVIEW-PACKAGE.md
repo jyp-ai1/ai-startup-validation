@@ -941,3 +941,7 @@ CPO는 1차 게이트 FAIL을 유지했다. 이번 실행은 프롬프트를 바
 ## 36. 2026-10-29 12:54 KST 비교 호출 고정
 
 `quality-2` 제품 요청과 `quality-3` 초안을 같은 양조장 입력으로 고정했다. 파일은 `docs/evidence/ALABOM/AI-PM/quality-2-3-compare.json`이다. 두 호출 모두 `not_run`이고 응답 원문은 없다. 이 프로세스에 `GPT_API_KEY`가 없다. 모델 품질 비교는 **NOT RUN**이다. 1차 게이트는 **FAIL**이다.
+
+## 37. 2026-10-29 12:59 KST 실호출 환경
+
+`executeQualityCompare()`를 이 클라우드 에이전트에서 다시 실행했다. 반환은 `not_run` 두 건이다. 비교 작업은 **BLOCKED**다. 부팅 시 주입된 비밀 이름에 `GPT_API_KEY`가 없다. 셀프호스트 워커는 0대이고 Vercel CLI 토큰은 없다. 제품 라우트로 대체하지 않았다. 제품 프롬프트는 `quality-2` 그대로다. 1차 게이트는 **FAIL**이다. 진단은 `docs/evidence/ALABOM/AI-PM/QUALITY-COMPARE.md`다.

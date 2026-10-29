@@ -21,3 +21,25 @@
 - `quality-3`를 제품 입력 예산에 넣으면 사용자 문장이 633자에서 218자로 잘린다. 비교 호출은 그 자르기를 쓰지 않고 전문을 보내도록 고정했다. 그 호출은 아직 실행되지 않았다.
 
 회귀 A/B와 사업성 비교는 원문이 없어 **NOT RUN**이다. 1차 게이트는 **FAIL**이다.
+
+## 2026-10-29 12:59 KST 실행 환경
+
+비교 작업 상태는 **BLOCKED**다. `executeQualityCompare()`를 이 프로세스에서 다시 실행했고, 반환은 두 칸 모두 `not_run`이다. 그 테스트가 통과한 것은 키 없을 때의 반환을 확인한 것이며 모델 품질 통과가 아니다.
+
+| 확인 | 결과 |
+|---|---|
+| 프로세스 | 클라우드 에이전트 `bc-e981acef-6442-4642-bef1-b0217b624b88` |
+| 환경 | `316b619d-a743-11f1-a7d1-d6b4613131ce`. 개인 환경. `environment.json`은 이 런에 노출되지 않음 |
+| 함수가 읽는 값 | `readGptApiKey()` → 프로세스 환경의 `GPT_API_KEY`만. 값은 없음 |
+| 부팅 시 주입된 비밀 이름 | `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
+| 주입 시점 | 에이전트 부팅. 이 목록에 `GPT_API_KEY`가 없다 |
+| 이 프로세스 재시작 | 환경에 저장되지 않은 비밀을 불러오지 않는다 |
+| `.env` | 없음 |
+| 네트워크 | 외부 호출 제한 없음. 막힌 이유는 키가 없는 것이다 |
+| 셀프호스트 워커 | 연결된 머신 0 |
+| Vercel CLI | 토큰 없음. Preview 환경 변수를 읽지 못함 |
+| 저장소 GitHub Actions | 워크플로 파일 없음 |
+
+Preview에 남아 있는 과거 OpenAI 호출은 제품 검토 라우트다. `executeQualityCompare()`가 아니고 `quality-3` 초안을 보내지 않는다. 그 경로로 대체하지 않았다.
+
+필요한 실행 환경은 위 클라우드 에이전트 환경에 `GPT_API_KEY`가 저장된 뒤 새로 부팅한 에이전트다. 그 프로세스에서 `pnpm --filter web test:ai-pm-compare`가 같은 함수를 실행한다. 제품 프롬프트와 제품 코드는 바꾸지 않았다.
