@@ -3385,6 +3385,83 @@ describe('AI PM first review', () => {
     expect(reflectionReviewsRepeat(recorded.report.calls[1]?.raw ?? '', recorded.report.calls[3]?.raw ?? '')).toBe(false);
   });
 
+  it('keeps the decision run unstored when the repair still misses the grounds', () => {
+    const recorded = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-decision-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as {
+      runId: string;
+      priorRunId: string;
+      gitSha: string;
+      startedAt: string;
+      finishedAt: string;
+      productFollowUpInvoked: boolean;
+      repairCount: number;
+      responseFormat: string;
+      usage: { promptTokens: number; completionTokens: number; totalTokens: number };
+      report: { calls: Array<{ promptVersion: string; raw: string; userPrompt: string; sameAsFirst?: boolean }> };
+    };
+    expect(recorded.runId).toBe('q1-incremental-reflection-decision-2026-10-30');
+    expect(recorded.priorRunId).toBe('q1-incremental-reflection-unified-2026-10-30');
+    expect(recorded.gitSha).toBe('710719abc418b9677e2362c5e9c871e5f4463322');
+    expect(recorded.startedAt).toBe('2026-10-30T10:30:13.770Z');
+    expect(recorded.finishedAt).toBe('2026-10-30T10:30:44.036Z');
+    expect(recorded.productFollowUpInvoked).toBe(false);
+    expect(recorded.responseFormat).toBe('json_schema');
+    expect(recorded.repairCount).toBe(2);
+    expect(recorded.usage).toEqual({ promptTokens: 18032, completionTokens: 3046, totalTokens: 21078 });
+    expect(recorded.report.calls).toHaveLength(4);
+    expect(recorded.report.calls[0]?.raw).toBe(recorded.report.calls[1]?.raw);
+    expect(recorded.report.calls[2]?.raw).not.toBe(recorded.report.calls[3]?.raw);
+    expect(recorded.report.calls[1]?.sameAsFirst).toBe(true);
+    expect(recorded.report.calls[3]?.sameAsFirst).toBe(false);
+    const score = (version: string) => {
+      const call = recorded.report.calls.find((item) => item.promptVersion === version);
+      const sent = JSON.parse(call?.userPrompt ?? '{}') as {
+        previousAnalysis: ReviewSections & { analysis: { nextVerification: string } };
+        founderChoice: { label: string };
+        founderSupplement: string;
+        answerOrigin: 'synthetic-test-data';
+      };
+      const previous = structuredClone(sent.previousAnalysis);
+      const before = JSON.stringify(previous);
+      const normalized = normalizeIncrementalSections(previous, call?.raw ?? '', {
+        previousJudgment: previous.judgment,
+        previousHypotheses: [...previous.hypotheses],
+        previousNextVerification: previous.analysis.nextVerification,
+        previousNextQuestion: previous.nextQuestion,
+        previousRevenueModel: previous.revenueModel,
+        choiceLabel: sent.founderChoice.label,
+        supplement: sent.founderSupplement,
+        answerOrigin: sent.answerOrigin,
+      });
+      expect(JSON.stringify(previous)).toBe(before);
+      expect(normalized.sections).toBeNull();
+      return normalized.errors;
+    };
+    expect(score('reflection-output-11:choice-only:repair')).toEqual([
+      'reason_insufficient:judgment',
+      'retention_sufficiency_missing:judgment',
+      'retention_evidence_missing:judgment',
+      'input_echo_only:judgment',
+      'reason_insufficient:hypotheses',
+      'retention_sufficiency_missing:hypotheses',
+      'input_echo_only:hypotheses',
+      'priority_plan_unfocused',
+    ]);
+    expect(score('reflection-output-11:brewery-claim:repair')).toEqual([
+      'retention_effect_missing:judgment',
+      'retention_hold_missing:judgment',
+      'retention_evidence_missing:judgment',
+      'retention_effect_missing:hypotheses',
+      'retention_hold_missing:hypotheses',
+      'retention_evidence_missing:hypotheses',
+    ]);
+    expect(reflectionReviewsRepeat(recorded.report.calls[1]?.raw ?? '', recorded.report.calls[3]?.raw ?? '')).toBe(false);
+  });
+
   it('accumulates a second synthetic answer on the updated analysis', () => {
     const choice = '체험 프로그램을 먼저 검증할 것';
     const originalQuestion = '체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?';
