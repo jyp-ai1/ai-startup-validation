@@ -50,7 +50,7 @@ export const FOLLOW_UP_BREWERY_VERIFICATION_PLAN =
   '체험 프로그램을 먼저 검증할 것. 먼저 체험 프로그램을 제공할 수 있는 양조장 후보를 찾고, 실제 협력 가능 여부와 체험 운영 조건을 확인한다. 협력 가능 여부가 확인되기 전까지는 확정된 공급처로 간주하지 않는다. 이후 잠재 고객 인터뷰와 체험 참여 의향을 확인하고, 가격 수용도와 예약 전환은 별도로 검증한다.';
 
 export const FOLLOW_UP_OUTPUT_CONTRACT_NOTE =
-  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes이다. changes 원소는 field, previous, current, decision, reason, evidenceStatus이다. 창업자 답변은 입력에 있으므로 원소마다 반복하지 않는다. 저장된 가설이 미확인이면 미확인으로 둔다. 수요가 있을 것이라는 문장을 넣으면 실패다. nextQuestion은 물음표로 끝나는 질문이다. 지시 문장을 질문으로 쓰면 실패다. revenueModel은 저장된 가설 문장 그대로다.';
+  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes이다. changes 원소는 field, previous, current, decision, reason, evidenceStatus이다. decision은 changed, retained, unresolved 중 하나다. retained와 unresolved의 reason은 답변을 검토한 결과다. 창업자 답변은 입력에 있으므로 원소마다 반복하지 않는다. 저장된 가설이 미확인이면 미확인으로 둔다. 수요가 있을 것이라는 문장을 넣으면 실패다. nextQuestion은 물음표로 끝나는 질문이다. 지시 문장을 질문으로 쓰면 실패다. revenueModel은 저장된 가설 문장 그대로다.';
 
 export const FOLLOW_UP_OUTPUT_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'] as const;
 
@@ -1192,6 +1192,54 @@ function explainsInsufficiency(reason: string): boolean {
   return /충분하지|바꾸지 않|확인된 사실이 아니|근거가 아니|부족|확정하지/.test(reason);
 }
 
+function explainsDeferral(reason: string): boolean {
+  return /유보|아직 판단|확인해야|증빙|필요/.test(reason);
+}
+
+function decisionMatches(decision: string, changed: boolean): boolean {
+  if (changed) return decision === 'changed';
+  return decision === 'retained' || decision === 'unresolved';
+}
+
+function assertsConfirmation(text: string): boolean {
+  return /확정되었|확정했다|계약을 맺|계약했다|확보했다|확보되었/.test(text);
+}
+
+function marksClaimAsUnverified(text: string): boolean {
+  return /주장|확인된 사실이 아니|증빙이 없|증빙은 없|계약서는 없|검증되지|미확인/.test(text);
+}
+
+function claimPromoted(text: string): boolean {
+  return assertsConfirmation(text) && !marksClaimAsUnverified(text);
+}
+
+function citesRetentionInput(reason: string, context: FollowUpOutputContext): boolean {
+  if (citesFollowUpInput(reason, context)) return true;
+  return absentInputMarkers(context.supplement).some((marker) => reason.includes(marker));
+}
+
+function retentionReviewErrors(field: string, reason: string, decision: string, context: FollowUpOutputContext): string[] {
+  if (field !== 'judgment' && field !== 'hypotheses') return [];
+  if (decision !== 'retained' && decision !== 'unresolved') return [];
+  const errors: string[] = [];
+  if (!citesRetentionInput(reason, context)) errors.push(`retention_input_missing:${field}`);
+  if (!/영향|바꾸|유지|유보|판단|가설|미확인/.test(reason)) errors.push(`retention_effect_missing:${field}`);
+  if (!/충분하지|부족|확인된 사실이 아니|근거가 아니|증빙이 없|증빙은 없|확정하지|검증되지/.test(reason)) {
+    errors.push(`retention_sufficiency_missing:${field}`);
+  }
+  if (decision === 'retained' && !/유지|바꾸지|그대로|두지|머문/.test(reason)) errors.push(`retention_hold_missing:${field}`);
+  if (decision === 'unresolved' && !/유보|아직/.test(reason)) errors.push(`unresolved_verification_missing:${field}`);
+  if (!/필요|확인해야|증빙|증거가|계약서/.test(reason)) errors.push(`retention_evidence_missing:${field}`);
+  return errors;
+}
+
+function supplementConflicts(previous: string, supplement: string): boolean {
+  if (!previous || !supplement) return false;
+  const deniesMarketing = /마케팅/.test(previous) && /마케팅[^。]{0,16}하지 않|마케팅 지원은 하지/.test(supplement);
+  const deniesExperience = /체험/.test(previous) && /체험[^。]{0,16}하지 않/.test(supplement);
+  return deniesMarketing || deniesExperience;
+}
+
 function asksAQuestion(text: string): boolean {
   const trimmed = text.trim();
   return /[?？]$/.test(trimmed) && !/질문한다|이 문장이다|적는다|실패다/.test(trimmed);
@@ -1349,11 +1397,29 @@ export function incrementalReflectionErrors(raw: string, context: FollowUpOutput
     if (!Object.prototype.hasOwnProperty.call(change, 'current') || current !== expectedUpdated[field]) errors.push(`follow_up_output_current:${field}`);
     const changed = current !== previous;
     if (!decision) errors.push(`decision_missing:${field}`);
-    else if (decision !== (changed ? 'changed' : 'retained')) errors.push(`decision_mismatch:${field}`);
+    else if (!decisionMatches(decision, changed)) errors.push(`decision_mismatch:${field}`);
     if (!reason) errors.push(`reason_missing:${field}`);
     else if (reasonIsGeneric(reason)) errors.push(`reason_generic:${field}`);
-    else if (!changed && !explainsInsufficiency(reason)) errors.push(`reason_insufficient:${field}`);
+    else if (!changed && decision === 'unresolved' && !explainsDeferral(reason)) errors.push(`unresolved_verification_missing:${field}`);
+    else if (!changed && decision !== 'unresolved' && !explainsInsufficiency(reason)) errors.push(`reason_insufficient:${field}`);
     else if (changed && !linksIncrementalAnswer(reason, current, context)) errors.push(`reason_untraced:${field}`);
+    if (reason) errors.push(...retentionReviewErrors(field, reason, decision, context));
+    if (assertsConfirmation(context.supplement) && evidenceStatus === 'confirmed-fact') errors.push(`claim_promoted_to_fact:${field}`);
+    if (assertsConfirmation(context.supplement) && (field === 'judgment' || field === 'hypotheses') && claimPromoted(current)) {
+      errors.push(`claim_promoted_to_fact:${field}`);
+    }
+    if (assertsConfirmation(context.supplement) && (field === 'judgment' || field === 'hypotheses') && reason && !marksClaimAsUnverified(reason)) {
+      errors.push(`claim_unmarked:${field}`);
+    }
+    if (
+      field === 'judgment' &&
+      !changed &&
+      decision === 'retained' &&
+      supplementConflicts(context.previousJudgment, context.supplement) &&
+      !/충돌|반대로|하지 않/.test(reason)
+    ) {
+      errors.push('conflict_unreviewed:judgment');
+    }
     if (field === 'judgment' && context.choiceLabel && reason && choiceOnlyGrounds(reason, context.choiceLabel)) {
       errors.push('reason_choice_copied:judgment');
     }
@@ -1686,9 +1752,12 @@ function reviewSystemPrompt(): string {
     '원소 키는 field, previous, current, decision, reason, evidenceStatus 이다. founderAnswer와 choiceTrace는 넣지 않는다. 코드가 창업자 답변을 보존한다.',
     'previous는 저장된 값 그대로다. nextQuestion.previous가 저장된 질문과 다르면 실패다.',
     'current는 그 필드의 반환값과 같다. hypotheses의 previous와 current는 항목을 " / "로 잇는다.',
-    'decision은 current가 previous와 같으면 retained, 다르면 changed 이다.',
+    'decision은 changed, retained, unresolved 중 하나다. current가 previous와 다르면 changed다. 값이 같고 답변을 검토해 유지하면 retained다. 값이 같고 근거가 부족해 판단을 유보하면 unresolved다.',
     'reason이 비어 있으면 실패다. retained여도 비어 있으면 실패다. 새 정보가 없어 유지, 바꾸지 않은 이유, 이전과 동일한 상태라고만 쓰면 실패다.',
     'reason은 그 답변이 그 필드에 미치는 영향을 설명한다. 선택 문장과 추가 설명을 원소마다 복사하지 않는다.',
+    'judgment와 hypotheses가 retained 또는 unresolved이면 reason에 다섯 가지를 적는다. 답변이 새로 말한 정보, 그 정보가 기존 판단이나 가설에 미치는 영향, 근거가 충분한지, 유지하거나 유보하는 이유, 바꾸려면 필요한 증빙이다.',
+    '확정, 계약, 확보는 창업자의 주장일 수 있다. 계약서나 입금 기록이 없으면 확인된 사실이 아니다. 주장이라고 적고 evidenceStatus는 unverified-input이다. 그 주장을 무시하지 않는다.',
+    '답변이 기존 판단과 충돌하면 검토 없이 retained하지 않는다. 판단을 바꾸거나 unresolved로 충돌을 적는다.',
     'retained인 reason은 추가 설명이 왜 그 필드를 바꾸기에 부족한지 적는다. 네 reason은 서로 다르다.',
     'judgment의 reason에는 판단, hypotheses에는 가설 또는 미확인, nextVerification에는 검증, nextQuestion에는 질문이라는 말을 넣는다.',
     '판단의 reason이 선택 문장뿐이면 실패다. 선택은 그 계획이 옳다는 근거가 아니다.',

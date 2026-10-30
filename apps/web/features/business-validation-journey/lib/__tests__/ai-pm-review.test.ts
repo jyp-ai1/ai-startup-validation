@@ -87,9 +87,9 @@ function validUngatedFollowUpRaw(previous: ReviewSections, supplement = '양조�
     const same = updated === previousValue;
     const reason =
       field === 'judgment'
-        ? `${supplement} 이 말은 확인된 사실이 아니어서 저장된 판단을 바꾸지 않는다.`
+        ? `${supplement} 이 추가 설명은 확인된 사실이 아니어서 저장된 판단에 영향을 주지 못한다. 근거가 충분하지 않아 판단을 바꾸지 않고 유지한다. 판단을 바꾸려면 계약서가 필요하다.`
         : field === 'hypotheses'
-          ? `${supplement} 이 말은 가설을 바꿀 근거가 아니어서 미확인으로 둔다.`
+          ? `${supplement} 이 추가 설명은 가설을 확정하지 못한다. 근거가 부족해 미확인으로 유지한다. 가설을 바꾸려면 예약 확인이 필요하다.`
           : field === 'nextVerification'
             ? `${supplement} 이 말은 검증 문장을 바꾸기에 충분하지 않다.`
             : `${supplement} 이 말은 질문을 바꾸기에 충분하지 않다.`;
@@ -116,6 +116,59 @@ function validUngatedFollowUpRaw(previous: ReviewSections, supplement = '양조�
       change('nextQuestion', previous.nextQuestion, previous.nextQuestion),
     ],
   });
+}
+
+function reflectionCase(input: {
+  previous: ReviewSections;
+  supplement: string;
+  choiceLabel?: string | null;
+  judgment?: string;
+  hypotheses?: string[];
+  nextVerification?: string;
+  nextQuestion?: string;
+  reasons: Record<string, string>;
+  decisions?: Record<string, string>;
+  evidenceStatus?: string;
+}): { raw: string; context: Parameters<typeof incrementalReflectionErrors>[1] } {
+  const judgment = input.judgment ?? input.previous.judgment;
+  const hypotheses = input.hypotheses ?? input.previous.hypotheses;
+  const nextVerification = input.nextVerification ?? '추가 설명이 확인되기 전에는 기존 질문을 다시 확인한다.';
+  const nextQuestion = input.nextQuestion ?? input.previous.nextQuestion;
+  const line = (values: string[]) => values.join(' / ');
+  const previousVerification = input.previous.analysis?.nextVerification ?? '';
+  const fields = [
+    ['judgment', input.previous.judgment, judgment],
+    ['hypotheses', line(input.previous.hypotheses), line(hypotheses)],
+    ['nextVerification', previousVerification, nextVerification],
+    ['nextQuestion', input.previous.nextQuestion, nextQuestion],
+  ] as const;
+  return {
+    raw: JSON.stringify({
+      judgment,
+      hypotheses,
+      nextVerification,
+      nextQuestion,
+      revenueModel: input.previous.revenueModel,
+      changes: fields.map(([field, previousValue, current]) => ({
+        field,
+        previous: previousValue,
+        current,
+        decision: input.decisions?.[field] ?? (current === previousValue ? 'retained' : 'changed'),
+        reason: input.reasons[field],
+        evidenceStatus: input.evidenceStatus ?? 'unverified-input',
+      })),
+    }),
+    context: {
+      previousJudgment: input.previous.judgment,
+      previousHypotheses: [...input.previous.hypotheses],
+      previousNextVerification: previousVerification,
+      previousNextQuestion: input.previous.nextQuestion,
+      previousRevenueModel: input.previous.revenueModel,
+      choiceLabel: input.choiceLabel ?? null,
+      supplement: input.supplement,
+      answerOrigin: 'synthetic-test-data',
+    },
+  };
 }
 
 function reply(content: string, extra?: Partial<ChatResponse>): ChatResponse {
@@ -1890,8 +1943,16 @@ describe('AI PM first review', () => {
     const raw = recorded.report.calls[0]?.raw ?? '';
     expect(parseSections(raw, '원문')).toBeNull();
     expect(followUpOutputContractErrors(raw, context)).toContain('founder_answer_choice:hypotheses');
-    const normalized = normalizeIncrementalSections(previous, raw, context);
-    expect(incrementalReflectionErrors(raw, context)).toEqual([]);
+    expect(incrementalReflectionErrors(raw, context)).toEqual([
+      'retention_evidence_missing:judgment',
+      'retention_evidence_missing:hypotheses',
+    ]);
+    const repaired = JSON.parse(raw) as { changes: Array<{ field: string; reason: string }> };
+    for (const change of repaired.changes) {
+      if (change.field === 'judgment') change.reason += ' 판단을 바꾸려면 계약서가 필요하다.';
+      if (change.field === 'hypotheses') change.reason += ' 가설을 바꾸려면 예약 확인이 필요하다.';
+    }
+    const normalized = normalizeIncrementalSections(previous, JSON.stringify(repaired), context);
     expect(normalized.errors).toEqual([]);
     expect(JSON.stringify(previous)).toBe(before);
     expect(normalized.sections?.customer).toBe(previous.customer);
@@ -1913,6 +1974,129 @@ describe('AI PM first review', () => {
     const missing = normalizeIncrementalSections(previous, JSON.stringify({ judgment: previous.judgment }), context);
     expect(missing.sections).toBeNull();
     expect(missing.errors.length).toBeGreaterThan(0);
+  });
+
+  it('changes a hypothesis when the synthetic answer is enough to reorder it', () => {
+    const supplement = '체험 프로그램 검증을 먼저 하겠다고 정했다. 수수료 가설은 뒤로 둔다.';
+    const reviewed = reflectionCase({
+      previous: sections(),
+      supplement,
+      hypotheses: ['가설: 체험 프로그램 검증이 수수료 검증보다 앞선다'],
+      reasons: {
+        judgment: `${supplement} 이 말은 순서에 대한 계획이라 확인된 사실이 아니다. 저장된 판단에 미칠 영향이 충분하지 않아 판단을 바꾸지 않고 유지한다. 판단을 바꾸려면 계약서가 필요하다.`,
+        hypotheses: `${supplement} 이 계획이 가설의 순서를 바꾼다. 아직 가설이며 확인된 사실은 아니다.`,
+        nextVerification: `${supplement} 이 말은 검증 순서를 아직 실행된 사실로 만들지 않는다.`,
+        nextQuestion: `${supplement} 이 말은 질문을 바꾸기에 충분하지 않다. 질문을 바꾸려면 예약 확인이 필요하다.`,
+      },
+    });
+    const normalized = normalizeIncrementalSections(sections(), reviewed.raw, reviewed.context);
+    expect(normalized.errors).toEqual([]);
+    expect(normalized.sections?.hypotheses).toEqual(['가설: 체험 프로그램 검증이 수수료 검증보다 앞선다']);
+    expect(normalized.sections?.judgment).toBe(sections().judgment);
+    expect(normalized.sections?.customer).toBe(sections().customer);
+  });
+
+  it('keeps the judgment when the synthetic answer adds only part of the evidence', () => {
+    const supplement = '예약 고객, 가격, 계약, 확정된 양조장은 없다.';
+    const reviewed = reflectionCase({
+      previous: sections(),
+      supplement,
+      reasons: {
+        judgment: `${supplement} 이 없음은 확인된 사실이 아니어서 저장된 판단에 영향을 주지 못한다. 근거가 충분하지 않아 판단을 바꾸지 않고 유지한다. 판단을 바꾸려면 계약서가 필요하다.`,
+        hypotheses: `${supplement} 이 없음은 가설을 확정하지 못한다. 근거가 부족해 미확인으로 유지한다. 가설을 바꾸려면 예약 확인이 필요하다.`,
+        nextVerification: `${supplement} 이 없음 때문에 검증은 양조장 후보 확인에 머문다.`,
+        nextQuestion: '양조장 후보가 있는지가 남은 질문이다. 예약 고객, 가격, 계약, 확정된 양조장은 없다.',
+      },
+      nextQuestion: '양조장 후보가 있는가?',
+    });
+    const normalized = normalizeIncrementalSections(sections(), reviewed.raw, reviewed.context);
+    expect(normalized.errors).toEqual([]);
+    expect(normalized.sections?.judgment).toBe(sections().judgment);
+    expect(normalized.sections?.nextQuestion).toBe('양조장 후보가 있는가?');
+    expect(JSON.parse(reviewed.raw).changes.find((change: { field: string }) => change.field === 'judgment').decision).toBe('retained');
+  });
+
+  it('defers the judgment when the synthetic answer is not enough to review it', () => {
+    const supplement = '아직은 잘 모르겠다고만 했다.';
+    const reviewed = reflectionCase({
+      previous: sections(),
+      supplement,
+      decisions: { judgment: 'unresolved', hypotheses: 'unresolved' },
+      reasons: {
+        judgment: `${supplement} 새 정보가 부족해 저장된 판단에 미칠 영향을 아직 판단할 수 없다. 판단을 유보한다. 바꾸려면 계약서 증빙이 필요하다.`,
+        hypotheses: `${supplement} 가설을 확정하지 못한다. 근거가 부족해 가설을 유보한다. 예약 확인이 필요하다.`,
+        nextVerification: `${supplement} 이 말은 검증 문장을 바꾸기에 충분하지 않다.`,
+        nextQuestion: `${supplement} 이 말은 질문을 바꾸기에 충분하지 않다.`,
+      },
+    });
+    const normalized = normalizeIncrementalSections(sections(), reviewed.raw, reviewed.context);
+    expect(normalized.errors).toEqual([]);
+    expect(normalized.sections?.judgment).toBe(sections().judgment);
+    expect(normalized.sections?.hypotheses).toEqual(sections().hypotheses);
+  });
+
+  it('keeps a specific founder claim unverified when no document is supplied', () => {
+    const supplement = '양조장과 계약이 확정되었다고 말한다. 계약서와 입금 증빙은 없다.';
+    const held = reflectionCase({
+      previous: sections(),
+      supplement,
+      reasons: {
+        judgment: `${supplement} 이것은 창업자의 주장이고 증빙은 없다. 확인된 사실이 아니어서 저장된 판단에 미칠 영향이 부족하다. 판단을 유지한다. 바꾸려면 계약서가 필요하다.`,
+        hypotheses: `${supplement} 이 주장은 가설을 확정하지 못한다. 증빙은 없어 미확인으로 유지한다. 예약 확인이 필요하다.`,
+        nextVerification: `${supplement} 계약 주장은 검증이 끝나지 않았다는 뜻이다.`,
+        nextQuestion: `${supplement} 증빙이 없어 계약서 유무를 묻는다.`,
+      },
+      nextQuestion: '계약서가 있는가?',
+    });
+    expect(normalizeIncrementalSections(sections(), held.raw, held.context).errors).toEqual([]);
+    const promoted = reflectionCase({
+      previous: sections(),
+      supplement,
+      judgment: '양조장과 계약이 확정되었다.',
+      reasons: held.raw ? JSON.parse(held.raw).changes.reduce((acc: Record<string, string>, change: { field: string; reason: string }) => ({ ...acc, [change.field]: change.reason }), {}) : {},
+    });
+    expect(incrementalReflectionErrors(promoted.raw, promoted.context)).toContain('claim_promoted_to_fact:judgment');
+    const confirmed = reflectionCase({
+      previous: sections(),
+      supplement,
+      evidenceStatus: 'confirmed-fact',
+      reasons: JSON.parse(held.raw).changes.reduce(
+        (acc: Record<string, string>, change: { field: string; reason: string }) => ({ ...acc, [change.field]: change.reason }),
+        {},
+      ),
+    });
+    expect(incrementalReflectionErrors(confirmed.raw, confirmed.context)).toContain('claim_promoted_to_fact:judgment');
+  });
+
+  it('does not keep a judgment that the synthetic answer contradicts', () => {
+    const previous = { ...sections(), judgment: '마케팅 지원이 사업의 핵심이다.' };
+    const supplement = '마케팅 지원은 하지 않고 체험만 진행한다.';
+    const silent = reflectionCase({
+      previous,
+      supplement,
+      reasons: {
+        judgment: '현재 판단을 유지한다. 근거가 부족하고 계약서가 필요하다. 확인된 사실이 아니다.',
+        hypotheses: `${supplement} 이 말은 가설을 확정하지 못한다. 근거가 부족해 미확인으로 유지한다. 예약 확인이 필요하다.`,
+        nextVerification: `${supplement} 이 말은 검증 문장을 바꾸기에 충분하지 않다.`,
+        nextQuestion: `${supplement} 이 말은 질문을 바꾸기에 충분하지 않다.`,
+      },
+    });
+    expect(incrementalReflectionErrors(silent.raw, silent.context)).toContain('conflict_unreviewed:judgment');
+    const revised = reflectionCase({
+      previous,
+      supplement,
+      judgment: '체험만 진행하겠다는 주장이다. 확인된 사실은 아니다.',
+      reasons: {
+        judgment: `${supplement} 기존 마케팅 판단과 충돌한다. 이것은 주장이고 확인된 사실이 아니다.`,
+        hypotheses: `${supplement} 이 말은 가설을 확정하지 못한다. 근거가 부족해 미확인으로 유지한다. 예약 확인이 필요하다.`,
+        nextVerification: `${supplement} 이 말은 검증 문장을 바꾸기에 충분하지 않다.`,
+        nextQuestion: `${supplement} 이 말은 질문을 바꾸기에 충분하지 않다.`,
+      },
+    });
+    const normalized = normalizeIncrementalSections(previous, revised.raw, revised.context);
+    expect(normalized.errors).toEqual([]);
+    expect(normalized.sections?.judgment).toBe('체험만 진행하겠다는 주장이다. 확인된 사실은 아니다.');
+    expect(normalized.sections?.customer).toBe(previous.customer);
   });
 
   it('keeps the normalize run unstored when a retained reason does not explain the answer', () => {
@@ -1969,7 +2153,9 @@ describe('AI PM first review', () => {
       supplement: sent.founderSupplement,
       answerOrigin: sent.answerOrigin,
     });
-    expect(normalized.errors).toEqual(['reason_insufficient:judgment', 'reason_insufficient:hypotheses']);
+    expect(normalized.errors).toEqual(
+      expect.arrayContaining(['reason_insufficient:judgment', 'reason_insufficient:hypotheses']),
+    );
     expect(normalized.sections).toBeNull();
   });
 
