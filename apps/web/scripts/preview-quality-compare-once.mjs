@@ -2,6 +2,7 @@
  * One incremental-reflection call of the frozen product follow-up request.
  * The founder answer in the fixture is synthetic test data.
  * Production builds return immediately. The product second-review route is not called.
+ * The input-trace call q1-incremental-reflection-input-trace-2026-10-30 stays RECORDED.
  * The review-fields call q1-incremental-reflection-review-fields-2026-10-30 stays RECORDED.
  * The reason-quality call q1-incremental-reflection-reason-quality-2026-10-30 stays RECORDED.
  * The normalize call q1-incremental-reflection-normalize-2026-10-30 stays RECORDED.
@@ -16,14 +17,14 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-input-trace-2026-10-30';
-export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-review-fields-2026-10-30';
+export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-choice-repair-2026-10-30';
+export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-input-trace-2026-10-30';
 export const PREVIEW_COMPARE_BUCKET = 'ai-pm-quality-compare';
 export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(scriptDir, '..');
-const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-input-trace-request.json');
+const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-choice-repair-request.json');
 
 export function shouldRunPreviewQualityCompare(env) {
   return env.VERCEL_ENV === 'preview' && Boolean(env.VERCEL_GIT_COMMIT_REF) && env.VERCEL_GIT_COMMIT_REF !== 'main';
@@ -205,6 +206,24 @@ export function reviewFieldGaps(raw, userPrompt) {
     errors.push('plan_not_from_input');
   }
   if (experience && claim && !/계약서|증빙|입금/.test(nextVerification)) errors.push('claim_verification_missing');
+  const judgment = typeof parsed.judgment === 'string' ? parsed.judgment : '';
+  if (choice && (compactText(judgment) === compactText(choice) || judgment.includes(choice))) errors.push('choice_promoted_to_judgment');
+  const previous = sent.previousAnalysis && typeof sent.previousAnalysis === 'object' ? sent.previousAnalysis : {};
+  const previousHypotheses = Array.isArray(previous.hypotheses) ? previous.hypotheses : [];
+  const nextHypotheses = Array.isArray(parsed.hypotheses) ? parsed.hypotheses.filter((item) => typeof item === 'string') : [];
+  const previousLine = previousHypotheses.join(' / ');
+  const nextLine = nextHypotheses.join(' / ');
+  if (!supplement.trim() && (previousLine === '미확인' || previousLine === '') && nextLine && nextLine !== previousLine) {
+    errors.push('hypothesis_unconfirmed_replaced');
+  }
+  if (/수요/.test(nextLine) && /있을|있다|존재|예상/.test(nextLine)) errors.push('hypothesis_demand_ungrounded');
+  if (experience && choice && !nextVerification.includes(choice)) errors.push('next_verification_choice_absent');
+  for (const field of ['judgment', 'hypotheses']) {
+    const change = changes.find((item) => item && item.field === field);
+    if (change && change.decision === 'changed' && change.sufficiencyAssessment === 'insufficient') {
+      errors.push(`sufficiency_conflict:${field}`);
+    }
+  }
   return [...new Set(errors)];
 }
 
@@ -224,10 +243,15 @@ export function repairMessage(errors) {
         String(error).startsWith('input_echo_only') ||
         String(error).startsWith('claim_unlinked') ||
         error === 'plan_not_from_input' ||
-        error === 'claim_verification_missing',
+        error === 'claim_verification_missing' ||
+        error === 'choice_promoted_to_judgment' ||
+        error === 'hypothesis_unconfirmed_replaced' ||
+        error === 'hypothesis_demand_ungrounded' ||
+        error === 'next_verification_choice_absent' ||
+        String(error).startsWith('sufficiency_conflict'),
     )
   ) {
-    lines.push('founderChoice와 previousJudgment의 관계를 적어라. 상태 문장이나 선택 문장만 반복하지 마라. 입력에 없는 확정을 만들지 마라.');
+    lines.push('founderChoice와 previousJudgment의 관계를 적어라. 상태 문장이나 선택 문장만 반복하지 마라. 입력에 없는 확정을 만들지 마라. 선택 문장을 판단 값으로 옮기지 마라. 미확인 가설에 수요가 있다는 문장을 넣지 마라.');
   }
   lines.push('같은 스키마의 JSON만 반환하라.');
   return lines.join(' ');

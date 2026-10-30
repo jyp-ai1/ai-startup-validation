@@ -2066,10 +2066,15 @@ export function followUpRepairMessage(errors: string[]): string {
         error === 'plan_not_from_input' ||
         error === 'question_not_from_input' ||
         error === 'claim_verification_missing' ||
-        error === 'input_invented',
+        error === 'input_invented' ||
+        error === 'choice_promoted_to_judgment' ||
+        error === 'hypothesis_unconfirmed_replaced' ||
+        error === 'hypothesis_demand_ungrounded' ||
+        error === 'next_verification_choice_absent' ||
+        error.startsWith('sufficiency_conflict'),
     )
   ) {
-    lines.push('founderChoice와 previousJudgment의 관계를 적어라. 상태 문장이나 선택 문장만 반복하지 마라. 입력에 없는 확정을 만들지 마라.');
+    lines.push('founderChoice와 previousJudgment의 관계를 적어라. 상태 문장이나 선택 문장만 반복하지 마라. 입력에 없는 확정을 만들지 마라. 선택 문장을 판단 값으로 옮기지 마라. 미확인 가설에 수요가 있다는 문장을 넣지 마라.');
   }
   lines.push('같은 스키마의 JSON만 반환하라.');
   return lines.join(' ');

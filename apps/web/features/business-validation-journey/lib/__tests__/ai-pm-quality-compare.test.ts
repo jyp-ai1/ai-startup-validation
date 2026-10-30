@@ -169,12 +169,15 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-input-trace-2026-10-30');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-choice-repair-2026-10-30');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('incremental-reflection-input-trace-request.json');
+    expect(script).toContain('incremental-reflection-choice-repair-request.json');
+    expect(script).toContain('q1-incremental-reflection-input-trace-2026-10-30');
+    expect(script).not.toContain('q1-incremental-reflection-input-trace-2026-10-30.json');
+    expect(script).not.toContain('incremental-reflection-input-trace-request.json');
     expect(script).toContain('q1-incremental-reflection-review-fields-2026-10-30');
     expect(script).not.toContain('q1-incremental-reflection-review-fields-2026-10-30.json');
     expect(script).not.toContain('incremental-reflection-review-fields-request.json');
@@ -1322,6 +1325,13 @@ describe('quality-2 and quality-3 compare requests', () => {
     const fixtureUrl = new URL('../incremental-reflection-input-trace-request.json', import.meta.url);
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(fixtureUrl, `${JSON.stringify(record, null, 2)}\n`);
     expect(JSON.parse(readFileSync(fixtureUrl, 'utf8'))).toEqual(record);
+    const repairFixture = JSON.parse(
+      readFileSync(new URL('../incremental-reflection-choice-repair-request.json', import.meta.url), 'utf8'),
+    ) as { priorRunId: string; requests: Array<{ inputId: string; request: unknown }> };
+    expect(repairFixture.priorRunId).toBe('q1-incremental-reflection-input-trace-2026-10-30');
+    expect(repairFixture.requests).toHaveLength(1);
+    expect(repairFixture.requests[0]?.inputId).toBe('choice-only');
+    expect(repairFixture.requests[0]?.request).toEqual(record.requests[0]?.request);
   });
 });
 
