@@ -2995,6 +2995,86 @@ describe('AI PM first review', () => {
     expect(reflectionReviewsRepeat(traced.call?.raw ?? '', claim.call?.raw ?? '')).toBe(false);
   });
 
+  it('keeps the meaning-trace run unstored when the repair still misses the input', () => {
+    const recorded = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-meaning-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as {
+      runId: string;
+      priorRunId: string;
+      gitSha: string;
+      startedAt: string;
+      finishedAt: string;
+      productFollowUpInvoked: boolean;
+      repairCount: number;
+      responseFormat: string;
+      usage: { promptTokens: number; completionTokens: number; totalTokens: number };
+      report: { calls: Array<{ promptVersion: string; raw: string; userPrompt: string; model: string }> };
+    };
+    expect(recorded.runId).toBe('q1-incremental-reflection-meaning-2026-10-30');
+    expect(recorded.priorRunId).toBe('q1-incremental-reflection-choice-repair-2026-10-30');
+    expect(recorded.gitSha).toBe('feccf08415f288684945d5c5180a8214a058daef');
+    expect(recorded.startedAt).toBe('2026-10-30T09:04:33.353Z');
+    expect(recorded.finishedAt).toBe('2026-10-30T09:05:09.623Z');
+    expect(recorded.productFollowUpInvoked).toBe(false);
+    expect(recorded.responseFormat).toBe('json_schema');
+    expect(recorded.repairCount).toBe(2);
+    expect(recorded.usage).toEqual({ promptTokens: 17376, completionTokens: 3492, totalTokens: 20868 });
+    expect(recorded.report.calls).toHaveLength(4);
+    expect(recorded.report.calls[0]?.raw).not.toBe(recorded.report.calls[1]?.raw);
+    expect(recorded.report.calls[2]?.raw).not.toBe(recorded.report.calls[3]?.raw);
+    const score = (version: string) => {
+      const call = recorded.report.calls.find((item) => item.promptVersion === version);
+      const sent = JSON.parse(call?.userPrompt ?? '{}') as {
+        previousAnalysis: ReviewSections & { analysis: { nextVerification: string } };
+        founderChoice: { label: string };
+        founderSupplement: string;
+        answerOrigin: 'synthetic-test-data';
+      };
+      const previous = structuredClone(sent.previousAnalysis);
+      const before = JSON.stringify(previous);
+      const normalized = normalizeIncrementalSections(previous, call?.raw ?? '', {
+        previousJudgment: previous.judgment,
+        previousHypotheses: [...previous.hypotheses],
+        previousNextVerification: previous.analysis.nextVerification,
+        previousNextQuestion: previous.nextQuestion,
+        previousRevenueModel: previous.revenueModel,
+        choiceLabel: sent.founderChoice.label,
+        supplement: sent.founderSupplement,
+        answerOrigin: sent.answerOrigin,
+      });
+      expect(JSON.stringify(previous)).toBe(before);
+      expect(normalized.sections).toBeNull();
+      return normalized.errors;
+    };
+    expect(score('reflection-output-11:choice-only:repair')).toEqual([
+      'retention_hold_missing:judgment',
+      'retention_evidence_missing:judgment',
+      'status_repeat:impactAssessment:judgment',
+      'input_echo_only:judgment',
+      'trace_relation_missing:judgment',
+      'reason_insufficient:hypotheses',
+      'retention_sufficiency_missing:hypotheses',
+      'retention_hold_missing:hypotheses',
+      'retention_evidence_missing:hypotheses',
+      'review_hold_generic:impactAssessment:hypotheses',
+      'review_hold_generic:holdReason:hypotheses',
+      'input_echo_only:hypotheses',
+      'trace_relation_missing:hypotheses',
+    ]);
+    expect(score('reflection-output-11:brewery-claim:repair')).toEqual([
+      'retention_input_missing:hypotheses',
+      'retention_hold_missing:hypotheses',
+      'retention_evidence_missing:hypotheses',
+      'decision_mismatch:nextVerification',
+      'follow_up_output_previous:nextQuestion',
+      'claim_verification_missing',
+    ]);
+    expect(reflectionReviewsRepeat(recorded.report.calls[1]?.raw ?? '', recorded.report.calls[3]?.raw ?? '')).toBe(false);
+  });
+
   it('stores the child from changes, restores the same sections, and ignores a duplicate submit', async () => {
     const store = openAiPmReviewStore(storePath());
     const chat = async (request: ChatRequest) => {
