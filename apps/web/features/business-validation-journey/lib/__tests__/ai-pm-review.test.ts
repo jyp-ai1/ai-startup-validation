@@ -2491,6 +2491,100 @@ describe('AI PM first review', () => {
     failedStore.close();
   });
 
+  it('keeps the review-fields run unstored when the model does not review the supplement', () => {
+    const recorded = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-review-fields-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as {
+      runId: string;
+      priorRunId: string;
+      gitSha: string;
+      startedAt: string;
+      finishedAt: string;
+      productFollowUpInvoked: boolean;
+      responseFormat: string;
+      repairCount: number;
+      usage: { promptTokens: number; completionTokens: number; totalTokens: number };
+      report: {
+        calls: Array<{
+          promptVersion: string;
+          model: string;
+          promptTokens: number;
+          completionTokens: number;
+          totalTokens: number;
+          raw: string;
+          userPrompt: string;
+        }>;
+      };
+    };
+    expect(recorded.runId).toBe('q1-incremental-reflection-review-fields-2026-10-30');
+    expect(recorded.priorRunId).toBe('q1-incremental-reflection-reason-quality-2026-10-30');
+    expect(recorded.gitSha).toBe('98c492d4b265c5a2e0ea5418e99525173eef8e67');
+    expect(recorded.startedAt).toBe('2026-10-30T08:09:03.613Z');
+    expect(recorded.finishedAt).toBe('2026-10-30T08:09:20.215Z');
+    expect(recorded.productFollowUpInvoked).toBe(false);
+    expect(recorded.responseFormat).toBe('json_schema');
+    expect(recorded.repairCount).toBe(1);
+    expect(recorded.report.calls).toHaveLength(2);
+    expect(recorded.usage).toEqual({ promptTokens: 8026, completionTokens: 1490, totalTokens: 9516 });
+    expect(recorded.report.calls[0]?.promptTokens).toBe(3535);
+    expect(recorded.report.calls[0]?.completionTokens).toBe(745);
+    expect(recorded.report.calls[0]?.totalTokens).toBe(4280);
+    expect(recorded.report.calls[1]?.promptTokens).toBe(4491);
+    expect(recorded.report.calls[1]?.completionTokens).toBe(745);
+    expect(recorded.report.calls[1]?.totalTokens).toBe(5236);
+    expect(recorded.report.calls.every((call) => call.model === 'gpt-4o-mini-2024-07-18')).toBe(true);
+    const sent = JSON.parse(recorded.report.calls[0]?.userPrompt ?? '{}') as {
+      previousAnalysis: ReviewSections & { analysis: { nextVerification: string } };
+      founderChoice: { label: string };
+      founderSupplement: string;
+      answerOrigin: 'synthetic-test-data';
+    };
+    expect(sent.founderChoice.label).toBe('체험 프로그램을 먼저 검증할 것');
+    expect(sent.founderSupplement).toContain('확정된 양조장');
+    const before = JSON.stringify(sent.previousAnalysis);
+    const context = {
+      previousJudgment: sent.previousAnalysis.judgment,
+      previousHypotheses: sent.previousAnalysis.hypotheses,
+      previousNextVerification: sent.previousAnalysis.analysis.nextVerification,
+      previousNextQuestion: sent.previousAnalysis.nextQuestion,
+      previousRevenueModel: sent.previousAnalysis.revenueModel,
+      choiceLabel: sent.founderChoice.label,
+      supplement: sent.founderSupplement,
+      answerOrigin: sent.answerOrigin,
+    };
+    const finalRaw = recorded.report.calls[1]?.raw ?? '';
+    const parsed = JSON.parse(finalRaw) as {
+      hypotheses: string[];
+      nextQuestion: string;
+      changes: Array<Record<string, string>>;
+    };
+    const judgment = parsed.changes.find((change) => change.field === 'judgment');
+    const hypotheses = parsed.changes.find((change) => change.field === 'hypotheses');
+    expect(parsed.hypotheses).toEqual(['미확인']);
+    expect(parsed.nextQuestion).toBe('양조장 후보가 있는가?');
+    expect(judgment?.inputConsidered).toBe('체험 프로그램을 먼저 검증할 것');
+    expect(judgment?.inputConsidered).not.toContain('확정된 양조장');
+    expect(hypotheses?.holdReason).toBe('새로운 정보가 없기 때문에 가설을 유지한다.');
+    const normalized = normalizeIncrementalSections(sent.previousAnalysis, finalRaw, context);
+    expect(JSON.stringify(sent.previousAnalysis)).toBe(before);
+    expect(normalized.sections).toBeNull();
+    expect(normalized.errors).toEqual([
+      'reason_insufficient:judgment',
+      'retention_input_missing:judgment',
+      'retention_sufficiency_missing:judgment',
+      'retention_evidence_missing:judgment',
+      'retention_hold_missing:judgment',
+      'reason_insufficient:hypotheses',
+      'retention_input_missing:hypotheses',
+      'retention_sufficiency_missing:hypotheses',
+      'retention_evidence_missing:hypotheses',
+      'next_verification_not_executable',
+    ]);
+  });
+
   it('stores the child from changes, restores the same sections, and ignores a duplicate submit', async () => {
     const store = openAiPmReviewStore(storePath());
     const chat = async (request: ChatRequest) => {
