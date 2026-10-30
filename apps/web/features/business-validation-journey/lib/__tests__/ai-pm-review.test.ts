@@ -8,6 +8,7 @@ import type { ChatRequest, ChatResponse } from '@repo/ai';
 import { describe, expect, it } from 'vitest';
 
 import { chooseReviewBackend, openSupabaseReviewStore, type AiPmDurablePort } from '../ai-pm-review-backend';
+import type { ReviewSections } from '../ai-pm-review-store';
 import {
   AI_PM_GEMINI_FALLBACK_MODEL,
   AI_PM_REVIEW_INPUT_TOKEN_BUDGET,
@@ -25,6 +26,8 @@ import {
   FOLLOW_UP_BREWERY_VERIFICATION_PLAN,
   FOLLOW_UP_OUTPUT_CONTRACT,
   followUpOutputContractErrors,
+  incrementalReflectionErrors,
+  normalizeIncrementalSections,
   FOLLOW_UP_SEPARATION_RULES,
   buildSyntheticFollowUpRequest,
   followUpAnswerNotice,
@@ -101,9 +104,11 @@ function validUngatedFollowUpRaw(previous: ReviewSections, supplement = '양조�
     };
   };
   return JSON.stringify({
-    ...previous,
+    judgment: previous.judgment,
+    hypotheses: previous.hypotheses,
     nextVerification,
-    choiceTrace: null,
+    nextQuestion: previous.nextQuestion,
+    revenueModel: previous.revenueModel,
     changes: [
       change('judgment', previous.judgment, previous.judgment),
       change('hypotheses', line, line),
@@ -279,9 +284,11 @@ describe('AI PM first review', () => {
     expect(followSystem).toContain('수요가 있다고 단정하지 않는다');
     expect(followSystem).toContain(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
     expect(followSystem).toContain('reason이 비어 있으면 실패다');
-    expect(followSystem).toContain('선택이 있는데 null이면 실패다');
+    expect(followSystem).toContain('코드가 창업자 답변을 보존한다');
+    expect(followSystem).toContain('선택 문장과 추가 설명을 원소마다 복사하지 않는다');
+    expect(followSystem).not.toContain('선택이 있는데 null이면 실패다');
+    expect(followSystem).not.toContain('원소 choiceTrace');
     expect(followSystem).toContain('revenueModel은 previousAnalysis.revenueModel');
-    expect(followSystem).toContain('원소 choiceTrace');
     expect(followSystem).not.toContain('선택이 없으면 null이다');
     expect(followSystem).not.toContain('grounds는 빈 문자열이다');
     expect(buildFirstReviewRequest(evidence.businessInput).messages[0]?.content).not.toContain(FOLLOW_UP_OUTPUT_CONTRACT);
@@ -1851,6 +1858,153 @@ describe('AI PM first review', () => {
     const parent = await store.readReview('user-a', first.record.reviewId);
     expect(parent?.sections?.judgment).toBe(sections().judgment);
     expect(parent?.sections?.nextQuestion).toBe(sections().nextQuestion);
+    expect(follow.record.error).toContain('follow_up_output_previous');
+    store.close();
+  });
+
+  it('normalizes a linked reflection onto the stored sections without echoing the answer', () => {
+    const recorded = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-question-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as { report: { calls: Array<{ raw: string; userPrompt: string }> } };
+    const sent = JSON.parse(recorded.report.calls[0]?.userPrompt ?? '{}') as {
+      previousAnalysis: ReviewSections & { analysis: { nextVerification: string } };
+      founderChoice: { label: string };
+      founderSupplement: string;
+      answerOrigin: 'synthetic-test-data';
+    };
+    const previous = structuredClone(sent.previousAnalysis);
+    const before = JSON.stringify(previous);
+    const context = {
+      previousJudgment: previous.judgment,
+      previousHypotheses: previous.hypotheses,
+      previousNextVerification: previous.analysis.nextVerification,
+      previousNextQuestion: previous.nextQuestion,
+      previousRevenueModel: previous.revenueModel,
+      choiceLabel: sent.founderChoice.label,
+      supplement: sent.founderSupplement,
+      answerOrigin: sent.answerOrigin,
+    };
+    const raw = recorded.report.calls[0]?.raw ?? '';
+    expect(parseSections(raw, '원문')).toBeNull();
+    expect(followUpOutputContractErrors(raw, context)).toContain('founder_answer_choice:hypotheses');
+    const normalized = normalizeIncrementalSections(previous, raw, context);
+    expect(incrementalReflectionErrors(raw, context)).toEqual([]);
+    expect(normalized.errors).toEqual([]);
+    expect(JSON.stringify(previous)).toBe(before);
+    expect(normalized.sections?.customer).toBe(previous.customer);
+    expect(normalized.sections?.problem).toBe(previous.problem);
+    expect(normalized.sections?.answerHint).toBe(previous.answerHint);
+    expect(normalized.sections?.claimConfirmation).toBeNull();
+    expect(normalized.sections?.revenueModel).toBe(previous.revenueModel);
+    expect(normalized.sections?.judgment).toBe(previous.judgment);
+    expect(normalized.sections?.hypotheses).toEqual(['미확인']);
+    expect(normalized.sections?.nextQuestion).toBe('양조장 후보가 있는가?');
+    expect(normalized.sections?.nextQuestionReason).toContain('양조장 후보');
+    expect(normalized.sections?.nextQuestionReason).not.toBe(previous.nextQuestionReason);
+    expect(normalized.sections?.analysis?.nextVerification).toBe(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
+    expect(normalized.sections?.analysis?.founderFacts).toEqual(previous.analysis.founderFacts);
+    expect(normalizeIncrementalSections(previous, '{', context)).toEqual({
+      sections: null,
+      errors: ['follow_up_output_unparsed'],
+    });
+    const missing = normalizeIncrementalSections(previous, JSON.stringify({ judgment: previous.judgment }), context);
+    expect(missing.sections).toBeNull();
+    expect(missing.errors.length).toBeGreaterThan(0);
+  });
+
+  it('stores the child from changes, restores the same sections, and ignores a duplicate submit', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const chat = async (request: ChatRequest) => {
+      const followUp = request.messages.some((message) => message.content.includes(FOLLOW_UP_OUTPUT_CONTRACT));
+      return reply(followUp ? validUngatedFollowUpRaw(sections()) : JSON.stringify(sections()));
+    };
+    const first = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    const parentBefore = JSON.stringify((await store.readReview('user-a', first.record.reviewId))?.sections);
+    await saveReviewFeedback({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      now: NOW,
+      body: {
+        reviewId: first.record.reviewId,
+        agreement: 'partial',
+        accuracy: 'mostly_accurate',
+        revisionAreas: ['evidence'],
+        comment: '인터뷰는 아직 없다.',
+        nextAction: 'verify_hypotheses',
+      },
+    });
+    const raw = validUngatedFollowUpRaw(sections());
+    expect(parseSections(raw, PLAN)).toBeNull();
+    const follow = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement: '양조장 대표 인터뷰는 아직 없다.',
+      now: NOW,
+      chat: async () => reply(raw),
+      evidence: 'injected_http',
+    });
+    expect(follow.ok).toBe(true);
+    if (!follow.ok) return;
+    expect(follow.called).toBe(true);
+    expect(follow.record.status).toBe('succeeded');
+    expect(follow.record.sections?.customer).toBe(sections().customer);
+    expect(follow.record.sections?.problem).toBe(sections().problem);
+    expect(follow.record.sections?.answerHint).toBe(sections().answerHint);
+    expect(follow.record.sections?.judgment).toBe(sections().judgment);
+    expect(follow.record.sections?.nextQuestion).toBe(sections().nextQuestion);
+    expect(follow.record.parentReviewId).toBe(first.record.reviewId);
+    const reread = await store.readReview('user-a', follow.record.reviewId);
+    expect(reread?.sections).toEqual(follow.record.sections);
+    expect(reread?.status).toBe('succeeded');
+    const parent = await store.readReview('user-a', first.record.reviewId);
+    expect(JSON.stringify(parent?.sections)).toBe(parentBefore);
+    const again = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement: '양조장 대표 인터뷰는 아직 없다.',
+      now: NOW,
+      chat: async () => reply(raw),
+      evidence: 'injected_http',
+    });
+    expect(again.ok && again.called).toBe(false);
+    if (again.ok) expect(again.record.reviewId).toBe(follow.record.reviewId);
+    const children = (await store.listReviews('user-a', 'project-test')).filter((record) => record.parentReviewId === first.record.reviewId);
+    expect(children).toHaveLength(1);
+    const broken = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement: '다른 추가 설명',
+      now: NOW,
+      chat: async () => reply('{'),
+      evidence: 'injected_http',
+    });
+    expect(broken.ok).toBe(true);
+    if (!broken.ok) return;
+    expect(broken.record.status).toBe('failed');
+    expect(broken.record.sections).toBeNull();
+    expect(broken.record.rawContent).toBe('{');
+    expect(broken.record.error).toContain('follow_up_output_unparsed');
+    expect((await store.readReview('user-a', first.record.reviewId))?.sections?.judgment).toBe(sections().judgment);
     store.close();
   });
 

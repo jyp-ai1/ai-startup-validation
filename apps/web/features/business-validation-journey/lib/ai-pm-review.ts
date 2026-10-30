@@ -42,7 +42,7 @@ export const FOLLOW_UP_ANALYSIS_CONTRACT_NOTE =
 export const FOLLOW_UP_ANSWER_ORIGINS = ['synthetic-test-data', 'founder-input'] as const;
 export type FollowUpAnswerOrigin = (typeof FOLLOW_UP_ANSWER_ORIGINS)[number];
 
-export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-10';
+export const FOLLOW_UP_OUTPUT_CONTRACT = 'reflection-output-11';
 
 export const FOLLOW_UP_FOUNDER_ANSWER_STATUS = 'unverified-input';
 
@@ -50,7 +50,7 @@ export const FOLLOW_UP_BREWERY_VERIFICATION_PLAN =
   '체험 프로그램을 먼저 검증할 것. 먼저 체험 프로그램을 제공할 수 있는 양조장 후보를 찾고, 실제 협력 가능 여부와 체험 운영 조건을 확인한다. 협력 가능 여부가 확인되기 전까지는 확정된 공급처로 간주하지 않는다. 이후 잠재 고객 인터뷰와 체험 참여 의향을 확인하고, 가격 수용도와 예약 전환은 별도로 검증한다.';
 
 export const FOLLOW_UP_OUTPUT_CONTRACT_NOTE =
-  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes이다. 저장된 가설이 미확인이면 미확인으로 둔다. 수요가 있을 것이라는 문장을 넣으면 실패다. nextQuestion은 물음표로 끝나는 질문이다. 지시 문장을 질문으로 쓰면 실패다. effect와 reason이 같으면 실패다. revenueModel은 저장된 가설 문장 그대로다.';
+  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes이다. changes 원소는 field, previous, current, decision, reason, evidenceStatus이다. 창업자 답변은 입력에 있으므로 원소마다 반복하지 않는다. 저장된 가설이 미확인이면 미확인으로 둔다. 수요가 있을 것이라는 문장을 넣으면 실패다. nextQuestion은 물음표로 끝나는 질문이다. 지시 문장을 질문으로 쓰면 실패다. revenueModel은 저장된 가설 문장 그대로다.';
 
 export const FOLLOW_UP_OUTPUT_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'] as const;
 
@@ -842,6 +842,7 @@ export async function runFollowUpReview(input: {
     }),
     chat: input.chat,
     gate: needsRevisionGate(marks) ? { previous: parent.sections, marks } : null,
+    previousSections: needsRevisionGate(marks) ? null : parent.sections,
     outputContract: needsRevisionGate(marks)
       ? null
       : followUpOutputContext({
@@ -1210,9 +1211,250 @@ function inventedPresence(text: string, supplement: string): boolean {
   return rules.some(([topic, claim]) => supplement.includes(topic) && claim.test(text));
 }
 
+export type IncrementalNormalization = {
+  sections: ReviewSections | null;
+  errors: string[];
+};
+
+function readReflectionObject(raw: string): Record<string, unknown> | null {
+  try {
+    const value = JSON.parse(raw) as unknown;
+    if (value && typeof value === 'object' && !Array.isArray(value)) return value as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function cloneReviewSections(previous: ReviewSections): ReviewSections {
+  const analysis = previous.analysis;
+  return {
+    ...previous,
+    risks: [...previous.risks],
+    uncertain: [...previous.uncertain],
+    hypotheses: [...previous.hypotheses],
+    claimConfirmation: previous.claimConfirmation ? { ...previous.claimConfirmation } : null,
+    analysis: analysis
+      ? {
+          ...analysis,
+          strengths: [...analysis.strengths],
+          assumptions: [...analysis.assumptions],
+          evidenceToChange: [...analysis.evidenceToChange],
+          founderFacts: [...analysis.founderFacts],
+          inferences: [...analysis.inferences],
+          choices: analysis.choices.map((choice) => ({ ...choice })),
+        }
+      : analysis,
+  };
+}
+
+function sectionsStorageErrors(sections: ReviewSections): string[] {
+  const errors: string[] = [];
+  const textKeys = [
+    'customer',
+    'problem',
+    'market',
+    'revenueModel',
+    'execution',
+    'judgment',
+    'nextQuestion',
+    'nextQuestionReason',
+    'answerHint',
+  ] as const;
+  for (const key of textKeys) {
+    if (typeof sections[key] !== 'string' || sections[key].trim().length === 0) errors.push(`sections_missing:${key}`);
+  }
+  for (const key of ['risks', 'uncertain', 'hypotheses'] as const) {
+    if (!Array.isArray(sections[key]) || sections[key].some((item) => typeof item !== 'string' || item.trim().length === 0)) {
+      errors.push(`sections_missing:${key}`);
+    }
+  }
+  return errors;
+}
+
 /**
- * Reflection return contract. An empty list means the required fields, the changes
- * array, and the grounds rules hold. It does not by itself mean the reflection is good.
+ * Semantic reflection contract. The founder answer stays on the request.
+ * A change explains the effect in reason and current. It does not repeat choice, supplement, and label.
+ * An empty list means the structure and the analytical link hold.
+ */
+export function incrementalReflectionErrors(raw: string, context: FollowUpOutputContext): string[] {
+  const parsed = readReflectionObject(raw);
+  if (!parsed) return ['follow_up_output_unparsed'];
+  const errors: string[] = [];
+  const judgment = typeof parsed.judgment === 'string' ? parsed.judgment.trim() : '';
+  const nextVerification = typeof parsed.nextVerification === 'string' ? parsed.nextVerification.trim() : '';
+  const nextQuestion = typeof parsed.nextQuestion === 'string' ? parsed.nextQuestion.trim() : '';
+  const hypotheses = Array.isArray(parsed.hypotheses)
+    ? parsed.hypotheses.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+    : [];
+  if (!judgment) errors.push('follow_up_output_missing_judgment');
+  if (!Array.isArray(parsed.hypotheses) || hypotheses.length === 0) errors.push('follow_up_output_missing_hypotheses');
+  if (!nextVerification) errors.push('follow_up_output_missing_nextVerification');
+  if (!nextQuestion) errors.push('follow_up_output_missing_nextQuestion');
+  const revenue =
+    typeof parsed.revenueModel === 'string'
+      ? parsed.revenueModel.trim()
+      : typeof parsed.business_model === 'string'
+        ? parsed.business_model.trim()
+        : '';
+  if (!revenue) errors.push('follow_up_output_missing_revenueModel');
+  else if (context.previousRevenueModel.trim() && revenue !== context.previousRevenueModel.trim()) errors.push('revenue_hypothesis_replaced');
+  else if (context.previousRevenueModel.includes('가설') && !revenue.includes('가설')) errors.push('hypothesis_label_removed');
+  if (!context.previousRevenueModel.trim() && revenue) errors.push('revenue_hypothesis_invented');
+  if (/가격[^。\n]{0,16}없/.test(context.supplement) && revenue && !revenue.includes('가설') && /참가비|수익/.test(revenue)) {
+    errors.push('hypothesis_label_removed');
+  }
+  const facts = Array.isArray(parsed.founderFacts) ? parsed.founderFacts.map((item) => String(item)) : [];
+  if (context.choiceLabel && facts.some((fact) => fact.includes(context.choiceLabel ?? ''))) errors.push('choice_in_founder_facts');
+  if (context.supplement && facts.some((fact) => fact.includes(context.supplement))) errors.push('supplement_in_founder_facts');
+  const changes = Array.isArray(parsed.changes) ? parsed.changes : null;
+  if (!Object.prototype.hasOwnProperty.call(parsed, 'changes') || parsed.changes == null) errors.push('follow_up_output_missing_changes');
+  else if (!changes) errors.push('follow_up_output_changes_type');
+  else if (changes.some((item) => !item || typeof item !== 'object' || Array.isArray(item))) errors.push('follow_up_output_change_type');
+  const expectedPrevious: Record<(typeof FOLLOW_UP_OUTPUT_FIELDS)[number], string> = {
+    judgment: context.previousJudgment,
+    hypotheses: hypothesisLine(context.previousHypotheses),
+    nextVerification: context.previousNextVerification,
+    nextQuestion: context.previousNextQuestion,
+  };
+  const expectedUpdated: Record<(typeof FOLLOW_UP_OUTPUT_FIELDS)[number], string> = {
+    judgment,
+    hypotheses: hypothesisLine(hypotheses),
+    nextVerification,
+    nextQuestion,
+  };
+  const priorityChoice = Boolean(context.choiceLabel && /먼저|검증/.test(context.choiceLabel));
+  const recordedReasons: string[] = [];
+  for (const field of FOLLOW_UP_OUTPUT_FIELDS) {
+    const change = changes?.find((item) => item && typeof item === 'object' && (item as Record<string, unknown>).field === field) as
+      | Record<string, unknown>
+      | undefined;
+    if (!change) {
+      errors.push(`follow_up_output_missing_change:${field}`);
+      continue;
+    }
+    const previous = typeof change.previous === 'string' ? change.previous : '';
+    const current = typeof change.current === 'string' ? change.current : '';
+    const decision = typeof change.decision === 'string' ? change.decision.trim() : '';
+    const reason = typeof change.reason === 'string' ? change.reason.trim() : '';
+    const evidenceStatus = typeof change.evidenceStatus === 'string' ? change.evidenceStatus.trim() : '';
+    recordedReasons.push(reason);
+    if (previous !== expectedPrevious[field]) errors.push(`follow_up_output_previous:${field}`);
+    if (!Object.prototype.hasOwnProperty.call(change, 'current') || current !== expectedUpdated[field]) errors.push(`follow_up_output_current:${field}`);
+    const changed = current !== previous;
+    if (!decision) errors.push(`decision_missing:${field}`);
+    else if (decision !== (changed ? 'changed' : 'retained')) errors.push(`decision_mismatch:${field}`);
+    if (!reason) errors.push(`reason_missing:${field}`);
+    else if (reasonIsGeneric(reason)) errors.push(`reason_generic:${field}`);
+    else if (!citesFollowUpInput(reason, context)) errors.push(`reason_untraced:${field}`);
+    else if (!changed && !explainsInsufficiency(reason)) errors.push(`reason_insufficient:${field}`);
+    if (reason && !FIELD_REASON_CUES[field].test(reason)) errors.push(`reason_not_field_specific:${field}`);
+    if (field === 'judgment' && context.choiceLabel && reason && choiceOnlyGrounds(reason, context.choiceLabel)) {
+      errors.push('reason_choice_copied:judgment');
+    }
+    if (!evidenceStatus || !EVIDENCE_STATUSES.has(evidenceStatus)) errors.push(`evidence_status:${field}`);
+    else if (absentInputMarkers(context.supplement).length > 0 && evidenceStatus !== FOLLOW_UP_FOUNDER_ANSWER_STATUS) {
+      errors.push(`evidence_status_promoted:${field}`);
+    }
+    if (priorityChoice && field === 'nextVerification' && !changed) errors.push('next_verification_unchanged');
+  }
+  if (recordedReasons.every((reason) => reason.length > 0) && new Set(recordedReasons).size === 1) errors.push('reason_copied_across_fields');
+  if (
+    context.choiceLabel &&
+    recordedReasons.every((reason) => reason.length > 0 && choiceOnlyGrounds(reason, context.choiceLabel ?? ''))
+  ) {
+    errors.push('reason_repeated_choice');
+  }
+  const linked = [judgment, hypotheses.join('\n'), nextVerification, nextQuestion, recordedReasons.join('\n')].join('\n');
+  if (context.choiceLabel && !linked.includes(context.choiceLabel)) errors.push('choice_unlinked');
+  for (const marker of absentInputMarkers(context.supplement)) {
+    if (!recordedReasons.join('\n').includes(marker)) errors.push(`reason_missing_supplement:${marker}`);
+  }
+  if (judgmentRestatesChoice(judgment, context.choiceLabel)) errors.push('choice_promoted_to_judgment');
+  if (
+    unconfirmedHypotheses(context.previousHypotheses) &&
+    absentInputMarkers(context.supplement).length > 0 &&
+    hypothesisLine(hypotheses) !== hypothesisLine(context.previousHypotheses)
+  ) {
+    errors.push('hypothesis_unconfirmed_replaced');
+  }
+  if (
+    unconfirmedHypotheses(context.previousHypotheses) &&
+    hypothesisLine(hypotheses) !== hypothesisLine(context.previousHypotheses) &&
+    forecastsDemand(hypotheses.join('\n'))
+  ) {
+    errors.push('hypothesis_demand_ungrounded');
+  }
+  const claimText = [judgment, hypotheses.join('\n'), nextVerification, nextQuestion, recordedReasons.join('\n')].join('\n');
+  if (inventedPresence(claimText, context.supplement)) errors.push('absent_input_invented');
+  const experienceFirst = Boolean(
+    context.choiceLabel &&
+      context.choiceLabel.includes('체험') &&
+      context.choiceLabel.includes('먼저') &&
+      !context.choiceLabel.includes('마케팅을 먼저'),
+  );
+  if (experienceFirst && context.choiceLabel && !nextVerification.includes(context.choiceLabel)) errors.push('next_verification_choice_absent');
+  if (experienceFirst && !nextVerification.includes('체험')) errors.push('next_verification_priority_missing');
+  if (
+    experienceFirst &&
+    absentInputMarkers(context.supplement).some((marker) => marker.includes('양조장')) &&
+    !verificationPlanReady(nextVerification)
+  ) {
+    errors.push('next_verification_not_executable');
+  }
+  if (experienceFirst && !asksAQuestion(nextQuestion)) errors.push('next_question_not_a_question');
+  if (experienceFirst && /마케팅/.test(nextQuestion) && /효과|우선|먼저|검증/.test(nextQuestion)) errors.push('next_question_regressed');
+  if (experienceFirst) {
+    const markers = absentInputMarkers(context.supplement);
+    const focus = markers.length > 0 ? markers : ['체험'];
+    if (!focus.some((marker) => nextQuestion.includes(marker)) && !nextQuestion.includes('체험')) errors.push('next_question_unknown_missing');
+  }
+  const prose = [judgment, hypotheses.join('\n'), nextVerification, nextQuestion, JSON.stringify(changes ?? [])].join('\n');
+  if (/강화되었|강화됐다|수요가 확인되었|수요가 확인됐다|수요가 있다/.test(prose)) errors.push('hypothesis_strengthened');
+  return [...new Set(errors)];
+}
+
+/**
+ * Applies a reflection return onto the stored sections.
+ * Unchanged fields stay. sections is null when the return cannot be stored.
+ * The previous object is not modified.
+ */
+export function normalizeIncrementalSections(
+  previous: ReviewSections,
+  raw: string,
+  context: FollowUpOutputContext,
+): IncrementalNormalization {
+  const errors = incrementalReflectionErrors(raw, context);
+  if (errors.length > 0) return { sections: null, errors };
+  const parsed = readReflectionObject(raw);
+  if (!parsed) return { sections: null, errors: ['follow_up_output_unparsed'] };
+  const next = cloneReviewSections(previous);
+  const judgment = typeof parsed.judgment === 'string' ? parsed.judgment.trim() : '';
+  const nextQuestion = typeof parsed.nextQuestion === 'string' ? parsed.nextQuestion.trim() : '';
+  const nextVerification = typeof parsed.nextVerification === 'string' ? parsed.nextVerification.trim() : '';
+  const hypotheses = Array.isArray(parsed.hypotheses)
+    ? parsed.hypotheses.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).map((item) => item.trim())
+    : [];
+  next.judgment = judgment;
+  next.hypotheses = hypotheses;
+  next.nextQuestion = nextQuestion;
+  next.revenueModel = previous.revenueModel;
+  if (nextQuestion !== previous.nextQuestion) {
+    const questionChange = (Array.isArray(parsed.changes) ? parsed.changes : []).find(
+      (item) => item && typeof item === 'object' && (item as Record<string, unknown>).field === 'nextQuestion',
+    ) as Record<string, unknown> | undefined;
+    const reason = typeof questionChange?.reason === 'string' ? questionChange.reason.trim() : '';
+    if (reason) next.nextQuestionReason = reason;
+  }
+  if (next.analysis) next.analysis = { ...next.analysis, nextVerification };
+  const storageErrors = sectionsStorageErrors(next);
+  if (storageErrors.length > 0) return { sections: null, errors: storageErrors };
+  return { sections: next, errors: [] };
+}
+
+/**
+ * Echo-era reflection contract. Kept so recorded runs stay scored the same way.
+ * Storage uses normalizeIncrementalSections. An empty list is not a reflection pass.
  */
 export function followUpOutputContractErrors(raw: string, context: FollowUpOutputContext): string[] {
   let parsed: Record<string, unknown> | null = null;
@@ -1433,35 +1675,27 @@ function reviewSystemPrompt(): string {
     followUpBasePrompt(),
     `반환 계약 ${FOLLOW_UP_OUTPUT_CONTRACT}.`,
     '필수 키는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes 이다.',
-    'choiceTrace와 evidenceStatus는 각 changes 원소에 있다. 루트에만 있으면 실패다.',
     '필수 키가 없으면 실패다.',
     'hypotheses는 비어 있지 않은 문자열 배열이다.',
     'changes는 JSON 배열이다. 객체 맵, 문자열, 누락, 배열이 아닌 원소는 실패다.',
     '배열 원소는 네 개다. field는 judgment, hypotheses, nextVerification, nextQuestion 이다.',
-    '원소 키는 field, previous, current, decision, reason, founderAnswer, choiceTrace, evidenceStatus 이다. updated, grounds, unchangedReason은 쓰지 않는다.',
+    '원소 키는 field, previous, current, decision, reason, evidenceStatus 이다. founderAnswer와 choiceTrace는 넣지 않는다. 코드가 창업자 답변을 보존한다.',
     'previous는 저장된 값 그대로다. nextQuestion.previous가 저장된 질문과 다르면 실패다.',
     'current는 그 필드의 반환값과 같다. hypotheses의 previous와 current는 항목을 " / "로 잇는다.',
     'decision은 current가 previous와 같으면 retained, 다르면 changed 이다.',
     'reason이 비어 있으면 실패다. retained여도 비어 있으면 실패다. 새 정보가 없어 유지, 바꾸지 않은 이유, 이전과 동일한 상태라고만 쓰면 실패다.',
-    'retained인 reason은 추가 설명의 없음이 왜 그 필드를 바꾸기에 부족한지 적는다. 네 reason은 서로 다르다.',
+    'reason은 그 답변이 그 필드에 미치는 영향을 설명한다. 선택 문장과 추가 설명을 원소마다 복사하지 않는다.',
+    'retained인 reason은 추가 설명이 왜 그 필드를 바꾸기에 부족한지 적는다. 네 reason은 서로 다르다.',
     'judgment의 reason에는 판단, hypotheses에는 가설 또는 미확인, nextVerification에는 검증, nextQuestion에는 질문이라는 말을 넣는다.',
     '판단의 reason이 선택 문장뿐이면 실패다. 선택은 그 계획이 옳다는 근거가 아니다.',
     'evidenceStatus는 unverified-input, confirmed-fact, unconfirmed 중 하나다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 unverified-input 이다. confirmed-fact로 쓰면 실패다.',
-    '루트에 founderAnswer 키를 만들지 않는다. 루트 객체는 changes 원소를 통과시키지 않는다.',
-    'founderAnswer는 각 원소 안의 객체다. choice, supplement, source, status를 구분한다.',
-    '선택이 있으면 founderAnswer.choice는 그 문장 그대로다. 선택이 있는데 null이면 실패다. 선택 입력이 없을 때만 null이다.',
-    'founderAnswer.supplement는 추가 설명의 핵심이다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 그 네 말을 적는다.',
-    'founderAnswer.source는 answerOrigin과 같다. founderAnswer.status는 unverified-input 이다.',
-    '원소 choiceTrace는 label, answerOrigin, role, effect다. label은 선택 문장, answerOrigin은 입력과 같고 role은 plan이다. effect는 선택 문장 원문을 포함하고 그 필드에만 미치는 영향을 말한다. 그 선택이라고만 쓰면 실패다. 네 effect가 같으면 실패다. effect와 reason이 같으면 실패다. effect를 current에 넣으면 실패다.',
-    'hypotheses의 effect는 선택 문장과 검증 우선순위를 말하고 수요 증거가 아니라고 말한다. 가설 current에 수요 문장을 넣지 않는다.',
-    '예시 원소: {"field":"judgment","previous":"저장 판단","current":"저장 판단","decision":"retained","reason":"예약 고객, 가격, 계약, 확정된 양조장은 없다. 이 없음은 확인된 사실이 아니어서 저장된 판단을 바꾸지 않는다.","founderAnswer":{"choice":"체험 프로그램을 먼저 검증할 것","supplement":"예약 고객, 가격, 계약, 확정된 양조장은 없다","source":"synthetic-test-data","status":"unverified-input"},"choiceTrace":{"label":"체험 프로그램을 먼저 검증할 것","answerOrigin":"synthetic-test-data","role":"plan","effect":"체험 프로그램을 먼저 검증할 것은 계획이라 저장된 판단을 바꾸지 않는다."},"evidenceStatus":"unverified-input"}',
-    'hypotheses는 미확인이면 retained다. reason에는 예약 고객, 가격, 계약, 확정된 양조장과 가설을 넣고, 그 없음이 가설을 확정하지 못한다고 적는다.',
+    'hypotheses는 미확인이면 retained다. 그 없음이 가설을 확정하지 못한다고 reason에 적는다. 가설 current에 수요 문장을 넣지 않는다.',
     'judgment는 저장 판단을 유지한다. 선택이나 검증 계획을 판단으로 옮기지 않는다.',
     `nextVerification의 current는 이 문장이다. ${FOLLOW_UP_BREWERY_VERIFICATION_PLAN}`,
     '그 문장은 검증 계획이다. 양조장 후보, 협력 가능 여부, 참여 의향, 가격과 예약의 별도 검증 순서다. 어느 단계도 끝난 사실이 아니다. decision은 changed이다.',
-    'nextVerification의 effect는 선택 문장과 그 순서를 말하고, 수요가 입증되지 않는다고 말한다. reason은 예약 고객, 가격, 계약, 확정된 양조장이 없어 검증이 그 순서에 머문다고 말한다. effect와 다른 문장이다.',
-    'nextQuestion의 current는 양조장 후보가 있는가? 이다. 물음표로 끝난다. 지시 문장이나 effect, reason을 질문 값으로 쓰면 실패다. previous는 저장된 질문 그대로다. decision은 changed이다.',
-    'nextQuestion의 effect는 선택 문장과 양조장 후보 질문의 관계를 말한다. reason은 선택 문장과 예약 고객, 가격, 계약, 확정된 양조장이 없다는 말, 그리고 그 질문이 필요한 이유를 말한다.',
+    'nextVerification의 reason은 그 순서가 필요한 이유를 적는다. 선택 문장을 그대로 반복하지 않아도 된다.',
+    'nextQuestion의 current는 양조장 후보가 있는가? 이다. 물음표로 끝난다. 지시 문장을 질문 값으로 쓰면 실패다. previous는 저장된 질문 그대로다. decision은 changed이다.',
+    'nextQuestion의 reason은 그 질문이 남은 불확실성인 이유를 적는다.',
     'revenueModel은 previousAnalysis.revenueModel 문장을 그대로 복사한다. 빼거나 고치면 실패다. 가설 표시를 지우거나 확정 수익으로 바꾸지 않는다. 저장된 값이 없으면 새 문장을 만들지 않는다.',
     'founderFacts에 선택 문장이나 추가 설명을 넣지 않는다.',
     '가설이 강화되었다고 쓰지 않는다. 수요가 있다고 단정하지 않는다.',
@@ -1504,12 +1738,17 @@ async function finishCall(input: {
   chat: ReviewChat;
   gate?: { previous: ReviewSections; marks: ReviewMark[] } | null;
   outputContract?: FollowUpOutputContext | null;
+  previousSections?: ReviewSections | null;
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const started = Date.now();
   try {
     const response = await input.chat(input.request);
-    const sections = parseSections(response.content, input.input.text);
-    const outputErrors = input.outputContract ? followUpOutputContractErrors(response.content, input.outputContract) : [];
+    const normalized =
+      input.outputContract && input.previousSections
+        ? normalizeIncrementalSections(input.previousSections, response.content, input.outputContract)
+        : null;
+    const sections = normalized ? normalized.sections : parseSections(response.content, input.input.text);
+    const outputErrors = normalized ? normalized.errors : input.outputContract ? ['incremental_previous_missing'] : [];
     const outputError = outputErrors.length > 0 ? outputErrors.join(',') : null;
     const revisionGate =
       sections && input.gate && needsRevisionGate(input.gate.marks)
@@ -1530,7 +1769,7 @@ async function finishCall(input: {
       error: outputError ?? (sections ? (revisionGate && !revisionGate.pass ? 'revision_gate' : null) : reviewContractError(response.content)),
       provider: response.provider === 'google' ? 'google' : response.provider === 'openai' ? 'openai' : null,
       model: response.model,
-      sections: outputError ? null : sections,
+      sections,
       revisionGate,
       rawContent: response.content,
       promptTokens: usageKnown ? response.usage.inputTokens : null,
