@@ -169,12 +169,17 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-choice-repair-2026-10-30');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-meaning-2026-10-30');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('incremental-reflection-choice-repair-request.json');
+    expect(script).toContain('incremental-reflection-meaning-request.json');
+    expect(script).toContain('이전 JSON과 같은 응답을 다시 내면 실패다');
+    expect(script).toContain('judgment_changed_by_choice');
+    expect(script).toContain('q1-incremental-reflection-choice-repair-2026-10-30');
+    expect(script).not.toContain('q1-incremental-reflection-choice-repair-2026-10-30.json');
+    expect(script).not.toContain('incremental-reflection-choice-repair-request.json');
     expect(script).toContain('q1-incremental-reflection-input-trace-2026-10-30');
     expect(script).not.toContain('q1-incremental-reflection-input-trace-2026-10-30.json');
     expect(script).not.toContain('incremental-reflection-input-trace-request.json');
@@ -1298,6 +1303,59 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(userB.founderSupplement).toContain('확정되었');
     expect(userB.inputLedger.find((entry) => entry.id === 'founderSupplement')?.kind).toBe('unverified-claim');
     expect(caseA).not.toEqual(caseB);
+    const fixtureUrl = new URL('../incremental-reflection-input-trace-request.json', import.meta.url);
+    const frozen = JSON.parse(readFileSync(fixtureUrl, 'utf8')) as {
+      priorRunId: string;
+      requests: Array<{ inputId: string; request: unknown }>;
+    };
+    expect(frozen.priorRunId).toBe('q1-incremental-reflection-review-fields-2026-10-30');
+    expect(frozen.requests.map((item) => item.inputId)).toEqual(['choice-only', 'brewery-claim']);
+    expect(frozen.requests[0]?.request).not.toEqual(caseA);
+    const repairFixture = JSON.parse(
+      readFileSync(new URL('../incremental-reflection-choice-repair-request.json', import.meta.url), 'utf8'),
+    ) as { priorRunId: string; requests: Array<{ inputId: string; request: unknown }> };
+    expect(repairFixture.priorRunId).toBe('q1-incremental-reflection-input-trace-2026-10-30');
+    expect(repairFixture.requests).toHaveLength(1);
+    expect(repairFixture.requests[0]?.inputId).toBe('choice-only');
+    expect(repairFixture.requests[0]?.request).toEqual(frozen.requests[0]?.request);
+    expect(repairFixture.requests[0]?.request).not.toEqual(caseA);
+  });
+
+  it('freezes meaning-trace requests that keep a choice as priority and a claim as unverified', () => {
+    const evidence = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json', import.meta.url), 'utf8'),
+    ) as { businessInput: string; report: { calls: Array<{ promptVersion: string; raw: string }> } };
+    const previousRaw = evidence.report.calls.find((call) => call.promptVersion === 'quality-14-cpo-draft:brewery');
+    const parsed = parseSections(previousRaw?.raw ?? '', evidence.businessInput);
+    const selected = parsed?.analysis?.choices.find((choice) => choice.label === '체험 프로그램을 먼저 검증할 것');
+    const feedback = {
+      feedbackId: 'feedback-trace',
+      reviewId: 'review-trace',
+      userId: 'user-trace',
+      agreement: 'need_info' as const,
+      accuracy: 'hard_to_compare' as const,
+      revisionAreas: ['other' as const],
+      comment: selected?.label ?? '',
+      nextAction: 'verify_hypotheses' as const,
+      marks: [],
+      choiceAnswer: { choiceId: selected?.id ?? '', label: selected?.label ?? '', otherText: '' },
+      submittedAt: '2026-10-30T08:00:00.000Z',
+      modelCalls: 0 as const,
+    };
+    const caseA = buildFollowUpRequest({
+      originalInput: evidence.businessInput,
+      sections: parsed!,
+      feedback,
+      supplement: '',
+      answerOrigin: 'synthetic-test-data',
+    });
+    const caseB = buildFollowUpRequest({
+      originalInput: evidence.businessInput,
+      sections: parsed!,
+      feedback,
+      supplement: FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM,
+      answerOrigin: 'synthetic-test-data',
+    });
     const record = {
       businessInput: evidence.businessInput,
       dataClass: 'synthetic-test-data',
@@ -1305,7 +1363,7 @@ describe('quality-2 and quality-3 compare requests', () => {
       analysisContract: 'parsed-sections-1',
       outputContract: 'reflection-output-11',
       baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json',
-      priorRunId: 'q1-incremental-reflection-review-fields-2026-10-30',
+      priorRunId: 'q1-incremental-reflection-choice-repair-2026-10-30',
       confounders: [
         {
           id: 'call_path',
@@ -1313,8 +1371,9 @@ describe('quality-2 and quality-3 compare requests', () => {
             'Preview build reads this frozen request and calls the model directly. It does not call the product second-review route.',
         },
         {
-          id: 'two_inputs',
-          detail: 'Case A has no supplement. Case B adds an unverified brewery claim. The same hold sentence on both is not a pass.',
+          id: 'meaning',
+          detail:
+            'A choice sets verification priority and does not change the stored judgment. An unverified brewery claim stays a claim. One repair names the failed checks. An identical repair is a fail. There is no third call.',
         },
       ],
       requests: [
@@ -1322,16 +1381,13 @@ describe('quality-2 and quality-3 compare requests', () => {
         { inputId: 'brewery-claim', promptVersion: 'reflection-output-11:brewery-claim', request: caseB },
       ],
     };
-    const fixtureUrl = new URL('../incremental-reflection-input-trace-request.json', import.meta.url);
+    const fixtureUrl = new URL('../incremental-reflection-meaning-request.json', import.meta.url);
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(fixtureUrl, `${JSON.stringify(record, null, 2)}\n`);
     expect(JSON.parse(readFileSync(fixtureUrl, 'utf8'))).toEqual(record);
-    const repairFixture = JSON.parse(
-      readFileSync(new URL('../incremental-reflection-choice-repair-request.json', import.meta.url), 'utf8'),
-    ) as { priorRunId: string; requests: Array<{ inputId: string; request: unknown }> };
-    expect(repairFixture.priorRunId).toBe('q1-incremental-reflection-input-trace-2026-10-30');
-    expect(repairFixture.requests).toHaveLength(1);
-    expect(repairFixture.requests[0]?.inputId).toBe('choice-only');
-    expect(repairFixture.requests[0]?.request).toEqual(record.requests[0]?.request);
+    const historical = JSON.parse(
+      readFileSync(new URL('../incremental-reflection-input-trace-request.json', import.meta.url), 'utf8'),
+    ) as { requests: Array<{ request: unknown }> };
+    expect(record.requests[0]?.request).not.toEqual(historical.requests[0]?.request);
   });
 });
 

@@ -1756,6 +1756,7 @@ export function incrementalReflectionErrors(raw: string, context: FollowUpOutput
   ) {
     errors.push('hypothesis_unconfirmed_replaced');
   }
+  if (choiceOnly && judgment !== context.previousJudgment.trim()) errors.push('judgment_changed_by_choice');
   if (claimChoice && nextVerification === FOLLOW_UP_BREWERY_VERIFICATION_PLAN) errors.push('plan_not_from_input');
   if (claimChoice && !/계약서|증빙|입금/.test(nextVerification)) errors.push('claim_verification_missing');
   if (experienceFirst && !asksAQuestion(nextQuestion)) errors.push('next_question_not_a_question');
@@ -2048,33 +2049,33 @@ function gatedFollowUpPrompt(): string {
 
 /** Lists the failed checks. It does not supply the review sentences. */
 export function followUpRepairMessage(errors: string[]): string {
+  const has = (code: string) => errors.some((error) => error === code || error.startsWith(`${code}:`));
   const lines = [
     '이전 JSON은 저장되지 않았다.',
     `실패 코드: ${errors.join(',')}.`,
+    '이전 JSON과 같은 응답을 다시 내면 실패다.',
     'judgment와 hypotheses의 inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded를 입력에 이미 있는 창업자 답변으로 다시 적어라.',
     '없는 계약, 예약, 확정 사실을 만들지 마라. 확정 주장을 확인된 사실로 쓰지 마라.',
     'retentionDecision은 decision과 같아야 한다. retained 또는 unresolved의 sufficiencyAssessment는 sufficient가 아니다.',
     'holdReason에 방향성만 적거나 추가 정보가 필요하다만 쓰지 마라.',
   ];
-  if (
-    errors.some(
-      (error) =>
-        error.startsWith('status_repeat') ||
-        error.startsWith('input_echo_only') ||
-        error.startsWith('trace_') ||
-        error.startsWith('claim_unlinked') ||
-        error === 'plan_not_from_input' ||
-        error === 'question_not_from_input' ||
-        error === 'claim_verification_missing' ||
-        error === 'input_invented' ||
-        error === 'choice_promoted_to_judgment' ||
-        error === 'hypothesis_unconfirmed_replaced' ||
-        error === 'hypothesis_demand_ungrounded' ||
-        error === 'next_verification_choice_absent' ||
-        error.startsWith('sufficiency_conflict'),
-    )
-  ) {
-    lines.push('founderChoice와 previousJudgment의 관계를 적어라. 상태 문장이나 선택 문장만 반복하지 마라. 입력에 없는 확정을 만들지 마라. 선택 문장을 판단 값으로 옮기지 마라. 미확인 가설에 수요가 있다는 문장을 넣지 마라.');
+  if (has('choice_promoted_to_judgment') || has('judgment_changed_by_choice')) {
+    lines.push('judgment.current는 입력의 previousJudgment와 같은 문장으로 되돌려라. decision은 retained다. 선택은 검증 우선순위이며 판단의 증거가 아니다.');
+  }
+  if (has('hypothesis_unconfirmed_replaced') || has('hypothesis_demand_ungrounded')) {
+    lines.push('hypotheses.current는 저장된 가설 그대로다. 미확인이면 미확인만 둔다. 수요가 있다, 있을 것이다, 성공 가능성을 높인다를 넣지 마라.');
+  }
+  if (has('next_verification_choice_absent') || has('choice_unlinked')) {
+    lines.push('nextVerification.current는 founderChoice.label을 그대로 포함한다. 그 선택의 수요와 실행 가능성을 확인하는 순서다. 수요가 확인되었다고 쓰지 마라.');
+  }
+  if (has('claim_unmarked') || has('claim_promoted_to_fact') || has('claim_verification_missing') || has('status_repeat')) {
+    lines.push('확정 주장은 주장으로 적고 확인된 사실이 아니라고 적어라. evidenceStatus는 unverified-input이다. 여전히 유효하다, 변화가 없다, 새로운 정보가 없다만 쓰지 마라.');
+  }
+  if (has('follow_up_output_previous')) {
+    lines.push('previous는 입력에 있는 저장 값 그대로다. nextQuestion.previous는 저장된 질문과 같아야 한다.');
+  }
+  if (has('sufficiency_conflict')) {
+    lines.push('선택만으로 judgment를 changed로 두지 마라. retained의 sufficiencyAssessment는 insufficient다.');
   }
   lines.push('같은 스키마의 JSON만 반환하라.');
   return lines.join(' ');
@@ -2093,17 +2094,31 @@ function reviewRoute(supplement: string): string[] {
   }
   if (assertsConfirmation(supplement)) {
     return [
-      'founderSupplement의 kind는 unverified-claim이다. 확정, 계약, 확보는 주장이며 확인된 사실이 아니다.',
-      'judgment current는 저장된 판단이다. 그 주장이 판단에 미치는 영향과, 계약서나 입금 증빙이 없으면 바꾸지 않는 이유를 적는다.',
-      'nextVerification은 그 주장의 계약서 또는 증빙 확인과 선택한 체험 검증을 함께 적는다. 양조장 후보가 있는가로 바꾸지 않는다.',
-      'nextQuestion은 그 주장에서 아직 없는 증빙을 묻는다. 물음표로 끝난다.',
+      'founderChoice는 검증 우선순위다. 판단의 증거가 아니다. nextVerification.current는 founderChoice.label을 그대로 포함한다.',
+      'founderSupplement의 kind는 unverified-claim이다. 확정, 계약, 확보는 창업자가 말한 주장이다. 확인된 사실이 아니다. 사실로 승격하지 마라.',
+      'judgment.current는 previousJudgment와 같은 문장이다. decision은 retained다. 주장을 판단 문장에 확정된 사실로 넣지 마라.',
+      '유지 이유에는 그 주장이 확인된 사실이 아니고, 계약서나 입금 증빙이 없으면 저장 판단을 바꾸지 않는다고 적어라. 여전히 유효하다, 변화가 없다, 새로운 정보가 없다만 쓰면 실패다.',
+      'hypotheses가 미확인이면 current도 미확인만 둔다. 주장 문장을 가설에 붙이지 마라.',
+      'nextVerification은 선택 문장과, 그 주장의 계약서 또는 입금 증빙 확인을 함께 적는다. 양조장 후보 계획을 강제하지 마라. 수요가 있다고 단정하지 마라.',
+      'nextQuestion은 그 주장에서 아직 없는 증빙을 묻는다. 물음표로 끝난다. previous는 저장된 질문 그대로다.',
+    ];
+  }
+  if (!supplement.trim()) {
+    return [
+      'founderChoice의 kind는 plan-choice다. 이것은 검증 우선순위다. 사업 판단을 입증하는 증거가 아니다.',
+      'founderSupplement의 kind는 absent다. 없는 확정, 계약, 양조장, 수요를 만들지 마라.',
+      'judgment.current는 previousJudgment와 같은 문장이다. decision은 retained다. 선택 문장을 판단에 넣으면 실패다.',
+      '유지 이유는 그 선택이 수요나 실행 가능성을 확인한 증거가 아니어서 저장 판단을 바꾸지 않는다는 것이다. 여전히 유효하다만 쓰면 실패다.',
+      'hypotheses가 미확인이면 current도 미확인만 둔다. 수요가 있다, 있을 것이다, 성공 가능성을 높인다를 넣으면 실패다.',
+      'nextVerification.current는 founderChoice.label을 그대로 포함한다. 그 뒤에 체험 프로그램의 수요와 실행 가능성을 확인하는 순서를 적는다. 수요가 있다고 단정하지 마라. decision은 changed다.',
+      'nextQuestion은 그 순서에서 아직 없는 고객 또는 수요 증거를 묻는다. 물음표로 끝난다. 양조장 후보가 있는가로 바꾸지 마라.',
     ];
   }
   return [
-    'founderSupplement가 비어 있으면 kind는 absent다. 없는 확정, 계약, 양조장을 만들지 않는다.',
-    'founderChoice는 계획이다. 그 계획과 previousJudgment의 관계를 inputConsidered와 impactAssessment에 적는다. 선택 문장만 반복하면 실패다.',
-    '변화가 없다, 여전히 유효하다, 새로운 정보가 없다만 쓰면 실패다. 부족한 근거와 판단을 바꿀 증거를 적는다.',
-    'nextVerification과 nextQuestion은 그 선택에서 아직 없는 고객 또는 수요 증거와 연결한다. 양조장 후보가 있는가로 바꾸지 않는다.',
+    'founderChoice는 검증 우선순위다. 그 문장만으로 저장 판단을 바꾸지 마라.',
+    '추가 설명이 기존 판단과 충돌하면 그 충돌을 검토한다. 없으면 판단을 유지하고, 유지 이유에 무엇이 부족한지 적는다.',
+    '변화가 없다, 여전히 유효하다, 새로운 정보가 없다만 쓰면 실패다.',
+    'nextVerification은 그 입력에서 아직 확인되지 않은 증거를 확인하는 순서다. 양조장 후보가 있는가로 바꾸지 마라.',
   ];
 }
 

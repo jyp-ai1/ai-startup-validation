@@ -2,6 +2,7 @@
  * One incremental-reflection call of the frozen product follow-up request.
  * The founder answer in the fixture is synthetic test data.
  * Production builds return immediately. The product second-review route is not called.
+ * The choice-repair call q1-incremental-reflection-choice-repair-2026-10-30 stays RECORDED.
  * The input-trace call q1-incremental-reflection-input-trace-2026-10-30 stays RECORDED.
  * The review-fields call q1-incremental-reflection-review-fields-2026-10-30 stays RECORDED.
  * The reason-quality call q1-incremental-reflection-reason-quality-2026-10-30 stays RECORDED.
@@ -17,14 +18,14 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-choice-repair-2026-10-30';
-export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-input-trace-2026-10-30';
+export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-meaning-2026-10-30';
+export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-choice-repair-2026-10-30';
 export const PREVIEW_COMPARE_BUCKET = 'ai-pm-quality-compare';
 export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(scriptDir, '..');
-const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-choice-repair-request.json');
+const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-meaning-request.json');
 
 export function shouldRunPreviewQualityCompare(env) {
   return env.VERCEL_ENV === 'preview' && Boolean(env.VERCEL_GIT_COMMIT_REF) && env.VERCEL_GIT_COMMIT_REF !== 'main';
@@ -213,11 +214,18 @@ export function reviewFieldGaps(raw, userPrompt) {
   const nextHypotheses = Array.isArray(parsed.hypotheses) ? parsed.hypotheses.filter((item) => typeof item === 'string') : [];
   const previousLine = previousHypotheses.join(' / ');
   const nextLine = nextHypotheses.join(' / ');
-  if (!supplement.trim() && (previousLine === '미확인' || previousLine === '') && nextLine && nextLine !== previousLine) {
+  if (
+    (previousLine === '미확인' || previousLine === '') &&
+    nextLine &&
+    nextLine !== previousLine &&
+    (!supplement.trim() || claim)
+  ) {
     errors.push('hypothesis_unconfirmed_replaced');
   }
   if (/수요/.test(nextLine) && /있을|있다|존재|예상/.test(nextLine)) errors.push('hypothesis_demand_ungrounded');
   if (experience && choice && !nextVerification.includes(choice)) errors.push('next_verification_choice_absent');
+  const previousJudgment = typeof previous.judgment === 'string' ? previous.judgment.trim() : '';
+  if (!supplement.trim() && previousJudgment && judgment.trim() !== previousJudgment) errors.push('judgment_changed_by_choice');
   for (const field of ['judgment', 'hypotheses']) {
     const change = changes.find((item) => item && item.field === field);
     if (change && change.decision === 'changed' && change.sufficiencyAssessment === 'insufficient') {
@@ -228,30 +236,33 @@ export function reviewFieldGaps(raw, userPrompt) {
 }
 
 export function repairMessage(errors) {
+  const has = (code) => errors.some((error) => error === code || String(error).startsWith(`${code}:`));
   const lines = [
     '이전 JSON은 저장되지 않았다.',
     `실패 코드: ${errors.join(',')}.`,
+    '이전 JSON과 같은 응답을 다시 내면 실패다.',
     'judgment와 hypotheses의 inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded를 입력에 이미 있는 창업자 답변으로 다시 적어라.',
     '없는 계약, 예약, 확정 사실을 만들지 마라. 확정 주장을 확인된 사실로 쓰지 마라.',
     'retentionDecision은 decision과 같아야 한다. retained 또는 unresolved의 sufficiencyAssessment는 sufficient가 아니다.',
     'holdReason에 방향성만 적거나 추가 정보가 필요하다만 쓰지 마라.',
   ];
-  if (
-    errors.some(
-      (error) =>
-        String(error).startsWith('status_repeat') ||
-        String(error).startsWith('input_echo_only') ||
-        String(error).startsWith('claim_unlinked') ||
-        error === 'plan_not_from_input' ||
-        error === 'claim_verification_missing' ||
-        error === 'choice_promoted_to_judgment' ||
-        error === 'hypothesis_unconfirmed_replaced' ||
-        error === 'hypothesis_demand_ungrounded' ||
-        error === 'next_verification_choice_absent' ||
-        String(error).startsWith('sufficiency_conflict'),
-    )
-  ) {
-    lines.push('founderChoice와 previousJudgment의 관계를 적어라. 상태 문장이나 선택 문장만 반복하지 마라. 입력에 없는 확정을 만들지 마라. 선택 문장을 판단 값으로 옮기지 마라. 미확인 가설에 수요가 있다는 문장을 넣지 마라.');
+  if (has('choice_promoted_to_judgment') || has('judgment_changed_by_choice')) {
+    lines.push('judgment.current는 입력의 previousJudgment와 같은 문장으로 되돌려라. decision은 retained다. 선택은 검증 우선순위이며 판단의 증거가 아니다.');
+  }
+  if (has('hypothesis_unconfirmed_replaced') || has('hypothesis_demand_ungrounded')) {
+    lines.push('hypotheses.current는 저장된 가설 그대로다. 미확인이면 미확인만 둔다. 수요가 있다, 있을 것이다, 성공 가능성을 높인다를 넣지 마라.');
+  }
+  if (has('next_verification_choice_absent') || has('choice_unlinked')) {
+    lines.push('nextVerification.current는 founderChoice.label을 그대로 포함한다. 그 선택의 수요와 실행 가능성을 확인하는 순서다. 수요가 확인되었다고 쓰지 마라.');
+  }
+  if (has('claim_unmarked') || has('claim_promoted_to_fact') || has('claim_verification_missing') || has('status_repeat')) {
+    lines.push('확정 주장은 주장으로 적고 확인된 사실이 아니라고 적어라. evidenceStatus는 unverified-input이다. 여전히 유효하다, 변화가 없다, 새로운 정보가 없다만 쓰지 마라.');
+  }
+  if (has('follow_up_output_previous')) {
+    lines.push('previous는 입력에 있는 저장 값 그대로다. nextQuestion.previous는 저장된 질문과 같아야 한다.');
+  }
+  if (has('sufficiency_conflict')) {
+    lines.push('선택만으로 judgment를 changed로 두지 마라. retained의 sufficiencyAssessment는 insufficient다.');
   }
   lines.push('같은 스키마의 JSON만 반환하라.');
   return lines.join(' ');

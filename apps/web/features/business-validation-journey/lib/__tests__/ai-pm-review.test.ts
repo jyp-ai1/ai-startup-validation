@@ -2387,6 +2387,21 @@ describe('AI PM first review', () => {
       if (!repair) return reply('{', { usage: { inputTokens: 11, outputTokens: 2, totalTokens: 13 } });
       expect(request.messages.at(-1)?.content).toBe(followUpRepairMessage(['follow_up_output_unparsed']));
       expect(followUpRepairMessage(['follow_up_output_unparsed'])).not.toContain('양조장 후보가 있는가');
+      const specificRepair = followUpRepairMessage([
+        'choice_promoted_to_judgment',
+        'judgment_changed_by_choice',
+        'hypothesis_unconfirmed_replaced',
+        'next_verification_choice_absent',
+        'claim_unmarked',
+        'status_repeat:holdReason:judgment',
+        'sufficiency_conflict:judgment',
+      ]);
+      expect(specificRepair).toContain('이전 JSON과 같은 응답을 다시 내면 실패다');
+      expect(specificRepair).toContain('previousJudgment와 같은 문장');
+      expect(specificRepair).toContain('founderChoice.label을 그대로 포함');
+      expect(specificRepair).toContain('확인된 사실이 아니라고');
+      expect(specificRepair).toContain('retained의 sufficiencyAssessment는 insufficient다');
+      expect(specificRepair).not.toContain('양조장 후보가 있는가');
       return reply(validUngatedFollowUpRaw(sections()), { usage: { inputTokens: 20, outputTokens: 7, totalTokens: 27 } });
     };
     const first = await runFirstReview({
@@ -2683,7 +2698,12 @@ describe('AI PM first review', () => {
     expect(claimSystem).not.toContain(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
     expect(claimSystem).not.toContain('양조장 후보가 있는가?');
     expect(emptySystem).toContain('inputLedger');
+    expect(emptySystem).toContain('검증 우선순위');
+    expect(emptySystem).toContain('previousJudgment와 같은 문장');
     expect(claimSystem).toContain('unverified-claim');
+    expect(claimSystem).toContain('검증 우선순위');
+    expect(claimSystem).toContain('확인된 사실이 아니다');
+    expect(claimSystem).toContain('계약서나 입금 증빙');
 
     const experiencePlan = `${choice} 잠재 고객의 체험 참여 의향을 인터뷰로 확인한다. 이 단계는 아직 실행되지 않았다.`;
     const experienceQuestion = '체험 프로그램에 참여할 고객이 있는가?';
@@ -2795,6 +2815,19 @@ describe('AI PM first review', () => {
     const inventedResult = normalizeIncrementalSections(previous, JSON.stringify(invented), contextFor(''));
     expect(inventedResult.errors).toContain('input_invented');
     expect(inventedResult.sections).toBeNull();
+    const rewritten = JSON.parse(emptyRaw) as { judgment: string; changes: Array<Record<string, string>> };
+    rewritten.judgment = '사업 방향이 구체화되었다.';
+    const rewrittenJudgment = rewritten.changes.find((change) => change.field === 'judgment');
+    if (rewrittenJudgment) {
+      rewrittenJudgment.current = rewritten.judgment;
+      rewrittenJudgment.decision = 'changed';
+      rewrittenJudgment.retentionDecision = 'changed';
+      rewrittenJudgment.sufficiencyAssessment = 'partial';
+    }
+    const rewrittenResult = normalizeIncrementalSections(previous, JSON.stringify(rewritten), contextFor(''));
+    expect(rewrittenResult.errors).toContain('judgment_changed_by_choice');
+    expect(rewrittenResult.sections).toBeNull();
+    expect(JSON.stringify(previous)).toBe(before);
 
     const claimRaw = buildRaw({
       supplement: FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM,
@@ -2827,7 +2860,16 @@ describe('AI PM first review', () => {
     expect(claimStored.sections?.hypotheses).toEqual(['미확인']);
     expect(claimStored.sections?.nextQuestion).toBe('계약서가 있는가?');
     expect(claimStored.sections?.analysis?.nextVerification).toBe(claimPlan);
+    expect(claimPlan).toContain(choice);
+    expect(experiencePlan).toContain(choice);
     expect(claimPlan).not.toBe(experiencePlan);
+    const claimParsed = JSON.parse(claimRaw) as { changes: Array<Record<string, string>> };
+    const claimJudgment = claimParsed.changes.find((change) => change.field === 'judgment');
+    expect(claimJudgment?.decision).toBe('retained');
+    expect(claimJudgment?.sufficiencyAssessment).toBe('insufficient');
+    expect(claimJudgment?.evidenceStatus).toBe('unverified-input');
+    expect(claimJudgment?.evidenceNeeded).toContain('계약서');
+    expect(claimJudgment?.impactAssessment).not.toContain('변화가 없다');
     expect(reflectionReviewsRepeat(emptyRaw, claimRaw)).toBe(false);
     expect(reflectionReviewsRepeat(emptyRaw, emptyRaw)).toBe(true);
     const promoted = JSON.parse(claimRaw) as { judgment: string; changes: Array<Record<string, string>> };
@@ -2904,6 +2946,7 @@ describe('AI PM first review', () => {
       'hypothesis_demand_ungrounded',
       'next_verification_choice_absent',
       'hypothesis_unconfirmed_replaced',
+      'judgment_changed_by_choice',
     ]);
     const claim = score(
       '../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-input-trace-recorded.json',
@@ -2947,6 +2990,7 @@ describe('AI PM first review', () => {
       'choice_promoted_to_judgment',
       'next_verification_choice_absent',
       'hypothesis_unconfirmed_replaced',
+      'judgment_changed_by_choice',
     ]);
     expect(reflectionReviewsRepeat(traced.call?.raw ?? '', claim.call?.raw ?? '')).toBe(false);
   });
