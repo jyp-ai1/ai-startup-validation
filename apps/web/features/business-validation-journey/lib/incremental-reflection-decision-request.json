@@ -1,0 +1,313 @@
+{
+  "businessInput": "다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n검토 목적: 종합 사업성 검토\n현재 단계: 미확인\n가장 알고 싶은 것: 없음\n검토 계약: comprehensive-1",
+  "dataClass": "synthetic-test-data",
+  "notice": "테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.",
+  "analysisContract": "parsed-sections-1",
+  "outputContract": "reflection-output-11",
+  "baselineSource": "docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json",
+  "priorRunId": "q1-incremental-reflection-unified-2026-10-30",
+  "confounders": [
+    {
+      "id": "call_path",
+      "detail": "Preview build reads this frozen request and calls the model directly. It does not call the product second-review route."
+    },
+    {
+      "id": "decision",
+      "detail": "A retained judgment can sit beside a changed verification plan. The choice reorders the hypothesis check and keeps a still-valid marketing task for later. An unverified claim does not flip decision on an unchanged sentence. One repair names the failed checks. An identical repair is a fail. There is no third call."
+    }
+  ],
+  "requests": [
+    {
+      "inputId": "choice-only",
+      "promptVersion": "reflection-output-11:choice-only",
+      "request": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "responseFormat": {
+          "type": "json_schema",
+          "schema": {
+            "title": "reflection_output_11",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "judgment",
+              "hypotheses",
+              "nextVerification",
+              "nextQuestion",
+              "revenueModel",
+              "changes"
+            ],
+            "properties": {
+              "judgment": {
+                "type": "string"
+              },
+              "hypotheses": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "nextVerification": {
+                "type": "string"
+              },
+              "nextQuestion": {
+                "type": "string"
+              },
+              "revenueModel": {
+                "type": "string"
+              },
+              "changes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "field",
+                    "previous",
+                    "current",
+                    "decision",
+                    "reason",
+                    "evidenceStatus",
+                    "inputConsidered",
+                    "impactAssessment",
+                    "sufficiencyAssessment",
+                    "retentionDecision",
+                    "holdReason",
+                    "evidenceNeeded"
+                  ],
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "enum": [
+                        "judgment",
+                        "hypotheses",
+                        "nextVerification",
+                        "nextQuestion"
+                      ]
+                    },
+                    "previous": {
+                      "type": "string"
+                    },
+                    "current": {
+                      "type": "string"
+                    },
+                    "decision": {
+                      "type": "string",
+                      "enum": [
+                        "retained",
+                        "changed",
+                        "unresolved"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "evidenceStatus": {
+                      "type": "string",
+                      "enum": [
+                        "confirmed-fact",
+                        "unverified-input",
+                        "unconfirmed"
+                      ]
+                    },
+                    "inputConsidered": {
+                      "type": "string",
+                      "description": "창업자 답변이 새로 말한 정보. 확정 주장은 확인된 사실이 아니다."
+                    },
+                    "impactAssessment": {
+                      "type": "string",
+                      "description": "그 정보가 기존 판단이나 가설에 미치는 영향."
+                    },
+                    "sufficiencyAssessment": {
+                      "type": "string",
+                      "enum": [
+                        "sufficient",
+                        "insufficient",
+                        "partial"
+                      ],
+                      "description": "retained 또는 unresolved이면 sufficient가 아니다."
+                    },
+                    "retentionDecision": {
+                      "type": "string",
+                      "enum": [
+                        "retained",
+                        "changed",
+                        "unresolved"
+                      ],
+                      "description": "decision과 같은 값."
+                    },
+                    "holdReason": {
+                      "type": "string",
+                      "description": "유지하거나 유보하거나 바꾼 구체적 이유. 방향성만 적거나 추가 정보가 필요하다만 쓰면 실패다."
+                    },
+                    "evidenceNeeded": {
+                      "type": "string",
+                      "description": "판단을 바꾸려면 필요한 계약서, 증빙, 예약, 입금, 확인, 인터뷰, 기록."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "messages": [
+          {
+            "role": "system",
+            "content": "당신은 ALABOM의 AI PM이다. 입력에 없는 가격, 인원, 매출, 시장 규모는 만들지 않는다. JSON 객체만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다. 이전 1차 분석은 과거 출력이다. 새 분석과 구분하고 통째로 다시 출력하지 않는다. 선택한 답변과 추가 설명은 현재의 판단·정보이며 검증된 사실이 아니다. answerOrigin이 synthetic-test-data이면 테스트용 합성 데이터다. 실제 창업자 답변으로 취급하지 않는다. answerOrigin이 founder-input이어도 근거가 없으면 사실로 승격하지 않는다. 가설로 남긴다. 판단, 가설, 검증 우선순위는 답변 때문에 달라지는 부분만 갱신한다. 근거 없이 가설이 강화되었다고 쓰지 않는다. 반환 계약 reflection-output-11. 필수 키는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes 이다. 필수 키가 없으면 실패다. hypotheses는 비어 있지 않은 문자열 배열이다. changes는 JSON 배열이다. 객체 맵, 문자열, 누락, 배열이 아닌 원소는 실패다. 배열 원소는 네 개다. field는 judgment, hypotheses, nextVerification, nextQuestion 이다. 원소 키는 field, previous, current, decision, reason, evidenceStatus, inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded 이다. founderAnswer와 choiceTrace는 넣지 않는다. 코드가 창업자 답변을 보존한다. 코드는 여섯 검토 필드를 만들지 않는다. previous는 저장된 값 그대로다. nextQuestion.previous가 저장된 질문과 다르면 실패다. current는 그 필드의 반환값과 같다. hypotheses의 previous와 current는 항목을 \" / \"로 잇는다. decision은 changed, retained, unresolved 중 하나다. current가 previous와 다르면 changed다. 값이 같고 답변을 검토해 유지하면 retained다. 값이 같고 근거가 부족해 판단을 유보하면 unresolved다. reason이 비어 있으면 실패다. retained여도 비어 있으면 실패다. 새 정보가 없어 유지, 바꾸지 않은 이유, 이전과 동일한 상태라고만 쓰면 실패다. reason은 그 답변이 그 필드에 미치는 영향을 설명한다. 선택 문장과 추가 설명을 원소마다 복사하지 않는다. inputLedger는 founderChoice, founderSupplement, previousJudgment, previousHypotheses, previousVerification을 구분한다. kind가 다른 입력을 같은 문장으로 다루지 않는다. 관련성이 낮으면 낮다고 적는다. judgment와 hypotheses의 inputConsidered는 답변이 새로 말한 정보다. impactAssessment는 기존 판단이나 가설에 미치는 영향이다. sufficiencyAssessment는 sufficient, insufficient, partial 중 하나다. retained 또는 unresolved이면 sufficient가 아니다. retentionDecision은 decision과 같다. holdReason은 유지하거나 유보하는 구체적 이유다. 방향성만 적거나 추가 정보가 필요하다만 쓰면 실패다. evidenceNeeded는 판단을 바꾸려면 필요한 계약서, 증빙, 예약, 입금, 확인, 인터뷰, 기록이다. 확정 주장을 확인된 사실로 쓰지 않는다. 확정, 계약, 확보는 창업자의 주장일 수 있다. 계약서나 입금 기록이 없으면 확인된 사실이 아니다. 주장이라고 적고 evidenceStatus는 unverified-input이다. 그 주장을 무시하지 않는다. 답변이 기존 판단과 충돌하면 검토 없이 retained하지 않는다. 판단을 바꾸거나 unresolved로 충돌을 적는다. retained인 reason은 추가 설명이 왜 그 필드를 바꾸기에 부족한지 적는다. 네 reason은 서로 다르다. judgment의 reason에는 판단, hypotheses에는 가설 또는 미확인, nextVerification에는 검증, nextQuestion에는 질문이라는 말을 넣는다. 판단의 reason이 선택 문장뿐이면 실패다. 선택은 그 계획이 옳다는 근거가 아니다. evidenceStatus는 unverified-input, confirmed-fact, unconfirmed 중 하나다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 unverified-input 이다. confirmed-fact로 쓰면 실패다. hypotheses는 미확인이면 retained다. 그 없음이 가설을 확정하지 못한다고 reason에 적는다. 가설 current에 수요 문장을 넣지 않는다. founderChoice의 kind는 plan-choice다. 이것은 검증 우선순위다. 사업 성공의 증거가 아니다. 가설의 검증 순서를 바꾼다. founderSupplement의 kind는 absent다. 없는 확정과 수요를 만들지 마라. judgment.current는 previousJudgment와 같은 문장이다. decision은 retained다. sufficiencyAssessment는 insufficient다. evidenceStatus는 unconfirmed다. 문장이 같은데 decision을 changed로 두면 실패다. judgment.inputConsidered가 founderChoice.label과 같으면 실패다. 이 선택은 새 사실이 아니라 검증 순서다. impactAssessment는 선택한 계획이 판단의 근거가 아니라는 관계를 적는다. 동일하며만 반복하면 실패다. judgment.reason과 holdReason은 각각 바꾸지 않고 유지, 근거가 부족, 고객 인터뷰가 필요를 담는다. hypotheses가 미확인이면 current도 미확인만 둔다. decision은 retained다. 수요가 있다를 넣으면 실패다. inputConsidered가 선택 문장과 같으면 실패다. hypotheses.impactAssessment는 선택 또는 계획과 가설 또는 미확인을 적고, 가설의 검증 순서가 어떻게 바뀌는지 적는다. hypotheses.reason과 holdReason은 각각 가설, 미확인, 유지, 근거가 부족, 인터뷰가 필요를 담는다. 미확인 상태만 반복하면 실패다. nextVerification.current는 founderChoice.label을 글자 그대로 앞에 둔다. 체험 수요와 실행 가능성을 먼저 확인한다. 그 다음에도 온라인 마케팅 검증은 남아 있다고 적는다. 및, 같이, 함께로 붙이면 실패다. 수요가 있다고 단정하지 마라. nextVerification.decision만 changed다. nextQuestion.current는 체험 참여 의향을 묻는다. 체험을 포함한다. 물음표로 끝난다. previous는 previousAnalysis.nextQuestion 그대로다. current가 그 질문과 같으면 실패다. revenueModel은 previousAnalysis.revenueModel 문장을 그대로 복사한다. 빼거나 고치면 실패다. 가설 표시를 지우거나 확정 수익으로 바꾸지 않는다. 저장된 값이 없으면 새 문장을 만들지 않는다. founderFacts에 선택 문장이나 추가 설명을 넣지 않는다. 가설이 강화되었다고 쓰지 않는다. 수요가 있다고 단정하지 않는다."
+          },
+          {
+            "role": "user",
+            "content": "{\"analysisContract\":\"parsed-sections-1\",\"analysisContractNote\":\"previousAnalysis는 파서가 저장한 분석 섹션 전체다. 1차 모델 JSON 원문의 바이트 복사가 아니다. originalInput은 창업자 사업 원문 전체다.\",\"outputContract\":\"reflection-output-11\",\"outputContractNote\":\"반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes이다. changes 원소는 field, previous, current, decision, reason, evidenceStatus, inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded이다. decision과 retentionDecision은 changed, retained, unresolved 중 하나이고 서로 같다. retained와 unresolved는 답변을 검토한 결과다. 여섯 검토 필드는 모델이 채운다. 코드가 그 문장을 만들지 않는다. 창업자 답변은 입력에 있으므로 원소마다 반복하지 않는다. 저장된 가설이 미확인이면 미확인으로 둔다. 수요가 있을 것이라는 문장을 넣으면 실패다. nextQuestion은 물음표로 끝나는 질문이다. 지시 문장을 질문으로 쓰면 실패다. revenueModel은 저장된 가설 문장 그대로다.\",\"answerOrigin\":\"synthetic-test-data\",\"answerOriginNotice\":\"테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.\",\"originalInput\":\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\\n\\n검토 목적: 종합 사업성 검토\\n현재 단계: 미확인\\n가장 알고 싶은 것: 없음\\n검토 계약: comprehensive-1\",\"previousAnalysis\":{\"customer\":\"다양한 관광객 중 전통주를 좋아하는 내국인 및 외국인\",\"problem\":\"개인별 다양한 경험을 중요시하는 관광객의 요구를 충족시키는 것\",\"market\":\"미확인\",\"revenueModel\":\"가설: 체험 프로그램 참가비 및 관련 상품 판매 수익(가설)\",\"execution\":\"양조장의 다양한 온라인 마케팅 지원을 통해 체험 프로그램 운영\",\"risks\":[\"미확인\"],\"uncertain\":[\"미확인\"],\"hypotheses\":[\"미확인\"],\"judgment\":\"전통주(양조장)를 좋아하는 내국인/외국인을 대상으로 양조장 체험을 안내하고 주변을 즐길 수 있는 사업을 구상 중이다.\",\"nextQuestion\":\"체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?\",\"nextQuestionReason\":\"사업의 성공을 위해 우선순위를 정해야 함\",\"answerHint\":\"선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.\",\"claimConfirmation\":null,\"analysis\":{\"summary\":\"전통주(양조장)를 좋아하는 내국인/외국인을 대상으로 양조장 체험을 안내하고 주변을 즐길 수 있는 사업을 구상 중이다.\",\"value\":\"양조장 체험과 주변 관광을 결합한 독특한 경험 제공\",\"operatingModel\":\"양조장의 다양한 온라인 마케팅 지원을 통해 체험 프로그램 운영\",\"payer\":\"미확인\",\"competition\":\"미확인\",\"operations\":\"미확인\",\"profitability\":\"미확인\",\"strengths\":[\"미확인\"],\"assumptions\":[\"미확인\"],\"evidenceToChange\":[\"미확인\"],\"founderFacts\":[\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다.\",\"우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길 수 있는 사업을 구상중이다.\",\"이는 양조장의 다양한 온라인 마케팅에서 시행될 수 있어서 우리는 그것을 지원하려 한다.\"],\"inferences\":[\"추론: 다양한 관광객의 증가로 개인별 경험의 중요성이 커지고 있다.\",\"추론: 전통주를 좋아하는 관광객을 대상으로 한 체험 프로그램이 필요하다.\",\"추론: 양조장 체험과 온라인 마케팅 지원이 결합된 사업 모델이 가능하다.\"],\"judgmentDetail\":\"미확인\",\"choices\":[{\"id\":\"c1\",\"label\":\"체험 프로그램을 먼저 검증할 것\"},{\"id\":\"c2\",\"label\":\"마케팅 지원을 먼저 검증할 것\"},{\"id\":\"c3\",\"label\":\"둘을 함께 검증할 것\"},{\"id\":\"other\",\"label\":\"아직 정하지 못함과 기타\"}],\"alternatives\":\"미확인\",\"differentiation\":\"미확인\",\"nextVerification\":\"체험 프로그램의 수요 검증 및 온라인 마케팅 효과 검증\"}},\"previousQuestion\":\"체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?\",\"founderChoice\":{\"answerOrigin\":\"synthetic-test-data\",\"choiceId\":\"c1\",\"label\":\"체험 프로그램을 먼저 검증할 것\",\"otherText\":\"\"},\"founderSupplement\":\"\",\"inputLedger\":[{\"id\":\"founderChoice\",\"kind\":\"plan-choice\",\"affects\":\"judgment,nextVerification\",\"text\":\"체험 프로그램을 먼저 검증할 것\"},{\"id\":\"founderSupplement\",\"kind\":\"absent\",\"affects\":\"none\",\"text\":\"\"},{\"id\":\"previousJudgment\",\"kind\":\"stored\",\"affects\":\"judgment\",\"text\":\"전통주(양조장)를 좋아하는 내국인/외국인을 대상으로 양조장 체험을 안내하고 주변을 즐길 수 있는 사업을 구상 중이다.\"},{\"id\":\"previousHypotheses\",\"kind\":\"stored\",\"affects\":\"hypotheses\",\"text\":\"미확인\"},{\"id\":\"previousVerification\",\"kind\":\"stored\",\"affects\":\"nextVerification\",\"text\":\"체험 프로그램의 수요 검증 및 온라인 마케팅 효과 검증\"}],\"separationRules\":[\"이전 1차 분석은 과거 출력이다. 새 분석과 구분하고 통째로 다시 출력하지 않는다.\",\"선택한 답변과 추가 설명은 현재의 판단·정보이며 검증된 사실이 아니다.\",\"answerOrigin이 synthetic-test-data이면 테스트용 합성 데이터다. 실제 창업자 답변으로 취급하지 않는다.\",\"answerOrigin이 founder-input이어도 근거가 없으면 사실로 승격하지 않는다. 가설로 남긴다.\",\"판단, 가설, 검증 우선순위는 답변 때문에 달라지는 부분만 갱신한다. 근거 없이 가설이 강화되었다고 쓰지 않는다.\"],\"feedback\":{\"agreement\":\"need_info\",\"accuracy\":\"hard_to_compare\",\"revisionAreas\":[\"other\"],\"comment\":\"체험 프로그램을 먼저 검증할 것\",\"nextAction\":\"verify_hypotheses\",\"marks\":[],\"choiceAnswer\":{\"choiceId\":\"c1\",\"label\":\"체험 프로그램을 먼저 검증할 것\",\"otherText\":\"\"}},\"previousReview\":{\"problem\":\"개인별 다양한 경험을 중요시하는 관광객의 요구를 충족시키는 것\",\"target_customer\":\"다양한 관광객 중 전통주를 좋아하는 내국인 및 외국인\",\"solution\":\"양조장의 다양한 온라인 마케팅 지원을 통해 체험 프로그램 운영\",\"business_model\":\"가설: 체험 프로그램 참가비 및 관련 상품 판매 수익(가설)\",\"validation_metric\":\"미확인\",\"judgment\":\"전통주(양조장)를 좋아하는 내국인/외국인을 대상으로 양조장 체험을 안내하고 주변을 즐길 수 있는 사업을 구상 중이다.\",\"nextQuestion\":\"체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?\"},\"supplement\":\"\"}"
+          }
+        ]
+      }
+    },
+    {
+      "inputId": "brewery-claim",
+      "promptVersion": "reflection-output-11:brewery-claim",
+      "request": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "responseFormat": {
+          "type": "json_schema",
+          "schema": {
+            "title": "reflection_output_11",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "judgment",
+              "hypotheses",
+              "nextVerification",
+              "nextQuestion",
+              "revenueModel",
+              "changes"
+            ],
+            "properties": {
+              "judgment": {
+                "type": "string"
+              },
+              "hypotheses": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "nextVerification": {
+                "type": "string"
+              },
+              "nextQuestion": {
+                "type": "string"
+              },
+              "revenueModel": {
+                "type": "string"
+              },
+              "changes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "field",
+                    "previous",
+                    "current",
+                    "decision",
+                    "reason",
+                    "evidenceStatus",
+                    "inputConsidered",
+                    "impactAssessment",
+                    "sufficiencyAssessment",
+                    "retentionDecision",
+                    "holdReason",
+                    "evidenceNeeded"
+                  ],
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "enum": [
+                        "judgment",
+                        "hypotheses",
+                        "nextVerification",
+                        "nextQuestion"
+                      ]
+                    },
+                    "previous": {
+                      "type": "string"
+                    },
+                    "current": {
+                      "type": "string"
+                    },
+                    "decision": {
+                      "type": "string",
+                      "enum": [
+                        "retained",
+                        "changed",
+                        "unresolved"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "evidenceStatus": {
+                      "type": "string",
+                      "enum": [
+                        "confirmed-fact",
+                        "unverified-input",
+                        "unconfirmed"
+                      ]
+                    },
+                    "inputConsidered": {
+                      "type": "string",
+                      "description": "창업자 답변이 새로 말한 정보. 확정 주장은 확인된 사실이 아니다."
+                    },
+                    "impactAssessment": {
+                      "type": "string",
+                      "description": "그 정보가 기존 판단이나 가설에 미치는 영향."
+                    },
+                    "sufficiencyAssessment": {
+                      "type": "string",
+                      "enum": [
+                        "sufficient",
+                        "insufficient",
+                        "partial"
+                      ],
+                      "description": "retained 또는 unresolved이면 sufficient가 아니다."
+                    },
+                    "retentionDecision": {
+                      "type": "string",
+                      "enum": [
+                        "retained",
+                        "changed",
+                        "unresolved"
+                      ],
+                      "description": "decision과 같은 값."
+                    },
+                    "holdReason": {
+                      "type": "string",
+                      "description": "유지하거나 유보하거나 바꾼 구체적 이유. 방향성만 적거나 추가 정보가 필요하다만 쓰면 실패다."
+                    },
+                    "evidenceNeeded": {
+                      "type": "string",
+                      "description": "판단을 바꾸려면 필요한 계약서, 증빙, 예약, 입금, 확인, 인터뷰, 기록."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "messages": [
+          {
+            "role": "system",
+            "content": "당신은 ALABOM의 AI PM이다. 입력에 없는 가격, 인원, 매출, 시장 규모는 만들지 않는다. JSON 객체만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다. 이전 1차 분석은 과거 출력이다. 새 분석과 구분하고 통째로 다시 출력하지 않는다. 선택한 답변과 추가 설명은 현재의 판단·정보이며 검증된 사실이 아니다. answerOrigin이 synthetic-test-data이면 테스트용 합성 데이터다. 실제 창업자 답변으로 취급하지 않는다. answerOrigin이 founder-input이어도 근거가 없으면 사실로 승격하지 않는다. 가설로 남긴다. 판단, 가설, 검증 우선순위는 답변 때문에 달라지는 부분만 갱신한다. 근거 없이 가설이 강화되었다고 쓰지 않는다. 반환 계약 reflection-output-11. 필수 키는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes 이다. 필수 키가 없으면 실패다. hypotheses는 비어 있지 않은 문자열 배열이다. changes는 JSON 배열이다. 객체 맵, 문자열, 누락, 배열이 아닌 원소는 실패다. 배열 원소는 네 개다. field는 judgment, hypotheses, nextVerification, nextQuestion 이다. 원소 키는 field, previous, current, decision, reason, evidenceStatus, inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded 이다. founderAnswer와 choiceTrace는 넣지 않는다. 코드가 창업자 답변을 보존한다. 코드는 여섯 검토 필드를 만들지 않는다. previous는 저장된 값 그대로다. nextQuestion.previous가 저장된 질문과 다르면 실패다. current는 그 필드의 반환값과 같다. hypotheses의 previous와 current는 항목을 \" / \"로 잇는다. decision은 changed, retained, unresolved 중 하나다. current가 previous와 다르면 changed다. 값이 같고 답변을 검토해 유지하면 retained다. 값이 같고 근거가 부족해 판단을 유보하면 unresolved다. reason이 비어 있으면 실패다. retained여도 비어 있으면 실패다. 새 정보가 없어 유지, 바꾸지 않은 이유, 이전과 동일한 상태라고만 쓰면 실패다. reason은 그 답변이 그 필드에 미치는 영향을 설명한다. 선택 문장과 추가 설명을 원소마다 복사하지 않는다. inputLedger는 founderChoice, founderSupplement, previousJudgment, previousHypotheses, previousVerification을 구분한다. kind가 다른 입력을 같은 문장으로 다루지 않는다. 관련성이 낮으면 낮다고 적는다. judgment와 hypotheses의 inputConsidered는 답변이 새로 말한 정보다. impactAssessment는 기존 판단이나 가설에 미치는 영향이다. sufficiencyAssessment는 sufficient, insufficient, partial 중 하나다. retained 또는 unresolved이면 sufficient가 아니다. retentionDecision은 decision과 같다. holdReason은 유지하거나 유보하는 구체적 이유다. 방향성만 적거나 추가 정보가 필요하다만 쓰면 실패다. evidenceNeeded는 판단을 바꾸려면 필요한 계약서, 증빙, 예약, 입금, 확인, 인터뷰, 기록이다. 확정 주장을 확인된 사실로 쓰지 않는다. 확정, 계약, 확보는 창업자의 주장일 수 있다. 계약서나 입금 기록이 없으면 확인된 사실이 아니다. 주장이라고 적고 evidenceStatus는 unverified-input이다. 그 주장을 무시하지 않는다. 답변이 기존 판단과 충돌하면 검토 없이 retained하지 않는다. 판단을 바꾸거나 unresolved로 충돌을 적는다. retained인 reason은 추가 설명이 왜 그 필드를 바꾸기에 부족한지 적는다. 네 reason은 서로 다르다. judgment의 reason에는 판단, hypotheses에는 가설 또는 미확인, nextVerification에는 검증, nextQuestion에는 질문이라는 말을 넣는다. 판단의 reason이 선택 문장뿐이면 실패다. 선택은 그 계획이 옳다는 근거가 아니다. evidenceStatus는 unverified-input, confirmed-fact, unconfirmed 중 하나다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 unverified-input 이다. confirmed-fact로 쓰면 실패다. hypotheses는 미확인이면 retained다. 그 없음이 가설을 확정하지 못한다고 reason에 적는다. 가설 current에 수요 문장을 넣지 않는다. founderChoice와 founderSupplement는 다른 입력이다. 선택은 검증 우선순위다. kind는 unverified-claim이다. 가설의 검증 순서와 확정 주장의 영향을 따로 적어라. 확정 주장은 확인된 사실이 아니다. 사실로 승격하지 마라. judgment.current는 previousJudgment와 같은 문장이다. decision은 retained다. sufficiencyAssessment는 insufficient다. evidenceStatus는 unverified-input이다. 문장이 같은데 decision을 changed로 두면 실패다. judgment.inputConsidered는 양조장 확정 문장을 주장으로 적고 증빙이 없다고 적는다. 선택 문장만 쓰면 실패다. 계약서가 필요하다고 적는다. judgment.reason과 holdReason은 각각 양조장, 주장, 확인된 사실이 아니다, 바꾸지 않고 유지, 계약서가 필요를 담는다. 동일하며만 쓰면 실패다. hypotheses가 미확인이면 current도 미확인만 둔다. decision은 retained다. 문장이 같은데 decision을 changed로 두면 실패다. hypotheses의 inputConsidered와 reason은 양조장 주장을 가설의 근거로 쓰지 않고 미확인을 유지하며 계약서가 필요하다고 적는다. nextVerification.current는 founderChoice.label을 글자 그대로 포함한다. 체험 수요와 실행 가능성, 계약서나 입금 증빙 확인을 함께 적는다. 선택 문장만 쓰면 실패다. 수요가 있다고 단정하지 마라. nextVerification.decision만 changed다. sufficiencyAssessment는 partial이다. nextQuestion.current는 저장된 이전 질문과 다른 질문이다. 계약서나 입금 증빙을 묻는다. 물음표로 끝난다. previous는 previousAnalysis.nextQuestion 그대로다. revenueModel은 previousAnalysis.revenueModel 문장을 그대로 복사한다. 빼거나 고치면 실패다. 가설 표시를 지우거나 확정 수익으로 바꾸지 않는다. 저장된 값이 없으면 새 문장을 만들지 않는다. founderFacts에 선택 문장이나 추가 설명을 넣지 않는다. 가설이 강화되었다고 쓰지 않는다. 수요가 있다고 단정하지 않는다."
+          },
+          {
+            "role": "user",
+            "content": "{\"analysisContract\":\"parsed-sections-1\",\"analysisContractNote\":\"previousAnalysis는 파서가 저장한 분석 섹션 전체다. 1차 모델 JSON 원문의 바이트 복사가 아니다. originalInput은 창업자 사업 원문 전체다.\",\"outputContract\":\"reflection-output-11\",\"outputContractNote\":\"반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes이다. changes 원소는 field, previous, current, decision, reason, evidenceStatus, inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded이다. decision과 retentionDecision은 changed, retained, unresolved 중 하나이고 서로 같다. retained와 unresolved는 답변을 검토한 결과다. 여섯 검토 필드는 모델이 채운다. 코드가 그 문장을 만들지 않는다. 창업자 답변은 입력에 있으므로 원소마다 반복하지 않는다. 저장된 가설이 미확인이면 미확인으로 둔다. 수요가 있을 것이라는 문장을 넣으면 실패다. nextQuestion은 물음표로 끝나는 질문이다. 지시 문장을 질문으로 쓰면 실패다. revenueModel은 저장된 가설 문장 그대로다.\",\"answerOrigin\":\"synthetic-test-data\",\"answerOriginNotice\":\"테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.\",\"originalInput\":\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\\n\\n검토 목적: 종합 사업성 검토\\n현재 단계: 미확인\\n가장 알고 싶은 것: 없음\\n검토 계약: comprehensive-1\",\"previousAnalysis\":{\"customer\":\"다양한 관광객 중 전통주를 좋아하는 내국인 및 외국인\",\"problem\":\"개인별 다양한 경험을 중요시하는 관광객의 요구를 충족시키는 것\",\"market\":\"미확인\",\"revenueModel\":\"가설: 체험 프로그램 참가비 및 관련 상품 판매 수익(가설)\",\"execution\":\"양조장의 다양한 온라인 마케팅 지원을 통해 체험 프로그램 운영\",\"risks\":[\"미확인\"],\"uncertain\":[\"미확인\"],\"hypotheses\":[\"미확인\"],\"judgment\":\"전통주(양조장)를 좋아하는 내국인/외국인을 대상으로 양조장 체험을 안내하고 주변을 즐길 수 있는 사업을 구상 중이다.\",\"nextQuestion\":\"체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?\",\"nextQuestionReason\":\"사업의 성공을 위해 우선순위를 정해야 함\",\"answerHint\":\"선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.\",\"claimConfirmation\":null,\"analysis\":{\"summary\":\"전통주(양조장)를 좋아하는 내국인/외국인을 대상으로 양조장 체험을 안내하고 주변을 즐길 수 있는 사업을 구상 중이다.\",\"value\":\"양조장 체험과 주변 관광을 결합한 독특한 경험 제공\",\"operatingModel\":\"양조장의 다양한 온라인 마케팅 지원을 통해 체험 프로그램 운영\",\"payer\":\"미확인\",\"competition\":\"미확인\",\"operations\":\"미확인\",\"profitability\":\"미확인\",\"strengths\":[\"미확인\"],\"assumptions\":[\"미확인\"],\"evidenceToChange\":[\"미확인\"],\"founderFacts\":[\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다.\",\"우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길 수 있는 사업을 구상중이다.\",\"이는 양조장의 다양한 온라인 마케팅에서 시행될 수 있어서 우리는 그것을 지원하려 한다.\"],\"inferences\":[\"추론: 다양한 관광객의 증가로 개인별 경험의 중요성이 커지고 있다.\",\"추론: 전통주를 좋아하는 관광객을 대상으로 한 체험 프로그램이 필요하다.\",\"추론: 양조장 체험과 온라인 마케팅 지원이 결합된 사업 모델이 가능하다.\"],\"judgmentDetail\":\"미확인\",\"choices\":[{\"id\":\"c1\",\"label\":\"체험 프로그램을 먼저 검증할 것\"},{\"id\":\"c2\",\"label\":\"마케팅 지원을 먼저 검증할 것\"},{\"id\":\"c3\",\"label\":\"둘을 함께 검증할 것\"},{\"id\":\"other\",\"label\":\"아직 정하지 못함과 기타\"}],\"alternatives\":\"미확인\",\"differentiation\":\"미확인\",\"nextVerification\":\"체험 프로그램의 수요 검증 및 온라인 마케팅 효과 검증\"}},\"previousQuestion\":\"체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?\",\"founderChoice\":{\"answerOrigin\":\"synthetic-test-data\",\"choiceId\":\"c1\",\"label\":\"체험 프로그램을 먼저 검증할 것\",\"otherText\":\"\"},\"founderSupplement\":\"테스트용 합성 설명. 실제 창업자가 제공한 문장이 아니다. 양조장 한 곳과 체험 진행이 확정되었다고 말한다. 계약서와 입금 증빙은 없다.\",\"inputLedger\":[{\"id\":\"founderChoice\",\"kind\":\"plan-choice\",\"affects\":\"judgment,nextVerification\",\"text\":\"체험 프로그램을 먼저 검증할 것\"},{\"id\":\"founderSupplement\",\"kind\":\"unverified-claim\",\"affects\":\"judgment,hypotheses,nextVerification\",\"text\":\"테스트용 합성 설명. 실제 창업자가 제공한 문장이 아니다. 양조장 한 곳과 체험 진행이 확정되었다고 말한다. 계약서와 입금 증빙은 없다.\"},{\"id\":\"previousJudgment\",\"kind\":\"stored\",\"affects\":\"judgment\",\"text\":\"전통주(양조장)를 좋아하는 내국인/외국인을 대상으로 양조장 체험을 안내하고 주변을 즐길 수 있는 사업을 구상 중이다.\"},{\"id\":\"previousHypotheses\",\"kind\":\"stored\",\"affects\":\"hypotheses\",\"text\":\"미확인\"},{\"id\":\"previousVerification\",\"kind\":\"stored\",\"affects\":\"nextVerification\",\"text\":\"체험 프로그램의 수요 검증 및 온라인 마케팅 효과 검증\"}],\"separationRules\":[\"이전 1차 분석은 과거 출력이다. 새 분석과 구분하고 통째로 다시 출력하지 않는다.\",\"선택한 답변과 추가 설명은 현재의 판단·정보이며 검증된 사실이 아니다.\",\"answerOrigin이 synthetic-test-data이면 테스트용 합성 데이터다. 실제 창업자 답변으로 취급하지 않는다.\",\"answerOrigin이 founder-input이어도 근거가 없으면 사실로 승격하지 않는다. 가설로 남긴다.\",\"판단, 가설, 검증 우선순위는 답변 때문에 달라지는 부분만 갱신한다. 근거 없이 가설이 강화되었다고 쓰지 않는다.\"],\"feedback\":{\"agreement\":\"need_info\",\"accuracy\":\"hard_to_compare\",\"revisionAreas\":[\"other\"],\"comment\":\"체험 프로그램을 먼저 검증할 것\",\"nextAction\":\"verify_hypotheses\",\"marks\":[],\"choiceAnswer\":{\"choiceId\":\"c1\",\"label\":\"체험 프로그램을 먼저 검증할 것\",\"otherText\":\"\"}},\"previousReview\":{\"problem\":\"개인별 다양한 경험을 중요시하는 관광객의 요구를 충족시키는 것\",\"target_customer\":\"다양한 관광객 중 전통주를 좋아하는 내국인 및 외국인\",\"solution\":\"양조장의 다양한 온라인 마케팅 지원을 통해 체험 프로그램 운영\",\"business_model\":\"가설: 체험 프로그램 참가비 및 관련 상품 판매 수익(가설)\",\"validation_metric\":\"미확인\",\"judgment\":\"전통주(양조장)를 좋아하는 내국인/외국인을 대상으로 양조장 체험을 안내하고 주변을 즐길 수 있는 사업을 구상 중이다.\",\"nextQuestion\":\"체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?\"},\"supplement\":\"테스트용 합성 설명. 실제 창업자가 제공한 문장이 아니다. 양조장 한 곳과 체험 진행이 확정되었다고 말한다. 계약서와 입금 증빙은 없다.\"}"
+          }
+        ]
+      }
+    }
+  ]
+}

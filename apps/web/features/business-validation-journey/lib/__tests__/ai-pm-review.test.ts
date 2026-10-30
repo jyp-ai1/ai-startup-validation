@@ -2413,7 +2413,9 @@ describe('AI PM first review', () => {
         'question_not_from_input',
         'plan_not_from_input',
       ]);
-      expect(choiceRepair).toContain('온라인 마케팅 효과 검증을 붙이지 마라');
+      expect(choiceRepair).toContain('그 다음에도 온라인 마케팅 검증은 남아 있다고 적어라');
+      expect(choiceRepair).toContain('nextVerification.decision만 changed다');
+      expect(choiceRepair).not.toContain('온라인 마케팅 효과 검증을 붙이지 마라');
       expect(choiceRepair).toContain('고객 인터뷰나 예약 의향');
       expect(choiceRepair).toContain('founderChoice.label과 같으면 실패다');
       expect(choiceRepair).toContain('근거가 부족');
@@ -2429,7 +2431,8 @@ describe('AI PM first review', () => {
       expect(claimRepair).toContain('founderChoice.label을 그대로 포함하고 계약서 또는 입금 증빙');
       expect(claimRepair).toContain('reason에도 양조장 또는 계약');
       expect(claimRepair).toContain('previousAnalysis.nextQuestion');
-      expect(claimRepair).toContain('decision은 changed다');
+      expect(claimRepair).toContain('nextVerification.decision만 changed다');
+      expect(claimRepair).toContain('그 decision은 retained다');
       expect(claimRepair).toContain('라벨을 다른 말로 바꾸면 실패다');
       expect(claimRepair).not.toContain('온라인 마케팅 효과 검증을 붙이지 마라');
       return reply(validUngatedFollowUpRaw(sections()), { usage: { inputTokens: 20, outputTokens: 7, totalTokens: 27 } });
@@ -2731,7 +2734,10 @@ describe('AI PM first review', () => {
     expect(emptySystem).toContain('검증 우선순위');
     expect(emptySystem).toContain('previousJudgment와 같은 문장');
     expect(emptySystem).toContain('inputConsidered가 founderChoice.label과 같으면 실패다');
-    expect(emptySystem).toContain('온라인 마케팅 효과 검증을 뒤에 붙이지 마라');
+    expect(emptySystem).toContain('그 다음에도 온라인 마케팅 검증은 남아 있다고 적는다');
+    expect(emptySystem).toContain('문장이 같은데 decision을 changed로 두면 실패다');
+    expect(emptySystem).toContain('가설의 검증 순서');
+    expect(emptySystem).not.toContain('온라인 마케팅 효과 검증을 뒤에 붙이지 마라');
     expect(emptySystem).toContain('미확인 상태만 반복하면 실패다');
     expect(emptySystem).toContain('근거가 부족');
     expect(emptySystem).toContain('글자 그대로');
@@ -2745,6 +2751,9 @@ describe('AI PM first review', () => {
     expect(claimSystem).toContain('글자 그대로');
     expect(claimSystem).toContain('계약서나 입금 증빙');
     expect(claimSystem).toContain('양조장 주장을 가설');
+    expect(claimSystem).toContain('nextVerification.decision만 changed다');
+    expect(claimSystem).toContain('문장이 같은데 decision을 changed로 두면 실패다');
+    expect(claimSystem).toContain('저장된 이전 질문과 다른 질문이다');
 
     const experiencePlan = `${choice} 잠재 고객의 체험 참여 의향을 인터뷰로 확인한다. 이 단계는 아직 실행되지 않았다.`;
     const experienceQuestion = '체험 프로그램에 참여할 고객이 있는가?';
@@ -3281,6 +3290,7 @@ describe('AI PM first review', () => {
       'retention_hold_missing:hypotheses',
       'input_echo_only:hypotheses',
       'question_not_from_input',
+      'priority_task_dropped',
       'next_question_unknown_missing',
     ]);
     expect(score('reflection-output-11:brewery-claim:repair')).toEqual([
@@ -3357,6 +3367,7 @@ describe('AI PM first review', () => {
       'retention_sufficiency_missing:hypotheses',
       'input_echo_only:hypotheses',
       'trace_relation_missing:hypotheses',
+      'priority_task_dropped',
     ]);
     expect(score('reflection-output-11:brewery-claim:repair')).toEqual([
       'decision_mismatch:judgment',
@@ -3377,7 +3388,7 @@ describe('AI PM first review', () => {
   it('accumulates a second synthetic answer on the updated analysis', () => {
     const choice = '체험 프로그램을 먼저 검증할 것';
     const originalQuestion = '체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?';
-    const firstPlan = `${choice} 잠재 고객의 체험 참여 의향을 인터뷰로 확인한다. 이 단계는 아직 실행되지 않았다.`;
+    const firstPlan = `${choice} 잠재 고객의 체험 참여 의향을 인터뷰로 확인한다. 이 단계는 아직 실행되지 않았다. 그 다음에도 온라인 마케팅 검증은 남아 있다.`;
     const firstQuestion = '체험 프로그램에 참여할 고객이 있는가?';
     const base = sections();
     const original: ReviewSections = {
@@ -3494,6 +3505,8 @@ describe('AI PM first review', () => {
     expect(first.errors).toEqual([]);
     expect(JSON.stringify(original)).toBe(parentBefore);
     expect(first.sections?.judgment).toBe(original.judgment);
+    expect(first.sections?.analysis?.nextVerification).toContain('그 다음');
+    expect(first.sections?.analysis?.nextVerification).toContain('온라인 마케팅');
     expect(first.sections?.nextQuestion).toBe(firstQuestion);
     const updated = first.sections;
     if (!updated?.analysis) throw new Error('first_sections_missing');

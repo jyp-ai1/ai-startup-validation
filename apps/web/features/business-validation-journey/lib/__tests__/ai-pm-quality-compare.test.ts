@@ -169,12 +169,16 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-unified-2026-10-30');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-decision-2026-10-30');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('incremental-reflection-unified-request.json');
+    expect(script).toContain('incremental-reflection-decision-request.json');
+    expect(script).not.toContain('incremental-reflection-unified-request.json');
+    expect(script).toContain('q1-incremental-reflection-unified-2026-10-30');
+    expect(script).not.toContain('q1-incremental-reflection-unified-2026-10-30.json');
+    expect(script).toContain('priority_task_dropped');
     expect(script).not.toContain('incremental-reflection-relation-request.json');
     expect(script).not.toContain('incremental-reflection-meaning-request.json');
     expect(script).toContain('q1-incremental-reflection-relation-2026-10-30');
@@ -1504,6 +1508,48 @@ describe('quality-2 and quality-3 compare requests', () => {
       supplement: '',
       answerOrigin: 'synthetic-test-data',
     });
+    const fixtureUrl = new URL('../incremental-reflection-unified-request.json', import.meta.url);
+    const frozen = JSON.parse(readFileSync(fixtureUrl, 'utf8')) as {
+      priorRunId: string;
+      requests: Array<{ inputId: string; request: unknown }>;
+    };
+    expect(frozen.priorRunId).toBe('q1-incremental-reflection-relation-2026-10-30');
+    expect(frozen.requests.map((item) => item.inputId)).toEqual(['choice-only', 'brewery-claim']);
+    expect(frozen.requests[0]?.request).not.toEqual(caseA);
+    const relation = JSON.parse(readFileSync(new URL('../incremental-reflection-relation-request.json', import.meta.url), 'utf8')) as {
+      requests: Array<{ request: unknown }>;
+    };
+    expect(frozen.requests[0]?.request).not.toEqual(relation.requests[0]?.request);
+  });
+
+  it('freezes decision requests that keep a retained judgment beside a changed plan', () => {
+    const evidence = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json', import.meta.url), 'utf8'),
+    ) as { businessInput: string; report: { calls: Array<{ promptVersion: string; raw: string }> } };
+    const previousRaw = evidence.report.calls.find((call) => call.promptVersion === 'quality-14-cpo-draft:brewery');
+    const parsed = parseSections(previousRaw?.raw ?? '', evidence.businessInput);
+    const selected = parsed?.analysis?.choices.find((choice) => choice.label === '체험 프로그램을 먼저 검증할 것');
+    const feedback = {
+      feedbackId: 'feedback-trace',
+      reviewId: 'review-trace',
+      userId: 'user-trace',
+      agreement: 'need_info' as const,
+      accuracy: 'hard_to_compare' as const,
+      revisionAreas: ['other' as const],
+      comment: selected?.label ?? '',
+      nextAction: 'verify_hypotheses' as const,
+      marks: [],
+      choiceAnswer: { choiceId: selected?.id ?? '', label: selected?.label ?? '', otherText: '' },
+      submittedAt: '2026-10-30T08:00:00.000Z',
+      modelCalls: 0 as const,
+    };
+    const caseA = buildFollowUpRequest({
+      originalInput: evidence.businessInput,
+      sections: parsed!,
+      feedback,
+      supplement: '',
+      answerOrigin: 'synthetic-test-data',
+    });
     const caseB = buildFollowUpRequest({
       originalInput: evidence.businessInput,
       sections: parsed!,
@@ -1518,7 +1564,7 @@ describe('quality-2 and quality-3 compare requests', () => {
       analysisContract: 'parsed-sections-1',
       outputContract: 'reflection-output-11',
       baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json',
-      priorRunId: 'q1-incremental-reflection-relation-2026-10-30',
+      priorRunId: 'q1-incremental-reflection-unified-2026-10-30',
       confounders: [
         {
           id: 'call_path',
@@ -1526,9 +1572,9 @@ describe('quality-2 and quality-3 compare requests', () => {
             'Preview build reads this frozen request and calls the model directly. It does not call the product second-review route.',
         },
         {
-          id: 'unified',
+          id: 'decision',
           detail:
-            'A choice and an unverified claim stay different inputs in one review. The next plan keeps the choice and the missing proof. The next question follows that review. One repair names the failed checks. An identical repair is a fail. There is no third call.',
+            'A retained judgment can sit beside a changed verification plan. The choice reorders the hypothesis check and keeps a still-valid marketing task for later. An unverified claim does not flip decision on an unchanged sentence. One repair names the failed checks. An identical repair is a fail. There is no third call.',
         },
       ],
       requests: [
@@ -1536,13 +1582,13 @@ describe('quality-2 and quality-3 compare requests', () => {
         { inputId: 'brewery-claim', promptVersion: 'reflection-output-11:brewery-claim', request: caseB },
       ],
     };
-    const fixtureUrl = new URL('../incremental-reflection-unified-request.json', import.meta.url);
+    const fixtureUrl = new URL('../incremental-reflection-decision-request.json', import.meta.url);
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(fixtureUrl, `${JSON.stringify(record, null, 2)}\n`);
     expect(JSON.parse(readFileSync(fixtureUrl, 'utf8'))).toEqual(record);
-    const relation = JSON.parse(readFileSync(new URL('../incremental-reflection-relation-request.json', import.meta.url), 'utf8')) as {
+    const unified = JSON.parse(readFileSync(new URL('../incremental-reflection-unified-request.json', import.meta.url), 'utf8')) as {
       requests: Array<{ request: unknown }>;
     };
-    expect(record.requests[0]?.request).not.toEqual(relation.requests[0]?.request);
+    expect(record.requests[0]?.request).not.toEqual(unified.requests[0]?.request);
   });
 });
 
