@@ -11,6 +11,8 @@ import {
   AI_PM_REVIEW_MODEL,
   buildFirstReviewRequest,
   buildFollowUpRequest,
+  FOLLOW_UP_BREWERY_VERIFICATION_PLAN,
+  FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM,
   followUpStructureCoverage,
   parseSections,
   presentReview,
@@ -167,12 +169,15 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-review-fields-2026-10-30');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-input-trace-2026-10-30');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('incremental-reflection-review-fields-request.json');
+    expect(script).toContain('incremental-reflection-input-trace-request.json');
+    expect(script).toContain('q1-incremental-reflection-review-fields-2026-10-30');
+    expect(script).not.toContain('q1-incremental-reflection-review-fields-2026-10-30.json');
+    expect(script).not.toContain('incremental-reflection-review-fields-request.json');
     expect(script).toContain('q1-incremental-reflection-reason-quality-2026-10-30');
     expect(script).not.toContain('q1-incremental-reflection-reason-quality-2026-10-30.json');
     expect(script).not.toContain('incremental-reflection-reason-quality-request.json');
@@ -1102,49 +1107,16 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(reasonQualityFixture.outputContract).toBe('reflection-output-11');
     expect(reasonQualityFixture.requests[0]?.promptVersion).toBe('reflection-output-11:brewery');
     expect(reasonQualityFixture.requests[0]?.request).not.toEqual(product.request);
-    const productUser = JSON.parse(product.request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
-      originalInput: string;
-    };
-    const reviewFieldsRecord = {
-      businessInput: productUser.originalInput,
-      dataClass: 'synthetic-test-data',
-      notice: '테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.',
-      analysisContract: 'parsed-sections-1',
-      outputContract: 'reflection-output-11',
-      baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-product-follow-up-request.json',
-      priorRunId: 'q1-incremental-reflection-reason-quality-2026-10-30',
-      confounders: [
-        {
-          id: 'call_path',
-          detail:
-            'Preview build reads this frozen product request and calls the model directly. It does not call the product second-review route. productFollowUpInvoked false is not a Q10 pass.',
-        },
-        {
-          id: 'data_class',
-          detail: '테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.',
-        },
-        {
-          id: 'separate_record',
-          detail:
-            'This run is q1-incremental-reflection-review-fields-2026-10-30. The reason-quality run q1-incremental-reflection-reason-quality-2026-10-30 and the earlier reflection runs stay RECORDED.',
-        },
-        {
-          id: 'output_contract',
-          detail:
-            'The request stays on reflection-output-11 and adds required review fields under a strict json_schema. A missing field is not stored. One repair call is allowed. The code does not write the review sentences.',
-        },
-      ],
-      requests: [
-        {
-          inputId: 'brewery',
-          promptVersion: 'reflection-output-11:brewery',
-          request: product.request,
-        },
-      ],
-    };
     const reviewFieldsUrl = new URL('../incremental-reflection-review-fields-request.json', import.meta.url);
-    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(reviewFieldsUrl, `${JSON.stringify(reviewFieldsRecord, null, 2)}\n`);
-    expect(JSON.parse(readFileSync(reviewFieldsUrl, 'utf8'))).toEqual(reviewFieldsRecord);
+    const reviewFieldsFixture = JSON.parse(readFileSync(reviewFieldsUrl, 'utf8')) as {
+      priorRunId: string;
+      outputContract: string;
+      requests: Array<{ promptVersion: string; request: unknown }>;
+    };
+    expect(reviewFieldsFixture.priorRunId).toBe('q1-incremental-reflection-reason-quality-2026-10-30');
+    expect(reviewFieldsFixture.outputContract).toBe('reflection-output-11');
+    expect(reviewFieldsFixture.requests[0]?.promptVersion).toBe('reflection-output-11:brewery');
+    expect(reviewFieldsFixture.requests[0]?.request).not.toEqual(product.request);
     const user = JSON.parse(historicalRequest.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
       previousAnalysis: Record<string, unknown>;
       founderChoice: { label: string };
@@ -1266,6 +1238,90 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(hedged.regressionA).toBe('pass');
     expect(hedged.regressionB).toBe('pass');
     expect(scoreBreweryRegression(null, COMPARE_BUSINESS_INPUT).regressionA).toBe('not_run');
+  });
+
+  it('freezes two input-trace requests that separate an empty supplement from a brewery claim', () => {
+    const evidence = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json', import.meta.url), 'utf8'),
+    ) as { businessInput: string; report: { calls: Array<{ promptVersion: string; raw: string }> } };
+    const previousRaw = evidence.report.calls.find((call) => call.promptVersion === 'quality-14-cpo-draft:brewery');
+    const parsed = parseSections(previousRaw?.raw ?? '', evidence.businessInput);
+    expect(parsed?.analysis?.choices.length).toBeGreaterThan(0);
+    const selected = parsed?.analysis?.choices.find((choice) => choice.label === '체험 프로그램을 먼저 검증할 것');
+    expect(selected?.id).toBeTruthy();
+    const feedback = {
+      feedbackId: 'feedback-trace',
+      reviewId: 'review-trace',
+      userId: 'user-trace',
+      agreement: 'need_info' as const,
+      accuracy: 'hard_to_compare' as const,
+      revisionAreas: ['other' as const],
+      comment: selected?.label ?? '',
+      nextAction: 'verify_hypotheses' as const,
+      marks: [],
+      choiceAnswer: { choiceId: selected?.id ?? '', label: selected?.label ?? '', otherText: '' },
+      submittedAt: '2026-10-30T08:00:00.000Z',
+      modelCalls: 0 as const,
+    };
+    const caseA = buildFollowUpRequest({
+      originalInput: evidence.businessInput,
+      sections: parsed!,
+      feedback,
+      supplement: '',
+      answerOrigin: 'synthetic-test-data',
+    });
+    const caseB = buildFollowUpRequest({
+      originalInput: evidence.businessInput,
+      sections: parsed!,
+      feedback,
+      supplement: FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM,
+      answerOrigin: 'synthetic-test-data',
+    });
+    const systemA = caseA.messages.find((message) => message.role === 'system')?.content ?? '';
+    const systemB = caseB.messages.find((message) => message.role === 'system')?.content ?? '';
+    expect(systemA).not.toContain(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
+    expect(systemB).not.toContain(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
+    expect(systemA).not.toContain('양조장 후보가 있는가?');
+    const userA = JSON.parse(caseA.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      founderSupplement: string;
+      inputLedger: Array<{ id: string; kind: string }>;
+    };
+    const userB = JSON.parse(caseB.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      founderSupplement: string;
+      inputLedger: Array<{ id: string; kind: string }>;
+    };
+    expect(userA.founderSupplement).toBe('');
+    expect(userA.inputLedger.find((entry) => entry.id === 'founderSupplement')?.kind).toBe('absent');
+    expect(userB.founderSupplement).toContain('확정되었');
+    expect(userB.inputLedger.find((entry) => entry.id === 'founderSupplement')?.kind).toBe('unverified-claim');
+    expect(caseA).not.toEqual(caseB);
+    const record = {
+      businessInput: evidence.businessInput,
+      dataClass: 'synthetic-test-data',
+      notice: '테스트용 합성 데이터. 실제 창업자 답변이 아니며 실제 사업 검증 결과가 아니다.',
+      analysisContract: 'parsed-sections-1',
+      outputContract: 'reflection-output-11',
+      baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json',
+      priorRunId: 'q1-incremental-reflection-review-fields-2026-10-30',
+      confounders: [
+        {
+          id: 'call_path',
+          detail:
+            'Preview build reads this frozen request and calls the model directly. It does not call the product second-review route.',
+        },
+        {
+          id: 'two_inputs',
+          detail: 'Case A has no supplement. Case B adds an unverified brewery claim. The same hold sentence on both is not a pass.',
+        },
+      ],
+      requests: [
+        { inputId: 'choice-only', promptVersion: 'reflection-output-11:choice-only', request: caseA },
+        { inputId: 'brewery-claim', promptVersion: 'reflection-output-11:brewery-claim', request: caseB },
+      ],
+    };
+    const fixtureUrl = new URL('../incremental-reflection-input-trace-request.json', import.meta.url);
+    if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(fixtureUrl, `${JSON.stringify(record, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(fixtureUrl, 'utf8'))).toEqual(record);
   });
 });
 

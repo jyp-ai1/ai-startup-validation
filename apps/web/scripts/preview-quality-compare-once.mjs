@@ -2,6 +2,7 @@
  * One incremental-reflection call of the frozen product follow-up request.
  * The founder answer in the fixture is synthetic test data.
  * Production builds return immediately. The product second-review route is not called.
+ * The review-fields call q1-incremental-reflection-review-fields-2026-10-30 stays RECORDED.
  * The reason-quality call q1-incremental-reflection-reason-quality-2026-10-30 stays RECORDED.
  * The normalize call q1-incremental-reflection-normalize-2026-10-30 stays RECORDED.
  * The question call q1-incremental-reflection-question-2026-10-29 stays RECORDED.
@@ -15,14 +16,14 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-review-fields-2026-10-30';
-export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-reason-quality-2026-10-30';
+export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-input-trace-2026-10-30';
+export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-review-fields-2026-10-30';
 export const PREVIEW_COMPARE_BUCKET = 'ai-pm-quality-compare';
 export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(scriptDir, '..');
-const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-review-fields-request.json');
+const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-input-trace-request.json');
 
 export function shouldRunPreviewQualityCompare(env) {
   return env.VERCEL_ENV === 'preview' && Boolean(env.VERCEL_GIT_COMMIT_REF) && env.VERCEL_GIT_COMMIT_REF !== 'main';
@@ -123,6 +124,12 @@ function genericHold(text) {
   return /방향성|추가정보|동일한상태|미확인/.test(folded);
 }
 
+function statusRepeat(text) {
+  const folded = compactText(text).replace(/[.]/g, '');
+  if (!/여전히유효|변화가없다|새로운정보가없|새정보가없|방향성을제공|명확한방향/.test(folded)) return false;
+  return !/계획|근거가아니|주장|계약서|수요|고객|인터뷰|관련|부족|충분하지|확인된사실이아니|증빙/.test(folded);
+}
+
 /** Repair trigger. The stored score still uses incrementalReflectionErrors. This does not write review sentences. */
 export function reviewFieldGaps(raw, userPrompt) {
   let parsed;
@@ -185,20 +192,45 @@ export function reviewFieldGaps(raw, userPrompt) {
     if (promoted(input) || promoted(change.impactAssessment || '') || promoted(change.holdReason || '')) {
       errors.push(`claim_promoted_to_fact:${field}`);
     }
+    if (held && statusRepeat(change.impactAssessment || '')) errors.push(`status_repeat:impactAssessment:${field}`);
+    if (held && statusRepeat(change.holdReason || '')) errors.push(`status_repeat:holdReason:${field}`);
+    if (held && choice && compactText(input) === compactText(choice)) errors.push(`input_echo_only:${field}`);
+    if (assertsClaim && input.trim() && !/양조장|확정|계약/.test(input)) errors.push(`claim_unlinked:${field}`);
   }
+  const experience = choice.includes('체험') && choice.includes('먼저') && !choice.includes('마케팅을 먼저');
+  const nextVerification = typeof parsed.nextVerification === 'string' ? parsed.nextVerification : '';
+  const nextQuestion = typeof parsed.nextQuestion === 'string' ? parsed.nextQuestion : '';
+  const claim = /확정되었|확정했다|계약을 맺|계약했다|확보했다|확보되었/.test(supplement);
+  if (experience && !supplement.trim() && (nextVerification.includes('양조장 후보') || nextQuestion.includes('양조장 후보'))) {
+    errors.push('plan_not_from_input');
+  }
+  if (experience && claim && !/계약서|증빙|입금/.test(nextVerification)) errors.push('claim_verification_missing');
   return [...new Set(errors)];
 }
 
 export function repairMessage(errors) {
-  return [
+  const lines = [
     '이전 JSON은 저장되지 않았다.',
     `실패 코드: ${errors.join(',')}.`,
     'judgment와 hypotheses의 inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded를 입력에 이미 있는 창업자 답변으로 다시 적어라.',
     '없는 계약, 예약, 확정 사실을 만들지 마라. 확정 주장을 확인된 사실로 쓰지 마라.',
     'retentionDecision은 decision과 같아야 한다. retained 또는 unresolved의 sufficiencyAssessment는 sufficient가 아니다.',
     'holdReason에 방향성만 적거나 추가 정보가 필요하다만 쓰지 마라.',
-    '같은 스키마의 JSON만 반환하라.',
-  ].join(' ');
+  ];
+  if (
+    errors.some(
+      (error) =>
+        String(error).startsWith('status_repeat') ||
+        String(error).startsWith('input_echo_only') ||
+        String(error).startsWith('claim_unlinked') ||
+        error === 'plan_not_from_input' ||
+        error === 'claim_verification_missing',
+    )
+  ) {
+    lines.push('founderChoice와 previousJudgment의 관계를 적어라. 상태 문장이나 선택 문장만 반복하지 마라. 입력에 없는 확정을 만들지 마라.');
+  }
+  lines.push('같은 스키마의 JSON만 반환하라.');
+  return lines.join(' ');
 }
 
 function responseFormatBody(request) {

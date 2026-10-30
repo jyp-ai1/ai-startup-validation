@@ -26,11 +26,13 @@ import {
   FOLLOW_UP_BREWERY_VERIFICATION_PLAN,
   FOLLOW_UP_OUTPUT_CONTRACT,
   FOLLOW_UP_REVIEW_FIELDS,
+  FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM,
   followUpOutputContractErrors,
   followUpReflectionSchema,
   followUpRepairMessage,
   incrementalReflectionErrors,
   normalizeIncrementalSections,
+  reflectionReviewsRepeat,
   FOLLOW_UP_SEPARATION_RULES,
   buildSyntheticFollowUpRequest,
   followUpAnswerNotice,
@@ -551,6 +553,8 @@ describe('AI PM first review', () => {
       ['supplement', (payload) => { payload.supplement = '다른 설명'; }],
       ['supplement', (payload) => { payload.supplement = ''; }],
       ['supplement', (payload) => { delete payload.supplement; }],
+      ['inputLedger', (payload) => { payload.inputLedger = []; }],
+      ['inputLedger', (payload) => { delete payload.inputLedger; }],
     ];
     for (const [name, apply] of requiredMismatches) {
       expect(followUpRequestMismatches(mutate(apply), source), name).toContain(name);
@@ -2577,12 +2581,267 @@ describe('AI PM first review', () => {
       'retention_sufficiency_missing:judgment',
       'retention_evidence_missing:judgment',
       'retention_hold_missing:judgment',
+      'status_repeat:impactAssessment:judgment',
+      'status_repeat:holdReason:judgment',
+      'input_echo_only:judgment',
       'reason_insufficient:hypotheses',
       'retention_input_missing:hypotheses',
       'retention_sufficiency_missing:hypotheses',
       'retention_evidence_missing:hypotheses',
+      'status_repeat:impactAssessment:hypotheses',
+      'status_repeat:holdReason:hypotheses',
+      'input_echo_only:hypotheses',
       'next_verification_not_executable',
     ]);
+  });
+
+  it('relates an empty supplement and a brewery claim to different reviews', () => {
+    const choice = '체험 프로그램을 먼저 검증할 것';
+    const previous: ReviewSections = {
+      ...sections(),
+      hypotheses: ['미확인'],
+      analysis: {
+        summary: sections().judgment,
+        value: '미확인',
+        operatingModel: '구상',
+        payer: '미확인',
+        competition: '미확인',
+        operations: '구상',
+        profitability: '미확인',
+        strengths: ['구상'],
+        assumptions: ['미확인'],
+        evidenceToChange: ['수요'],
+        founderFacts: ['관광객'],
+        inferences: ['추론'],
+        judgmentDetail: '보류',
+        choices: [],
+        nextVerification: '기존 검증 문장',
+      },
+    };
+    const feedback = {
+      feedbackId: 'feedback-trace',
+      reviewId: 'review-trace',
+      userId: 'user-trace',
+      agreement: 'need_info' as const,
+      accuracy: 'hard_to_compare' as const,
+      revisionAreas: ['other' as const],
+      comment: choice,
+      nextAction: 'verify_hypotheses' as const,
+      marks: [],
+      choiceAnswer: { choiceId: 'choice-experience', label: choice, otherText: '' },
+      submittedAt: NOW,
+      modelCalls: 0 as const,
+    };
+    const emptyRequest = buildSyntheticFollowUpRequest({
+      originalInput: PLAN,
+      sections: previous,
+      feedback,
+      supplement: '',
+      answerOrigin: 'synthetic-test-data',
+    });
+    const claimRequest = buildSyntheticFollowUpRequest({
+      originalInput: PLAN,
+      sections: previous,
+      feedback,
+      supplement: FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM,
+      answerOrigin: 'synthetic-test-data',
+    });
+    const emptyUser = JSON.parse(emptyRequest.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      inputLedger: Array<{ id: string; kind: string; affects: string }>;
+    };
+    const claimUser = JSON.parse(claimRequest.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      inputLedger: Array<{ id: string; kind: string; affects: string }>;
+    };
+    expect(emptyUser.inputLedger.map((entry) => entry.id)).toEqual([
+      'founderChoice',
+      'founderSupplement',
+      'previousJudgment',
+      'previousHypotheses',
+      'previousVerification',
+    ]);
+    expect(emptyUser.inputLedger.find((entry) => entry.id === 'founderChoice')?.kind).toBe('plan-choice');
+    expect(emptyUser.inputLedger.find((entry) => entry.id === 'founderSupplement')).toMatchObject({ kind: 'absent', affects: 'none' });
+    expect(emptyUser.inputLedger.find((entry) => entry.id === 'previousJudgment')).toMatchObject({ kind: 'stored', affects: 'judgment' });
+    expect(claimUser.inputLedger.find((entry) => entry.id === 'founderSupplement')?.kind).toBe('unverified-claim');
+    const absenceRequest = buildSyntheticFollowUpRequest({
+      originalInput: PLAN,
+      sections: previous,
+      feedback,
+      supplement: '예약 고객, 가격, 계약, 확정된 양조장은 없다.',
+      answerOrigin: 'synthetic-test-data',
+    });
+    const absenceUser = JSON.parse(absenceRequest.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      inputLedger: Array<{ id: string; kind: string }>;
+    };
+    expect(absenceUser.inputLedger.find((entry) => entry.id === 'founderSupplement')?.kind).toBe('absence-statement');
+    const emptySystem = emptyRequest.messages.find((message) => message.role === 'system')?.content ?? '';
+    const claimSystem = claimRequest.messages.find((message) => message.role === 'system')?.content ?? '';
+    const absenceSystem = absenceRequest.messages.find((message) => message.role === 'system')?.content ?? '';
+    expect(absenceSystem).toContain(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
+    expect(emptySystem).not.toContain(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
+    expect(emptySystem).not.toContain('양조장 후보가 있는가?');
+    expect(claimSystem).not.toContain(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
+    expect(claimSystem).not.toContain('양조장 후보가 있는가?');
+    expect(emptySystem).toContain('inputLedger');
+    expect(claimSystem).toContain('unverified-claim');
+
+    const experiencePlan = `${choice} 잠재 고객의 체험 참여 의향을 인터뷰로 확인한다. 이 단계는 아직 실행되지 않았다.`;
+    const experienceQuestion = '체험 프로그램에 참여할 고객이 있는가?';
+    const claimPlan = `${choice} 양조장 확보 주장은 계약서와 입금 증빙을 확인한 뒤에만 협력으로 본다. 그와 별도로 체험 참여 수요를 인터뷰로 확인한다.`;
+    const reviewedFields = (field: string, decision: string, texts: Record<string, string>) => ({
+      inputConsidered: texts.inputConsidered ?? `${texts.note} 에서 새로 들은 내용이다.`,
+      impactAssessment: texts.impactAssessment ?? '이 내용은 저장된 판단에 미치는 영향이 제한된다.',
+      sufficiencyAssessment: decision === 'changed' ? 'partial' : 'insufficient',
+      retentionDecision: decision,
+      holdReason: texts.holdReason ?? (decision === 'changed' ? '기존 문장을 유지하지 않고 검증 순서를 바꾼다.' : '확인된 사실이 아니어서 바꾸지 않고 유지한다.'),
+      evidenceNeeded: texts.evidenceNeeded ?? '계약서 증빙이 필요하다.',
+    });
+    const buildRaw = (input: {
+      supplement: string;
+      judgment?: string;
+      hypotheses?: string[];
+      nextVerification: string;
+      nextQuestion: string;
+      reasons: Record<string, string>;
+      fields: Record<string, Record<string, string>>;
+    }) => {
+      const judgment = input.judgment ?? previous.judgment;
+      const hypotheses = input.hypotheses ?? previous.hypotheses;
+      const rows = [
+        ['judgment', previous.judgment, judgment],
+        ['hypotheses', previous.hypotheses.join(' / '), hypotheses.join(' / ')],
+        ['nextVerification', previous.analysis?.nextVerification ?? '', input.nextVerification],
+        ['nextQuestion', previous.nextQuestion, input.nextQuestion],
+      ] as const;
+      return JSON.stringify({
+        judgment,
+        hypotheses,
+        nextVerification: input.nextVerification,
+        nextQuestion: input.nextQuestion,
+        revenueModel: previous.revenueModel,
+        changes: rows.map(([field, prior, current]) => {
+          const decision = current === prior ? 'retained' : 'changed';
+          return {
+            field,
+            previous: prior,
+            current,
+            decision,
+            reason: input.reasons[field],
+            evidenceStatus: 'unverified-input',
+            ...reviewedFields(field, decision, input.fields[field] ?? { note: input.supplement }),
+          };
+        }),
+      });
+    };
+    const contextFor = (supplement: string) => ({
+      previousJudgment: previous.judgment,
+      previousHypotheses: [...previous.hypotheses],
+      previousNextVerification: previous.analysis?.nextVerification ?? '',
+      previousNextQuestion: previous.nextQuestion,
+      previousRevenueModel: previous.revenueModel,
+      choiceLabel: choice,
+      supplement,
+      answerOrigin: 'synthetic-test-data' as const,
+    });
+    const emptyRaw = buildRaw({
+      supplement: '',
+      nextVerification: experiencePlan,
+      nextQuestion: experienceQuestion,
+      reasons: {
+        judgment: `${choice} 은 검증 계획이라 저장된 판단의 근거가 아니다. 수요가 확인되지 않아 판단을 바꾸지 않고 유지한다. 판단을 바꾸려면 고객 인터뷰가 필요하다.`,
+        hypotheses: `${choice} 은 가설을 확정하지 못한다. 수요 근거가 부족해 미확인으로 유지한다. 가설을 바꾸려면 고객 인터뷰가 필요하다.`,
+        nextVerification: `${choice} 때문에 검증은 체험 참여 의향을 확인하는 순서로 바뀐다.`,
+        nextQuestion: `${choice} 은 체험 수요가 확인되지 않은 계획이다. 다음 질문은 참여할 고객이 있는지다.`,
+      },
+      fields: {
+        judgment: {
+          inputConsidered: `${choice} 은 검증 순서에 대한 계획이며 수요가 확인되지 않은 상태다.`,
+          impactAssessment: '선택한 계획은 저장된 판단과 관련된다. 수요가 확인되지 않은 판단에 미치는 영향은 그 계획을 근거로 바꾸기에는 부족하다.',
+          holdReason: '수요가 확인되지 않아 이 계획은 근거가 아니다. 저장된 판단을 유지한다.',
+          evidenceNeeded: '체험에 참여할 고객 인터뷰가 필요하다.',
+        },
+        hypotheses: {
+          inputConsidered: `${choice} 은 가설을 정하는 근거가 아니라 검증 계획이다.`,
+          impactAssessment: '이 계획은 미확인 가설과 관련되지만 근거가 부족해 가설을 확정하지 못한다.',
+          holdReason: '수요 근거가 부족해 가설을 미확인으로 유지한다.',
+          evidenceNeeded: '체험 참여 의향을 묻는 고객 인터뷰 기록이 필요하다.',
+        },
+      },
+    });
+    const before = JSON.stringify(previous);
+    const stored = normalizeIncrementalSections(previous, emptyRaw, contextFor(''));
+    expect(stored.errors).toEqual([]);
+    expect(JSON.stringify(previous)).toBe(before);
+    expect(stored.sections?.judgment).toBe(previous.judgment);
+    expect(stored.sections?.hypotheses).toEqual(['미확인']);
+    expect(stored.sections?.nextQuestion).toBe(experienceQuestion);
+    expect(stored.sections?.analysis?.nextVerification).toBe(experiencePlan);
+    expect(stored.sections?.revenueModel).toBe(previous.revenueModel);
+    expect(experiencePlan).not.toBe(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
+    const echoed = JSON.parse(emptyRaw) as { changes: Array<Record<string, string>> };
+    const echoedJudgment = echoed.changes.find((change) => change.field === 'judgment');
+    if (echoedJudgment) {
+      echoedJudgment.inputConsidered = choice;
+      echoedJudgment.impactAssessment = '기존 판단에 변화가 없다.';
+      echoedJudgment.holdReason = '기존 판단이 여전히 유효하다.';
+    }
+    const echoedResult = normalizeIncrementalSections(previous, JSON.stringify(echoed), contextFor(''));
+    expect(echoedResult.sections).toBeNull();
+    expect(echoedResult.errors).toEqual(expect.arrayContaining(['input_echo_only:judgment', 'status_repeat:impactAssessment:judgment', 'status_repeat:holdReason:judgment']));
+    const invented = JSON.parse(emptyRaw) as { nextVerification: string; changes: Array<Record<string, string>> };
+    invented.nextVerification = `${experiencePlan} 확정된 양조장을 확보했다.`;
+    const inventedChange = invented.changes.find((change) => change.field === 'nextVerification');
+    if (inventedChange) inventedChange.current = invented.nextVerification;
+    const inventedResult = normalizeIncrementalSections(previous, JSON.stringify(invented), contextFor(''));
+    expect(inventedResult.errors).toContain('input_invented');
+    expect(inventedResult.sections).toBeNull();
+
+    const claimRaw = buildRaw({
+      supplement: FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM,
+      nextVerification: claimPlan,
+      nextQuestion: '계약서가 있는가?',
+      reasons: {
+        judgment: `${FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM} 이것은 창업자의 주장이고 증빙은 없다. 확인된 사실이 아니어서 저장된 판단에 미칠 영향이 부족하다. 판단을 유지한다. 바꾸려면 계약서가 필요하다.`,
+        hypotheses: `${FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM} 이 주장은 가설을 확정하지 못한다. 증빙은 없어 미확인으로 유지한다. 가설을 바꾸려면 체험 수요 인터뷰가 필요하다.`,
+        nextVerification: `${FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM} ${choice} 계약 주장은 검증이 끝나지 않았다. 증빙 확인이 검증 순서에 들어간다.`,
+        nextQuestion: `${FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM} 증빙이 없어 계약서 유무를 질문한다.`,
+      },
+      fields: {
+        judgment: {
+          inputConsidered: `${FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM} 양조장 확보가 확정되었다는 주장이며 증빙은 없다. ${choice} 도 함께 들었다.`,
+          impactAssessment: '양조장 확보 주장은 저장된 판단과 관련된다. 증빙은 없어 확인된 사실이 아니며 판단에 미치는 영향은 제한된다. 판단을 유지한다.',
+          holdReason: '계약 증빙은 없어 확인된 사실이 아니다. 저장된 판단을 유지한다.',
+          evidenceNeeded: '양조장 계약서와 입금 증빙이 필요하다.',
+        },
+        hypotheses: {
+          inputConsidered: `${FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM} 양조장 확정 주장은 가설의 근거가 아니다.`,
+          impactAssessment: '이 주장은 미확인 가설과 관련되지만 가설을 확정하지 못한다.',
+          holdReason: '증빙은 없어 확인된 사실이 아니므로 가설을 미확인으로 유지한다.',
+          evidenceNeeded: '체험 수요를 확인하는 인터뷰 기록이 필요하다.',
+        },
+      },
+    });
+    const claimStored = normalizeIncrementalSections(previous, claimRaw, contextFor(FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM));
+    expect(claimStored.errors).toEqual([]);
+    expect(claimStored.sections?.judgment).toBe(previous.judgment);
+    expect(claimStored.sections?.hypotheses).toEqual(['미확인']);
+    expect(claimStored.sections?.nextQuestion).toBe('계약서가 있는가?');
+    expect(claimStored.sections?.analysis?.nextVerification).toBe(claimPlan);
+    expect(claimPlan).not.toBe(experiencePlan);
+    expect(reflectionReviewsRepeat(emptyRaw, claimRaw)).toBe(false);
+    expect(reflectionReviewsRepeat(emptyRaw, emptyRaw)).toBe(true);
+    const promoted = JSON.parse(claimRaw) as { judgment: string; changes: Array<Record<string, string>> };
+    promoted.judgment = '양조장과 계약이 확정되었다.';
+    const promotedJudgment = promoted.changes.find((change) => change.field === 'judgment');
+    if (promotedJudgment) {
+      promotedJudgment.current = promoted.judgment;
+      promotedJudgment.decision = 'changed';
+      promotedJudgment.retentionDecision = 'changed';
+      promotedJudgment.sufficiencyAssessment = 'partial';
+    }
+    const promotedResult = normalizeIncrementalSections(previous, JSON.stringify(promoted), contextFor(FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM));
+    expect(promotedResult.errors).toContain('claim_promoted_to_fact:judgment');
+    expect(promotedResult.sections).toBeNull();
   });
 
   it('stores the child from changes, restores the same sections, and ignores a duplicate submit', async () => {

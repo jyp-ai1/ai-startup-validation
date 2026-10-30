@@ -49,6 +49,10 @@ export const FOLLOW_UP_FOUNDER_ANSWER_STATUS = 'unverified-input';
 export const FOLLOW_UP_BREWERY_VERIFICATION_PLAN =
   '체험 프로그램을 먼저 검증할 것. 먼저 체험 프로그램을 제공할 수 있는 양조장 후보를 찾고, 실제 협력 가능 여부와 체험 운영 조건을 확인한다. 협력 가능 여부가 확인되기 전까지는 확정된 공급처로 간주하지 않는다. 이후 잠재 고객 인터뷰와 체험 참여 의향을 확인하고, 가격 수용도와 예약 전환은 별도로 검증한다.';
 
+/** Synthetic claim. It is not a verified brewery and it is not the absence sentence. */
+export const FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM =
+  '테스트용 합성 설명. 실제 창업자가 제공한 문장이 아니다. 양조장 한 곳과 체험 진행이 확정되었다고 말한다. 계약서와 입금 증빙은 없다.';
+
 export const FOLLOW_UP_OUTPUT_CONTRACT_NOTE =
   '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes이다. changes 원소는 field, previous, current, decision, reason, evidenceStatus, inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded이다. decision과 retentionDecision은 changed, retained, unresolved 중 하나이고 서로 같다. retained와 unresolved는 답변을 검토한 결과다. 여섯 검토 필드는 모델이 채운다. 코드가 그 문장을 만들지 않는다. 창업자 답변은 입력에 있으므로 원소마다 반복하지 않는다. 저장된 가설이 미확인이면 미확인으로 둔다. 수요가 있을 것이라는 문장을 넣으면 실패다. nextQuestion은 물음표로 끝나는 질문이다. 지시 문장을 질문으로 쓰면 실패다. revenueModel은 저장된 가설 문장 그대로다.';
 
@@ -133,6 +137,45 @@ export const FOLLOW_UP_SEPARATION_RULES = [
   'answerOrigin이 founder-input이어도 근거가 없으면 사실로 승격하지 않는다. 가설로 남긴다.',
   '판단, 가설, 검증 우선순위는 답변 때문에 달라지는 부분만 갱신한다. 근거 없이 가설이 강화되었다고 쓰지 않는다.',
 ] as const;
+
+export type FollowUpInputLedgerEntry = {
+  id: 'founderChoice' | 'founderSupplement' | 'previousJudgment' | 'previousHypotheses' | 'previousVerification';
+  kind: 'plan-choice' | 'absent' | 'unverified-claim' | 'absence-statement' | 'supplement' | 'stored';
+  affects: string;
+  text: string;
+};
+
+/**
+ * Labels each input the model must relate to an analysis item.
+ * The text is the input itself. It is not a review sentence.
+ */
+export function followUpInputLedger(input: {
+  choiceLabel: string | null;
+  supplement: string;
+  judgment: string;
+  hypotheses: readonly string[];
+  nextVerification: string;
+}): FollowUpInputLedgerEntry[] {
+  const choice = (input.choiceLabel ?? '').trim();
+  const supplementKind = inputSupplementKind(input.supplement);
+  return [
+    {
+      id: 'founderChoice',
+      kind: choice ? 'plan-choice' : 'absent',
+      affects: 'judgment,nextVerification',
+      text: choice,
+    },
+    {
+      id: 'founderSupplement',
+      kind: supplementKind,
+      affects: supplementKind === 'absent' ? 'none' : 'judgment,hypotheses,nextVerification',
+      text: input.supplement,
+    },
+    { id: 'previousJudgment', kind: 'stored', affects: 'judgment', text: input.judgment },
+    { id: 'previousHypotheses', kind: 'stored', affects: 'hypotheses', text: input.hypotheses.join(' / ') },
+    { id: 'previousVerification', kind: 'stored', affects: 'nextVerification', text: input.nextVerification },
+  ];
+}
 export const AI_PM_REVIEW_INPUT_LIMIT = 24_000;
 
 const AGREEMENTS = ['agree', 'partial', 'disagree', 'need_info'] as const;
@@ -502,6 +545,17 @@ export function buildFollowUpRequest(input: {
         }
       : null,
     founderSupplement: input.supplement,
+    ...(revision
+      ? {}
+      : {
+          inputLedger: followUpInputLedger({
+            choiceLabel: choice?.label ?? null,
+            supplement: input.supplement,
+            judgment: input.sections.judgment,
+            hypotheses: input.sections.hypotheses,
+            nextVerification: input.sections.analysis?.nextVerification ?? '',
+          }),
+        }),
     separationRules: [...FOLLOW_UP_SEPARATION_RULES],
     feedback: input.feedback
       ? {
@@ -531,7 +585,7 @@ export function buildFollowUpRequest(input: {
     maxTokens: AI_PM_FOLLOW_UP_MAX_TOKENS,
     responseFormat: revision ? { type: 'json_object' } : { type: 'json_schema', schema: followUpReflectionSchema() },
     messages: fitFollowUpMessages([
-      { role: 'system', content: revision ? gatedFollowUpPrompt() : reviewSystemPrompt() },
+      { role: 'system', content: revision ? gatedFollowUpPrompt() : reviewSystemPrompt(input.supplement) },
       { role: 'user', content: JSON.stringify(payload) },
     ]),
   };
@@ -584,6 +638,22 @@ export function followUpRequestMismatches(request: ChatRequest, source: FollowUp
   differ('previousQuestion', payload.previousQuestion, source.sections.nextQuestion);
   differ('founderSupplement', payload.founderSupplement, source.supplement);
   differ('supplement', payload.supplement, source.supplement);
+  const gated = Boolean(revisionPayload(source.sections, normalizeMarks(source.feedback?.marks)));
+  if (gated) {
+    if (payload.inputLedger !== undefined) mismatches.push('inputLedger');
+  } else {
+    differ(
+      'inputLedger',
+      payload.inputLedger,
+      followUpInputLedger({
+        choiceLabel: source.feedback?.choiceAnswer?.label ?? null,
+        supplement: source.supplement,
+        judgment: source.sections.judgment,
+        hypotheses: source.sections.hypotheses,
+        nextVerification: source.sections.analysis?.nextVerification ?? '',
+      }),
+    );
+  }
   differ('separationRules', payload.separationRules, [...FOLLOW_UP_SEPARATION_RULES]);
   const expectedAnalysis = followUpPreviousAnalysis(source.sections);
   const previous = payload.previousAnalysis;
@@ -1285,6 +1355,28 @@ function assertsConfirmation(text: string): boolean {
   return /확정되었|확정했다|계약을 맺|계약했다|확보했다|확보되었/.test(text);
 }
 
+function inputSupplementKind(supplement: string): FollowUpInputLedgerEntry['kind'] {
+  const text = supplement.trim();
+  if (!text) return 'absent';
+  if (assertsConfirmation(text)) return 'unverified-claim';
+  if (text.includes('없') && /양조장|예약|가격|계약/.test(text)) return 'absence-statement';
+  return 'supplement';
+}
+
+function experienceFirstChoice(label: string | null): boolean {
+  return Boolean(label && label.includes('체험') && label.includes('먼저') && !label.includes('마케팅을 먼저'));
+}
+
+const STATUS_REPEAT = /여전히유효|변화가없다|새로운정보가없|새정보가없|방향성을제공|명확한방향/;
+const STATUS_SPECIFIC = /계획|근거가아니|주장|계약서|수요|고객|인터뷰|관련|부족|충분하지|확인된사실이아니|증빙/;
+
+/** A status sentence that does not say how the new input relates to the stored item. */
+function statusRepeat(text: string): boolean {
+  const folded = compact(text).replace(/[.]/g, '');
+  if (!STATUS_REPEAT.test(folded)) return false;
+  return !STATUS_SPECIFIC.test(folded);
+}
+
 function marksClaimAsUnverified(text: string): boolean {
   return /주장|확인된 사실이 아니|증빙이 없|증빙은 없|계약서는 없|검증되지|미확인/.test(text);
 }
@@ -1363,6 +1455,38 @@ function reviewFieldErrors(
     for (const text of [inputConsidered, impactAssessment, holdReason]) {
       if (text && claimPromoted(text)) errors.push(`claim_promoted_to_fact:${field}`);
     }
+  }
+  if (held && impactAssessment && statusRepeat(impactAssessment)) errors.push(`status_repeat:impactAssessment:${field}`);
+  if (held && holdReason && statusRepeat(holdReason)) errors.push(`status_repeat:holdReason:${field}`);
+  const choice = (context.choiceLabel ?? '').trim();
+  if (held && choice && inputConsidered && compact(inputConsidered) === compact(choice)) errors.push(`input_echo_only:${field}`);
+  const choiceOnly = choice.length > 0 && context.supplement.trim().length === 0;
+  if (choiceOnly && held && impactAssessment) {
+    const relates =
+      field === 'hypotheses'
+        ? /계획|선택/.test(impactAssessment) && /가설|미확인|관련/.test(impactAssessment)
+        : /계획|선택/.test(impactAssessment) && /판단|관련|근거/.test(impactAssessment);
+    if (!relates) errors.push(`trace_relation_missing:${field}`);
+  }
+  if (choiceOnly && held && evidenceNeeded && !/고객|수요|인터뷰|참여|예약|의향/.test(evidenceNeeded)) {
+    errors.push(`trace_evidence_unrelated:${field}`);
+  }
+  if (
+    experienceFirstChoice(context.choiceLabel) &&
+    assertsConfirmation(context.supplement) &&
+    inputConsidered &&
+    !/양조장|확정|계약/.test(inputConsidered)
+  ) {
+    errors.push(`claim_unlinked:${field}`);
+  }
+  if (
+    field === 'judgment' &&
+    experienceFirstChoice(context.choiceLabel) &&
+    assertsConfirmation(context.supplement) &&
+    evidenceNeeded &&
+    !/계약서|증빙|입금/.test(evidenceNeeded)
+  ) {
+    errors.push(`trace_evidence_unrelated:${field}`);
   }
   return errors;
 }
@@ -1608,21 +1732,32 @@ export function incrementalReflectionErrors(raw: string, context: FollowUpOutput
   const absence = absentInputMarkers(context.supplement);
   if (absence.length > 0 && !absence.some((marker) => claimText.includes(marker))) errors.push('supplement_unlinked');
   if (inventedPresence(claimText, context.supplement)) errors.push('absent_input_invented');
-  const experienceFirst = Boolean(
-    context.choiceLabel &&
-      context.choiceLabel.includes('체험') &&
-      context.choiceLabel.includes('먼저') &&
-      !context.choiceLabel.includes('마케팅을 먼저'),
-  );
+  const experienceFirst = experienceFirstChoice(context.choiceLabel);
+  const choiceOnly = experienceFirst && context.supplement.trim().length === 0;
+  const claimChoice = experienceFirst && assertsConfirmation(context.supplement);
   if (experienceFirst && context.choiceLabel && !nextVerification.includes(context.choiceLabel)) errors.push('next_verification_choice_absent');
   if (experienceFirst && !nextVerification.includes('체험')) errors.push('next_verification_priority_missing');
   if (
     experienceFirst &&
+    !assertsConfirmation(context.supplement) &&
     absentInputMarkers(context.supplement).some((marker) => marker.includes('양조장')) &&
     !verificationPlanReady(nextVerification)
   ) {
     errors.push('next_verification_not_executable');
   }
+  if (choiceOnly && (nextVerification === FOLLOW_UP_BREWERY_VERIFICATION_PLAN || nextVerification.includes('양조장 후보'))) {
+    errors.push('plan_not_from_input');
+  }
+  if (choiceOnly && nextQuestion.includes('양조장 후보')) errors.push('question_not_from_input');
+  if (
+    choiceOnly &&
+    unconfirmedHypotheses(context.previousHypotheses) &&
+    hypothesisLine(hypotheses) !== hypothesisLine(context.previousHypotheses)
+  ) {
+    errors.push('hypothesis_unconfirmed_replaced');
+  }
+  if (claimChoice && nextVerification === FOLLOW_UP_BREWERY_VERIFICATION_PLAN) errors.push('plan_not_from_input');
+  if (claimChoice && !/계약서|증빙|입금/.test(nextVerification)) errors.push('claim_verification_missing');
   if (experienceFirst && !asksAQuestion(nextQuestion)) errors.push('next_question_not_a_question');
   if (experienceFirst && /마케팅/.test(nextQuestion) && /효과|우선|먼저|검증/.test(nextQuestion)) errors.push('next_question_regressed');
   if (experienceFirst) {
@@ -1631,8 +1766,28 @@ export function incrementalReflectionErrors(raw: string, context: FollowUpOutput
     if (!focus.some((marker) => nextQuestion.includes(marker)) && !nextQuestion.includes('체험')) errors.push('next_question_unknown_missing');
   }
   const prose = [judgment, hypotheses.join('\n'), nextVerification, nextQuestion, JSON.stringify(changes ?? [])].join('\n');
+  if (choiceOnly && /확정된 양조장|확보했다|계약했다|양조장이 확정|계약을 맺/.test(prose)) errors.push('input_invented');
   if (/강화되었|강화됐다|수요가 확인되었|수요가 확인됐다|수요가 있다/.test(prose)) errors.push('hypothesis_strengthened');
   return [...new Set(errors)];
+}
+
+/** True when two reviews reuse the same judgment input or the same hold sentence. */
+export function reflectionReviewsRepeat(leftRaw: string, rightRaw: string): boolean {
+  const read = (raw: string) => {
+    const parsed = readReflectionObject(raw);
+    const changes = Array.isArray(parsed?.changes) ? parsed.changes : [];
+    const judgment = changes.find((item) => item && typeof item === 'object' && (item as Record<string, unknown>).field === 'judgment') as
+      | Record<string, unknown>
+      | undefined;
+    return {
+      input: typeof judgment?.inputConsidered === 'string' ? judgment.inputConsidered : '',
+      hold: typeof judgment?.holdReason === 'string' ? judgment.holdReason : '',
+    };
+  };
+  const left = read(leftRaw);
+  const right = read(rightRaw);
+  if (!left.input || !right.input) return false;
+  return compact(left.input) === compact(right.input) || compact(left.hold) === compact(right.hold);
 }
 
 /**
@@ -1893,18 +2048,61 @@ function gatedFollowUpPrompt(): string {
 
 /** Lists the failed checks. It does not supply the review sentences. */
 export function followUpRepairMessage(errors: string[]): string {
-  return [
+  const lines = [
     '이전 JSON은 저장되지 않았다.',
     `실패 코드: ${errors.join(',')}.`,
     'judgment와 hypotheses의 inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded를 입력에 이미 있는 창업자 답변으로 다시 적어라.',
     '없는 계약, 예약, 확정 사실을 만들지 마라. 확정 주장을 확인된 사실로 쓰지 마라.',
     'retentionDecision은 decision과 같아야 한다. retained 또는 unresolved의 sufficiencyAssessment는 sufficient가 아니다.',
     'holdReason에 방향성만 적거나 추가 정보가 필요하다만 쓰지 마라.',
-    '같은 스키마의 JSON만 반환하라.',
-  ].join(' ');
+  ];
+  if (
+    errors.some(
+      (error) =>
+        error.startsWith('status_repeat') ||
+        error.startsWith('input_echo_only') ||
+        error.startsWith('trace_') ||
+        error.startsWith('claim_unlinked') ||
+        error === 'plan_not_from_input' ||
+        error === 'question_not_from_input' ||
+        error === 'claim_verification_missing' ||
+        error === 'input_invented',
+    )
+  ) {
+    lines.push('founderChoice와 previousJudgment의 관계를 적어라. 상태 문장이나 선택 문장만 반복하지 마라. 입력에 없는 확정을 만들지 마라.');
+  }
+  lines.push('같은 스키마의 JSON만 반환하라.');
+  return lines.join(' ');
 }
 
-function reviewSystemPrompt(): string {
+function reviewRoute(supplement: string): string[] {
+  if (supplement.includes('확정된 양조장은 없다')) {
+    return [
+      'judgment는 저장 판단을 유지한다. 선택이나 검증 계획을 판단으로 옮기지 않는다.',
+      `nextVerification의 current는 이 문장이다. ${FOLLOW_UP_BREWERY_VERIFICATION_PLAN}`,
+      '그 문장은 검증 계획이다. 양조장 후보, 협력 가능 여부, 참여 의향, 가격과 예약의 별도 검증 순서다. 어느 단계도 끝난 사실이 아니다. decision은 changed이다.',
+      'nextVerification의 reason은 그 순서가 필요한 이유를 적는다. 선택 문장을 그대로 반복하지 않아도 된다.',
+      'nextQuestion의 current는 양조장 후보가 있는가? 이다. 물음표로 끝난다. 지시 문장을 질문 값으로 쓰면 실패다. previous는 저장된 질문 그대로다. decision은 changed이다.',
+      'nextQuestion의 reason은 그 질문이 남은 불확실성인 이유를 적는다.',
+    ];
+  }
+  if (assertsConfirmation(supplement)) {
+    return [
+      'founderSupplement의 kind는 unverified-claim이다. 확정, 계약, 확보는 주장이며 확인된 사실이 아니다.',
+      'judgment current는 저장된 판단이다. 그 주장이 판단에 미치는 영향과, 계약서나 입금 증빙이 없으면 바꾸지 않는 이유를 적는다.',
+      'nextVerification은 그 주장의 계약서 또는 증빙 확인과 선택한 체험 검증을 함께 적는다. 양조장 후보가 있는가로 바꾸지 않는다.',
+      'nextQuestion은 그 주장에서 아직 없는 증빙을 묻는다. 물음표로 끝난다.',
+    ];
+  }
+  return [
+    'founderSupplement가 비어 있으면 kind는 absent다. 없는 확정, 계약, 양조장을 만들지 않는다.',
+    'founderChoice는 계획이다. 그 계획과 previousJudgment의 관계를 inputConsidered와 impactAssessment에 적는다. 선택 문장만 반복하면 실패다.',
+    '변화가 없다, 여전히 유효하다, 새로운 정보가 없다만 쓰면 실패다. 부족한 근거와 판단을 바꿀 증거를 적는다.',
+    'nextVerification과 nextQuestion은 그 선택에서 아직 없는 고객 또는 수요 증거와 연결한다. 양조장 후보가 있는가로 바꾸지 않는다.',
+  ];
+}
+
+function reviewSystemPrompt(supplement: string): string {
   return [
     followUpBasePrompt(),
     `반환 계약 ${FOLLOW_UP_OUTPUT_CONTRACT}.`,
@@ -1919,6 +2117,7 @@ function reviewSystemPrompt(): string {
     'decision은 changed, retained, unresolved 중 하나다. current가 previous와 다르면 changed다. 값이 같고 답변을 검토해 유지하면 retained다. 값이 같고 근거가 부족해 판단을 유보하면 unresolved다.',
     'reason이 비어 있으면 실패다. retained여도 비어 있으면 실패다. 새 정보가 없어 유지, 바꾸지 않은 이유, 이전과 동일한 상태라고만 쓰면 실패다.',
     'reason은 그 답변이 그 필드에 미치는 영향을 설명한다. 선택 문장과 추가 설명을 원소마다 복사하지 않는다.',
+    'inputLedger는 founderChoice, founderSupplement, previousJudgment, previousHypotheses, previousVerification을 구분한다. kind가 다른 입력을 같은 문장으로 다루지 않는다. 관련성이 낮으면 낮다고 적는다.',
     'judgment와 hypotheses의 inputConsidered는 답변이 새로 말한 정보다. impactAssessment는 기존 판단이나 가설에 미치는 영향이다. sufficiencyAssessment는 sufficient, insufficient, partial 중 하나다. retained 또는 unresolved이면 sufficient가 아니다. retentionDecision은 decision과 같다. holdReason은 유지하거나 유보하는 구체적 이유다. 방향성만 적거나 추가 정보가 필요하다만 쓰면 실패다. evidenceNeeded는 판단을 바꾸려면 필요한 계약서, 증빙, 예약, 입금, 확인, 인터뷰, 기록이다. 확정 주장을 확인된 사실로 쓰지 않는다.',
     '확정, 계약, 확보는 창업자의 주장일 수 있다. 계약서나 입금 기록이 없으면 확인된 사실이 아니다. 주장이라고 적고 evidenceStatus는 unverified-input이다. 그 주장을 무시하지 않는다.',
     '답변이 기존 판단과 충돌하면 검토 없이 retained하지 않는다. 판단을 바꾸거나 unresolved로 충돌을 적는다.',
@@ -1927,12 +2126,7 @@ function reviewSystemPrompt(): string {
     '판단의 reason이 선택 문장뿐이면 실패다. 선택은 그 계획이 옳다는 근거가 아니다.',
     'evidenceStatus는 unverified-input, confirmed-fact, unconfirmed 중 하나다. 예약 고객, 가격, 계약, 확정된 양조장이 없다고 하면 unverified-input 이다. confirmed-fact로 쓰면 실패다.',
     'hypotheses는 미확인이면 retained다. 그 없음이 가설을 확정하지 못한다고 reason에 적는다. 가설 current에 수요 문장을 넣지 않는다.',
-    'judgment는 저장 판단을 유지한다. 선택이나 검증 계획을 판단으로 옮기지 않는다.',
-    `nextVerification의 current는 이 문장이다. ${FOLLOW_UP_BREWERY_VERIFICATION_PLAN}`,
-    '그 문장은 검증 계획이다. 양조장 후보, 협력 가능 여부, 참여 의향, 가격과 예약의 별도 검증 순서다. 어느 단계도 끝난 사실이 아니다. decision은 changed이다.',
-    'nextVerification의 reason은 그 순서가 필요한 이유를 적는다. 선택 문장을 그대로 반복하지 않아도 된다.',
-    'nextQuestion의 current는 양조장 후보가 있는가? 이다. 물음표로 끝난다. 지시 문장을 질문 값으로 쓰면 실패다. previous는 저장된 질문 그대로다. decision은 changed이다.',
-    'nextQuestion의 reason은 그 질문이 남은 불확실성인 이유를 적는다.',
+    ...reviewRoute(supplement),
     'revenueModel은 previousAnalysis.revenueModel 문장을 그대로 복사한다. 빼거나 고치면 실패다. 가설 표시를 지우거나 확정 수익으로 바꾸지 않는다. 저장된 값이 없으면 새 문장을 만들지 않는다.',
     'founderFacts에 선택 문장이나 추가 설명을 넣지 않는다.',
     '가설이 강화되었다고 쓰지 않는다. 수요가 있다고 단정하지 않는다.',
