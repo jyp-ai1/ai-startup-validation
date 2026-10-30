@@ -127,6 +127,8 @@ export type StoredReview = {
   model: string | null;
   sections: ReviewSections | null;
   rawContent: string | null;
+  /** First model text when one repair call followed it. Absent when the first response was stored. */
+  firstRawContent?: string | null;
   /** Set when a follow-up was compared with the previous review. Absent on older rows. */
   revisionGate?: RevisionGate | null;
   promptTokens: number | null;

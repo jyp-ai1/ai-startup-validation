@@ -174,9 +174,29 @@ export function mapOpenAIError(status: number, body: string, headers?: Headers):
   return new AIProviderError(`OpenAI API error (${status}) ${diagnostics}`, 'openai', status);
 }
 
+/** Maps a chat request onto OpenAI response_format. json_schema is strict so required keys cannot be omitted. */
+export function openAIResponseFormat(request: ChatRequest): Record<string, unknown> | undefined {
+  if (request.responseFormat?.type === 'json_schema') {
+    const named = request.responseFormat.schema;
+    const name = typeof named.title === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(named.title) ? named.title : 'structured_output';
+    const { title: _title, ...schema } = named;
+    return {
+      type: 'json_schema',
+      json_schema: {
+        name,
+        strict: true,
+        schema,
+      },
+    };
+  }
+  if (request.responseFormat?.type === 'json_object') return { type: 'json_object' };
+  return undefined;
+}
+
 export async function openAIChat(apiKey: string, request: ChatRequest): Promise<ChatResponse> {
   const start = Date.now();
   const inputText = request.messages.map((m) => m.content).join('\n');
+  const responseFormat = openAIResponseFormat(request);
 
   const response = await fetch(OPENAI_CHAT_URL, {
     method: 'POST',
@@ -190,9 +210,7 @@ export async function openAIChat(apiKey: string, request: ChatRequest): Promise<
       temperature: request.temperature ?? 0.4,
       max_tokens: request.maxTokens ?? 1024,
       stream: false,
-      ...(request.responseFormat?.type === 'json_object'
-        ? { response_format: { type: 'json_object' } }
-        : {}),
+      ...(responseFormat ? { response_format: responseFormat } : {}),
     }),
     signal: AbortSignal.timeout(getTimeoutMs()),
   });

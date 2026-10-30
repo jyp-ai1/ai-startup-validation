@@ -50,7 +50,79 @@ export const FOLLOW_UP_BREWERY_VERIFICATION_PLAN =
   '체험 프로그램을 먼저 검증할 것. 먼저 체험 프로그램을 제공할 수 있는 양조장 후보를 찾고, 실제 협력 가능 여부와 체험 운영 조건을 확인한다. 협력 가능 여부가 확인되기 전까지는 확정된 공급처로 간주하지 않는다. 이후 잠재 고객 인터뷰와 체험 참여 의향을 확인하고, 가격 수용도와 예약 전환은 별도로 검증한다.';
 
 export const FOLLOW_UP_OUTPUT_CONTRACT_NOTE =
-  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes이다. changes 원소는 field, previous, current, decision, reason, evidenceStatus이다. decision은 changed, retained, unresolved 중 하나다. retained와 unresolved의 reason은 답변을 검토한 결과다. 창업자 답변은 입력에 있으므로 원소마다 반복하지 않는다. 저장된 가설이 미확인이면 미확인으로 둔다. 수요가 있을 것이라는 문장을 넣으면 실패다. nextQuestion은 물음표로 끝나는 질문이다. 지시 문장을 질문으로 쓰면 실패다. revenueModel은 저장된 가설 문장 그대로다.';
+  '반환 필수 필드는 judgment, hypotheses, nextVerification, nextQuestion, revenueModel, changes이다. changes 원소는 field, previous, current, decision, reason, evidenceStatus, inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded이다. decision과 retentionDecision은 changed, retained, unresolved 중 하나이고 서로 같다. retained와 unresolved는 답변을 검토한 결과다. 여섯 검토 필드는 모델이 채운다. 코드가 그 문장을 만들지 않는다. 창업자 답변은 입력에 있으므로 원소마다 반복하지 않는다. 저장된 가설이 미확인이면 미확인으로 둔다. 수요가 있을 것이라는 문장을 넣으면 실패다. nextQuestion은 물음표로 끝나는 질문이다. 지시 문장을 질문으로 쓰면 실패다. revenueModel은 저장된 가설 문장 그대로다.';
+
+export const FOLLOW_UP_REVIEW_FIELDS = [
+  'inputConsidered',
+  'impactAssessment',
+  'sufficiencyAssessment',
+  'retentionDecision',
+  'holdReason',
+  'evidenceNeeded',
+] as const;
+
+export const FOLLOW_UP_DECISIONS = ['retained', 'changed', 'unresolved'] as const;
+export const FOLLOW_UP_SUFFICIENCY = ['sufficient', 'insufficient', 'partial'] as const;
+
+/** Strict object the follow-up model must fill. Omitting a review field is not a successful response. */
+export function followUpReflectionSchema(): Record<string, unknown> {
+  return {
+    title: 'reflection_output_11',
+    type: 'object',
+    additionalProperties: false,
+    required: ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion', 'revenueModel', 'changes'],
+    properties: {
+      judgment: { type: 'string' },
+      hypotheses: { type: 'array', items: { type: 'string' } },
+      nextVerification: { type: 'string' },
+      nextQuestion: { type: 'string' },
+      revenueModel: { type: 'string' },
+      changes: {
+        type: 'array',
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: [
+            'field',
+            'previous',
+            'current',
+            'decision',
+            'reason',
+            'evidenceStatus',
+            ...FOLLOW_UP_REVIEW_FIELDS,
+          ],
+          properties: {
+            field: { type: 'string', enum: [...FOLLOW_UP_OUTPUT_FIELDS] },
+            previous: { type: 'string' },
+            current: { type: 'string' },
+            decision: { type: 'string', enum: [...FOLLOW_UP_DECISIONS] },
+            reason: { type: 'string' },
+            evidenceStatus: { type: 'string', enum: [...EVIDENCE_STATUSES] },
+            inputConsidered: {
+              type: 'string',
+              description: '창업자 답변이 새로 말한 정보. 확정 주장은 확인된 사실이 아니다.',
+            },
+            impactAssessment: { type: 'string', description: '그 정보가 기존 판단이나 가설에 미치는 영향.' },
+            sufficiencyAssessment: {
+              type: 'string',
+              enum: [...FOLLOW_UP_SUFFICIENCY],
+              description: 'retained 또는 unresolved이면 sufficient가 아니다.',
+            },
+            retentionDecision: { type: 'string', enum: [...FOLLOW_UP_DECISIONS], description: 'decision과 같은 값.' },
+            holdReason: {
+              type: 'string',
+              description: '유지하거나 유보하거나 바꾼 구체적 이유. 방향성만 적거나 추가 정보가 필요하다만 쓰면 실패다.',
+            },
+            evidenceNeeded: {
+              type: 'string',
+              description: '판단을 바꾸려면 필요한 계약서, 증빙, 예약, 입금, 확인, 인터뷰, 기록.',
+            },
+          },
+        },
+      },
+    },
+  };
+}
 
 export const FOLLOW_UP_OUTPUT_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'] as const;
 
@@ -220,7 +292,7 @@ export function openReviewChat(env: Record<string, string | undefined> = process
     callReviewWithQuotaSwitch({
       request,
       openAI: async (chatRequest) => {
-        if (openAICalls >= 1) throw new Error('review_retry_blocked');
+        if (openAICalls >= 2) throw new Error('review_retry_blocked');
         openAICalls += 1;
         return new OpenAIProviderAdapter({ apiKey: openAIKey }).chat(chatRequest);
       },
@@ -457,7 +529,7 @@ export function buildFollowUpRequest(input: {
     model: AI_PM_REVIEW_MODEL,
     temperature: 0.2,
     maxTokens: AI_PM_FOLLOW_UP_MAX_TOKENS,
-    responseFormat: { type: 'json_object' },
+    responseFormat: revision ? { type: 'json_object' } : { type: 'json_schema', schema: followUpReflectionSchema() },
     messages: fitFollowUpMessages([
       { role: 'system', content: revision ? gatedFollowUpPrompt() : reviewSystemPrompt() },
       { role: 'user', content: JSON.stringify(payload) },
@@ -1188,6 +1260,14 @@ function reasonIsGeneric(reason: string): boolean {
   return ['바꾸지않은이유', '새정보가없어유지', '이전과동일한상태', '이전과동일', '유지'].includes(text);
 }
 
+function isGenericHold(text: string): boolean {
+  if (reasonIsGeneric(text)) return true;
+  const folded = compact(text).replace(/[.]/g, '');
+  const specific = /충분하지|부족|확인된사실이아니|근거가아니|주장|계약서|증빙|예약|입금|인터뷰|기록/.test(folded);
+  if (specific) return false;
+  return /방향성|추가정보|동일한상태|미확인/.test(folded);
+}
+
 function explainsInsufficiency(reason: string): boolean {
   return /충분하지|바꾸지 않|확인된 사실이 아니|근거가 아니|부족|확정하지/.test(reason);
 }
@@ -1216,6 +1296,75 @@ function claimPromoted(text: string): boolean {
 function citesRetentionInput(reason: string, context: FollowUpOutputContext): boolean {
   if (citesFollowUpInput(reason, context)) return true;
   return absentInputMarkers(context.supplement).some((marker) => reason.includes(marker));
+}
+
+function reviewFieldText(change: Record<string, unknown>, key: (typeof FOLLOW_UP_REVIEW_FIELDS)[number]): string {
+  const value = change[key];
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+/**
+ * Scores the six review fields the schema requires.
+ * Does not write those strings. An empty field is a missing review.
+ */
+function reviewFieldErrors(
+  field: string,
+  change: Record<string, unknown>,
+  decision: string,
+  context: FollowUpOutputContext,
+): string[] {
+  const errors: string[] = [];
+  const inputConsidered = reviewFieldText(change, 'inputConsidered');
+  const impactAssessment = reviewFieldText(change, 'impactAssessment');
+  const sufficiency = reviewFieldText(change, 'sufficiencyAssessment');
+  const retentionDecision = reviewFieldText(change, 'retentionDecision');
+  const holdReason = reviewFieldText(change, 'holdReason');
+  const evidenceNeeded = reviewFieldText(change, 'evidenceNeeded');
+  if (!inputConsidered) errors.push(`review_field_missing:inputConsidered:${field}`);
+  if (!impactAssessment) errors.push(`review_field_missing:impactAssessment:${field}`);
+  if (!sufficiency) errors.push(`review_field_missing:sufficiencyAssessment:${field}`);
+  else if (!FOLLOW_UP_SUFFICIENCY.includes(sufficiency as (typeof FOLLOW_UP_SUFFICIENCY)[number])) {
+    errors.push(`review_field_invalid:sufficiencyAssessment:${field}`);
+  }
+  if (!retentionDecision) errors.push(`review_field_missing:retentionDecision:${field}`);
+  else if (!FOLLOW_UP_DECISIONS.includes(retentionDecision as (typeof FOLLOW_UP_DECISIONS)[number])) {
+    errors.push(`review_field_invalid:retentionDecision:${field}`);
+  } else if (retentionDecision !== decision) errors.push(`retention_decision_mismatch:${field}`);
+  if (!holdReason) errors.push(`review_field_missing:holdReason:${field}`);
+  if (!evidenceNeeded) errors.push(`review_field_missing:evidenceNeeded:${field}`);
+  const reviewed = field === 'judgment' || field === 'hypotheses';
+  if (!reviewed) return errors;
+  const held = decision === 'retained' || decision === 'unresolved';
+  if (inputConsidered && !citesRetentionInput(inputConsidered, context)) errors.push(`retention_input_missing:${field}`);
+  if (
+    inputConsidered &&
+    absentInputMarkers(context.supplement).length > 0 &&
+    !absentInputMarkers(context.supplement).some((marker) => inputConsidered.includes(marker))
+  ) {
+    errors.push(`retention_input_missing:${field}`);
+  }
+  if (impactAssessment && !/영향|바꾸|유지|유보|판단|가설|미확인|충돌/.test(impactAssessment)) {
+    errors.push(`retention_effect_missing:${field}`);
+  }
+  if (impactAssessment && held && isGenericHold(impactAssessment)) errors.push(`review_hold_generic:impactAssessment:${field}`);
+  if (held && sufficiency === 'sufficient') errors.push(`sufficiency_conflict:${field}`);
+  if (decision === 'changed' && sufficiency === 'insufficient') errors.push(`sufficiency_conflict:${field}`);
+  if (held && holdReason && isGenericHold(holdReason)) errors.push(`review_hold_generic:holdReason:${field}`);
+  if (held && decision === 'retained' && holdReason && !/유지|바꾸지|그대로|두지|머문/.test(holdReason)) {
+    errors.push(`retention_hold_missing:${field}`);
+  }
+  if (held && decision === 'unresolved' && holdReason && !/유보|아직/.test(holdReason)) {
+    errors.push(`unresolved_verification_missing:${field}`);
+  }
+  if (held && evidenceNeeded && !/계약서|증빙|예약|입금|확인|인터뷰|기록/.test(evidenceNeeded)) {
+    errors.push(`retention_evidence_missing:${field}`);
+  }
+  if (assertsConfirmation(context.supplement)) {
+    for (const text of [inputConsidered, impactAssessment, holdReason]) {
+      if (text && claimPromoted(text)) errors.push(`claim_promoted_to_fact:${field}`);
+    }
+  }
+  return errors;
 }
 
 function retentionReviewErrors(field: string, reason: string, decision: string, context: FollowUpOutputContext): string[] {
@@ -1411,12 +1560,13 @@ export function incrementalReflectionErrors(raw: string, context: FollowUpOutput
     if (assertsConfirmation(context.supplement) && (field === 'judgment' || field === 'hypotheses') && reason && !marksClaimAsUnverified(reason)) {
       errors.push(`claim_unmarked:${field}`);
     }
+    const reviewProse = [reason, reviewFieldText(change, 'impactAssessment'), reviewFieldText(change, 'holdReason')].join('\n');
     if (
       field === 'judgment' &&
       !changed &&
       decision === 'retained' &&
       supplementConflicts(context.previousJudgment, context.supplement) &&
-      !/충돌|반대로|하지 않/.test(reason)
+      !/충돌|반대로|하지 않/.test(reviewProse)
     ) {
       errors.push('conflict_unreviewed:judgment');
     }
@@ -1427,6 +1577,7 @@ export function incrementalReflectionErrors(raw: string, context: FollowUpOutput
     else if (absentInputMarkers(context.supplement).length > 0 && evidenceStatus !== FOLLOW_UP_FOUNDER_ANSWER_STATUS) {
       errors.push(`evidence_status_promoted:${field}`);
     }
+    errors.push(...reviewFieldErrors(field, change, decision, context));
     if (priorityChoice && field === 'nextVerification' && !changed) errors.push('next_verification_unchanged');
   }
   if (recordedReasons.every((reason) => reason.length > 0) && new Set(recordedReasons).size === 1) errors.push('reason_copied_across_fields');
@@ -1740,6 +1891,19 @@ function gatedFollowUpPrompt(): string {
   ].join(' ');
 }
 
+/** Lists the failed checks. It does not supply the review sentences. */
+export function followUpRepairMessage(errors: string[]): string {
+  return [
+    '이전 JSON은 저장되지 않았다.',
+    `실패 코드: ${errors.join(',')}.`,
+    'judgment와 hypotheses의 inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded를 입력에 이미 있는 창업자 답변으로 다시 적어라.',
+    '없는 계약, 예약, 확정 사실을 만들지 마라. 확정 주장을 확인된 사실로 쓰지 마라.',
+    'retentionDecision은 decision과 같아야 한다. retained 또는 unresolved의 sufficiencyAssessment는 sufficient가 아니다.',
+    'holdReason에 방향성만 적거나 추가 정보가 필요하다만 쓰지 마라.',
+    '같은 스키마의 JSON만 반환하라.',
+  ].join(' ');
+}
+
 function reviewSystemPrompt(): string {
   return [
     followUpBasePrompt(),
@@ -1749,13 +1913,13 @@ function reviewSystemPrompt(): string {
     'hypotheses는 비어 있지 않은 문자열 배열이다.',
     'changes는 JSON 배열이다. 객체 맵, 문자열, 누락, 배열이 아닌 원소는 실패다.',
     '배열 원소는 네 개다. field는 judgment, hypotheses, nextVerification, nextQuestion 이다.',
-    '원소 키는 field, previous, current, decision, reason, evidenceStatus 이다. founderAnswer와 choiceTrace는 넣지 않는다. 코드가 창업자 답변을 보존한다.',
+    '원소 키는 field, previous, current, decision, reason, evidenceStatus, inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded 이다. founderAnswer와 choiceTrace는 넣지 않는다. 코드가 창업자 답변을 보존한다. 코드는 여섯 검토 필드를 만들지 않는다.',
     'previous는 저장된 값 그대로다. nextQuestion.previous가 저장된 질문과 다르면 실패다.',
     'current는 그 필드의 반환값과 같다. hypotheses의 previous와 current는 항목을 " / "로 잇는다.',
     'decision은 changed, retained, unresolved 중 하나다. current가 previous와 다르면 changed다. 값이 같고 답변을 검토해 유지하면 retained다. 값이 같고 근거가 부족해 판단을 유보하면 unresolved다.',
     'reason이 비어 있으면 실패다. retained여도 비어 있으면 실패다. 새 정보가 없어 유지, 바꾸지 않은 이유, 이전과 동일한 상태라고만 쓰면 실패다.',
     'reason은 그 답변이 그 필드에 미치는 영향을 설명한다. 선택 문장과 추가 설명을 원소마다 복사하지 않는다.',
-    'judgment와 hypotheses가 retained 또는 unresolved이면 reason에 다섯 가지를 적는다. 답변이 새로 말한 정보, 그 정보가 기존 판단이나 가설에 미치는 영향, 근거가 충분한지, 유지하거나 유보하는 이유, 바꾸려면 필요한 증빙이다.',
+    'judgment와 hypotheses의 inputConsidered는 답변이 새로 말한 정보다. impactAssessment는 기존 판단이나 가설에 미치는 영향이다. sufficiencyAssessment는 sufficient, insufficient, partial 중 하나다. retained 또는 unresolved이면 sufficient가 아니다. retentionDecision은 decision과 같다. holdReason은 유지하거나 유보하는 구체적 이유다. 방향성만 적거나 추가 정보가 필요하다만 쓰면 실패다. evidenceNeeded는 판단을 바꾸려면 필요한 계약서, 증빙, 예약, 입금, 확인, 인터뷰, 기록이다. 확정 주장을 확인된 사실로 쓰지 않는다.',
     '확정, 계약, 확보는 창업자의 주장일 수 있다. 계약서나 입금 기록이 없으면 확인된 사실이 아니다. 주장이라고 적고 evidenceStatus는 unverified-input이다. 그 주장을 무시하지 않는다.',
     '답변이 기존 판단과 충돌하면 검토 없이 retained하지 않는다. 판단을 바꾸거나 unresolved로 충돌을 적는다.',
     'retained인 reason은 추가 설명이 왜 그 필드를 바꾸기에 부족한지 적는다. 네 reason은 서로 다르다.',
@@ -1815,11 +1979,53 @@ async function finishCall(input: {
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const started = Date.now();
   try {
-    const response = await input.chat(input.request);
-    const normalized =
+    const first = await input.chat(input.request);
+    let response = first;
+    let callCount = 1;
+    let firstRawContent: string | null = null;
+    let usageKnown = first.usageKnown === true;
+    let promptTokens = usageKnown ? first.usage.inputTokens : null;
+    let completionTokens = usageKnown ? first.usage.outputTokens : null;
+    let totalTokens = usageKnown ? first.usage.totalTokens : null;
+    const score = (content: string) =>
       input.outputContract && input.previousSections
-        ? normalizeIncrementalSections(input.previousSections, response.content, input.outputContract)
+        ? normalizeIncrementalSections(input.previousSections, content, input.outputContract)
         : null;
+    let normalized = score(response.content);
+    if (normalized && normalized.errors.length > 0 && input.outputContract && input.previousSections) {
+      const failedChecks = normalized.errors;
+      firstRawContent = first.content;
+      try {
+        const repair = await input.chat({
+          ...input.request,
+          messages: [
+            ...input.request.messages,
+            { role: 'assistant', content: first.content },
+            { role: 'user', content: followUpRepairMessage(failedChecks) },
+          ],
+        });
+        callCount = 2;
+        response = repair;
+        if (usageKnown && repair.usageKnown === true) {
+          promptTokens = (promptTokens ?? 0) + repair.usage.inputTokens;
+          completionTokens = (completionTokens ?? 0) + repair.usage.outputTokens;
+          totalTokens = (totalTokens ?? 0) + repair.usage.totalTokens;
+        } else {
+          usageKnown = false;
+          promptTokens = null;
+          completionTokens = null;
+          totalTokens = null;
+        }
+        normalized = score(response.content);
+      } catch (repairError) {
+        callCount = 2;
+        const repairMessage = repairError instanceof Error ? repairError.message : 'review_failed';
+        normalized = {
+          sections: null,
+          errors: [...failedChecks, `repair_failed:${repairMessage.slice(0, 180)}`],
+        };
+      }
+    }
     const sections = normalized ? normalized.sections : parseSections(response.content, input.input.text);
     const outputErrors = normalized ? normalized.errors : input.outputContract ? ['incremental_previous_missing'] : [];
     const outputError = outputErrors.length > 0 ? outputErrors.join(',') : null;
@@ -1828,7 +2034,6 @@ async function finishCall(input: {
         ? assessFollowUpRevision({ previous: input.gate.previous, next: sections, marks: input.gate.marks })
         : null;
     const accepted = Boolean(sections) && !outputError && revisionGate?.pass !== false;
-    const usageKnown = response.usageKnown === true;
     const record = baseRecord({
       input: input.input,
       sha: input.sha,
@@ -1838,16 +2043,17 @@ async function finishCall(input: {
       supplementSha: input.supplementSha,
       status: accepted ? 'succeeded' : 'failed',
       evidence: input.input.evidence,
-      callCount: 1,
+      callCount,
       error: outputError ?? (sections ? (revisionGate && !revisionGate.pass ? 'revision_gate' : null) : reviewContractError(response.content)),
       provider: response.provider === 'google' ? 'google' : response.provider === 'openai' ? 'openai' : null,
       model: response.model,
       sections,
       revisionGate,
       rawContent: response.content,
-      promptTokens: usageKnown ? response.usage.inputTokens : null,
-      completionTokens: usageKnown ? response.usage.outputTokens : null,
-      totalTokens: usageKnown ? response.usage.totalTokens : null,
+      firstRawContent,
+      promptTokens,
+      completionTokens,
+      totalTokens,
       usageKnown,
       latencyMs: response.latencyMs ?? Date.now() - started,
     });
@@ -1895,6 +2101,7 @@ function baseRecord(input: {
   sections?: ReviewSections | null;
   revisionGate?: RevisionGate | null;
   rawContent?: string | null;
+  firstRawContent?: string | null;
   promptTokens?: number | null;
   completionTokens?: number | null;
   totalTokens?: number | null;
@@ -1920,6 +2127,7 @@ function baseRecord(input: {
     sections: input.sections ?? null,
     revisionGate: input.revisionGate ?? null,
     rawContent: input.rawContent ?? null,
+    ...(input.firstRawContent ? { firstRawContent: input.firstRawContent } : {}),
     promptTokens: input.promptTokens ?? null,
     completionTokens: input.completionTokens ?? null,
     totalTokens: input.totalTokens ?? null,

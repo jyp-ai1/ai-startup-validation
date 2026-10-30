@@ -25,7 +25,10 @@ import {
   FOLLOW_UP_ANALYSIS_CONTRACT_NOTE,
   FOLLOW_UP_BREWERY_VERIFICATION_PLAN,
   FOLLOW_UP_OUTPUT_CONTRACT,
+  FOLLOW_UP_REVIEW_FIELDS,
   followUpOutputContractErrors,
+  followUpReflectionSchema,
+  followUpRepairMessage,
   incrementalReflectionErrors,
   normalizeIncrementalSections,
   FOLLOW_UP_SEPARATION_RULES,
@@ -93,14 +96,16 @@ function validUngatedFollowUpRaw(previous: ReviewSections, supplement = '양조�
           : field === 'nextVerification'
             ? `${supplement} 이 말은 검증 문장을 바꾸기에 충분하지 않다.`
             : `${supplement} 이 말은 질문을 바꾸기에 충분하지 않다.`;
+    const decision = same ? 'retained' : 'changed';
     return {
       field,
       previous: previousValue,
       current: updated,
-      decision: same ? 'retained' : 'changed',
+      decision,
       reason,
       founderAnswer,
       evidenceStatus: 'unverified-input',
+      ...reviewFields(field, decision, supplement),
     };
   };
   return JSON.stringify({
@@ -149,14 +154,18 @@ function reflectionCase(input: {
       nextVerification,
       nextQuestion,
       revenueModel: input.previous.revenueModel,
-      changes: fields.map(([field, previousValue, current]) => ({
-        field,
-        previous: previousValue,
-        current,
-        decision: input.decisions?.[field] ?? (current === previousValue ? 'retained' : 'changed'),
-        reason: input.reasons[field],
-        evidenceStatus: input.evidenceStatus ?? 'unverified-input',
-      })),
+      changes: fields.map(([field, previousValue, current]) => {
+        const decision = input.decisions?.[field] ?? (current === previousValue ? 'retained' : 'changed');
+        return {
+          field,
+          previous: previousValue,
+          current,
+          decision,
+          reason: input.reasons[field],
+          evidenceStatus: input.evidenceStatus ?? 'unverified-input',
+          ...reviewFields(field, decision, input.supplement),
+        };
+      }),
     }),
     context: {
       previousJudgment: input.previous.judgment,
@@ -168,6 +177,26 @@ function reflectionCase(input: {
       supplement: input.supplement,
       answerOrigin: 'synthetic-test-data',
     },
+  };
+}
+
+function reviewFields(field: string, decision: string, supplement: string): Record<string, string> {
+  const held = decision === 'retained' || decision === 'unresolved';
+  return {
+    inputConsidered: `${supplement} 에서 새로 들은 내용이다.`,
+    impactAssessment:
+      field === 'hypotheses'
+        ? '이 내용은 가설을 확정하지 못해 기존 가설에 미치는 영향이 제한된다.'
+        : '이 내용은 저장된 판단에 미치는 영향이 제한된다.',
+    sufficiencyAssessment: decision === 'changed' ? 'partial' : 'insufficient',
+    retentionDecision: decision,
+    holdReason:
+      decision === 'unresolved'
+        ? '근거가 부족해 아직 판단을 유보한다.'
+        : held
+          ? '확인된 사실이 아니어서 바꾸지 않고 유지한다.'
+          : '기존 문장을 유지하지 않고 검증 순서를 바꾼다.',
+    evidenceNeeded: field === 'hypotheses' ? '예약 확인 기록이 필요하다.' : '계약서 증빙이 필요하다.',
   };
 }
 
@@ -338,6 +367,16 @@ describe('AI PM first review', () => {
     expect(followSystem).toContain(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
     expect(followSystem).toContain('reason이 비어 있으면 실패다');
     expect(followSystem).toContain('코드가 창업자 답변을 보존한다');
+    expect(followSystem).toContain('코드는 여섯 검토 필드를 만들지 않는다');
+    expect(followSystem).toContain('inputConsidered');
+    expect(followSystem).toContain('holdReason');
+    expect(request.responseFormat?.type).toBe('json_schema');
+    if (request.responseFormat?.type === 'json_schema') {
+      const changes = request.responseFormat.schema.properties as { changes: { items: { required: string[] } } };
+      expect(changes.changes.items.required).toEqual(expect.arrayContaining([...FOLLOW_UP_REVIEW_FIELDS]));
+      expect(request.responseFormat.schema.additionalProperties).toBe(false);
+    }
+    expect(followUpReflectionSchema().title).toBe('reflection_output_11');
     expect(followSystem).toContain('선택 문장과 추가 설명을 원소마다 복사하지 않는다');
     expect(followSystem).not.toContain('선택이 있는데 null이면 실패다');
     expect(followSystem).not.toContain('원소 choiceTrace');
@@ -1945,12 +1984,37 @@ describe('AI PM first review', () => {
     expect(followUpOutputContractErrors(raw, context)).toContain('founder_answer_choice:hypotheses');
     expect(incrementalReflectionErrors(raw, context)).toEqual([
       'retention_evidence_missing:judgment',
+      'review_field_missing:inputConsidered:judgment',
+      'review_field_missing:impactAssessment:judgment',
+      'review_field_missing:sufficiencyAssessment:judgment',
+      'review_field_missing:retentionDecision:judgment',
+      'review_field_missing:holdReason:judgment',
+      'review_field_missing:evidenceNeeded:judgment',
       'retention_evidence_missing:hypotheses',
+      'review_field_missing:inputConsidered:hypotheses',
+      'review_field_missing:impactAssessment:hypotheses',
+      'review_field_missing:sufficiencyAssessment:hypotheses',
+      'review_field_missing:retentionDecision:hypotheses',
+      'review_field_missing:holdReason:hypotheses',
+      'review_field_missing:evidenceNeeded:hypotheses',
+      'review_field_missing:inputConsidered:nextVerification',
+      'review_field_missing:impactAssessment:nextVerification',
+      'review_field_missing:sufficiencyAssessment:nextVerification',
+      'review_field_missing:retentionDecision:nextVerification',
+      'review_field_missing:holdReason:nextVerification',
+      'review_field_missing:evidenceNeeded:nextVerification',
+      'review_field_missing:inputConsidered:nextQuestion',
+      'review_field_missing:impactAssessment:nextQuestion',
+      'review_field_missing:sufficiencyAssessment:nextQuestion',
+      'review_field_missing:retentionDecision:nextQuestion',
+      'review_field_missing:holdReason:nextQuestion',
+      'review_field_missing:evidenceNeeded:nextQuestion',
     ]);
-    const repaired = JSON.parse(raw) as { changes: Array<{ field: string; reason: string }> };
+    const repaired = JSON.parse(raw) as { changes: Array<{ field: string; reason: string; decision?: string }> };
     for (const change of repaired.changes) {
       if (change.field === 'judgment') change.reason += ' 판단을 바꾸려면 계약서가 필요하다.';
       if (change.field === 'hypotheses') change.reason += ' 가설을 바꾸려면 예약 확인이 필요하다.';
+      Object.assign(change, reviewFields(change.field, change.decision ?? 'retained', sent.founderSupplement));
     }
     const normalized = normalizeIncrementalSections(previous, JSON.stringify(repaired), context);
     expect(normalized.errors).toEqual([]);
@@ -2217,12 +2281,214 @@ describe('AI PM first review', () => {
       'retention_input_missing:judgment',
       'retention_sufficiency_missing:judgment',
       'retention_evidence_missing:judgment',
+      'review_field_missing:inputConsidered:judgment',
+      'review_field_missing:impactAssessment:judgment',
+      'review_field_missing:sufficiencyAssessment:judgment',
+      'review_field_missing:retentionDecision:judgment',
+      'review_field_missing:holdReason:judgment',
+      'review_field_missing:evidenceNeeded:judgment',
       'reason_insufficient:hypotheses',
       'retention_input_missing:hypotheses',
       'retention_sufficiency_missing:hypotheses',
       'retention_hold_missing:hypotheses',
+      'review_field_missing:inputConsidered:hypotheses',
+      'review_field_missing:impactAssessment:hypotheses',
+      'review_field_missing:sufficiencyAssessment:hypotheses',
+      'review_field_missing:retentionDecision:hypotheses',
+      'review_field_missing:holdReason:hypotheses',
+      'review_field_missing:evidenceNeeded:hypotheses',
+      'review_field_missing:inputConsidered:nextVerification',
+      'review_field_missing:impactAssessment:nextVerification',
+      'review_field_missing:sufficiencyAssessment:nextVerification',
+      'review_field_missing:retentionDecision:nextVerification',
+      'review_field_missing:holdReason:nextVerification',
+      'review_field_missing:evidenceNeeded:nextVerification',
+      'review_field_missing:inputConsidered:nextQuestion',
+      'review_field_missing:impactAssessment:nextQuestion',
+      'review_field_missing:sufficiencyAssessment:nextQuestion',
+      'review_field_missing:retentionDecision:nextQuestion',
+      'review_field_missing:holdReason:nextQuestion',
+      'review_field_missing:evidenceNeeded:nextQuestion',
     ]);
     expect(normalized.sections).toBeNull();
+  });
+
+  it('blocks a retained judgment that omits or genericizes the review fields', () => {
+    const supplement = '예약 고객, 가격, 계약, 확정된 양조장은 없다.';
+    const reviewed = reflectionCase({
+      previous: sections(),
+      supplement,
+      choiceLabel: '체험 프로그램을 먼저 검증할 것',
+      reasons: {
+        judgment: `${supplement} 이 없음은 확인된 사실이 아니어서 저장된 판단에 영향을 주지 못한다. 근거가 충분하지 않아 판단을 바꾸지 않고 유지한다. 판단을 바꾸려면 계약서가 필요하다.`,
+        hypotheses: `${supplement} 이 없음은 가설을 확정하지 못한다. 근거가 부족해 미확인으로 유지한다. 가설을 바꾸려면 예약 확인이 필요하다.`,
+        nextVerification: `${supplement} 이 없음 때문에 검증은 양조장 후보 확인에 머문다.`,
+        nextQuestion: '양조장 후보가 있는지가 남은 질문이다. 예약 고객, 가격, 계약, 확정된 양조장은 없다.',
+      },
+      nextVerification: FOLLOW_UP_BREWERY_VERIFICATION_PLAN,
+      nextQuestion: '양조장 후보가 있는가?',
+    });
+    const parsed = JSON.parse(reviewed.raw) as { changes: Array<Record<string, string>> };
+    const judgment = parsed.changes.find((change) => change.field === 'judgment');
+    expect(judgment?.retentionDecision).toBe('retained');
+    expect(judgment?.sufficiencyAssessment).toBe('insufficient');
+    expect(judgment?.inputConsidered).toContain('확정된 양조장');
+    expect(judgment?.holdReason).toContain('유지');
+    expect(judgment?.evidenceNeeded).toContain('계약서');
+    delete judgment?.inputConsidered;
+    const omitted = normalizeIncrementalSections(sections(), JSON.stringify(parsed), reviewed.context);
+    expect(omitted.sections).toBeNull();
+    expect(omitted.errors).toContain('review_field_missing:inputConsidered:judgment');
+    expect(JSON.stringify(omitted)).not.toContain('에서 새로 들은 내용이다');
+    const generic = JSON.parse(reviewed.raw) as { changes: Array<Record<string, string>> };
+    const genericJudgment = generic.changes.find((change) => change.field === 'judgment');
+    if (genericJudgment) genericJudgment.holdReason = '사업 구상에 명확한 방향성을 제공한다.';
+    const genericResult = normalizeIncrementalSections(sections(), JSON.stringify(generic), reviewed.context);
+    expect(genericResult.errors).toContain('review_hold_generic:holdReason:judgment');
+    expect(genericResult.sections).toBeNull();
+    const enough = JSON.parse(reviewed.raw) as { changes: Array<Record<string, string>> };
+    const enoughJudgment = enough.changes.find((change) => change.field === 'judgment');
+    if (enoughJudgment) enoughJudgment.sufficiencyAssessment = 'sufficient';
+    expect(incrementalReflectionErrors(JSON.stringify(enough), reviewed.context)).toContain('sufficiency_conflict:judgment');
+  });
+
+  it('keeps a confirmation claim unverified inside the review fields', () => {
+    const supplement = '양조장과 계약이 확정되었다고 말한다. 계약서와 입금 증빙은 없다.';
+    const reviewed = reflectionCase({
+      previous: sections(),
+      supplement,
+      reasons: {
+        judgment: `${supplement} 이것은 창업자의 주장이고 증빙은 없다. 확인된 사실이 아니어서 저장된 판단에 미칠 영향이 부족하다. 판단을 유지한다. 바꾸려면 계약서가 필요하다.`,
+        hypotheses: `${supplement} 이 주장은 가설을 확정하지 못한다. 증빙은 없어 미확인으로 유지한다. 예약 확인이 필요하다.`,
+        nextVerification: `${supplement} 계약 주장은 검증이 끝나지 않았다는 뜻이다.`,
+        nextQuestion: `${supplement} 증빙이 없어 계약서 유무를 묻는다.`,
+      },
+      nextQuestion: '계약서가 있는가?',
+    });
+    const parsed = JSON.parse(reviewed.raw) as { changes: Array<Record<string, string>> };
+    const judgment = parsed.changes.find((change) => change.field === 'judgment');
+    if (judgment) judgment.inputConsidered = '양조장과 계약이 확정되었다.';
+    expect(incrementalReflectionErrors(JSON.stringify(parsed), reviewed.context)).toContain('claim_promoted_to_fact:judgment');
+    expect(normalizeIncrementalSections(sections(), JSON.stringify(parsed), reviewed.context).sections).toBeNull();
+  });
+
+  it('stores one repair, records both responses, and does not call a third time', async () => {
+    const store = openAiPmReviewStore(storePath());
+    let followCalls = 0;
+    const chat = async (request: ChatRequest) => {
+      const followUp = request.messages.some((message) => message.content.includes(FOLLOW_UP_OUTPUT_CONTRACT));
+      if (!followUp) return reply(JSON.stringify(sections()));
+      followCalls += 1;
+      const repair = request.messages.some((message) => message.role === 'assistant');
+      if (!repair) return reply('{', { usage: { inputTokens: 11, outputTokens: 2, totalTokens: 13 } });
+      expect(request.messages.at(-1)?.content).toBe(followUpRepairMessage(['follow_up_output_unparsed']));
+      expect(followUpRepairMessage(['follow_up_output_unparsed'])).not.toContain('양조장 후보가 있는가');
+      return reply(validUngatedFollowUpRaw(sections()), { usage: { inputTokens: 20, outputTokens: 7, totalTokens: 27 } });
+    };
+    const first = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    await saveReviewFeedback({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      now: NOW,
+      body: {
+        reviewId: first.record.reviewId,
+        agreement: 'partial',
+        accuracy: 'mostly_accurate',
+        revisionAreas: ['evidence'],
+        comment: '인터뷰는 아직 없다.',
+        nextAction: 'verify_hypotheses',
+      },
+    });
+    const follow = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement: '양조장 대표 인터뷰는 아직 없다.',
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(follow.ok).toBe(true);
+    if (!follow.ok) return;
+    expect(followCalls).toBe(2);
+    expect(follow.record.callCount).toBe(2);
+    expect(follow.record.status).toBe('succeeded');
+    expect(follow.record.firstRawContent).toBe('{');
+    expect(follow.record.rawContent).toContain('inputConsidered');
+    expect(follow.record.sections?.judgment).toBe(sections().judgment);
+    expect(follow.record.sections?.customer).toBe(sections().customer);
+    expect(follow.record.promptTokens).toBe(31);
+    expect(follow.record.completionTokens).toBe(9);
+    expect(follow.record.totalTokens).toBe(40);
+    const parent = await store.readReview('user-a', first.record.reviewId);
+    expect(parent?.sections?.judgment).toBe(sections().judgment);
+    store.close();
+
+    const failedStore = openAiPmReviewStore(storePath());
+    let failedCalls = 0;
+    const failing = async (request: ChatRequest) => {
+      const followUp = request.messages.some((message) => message.content.includes(FOLLOW_UP_OUTPUT_CONTRACT));
+      if (!followUp) return reply(JSON.stringify(sections()));
+      failedCalls += 1;
+      return reply('{');
+    };
+    const parentReview = await runFirstReview({
+      projectId: 'project-test',
+      store: failedStore,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat: failing,
+      evidence: 'injected_http',
+    });
+    await saveReviewFeedback({
+      projectId: 'project-test',
+      store: failedStore,
+      userId: 'user-a',
+      now: NOW,
+      body: {
+        reviewId: parentReview.record.reviewId,
+        agreement: 'partial',
+        accuracy: 'mostly_accurate',
+        revisionAreas: ['evidence'],
+        comment: '인터뷰는 아직 없다.',
+        nextAction: 'verify_hypotheses',
+      },
+    });
+    const failed = await runFollowUpReview({
+      projectId: 'project-test',
+      store: failedStore,
+      userId: 'user-a',
+      reviewId: parentReview.record.reviewId,
+      supplement: '양조장 대표 인터뷰는 아직 없다.',
+      now: NOW,
+      chat: failing,
+      evidence: 'injected_http',
+    });
+    expect(failed.ok).toBe(true);
+    if (!failed.ok) return;
+    expect(failedCalls).toBe(2);
+    expect(failed.record.callCount).toBe(2);
+    expect(failed.record.status).toBe('failed');
+    expect(failed.record.sections).toBeNull();
+    expect(failed.record.firstRawContent).toBe('{');
+    expect(failed.record.rawContent).toBe('{');
+    expect(failed.record.error).toContain('follow_up_output_unparsed');
+    failedStore.close();
   });
 
   it('stores the child from changes, restores the same sections, and ignores a duplicate submit', async () => {

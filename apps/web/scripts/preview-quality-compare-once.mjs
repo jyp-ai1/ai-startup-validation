@@ -2,6 +2,7 @@
  * One incremental-reflection call of the frozen product follow-up request.
  * The founder answer in the fixture is synthetic test data.
  * Production builds return immediately. The product second-review route is not called.
+ * The reason-quality call q1-incremental-reflection-reason-quality-2026-10-30 stays RECORDED.
  * The normalize call q1-incremental-reflection-normalize-2026-10-30 stays RECORDED.
  * The question call q1-incremental-reflection-question-2026-10-29 stays RECORDED.
  * The link call q1-incremental-reflection-link-2026-10-29 stays RECORDED.
@@ -14,14 +15,14 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-reason-quality-2026-10-30';
-export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-normalize-2026-10-30';
+export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-review-fields-2026-10-30';
+export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-reason-quality-2026-10-30';
 export const PREVIEW_COMPARE_BUCKET = 'ai-pm-quality-compare';
 export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(scriptDir, '..');
-const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-reason-quality-request.json');
+const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-review-fields-request.json');
 
 export function shouldRunPreviewQualityCompare(env) {
   return env.VERCEL_ENV === 'preview' && Boolean(env.VERCEL_GIT_COMMIT_REF) && env.VERCEL_GIT_COMMIT_REF !== 'main';
@@ -101,6 +102,124 @@ function messageContent(request, role) {
   return request.messages.find((message) => message.role === role)?.content ?? '';
 }
 
+const REVIEW_KEYS = [
+  'inputConsidered',
+  'impactAssessment',
+  'sufficiencyAssessment',
+  'retentionDecision',
+  'holdReason',
+  'evidenceNeeded',
+];
+const REVIEW_FIELDS = ['judgment', 'hypotheses', 'nextVerification', 'nextQuestion'];
+
+function compactText(text) {
+  return String(text ?? '').replace(/\s+/g, '').trim();
+}
+
+function genericHold(text) {
+  const folded = compactText(text).replace(/[.]/g, '');
+  if (['바꾸지않은이유', '새정보가없어유지', '이전과동일한상태', '이전과동일', '유지'].includes(folded)) return true;
+  if (/충분하지|부족|확인된사실이아니|근거가아니|주장|계약서|증빙|예약|입금|인터뷰|기록/.test(folded)) return false;
+  return /방향성|추가정보|동일한상태|미확인/.test(folded);
+}
+
+/** Repair trigger. The stored score still uses incrementalReflectionErrors. This does not write review sentences. */
+export function reviewFieldGaps(raw, userPrompt) {
+  let parsed;
+  let sent;
+  try {
+    parsed = JSON.parse(raw);
+    sent = JSON.parse(userPrompt);
+  } catch {
+    return ['follow_up_output_unparsed'];
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return ['follow_up_output_unparsed'];
+  const supplement = typeof sent.founderSupplement === 'string' ? sent.founderSupplement : '';
+  const choice = sent.founderChoice && typeof sent.founderChoice.label === 'string' ? sent.founderChoice.label : '';
+  const errors = [];
+  const changes = Array.isArray(parsed.changes) ? parsed.changes : [];
+  for (const field of REVIEW_FIELDS) {
+    const change = changes.find((item) => item && item.field === field);
+    if (!change || typeof change !== 'object') {
+      errors.push(`follow_up_output_missing_change:${field}`);
+      continue;
+    }
+    for (const key of REVIEW_KEYS) {
+      if (typeof change[key] !== 'string' || !change[key].trim()) errors.push(`review_field_missing:${key}:${field}`);
+    }
+    const decision = typeof change.decision === 'string' ? change.decision.trim() : '';
+    const retention = typeof change.retentionDecision === 'string' ? change.retentionDecision.trim() : '';
+    if (retention && decision && retention !== decision) errors.push(`retention_decision_mismatch:${field}`);
+    if (field !== 'judgment' && field !== 'hypotheses') continue;
+    const held = decision === 'retained' || decision === 'unresolved';
+    const reason = typeof change.reason === 'string' ? change.reason.trim() : '';
+    if (held && reason && !/충분하지|바꾸지 않|확인된 사실이 아니|근거가 아니|부족|확정하지/.test(reason)) {
+      errors.push(`reason_insufficient:${field}`);
+    }
+    if (held && typeof change.holdReason === 'string' && change.holdReason.trim() && genericHold(change.holdReason)) {
+      errors.push(`review_hold_generic:holdReason:${field}`);
+    }
+    if (held && change.sufficiencyAssessment === 'sufficient') errors.push(`sufficiency_conflict:${field}`);
+    const evidence = typeof change.evidenceNeeded === 'string' ? change.evidenceNeeded : '';
+    if (held && evidence.trim() && !/계약서|증빙|예약|입금|확인|인터뷰|기록/.test(evidence)) {
+      errors.push(`retention_evidence_missing:${field}`);
+    }
+    const input = typeof change.inputConsidered === 'string' ? change.inputConsidered : '';
+    if (held && input.trim()) {
+      const markers = ['예약 고객', '예약', '가격', '계약', '확정된 양조장', '양조장'].filter(
+        (marker) => supplement.includes('없') && supplement.includes(marker),
+      );
+      const cites =
+        (choice.length >= 4 && input.includes(choice)) ||
+        (supplement.length >= 8 && input.includes(supplement.slice(0, 8))) ||
+        markers.some((marker) => input.includes(marker));
+      if (!cites || (markers.length > 0 && !markers.some((marker) => input.includes(marker)))) {
+        errors.push(`retention_input_missing:${field}`);
+      }
+    }
+    const assertsClaim = /확정되었|확정했다|계약을 맺|계약했다|확보했다|확보되었/.test(supplement);
+    const promoted = (text) =>
+      assertsClaim &&
+      /확정되었|확정했다|계약을 맺|계약했다|확보했다|확보되었/.test(text) &&
+      !/주장|확인된 사실이 아니|증빙이 없|증빙은 없|계약서는 없|검증되지|미확인/.test(text);
+    if (promoted(input) || promoted(change.impactAssessment || '') || promoted(change.holdReason || '')) {
+      errors.push(`claim_promoted_to_fact:${field}`);
+    }
+  }
+  return [...new Set(errors)];
+}
+
+export function repairMessage(errors) {
+  return [
+    '이전 JSON은 저장되지 않았다.',
+    `실패 코드: ${errors.join(',')}.`,
+    'judgment와 hypotheses의 inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded를 입력에 이미 있는 창업자 답변으로 다시 적어라.',
+    '없는 계약, 예약, 확정 사실을 만들지 마라. 확정 주장을 확인된 사실로 쓰지 마라.',
+    'retentionDecision은 decision과 같아야 한다. retained 또는 unresolved의 sufficiencyAssessment는 sufficient가 아니다.',
+    'holdReason에 방향성만 적거나 추가 정보가 필요하다만 쓰지 마라.',
+    '같은 스키마의 JSON만 반환하라.',
+  ].join(' ');
+}
+
+function responseFormatBody(request) {
+  const format = request.responseFormat;
+  if (format?.type === 'json_schema' && format.schema && typeof format.schema === 'object') {
+    const { title, ...schema } = format.schema;
+    const name = typeof title === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(title) ? title : 'structured_output';
+    return { type: 'json_schema', json_schema: { name, strict: true, schema } };
+  }
+  return { type: 'json_object' };
+}
+
+function measuredUsage(calls) {
+  if (calls.length === 0 || calls.some((call) => call.usageKnown !== true || typeof call.totalTokens !== 'number')) return null;
+  return {
+    promptTokens: calls.reduce((sum, call) => sum + call.promptTokens, 0),
+    completionTokens: calls.reduce((sum, call) => sum + call.completionTokens, 0),
+    totalTokens: calls.reduce((sum, call) => sum + call.totalTokens, 0),
+  };
+}
+
 function jsonObject(raw) {
   try {
     const parsed = JSON.parse(raw);
@@ -128,7 +247,7 @@ async function oneCall(apiKey, promptVersion, request) {
         temperature: request.temperature,
         max_tokens: request.maxTokens,
         stream: false,
-        response_format: { type: 'json_object' },
+        response_format: responseFormatBody(request),
       }),
       signal: AbortSignal.timeout(90_000),
     });
@@ -254,7 +373,23 @@ async function main() {
       });
       continue;
     }
-    calls.push(await oneCall(apiKey, item.promptVersion, item.request));
+    const first = await oneCall(apiKey, item.promptVersion, item.request);
+    first.reviewGaps = first.raw ? reviewFieldGaps(first.raw, first.userPrompt) : [];
+    calls.push(first);
+    if (first.raw && first.reviewGaps.length > 0) {
+      const repairRequest = {
+        ...item.request,
+        messages: [
+          ...item.request.messages,
+          { role: 'assistant', content: first.raw },
+          { role: 'user', content: repairMessage(first.reviewGaps) },
+        ],
+      };
+      const repair = await oneCall(apiKey, `${item.promptVersion}:repair`, repairRequest);
+      repair.reviewGaps = repair.raw ? reviewFieldGaps(repair.raw, first.userPrompt) : [];
+      repair.repairPrompt = repairMessage(first.reviewGaps);
+      calls.push(repair);
+    }
   }
 
   const status = apiKey ? 'RECORDED' : 'NOT RUN';
@@ -273,7 +408,9 @@ async function main() {
     model: request.model ?? 'gpt-4o-mini',
     temperature: request.temperature ?? 0.2,
     maxTokens,
-    responseFormat: 'json_object',
+    responseFormat: request.responseFormat?.type ?? 'json_object',
+    repairCount: Math.max(0, calls.filter((call) => call.promptVersion?.endsWith(':repair')).length),
+    usage: measuredUsage(calls.filter((call) => call.status !== 'not_run')),
     businessInput: fixture.businessInput,
     confounders: fixture.confounders,
     report: {
@@ -282,7 +419,7 @@ async function main() {
       model: request.model ?? 'gpt-4o-mini',
       temperature: request.temperature ?? 0.2,
       maxTokens,
-      responseFormat: 'json_object',
+      responseFormat: request.responseFormat?.type ?? 'json_object',
       businessInput: fixture.businessInput,
       confounders: fixture.confounders,
       productFollowUpInvoked: false,

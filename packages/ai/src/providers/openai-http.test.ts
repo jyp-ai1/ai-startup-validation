@@ -1,7 +1,49 @@
 import { describe, expect, it } from 'vitest';
 
 import { AIProviderError, RateLimitError } from '../errors';
-import { mapOpenAIError } from '../providers/openai-http';
+import { mapOpenAIError, openAIResponseFormat } from '../providers/openai-http';
+import type { ChatRequest } from '../types';
+
+describe('openAIResponseFormat', () => {
+  const request = (responseFormat: ChatRequest['responseFormat']): ChatRequest => ({
+    model: 'gpt-4o-mini',
+    messages: [{ role: 'user', content: 'ping' }],
+    responseFormat,
+  });
+
+  it('sends strict json_schema and drops the title keyword', () => {
+    expect(
+      openAIResponseFormat(
+        request({
+          type: 'json_schema',
+          schema: {
+            title: 'reflection_output_11',
+            type: 'object',
+            additionalProperties: false,
+            required: ['judgment'],
+            properties: { judgment: { type: 'string' } },
+          },
+        }),
+      ),
+    ).toEqual({
+      type: 'json_schema',
+      json_schema: {
+        name: 'reflection_output_11',
+        strict: true,
+        schema: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['judgment'],
+          properties: { judgment: { type: 'string' } },
+        },
+      },
+    });
+  });
+
+  it('keeps json_object for the first review', () => {
+    expect(openAIResponseFormat(request({ type: 'json_object' }))).toEqual({ type: 'json_object' });
+  });
+});
 
 describe('mapOpenAIError', () => {
   it('maps 401 to AIProviderError', () => {
