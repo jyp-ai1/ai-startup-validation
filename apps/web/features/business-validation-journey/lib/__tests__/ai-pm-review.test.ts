@@ -2844,6 +2844,113 @@ describe('AI PM first review', () => {
     expect(promotedResult.sections).toBeNull();
   });
 
+  it('keeps both input cases unstored when the model does not relate the answer', () => {
+    const score = (path: string, version: string) => {
+      const recorded = JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8')) as {
+        runId: string;
+        priorRunId: string;
+        gitSha: string;
+        startedAt: string;
+        finishedAt: string;
+        productFollowUpInvoked: boolean;
+        repairCount: number;
+        usage: { promptTokens: number; completionTokens: number; totalTokens: number };
+        report: { calls: Array<{ promptVersion: string; raw: string; userPrompt: string; model: string; reviewGaps?: string[] }> };
+      };
+      const call = recorded.report.calls.find((item) => item.promptVersion === version);
+      const sent = JSON.parse(call?.userPrompt ?? '{}') as {
+        previousAnalysis: ReviewSections & { analysis: { nextVerification: string } };
+        founderChoice: { label: string };
+        founderSupplement: string;
+        answerOrigin: 'synthetic-test-data';
+      };
+      const previous = structuredClone(sent.previousAnalysis);
+      const before = JSON.stringify(previous);
+      const normalized = normalizeIncrementalSections(previous, call?.raw ?? '', {
+        previousJudgment: previous.judgment,
+        previousHypotheses: [...previous.hypotheses],
+        previousNextVerification: previous.analysis.nextVerification,
+        previousNextQuestion: previous.nextQuestion,
+        previousRevenueModel: previous.revenueModel,
+        choiceLabel: sent.founderChoice.label,
+        supplement: sent.founderSupplement,
+        answerOrigin: sent.answerOrigin,
+      });
+      expect(JSON.stringify(previous)).toBe(before);
+      expect(normalized.sections).toBeNull();
+      return { recorded, call, normalized, sent };
+    };
+    const traced = score(
+      '../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-input-trace-recorded.json',
+      'reflection-output-11:choice-only',
+    );
+    expect(traced.recorded.runId).toBe('q1-incremental-reflection-input-trace-2026-10-30');
+    expect(traced.recorded.priorRunId).toBe('q1-incremental-reflection-review-fields-2026-10-30');
+    expect(traced.recorded.gitSha).toBe('aaf09bf638669c076152303669d580b03cb30856');
+    expect(traced.recorded.startedAt).toBe('2026-10-30T08:39:41.903Z');
+    expect(traced.recorded.finishedAt).toBe('2026-10-30T08:40:03.214Z');
+    expect(traced.recorded.productFollowUpInvoked).toBe(false);
+    expect(traced.recorded.repairCount).toBe(1);
+    expect(traced.recorded.usage).toEqual({ promptTokens: 12211, completionTokens: 2955, totalTokens: 15166 });
+    expect(traced.recorded.report.calls).toHaveLength(3);
+    expect(traced.call?.reviewGaps).toEqual([]);
+    expect(traced.sent.founderSupplement).toBe('');
+    expect(traced.normalized.errors).toEqual([
+      'sufficiency_conflict:judgment',
+      'sufficiency_conflict:hypotheses',
+      'reason_insufficient:nextVerification',
+      'next_verification_unchanged',
+      'choice_promoted_to_judgment',
+      'hypothesis_demand_ungrounded',
+      'next_verification_choice_absent',
+      'hypothesis_unconfirmed_replaced',
+    ]);
+    const claim = score(
+      '../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-input-trace-recorded.json',
+      'reflection-output-11:brewery-claim:repair',
+    );
+    expect(claim.sent.founderSupplement).toContain('확정되었');
+    expect(claim.normalized.errors).toEqual([
+      'reason_insufficient:judgment',
+      'retention_input_missing:judgment',
+      'retention_sufficiency_missing:judgment',
+      'retention_hold_missing:judgment',
+      'retention_evidence_missing:judgment',
+      'claim_unmarked:judgment',
+      'status_repeat:impactAssessment:judgment',
+      'status_repeat:holdReason:judgment',
+      'sufficiency_conflict:hypotheses',
+      'follow_up_output_previous:nextQuestion',
+      'reason_insufficient:nextQuestion',
+      'choice_unlinked',
+      'hypothesis_unconfirmed_replaced',
+      'next_verification_choice_absent',
+    ]);
+    const repaired = score(
+      '../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-choice-repair-recorded.json',
+      'reflection-output-11:choice-only:repair',
+    );
+    expect(repaired.recorded.runId).toBe('q1-incremental-reflection-choice-repair-2026-10-30');
+    expect(repaired.recorded.priorRunId).toBe('q1-incremental-reflection-input-trace-2026-10-30');
+    expect(repaired.recorded.gitSha).toBe('746e9e1c4538822eebeb9686d03da17f270a0f2a');
+    expect(repaired.recorded.startedAt).toBe('2026-10-30T08:43:56.156Z');
+    expect(repaired.recorded.finishedAt).toBe('2026-10-30T08:44:08.809Z');
+    expect(repaired.recorded.productFollowUpInvoked).toBe(false);
+    expect(repaired.recorded.repairCount).toBe(1);
+    expect(repaired.recorded.usage).toEqual({ promptTokens: 8192, completionTokens: 1682, totalTokens: 9874 });
+    expect(repaired.recorded.report.calls).toHaveLength(2);
+    expect(repaired.recorded.report.calls[0]?.raw).toBe(repaired.recorded.report.calls[1]?.raw);
+    expect(repaired.sent.founderSupplement).toBe('');
+    expect(repaired.normalized.errors).toEqual([
+      'sufficiency_conflict:judgment',
+      'sufficiency_conflict:hypotheses',
+      'choice_promoted_to_judgment',
+      'next_verification_choice_absent',
+      'hypothesis_unconfirmed_replaced',
+    ]);
+    expect(reflectionReviewsRepeat(traced.call?.raw ?? '', claim.call?.raw ?? '')).toBe(false);
+  });
+
   it('stores the child from changes, restores the same sections, and ignores a duplicate submit', async () => {
     const store = openAiPmReviewStore(storePath());
     const chat = async (request: ChatRequest) => {
