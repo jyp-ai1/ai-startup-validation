@@ -819,6 +819,9 @@ export function WorkspaceAiPmMain({
             <p className="mt-1 text-sm text-muted-foreground">{t('insufficientDocumentHint')}</p>
           </section>
         ) : null}
+        <p className="text-sm text-muted-foreground" data-testid="ai-pm-document-next">
+          사업 내용을 저장하면 이 프로젝트에서 사업성 검토가 열립니다. 내용이 없으면 검토는 시작하지 않습니다.
+        </p>
         <WorkspaceDocumentIntake
           onSubmit={onDocumentIntake}
           onStartWithoutDocument={() => {

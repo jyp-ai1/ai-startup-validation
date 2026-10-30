@@ -1919,6 +1919,9 @@ describe('AI PM first review', () => {
     expect(panel).toContain("fetch('/api/ai-pm-review/feedback'");
     expect(panel).toContain('data-testid="ai-pm-history"');
     expect(panel).toContain('data-testid="ai-pm-reflected-answer"');
+    expect(panel).toContain('data-testid="ai-pm-project-gate"');
+    expect(panel).toContain('href="/workspace?intent=new"');
+    expect(panel).toContain('href="/auth/login?next=/workspace"');
     expect(panel).toContain('최초 분석');
     expect(panel).toContain('`${index}차 재분석`');
     expect(panel).toContain('답을 저장했습니다. 다시 검토는 추가 설명을 적은 뒤 진행합니다.');
@@ -2637,6 +2640,18 @@ describe('AI PM first review', () => {
     expect(html).toContain('일정을 잡았습니까?');
     expect(html).toContain('다음 질문');
     expect(html).not.toContain('실패한 판단');
+    expect(html).not.toContain('ai-pm-project-gate');
+    expect(html).not.toMatch(/gpt|gemini|openai|token/i);
+  });
+
+  it('tells a visitor without a project where to open the review', () => {
+    const html = renderToStaticMarkup(createElement(AiPmReviewPanel, { initialText: PLAN }));
+    expect(html).toContain('data-testid="ai-pm-project-gate"');
+    expect(html).toContain('이 화면에는 프로젝트가 없어 사업성 검토를 시작하지 않습니다.');
+    expect(html).toContain('href="/workspace?intent=new"');
+    expect(html).toContain('href="/workspace"');
+    expect(html).toContain('href="/auth/login?next=/workspace"');
+    expect(html).not.toContain('AI 사업성 검토를 시작합니다');
     expect(html).not.toMatch(/gpt|gemini|openai|token/i);
   });
 

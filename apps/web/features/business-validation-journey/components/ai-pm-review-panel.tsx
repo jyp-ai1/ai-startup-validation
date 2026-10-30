@@ -7,7 +7,7 @@ import { Button, Textarea } from '@repo/ui';
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 import { businessBodyForReviewMatch, stripReviewIntakeLines } from '@/lib/project/parse-intake-seed';
 import type { AiPmReviewView } from '../lib/ai-pm-review';
-import { reviewFailureCopy } from '../lib/ai-pm-review-failure-copy';
+import { reviewFailureCopy, reviewModelUnavailableCopy } from '../lib/ai-pm-review-failure-copy';
 import {
   REVIEW_FOCUS_PRESETS,
   REVIEW_PURPOSE_LABEL,
@@ -206,7 +206,7 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
         return;
       }
       if (!response.ok || !payload.review) {
-        setMessage(inputError(payload.error));
+        setMessage(reviewModelUnavailableCopy(payload.error) ?? inputError(payload.error));
         return;
       }
       remember(payload.review);
@@ -401,7 +401,10 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
         return;
       }
       if (!response.ok || !payload.review) {
-        setMessage('다시 검토하지 못했습니다. 이전 분석은 그대로 남아 있습니다.');
+        setMessage(
+          reviewModelUnavailableCopy(payload.error) ??
+            '다시 검토하지 못했습니다. 이전 분석은 그대로 남아 있습니다.',
+        );
         return;
       }
       if (payload.review.status !== 'ready' || !payload.review.sections?.analysis) {
@@ -591,11 +594,34 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
               </p>
               <p className="text-xs text-muted-foreground">미확인 가설은 확인된 사실이 아닙니다.</p>
             </div>
+          ) : !projectId ? (
+            <div className="space-y-2 text-sm" data-testid="ai-pm-project-gate">
+              <p>이 화면에는 프로젝트가 없어 사업성 검토를 시작하지 않습니다.</p>
+              <p className="text-muted-foreground">
+                로그인 후 프로젝트를 열거나 새로 만들고, 사업 내용을 저장하면 그 프로젝트에서 검토를 시작합니다.
+              </p>
+              <p className="flex flex-wrap gap-3">
+                <a className="underline" href="/auth/login?next=/workspace">
+                  로그인
+                </a>
+                <a className="underline" href="/workspace">
+                  내 프로젝트
+                </a>
+                <a className="underline" href="/workspace?intent=new">
+                  새 프로젝트
+                </a>
+              </p>
+            </div>
           ) : (
             <p className="text-sm text-muted-foreground" data-testid="ai-pm-core">
               사업 내용만 입력해도 종합 사업성 검토를 시작합니다. 목적과 단계는 고르지 않아도 됩니다.
             </p>
           )}
+          {projectId && needsModelCall && stripReviewIntakeLines(text).trim().length < 8 ? (
+            <p className="text-sm text-muted-foreground" data-testid="ai-pm-text-gate">
+              사업 내용이 짧으면 검토를 시작하지 않습니다. 아이디어를 먼저 적어 주세요.
+            </p>
+          ) : null}
           {analysis ? null : needsModelCall ? (
             <Button
               type="button"
@@ -1079,7 +1105,9 @@ function writeStoredChoice(reviewId: string, choice: ChoiceAnswer) {
 
 function statusLine(review: AiPmReviewView): string {
   if (review.status === 'ready') return '모델 검토를 저장했습니다.';
-  if (review.status === 'unavailable') return '지금은 모델 검토 결과를 만들지 못했습니다. 입력은 여기에 남아 있습니다.';
+  if (review.status === 'unavailable') {
+    return '지금은 모델 검토를 실행하지 못했습니다. 입력한 사업 내용은 남아 있습니다.';
+  }
   return reviewFailureCopy(review.failure);
 }
 
