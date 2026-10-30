@@ -2,6 +2,7 @@
  * One incremental-reflection call of the frozen product follow-up request.
  * The founder answer in the fixture is synthetic test data.
  * Production builds return immediately. The product second-review route is not called.
+ * The meaning call q1-incremental-reflection-meaning-2026-10-30 stays RECORDED.
  * The choice-repair call q1-incremental-reflection-choice-repair-2026-10-30 stays RECORDED.
  * The input-trace call q1-incremental-reflection-input-trace-2026-10-30 stays RECORDED.
  * The review-fields call q1-incremental-reflection-review-fields-2026-10-30 stays RECORDED.
@@ -18,14 +19,14 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-meaning-2026-10-30';
-export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-choice-repair-2026-10-30';
+export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-relation-2026-10-30';
+export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-meaning-2026-10-30';
 export const PREVIEW_COMPARE_BUCKET = 'ai-pm-quality-compare';
 export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(scriptDir, '..');
-const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-meaning-request.json');
+const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-relation-request.json');
 
 export function shouldRunPreviewQualityCompare(env) {
   return env.VERCEL_ENV === 'preview' && Boolean(env.VERCEL_GIT_COMMIT_REF) && env.VERCEL_GIT_COMMIT_REF !== 'main';
@@ -145,6 +146,8 @@ export function reviewFieldGaps(raw, userPrompt) {
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return ['follow_up_output_unparsed'];
   const supplement = typeof sent.founderSupplement === 'string' ? sent.founderSupplement : '';
   const choice = sent.founderChoice && typeof sent.founderChoice.label === 'string' ? sent.founderChoice.label : '';
+  const previous = sent.previousAnalysis && typeof sent.previousAnalysis === 'object' ? sent.previousAnalysis : {};
+  const experience = choice.includes('체험') && choice.includes('먼저') && !choice.includes('마케팅을 먼저');
   const errors = [];
   const changes = Array.isArray(parsed.changes) ? parsed.changes : [];
   for (const field of REVIEW_FIELDS) {
@@ -159,12 +162,33 @@ export function reviewFieldGaps(raw, userPrompt) {
     const decision = typeof change.decision === 'string' ? change.decision.trim() : '';
     const retention = typeof change.retentionDecision === 'string' ? change.retentionDecision.trim() : '';
     if (retention && decision && retention !== decision) errors.push(`retention_decision_mismatch:${field}`);
+    const storedPrevious =
+      field === 'hypotheses'
+        ? (Array.isArray(previous.hypotheses) ? previous.hypotheses : []).join(' / ')
+        : field === 'nextVerification'
+          ? previous.analysis && typeof previous.analysis.nextVerification === 'string'
+            ? previous.analysis.nextVerification
+            : ''
+          : field === 'nextQuestion'
+            ? typeof previous.nextQuestion === 'string'
+              ? previous.nextQuestion
+              : ''
+            : typeof previous.judgment === 'string'
+              ? previous.judgment
+              : '';
+    if (typeof change.previous === 'string' && change.previous !== storedPrevious) errors.push(`follow_up_output_previous:${field}`);
+    const current = typeof change.current === 'string' ? change.current : '';
+    const changed = typeof change.previous === 'string' && current !== change.previous;
+    if (decision && ((changed && decision !== 'changed') || (!changed && decision !== 'retained' && decision !== 'unresolved'))) {
+      errors.push(`decision_mismatch:${field}`);
+    }
     if (field !== 'judgment' && field !== 'hypotheses') continue;
     const held = decision === 'retained' || decision === 'unresolved';
     const reason = typeof change.reason === 'string' ? change.reason.trim() : '';
     if (held && reason && !/충분하지|바꾸지 않|확인된 사실이 아니|근거가 아니|부족|확정하지/.test(reason)) {
       errors.push(`reason_insufficient:${field}`);
     }
+    if (decision === 'retained' && reason && !/유지|바꾸지|그대로|두지|머문/.test(reason)) errors.push(`retention_hold_missing:${field}`);
     if (held && typeof change.holdReason === 'string' && change.holdReason.trim() && genericHold(change.holdReason)) {
       errors.push(`review_hold_generic:holdReason:${field}`);
     }
@@ -197,9 +221,20 @@ export function reviewFieldGaps(raw, userPrompt) {
     if (held && statusRepeat(change.impactAssessment || '')) errors.push(`status_repeat:impactAssessment:${field}`);
     if (held && statusRepeat(change.holdReason || '')) errors.push(`status_repeat:holdReason:${field}`);
     if (held && choice && compactText(input) === compactText(choice)) errors.push(`input_echo_only:${field}`);
+    const choiceOnly = experience && !supplement.trim();
+    if (choiceOnly && held && typeof change.impactAssessment === 'string' && change.impactAssessment.trim()) {
+      const impact = change.impactAssessment;
+      const relates =
+        field === 'hypotheses'
+          ? /계획|선택/.test(impact) && /가설|미확인|관련/.test(impact)
+          : /계획|선택/.test(impact) && /판단|관련|근거/.test(impact);
+      if (!relates) errors.push(`trace_relation_missing:${field}`);
+    }
+    if (held && typeof change.impactAssessment === 'string' && genericHold(change.impactAssessment)) {
+      errors.push(`review_hold_generic:impactAssessment:${field}`);
+    }
     if (assertsClaim && input.trim() && !/양조장|확정|계약/.test(input)) errors.push(`claim_unlinked:${field}`);
   }
-  const experience = choice.includes('체험') && choice.includes('먼저') && !choice.includes('마케팅을 먼저');
   const nextVerification = typeof parsed.nextVerification === 'string' ? parsed.nextVerification : '';
   const nextQuestion = typeof parsed.nextQuestion === 'string' ? parsed.nextQuestion : '';
   const claim = /확정되었|확정했다|계약을 맺|계약했다|확보했다|확보되었/.test(supplement);
@@ -209,7 +244,6 @@ export function reviewFieldGaps(raw, userPrompt) {
   if (experience && claim && !/계약서|증빙|입금/.test(nextVerification)) errors.push('claim_verification_missing');
   const judgment = typeof parsed.judgment === 'string' ? parsed.judgment : '';
   if (choice && (compactText(judgment) === compactText(choice) || judgment.includes(choice))) errors.push('choice_promoted_to_judgment');
-  const previous = sent.previousAnalysis && typeof sent.previousAnalysis === 'object' ? sent.previousAnalysis : {};
   const previousHypotheses = Array.isArray(previous.hypotheses) ? previous.hypotheses : [];
   const nextHypotheses = Array.isArray(parsed.hypotheses) ? parsed.hypotheses.filter((item) => typeof item === 'string') : [];
   const previousLine = previousHypotheses.join(' / ');
@@ -224,6 +258,10 @@ export function reviewFieldGaps(raw, userPrompt) {
   }
   if (/수요/.test(nextLine) && /있을|있다|존재|예상/.test(nextLine)) errors.push('hypothesis_demand_ungrounded');
   if (experience && choice && !nextVerification.includes(choice)) errors.push('next_verification_choice_absent');
+  if (experience && !supplement.trim() && /온라인 마케팅/.test(nextVerification)) errors.push('priority_plan_unfocused');
+  const storedQuestion = typeof previous.nextQuestion === 'string' ? previous.nextQuestion.trim() : '';
+  if (experience && storedQuestion && nextQuestion.trim() === storedQuestion && (!supplement.trim() || claim)) errors.push('question_unchanged');
+  if (experience && claim && !/계약서|증빙|입금/.test(nextQuestion)) errors.push('question_claim_unlinked');
   const previousJudgment = typeof previous.judgment === 'string' ? previous.judgment.trim() : '';
   if (!supplement.trim() && previousJudgment && judgment.trim() !== previousJudgment) errors.push('judgment_changed_by_choice');
   for (const field of ['judgment', 'hypotheses']) {
@@ -241,25 +279,49 @@ export function repairMessage(errors) {
     '이전 JSON은 저장되지 않았다.',
     `실패 코드: ${errors.join(',')}.`,
     '이전 JSON과 같은 응답을 다시 내면 실패다.',
-    'judgment와 hypotheses의 inputConsidered, impactAssessment, sufficiencyAssessment, retentionDecision, holdReason, evidenceNeeded를 입력에 이미 있는 창업자 답변으로 다시 적어라.',
-    '없는 계약, 예약, 확정 사실을 만들지 마라. 확정 주장을 확인된 사실로 쓰지 마라.',
-    'retentionDecision은 decision과 같아야 한다. retained 또는 unresolved의 sufficiencyAssessment는 sufficient가 아니다.',
-    'holdReason에 방향성만 적거나 추가 정보가 필요하다만 쓰지 마라.',
+    '여섯 검토 필드를 비우거나 선택 문장만 복사하지 마라.',
+    '없는 확정 사실을 만들지 마라. 수요가 있다고 단정하지 마라.',
+    'retentionDecision은 decision과 같아야 한다.',
   ];
   if (has('choice_promoted_to_judgment') || has('judgment_changed_by_choice')) {
     lines.push('judgment.current는 입력의 previousJudgment와 같은 문장으로 되돌려라. decision은 retained다. 선택은 검증 우선순위이며 판단의 증거가 아니다.');
   }
+  if (has('input_echo_only')) {
+    lines.push('inputConsidered가 founderChoice.label과 같으면 실패다. 그 입력이 판단 또는 가설과 어떤 관계인지 적어라.');
+  }
+  if (has('status_repeat') || has('trace_relation_missing')) {
+    lines.push('impactAssessment와 holdReason에 여전히 유효하다, 변화가 없다, 새로운 정보가 없다만 쓰지 마라. 선택이 판단의 근거인지, 가설과 관련되는지, 검증 계획의 우선순위인지를 구분해 적어라.');
+  }
+  if (has('retention_hold_missing') || has('reason_insufficient') || has('review_hold_generic') || has('retention_sufficiency_missing')) {
+    lines.push('retained인 reason과 holdReason은 바꾸지 않고 유지하는 이유와, 근거가 부족한 이유를 함께 적는다. 미확인이라는 말만 반복하면 실패다.');
+  }
+  if (has('retention_evidence_missing') || has('trace_evidence_unrelated')) {
+    lines.push('evidenceNeeded와 reason에는 아직 없는 증거를 적는다. 체험 선택이면 고객 인터뷰나 예약 의향이다. 확정 주장이면 계약서나 입금 증빙이다.');
+  }
   if (has('hypothesis_unconfirmed_replaced') || has('hypothesis_demand_ungrounded')) {
     lines.push('hypotheses.current는 저장된 가설 그대로다. 미확인이면 미확인만 둔다. 수요가 있다, 있을 것이다, 성공 가능성을 높인다를 넣지 마라.');
   }
-  if (has('next_verification_choice_absent') || has('choice_unlinked')) {
-    lines.push('nextVerification.current는 founderChoice.label을 그대로 포함한다. 그 선택의 수요와 실행 가능성을 확인하는 순서다. 수요가 확인되었다고 쓰지 마라.');
+  const claimRepair =
+    has('claim_unmarked') ||
+    has('claim_promoted_to_fact') ||
+    has('claim_verification_missing') ||
+    has('claim_unlinked') ||
+    has('question_claim_unlinked') ||
+    has('retention_input_missing');
+  if (claimRepair) {
+    lines.push(
+      '확정 주장은 주장으로 적고 확인된 사실이 아니라고 적어라. hypotheses의 inputConsidered와 reason도 그 주장을 검토한다. evidenceStatus는 unverified-input이다. nextVerification.current는 founderChoice.label을 그대로 포함하고 계약서 또는 입금 증빙 확인을 함께 담는다. decision은 changed다.',
+    );
+  } else if (has('next_verification_choice_absent') || has('choice_unlinked') || has('priority_plan_unfocused')) {
+    lines.push(
+      'nextVerification.current는 founderChoice.label을 그대로 포함한다. 체험 프로그램의 수요와 실행 가능성을 확인하는 순서를 잇는다. 온라인 마케팅 효과 검증을 붙이지 마라. 수요가 확인되었다고 쓰지 마라. decision은 changed다.',
+    );
   }
-  if (has('claim_unmarked') || has('claim_promoted_to_fact') || has('claim_verification_missing') || has('status_repeat')) {
-    lines.push('확정 주장은 주장으로 적고 확인된 사실이 아니라고 적어라. evidenceStatus는 unverified-input이다. 여전히 유효하다, 변화가 없다, 새로운 정보가 없다만 쓰지 마라.');
+  if (has('decision_mismatch')) {
+    lines.push('current가 previous와 다르면 decision은 changed다. 같으면 retained 또는 unresolved다.');
   }
-  if (has('follow_up_output_previous')) {
-    lines.push('previous는 입력에 있는 저장 값 그대로다. nextQuestion.previous는 저장된 질문과 같아야 한다.');
+  if (has('follow_up_output_previous') || has('question_unchanged')) {
+    lines.push('모든 previous는 입력의 저장 값 그대로다. nextQuestion.previous는 previousAnalysis.nextQuestion과 같다. current는 그 질문을 반복하지 않고, 이번 검증에서 남은 불확실성을 묻는다.');
   }
   if (has('sufficiency_conflict')) {
     lines.push('선택만으로 judgment를 changed로 두지 마라. retained의 sufficiencyAssessment는 insufficient다.');
@@ -455,6 +517,7 @@ async function main() {
       const repair = await oneCall(apiKey, `${item.promptVersion}:repair`, repairRequest);
       repair.reviewGaps = repair.raw ? reviewFieldGaps(repair.raw, first.userPrompt) : [];
       repair.repairPrompt = repairMessage(first.reviewGaps);
+      repair.sameAsFirst = repair.raw === first.raw;
       calls.push(repair);
     }
   }

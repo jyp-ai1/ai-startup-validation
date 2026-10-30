@@ -2402,6 +2402,29 @@ describe('AI PM first review', () => {
       expect(specificRepair).toContain('확인된 사실이 아니라고');
       expect(specificRepair).toContain('retained의 sufficiencyAssessment는 insufficient다');
       expect(specificRepair).not.toContain('양조장 후보가 있는가');
+      const choiceRepair = followUpRepairMessage([
+        'retention_hold_missing:judgment',
+        'retention_evidence_missing:judgment',
+        'status_repeat:impactAssessment:judgment',
+        'input_echo_only:judgment',
+        'trace_relation_missing:judgment',
+        'reason_insufficient:hypotheses',
+        'priority_plan_unfocused',
+      ]);
+      expect(choiceRepair).toContain('온라인 마케팅 효과 검증을 붙이지 마라');
+      expect(choiceRepair).toContain('고객 인터뷰나 예약 의향');
+      expect(choiceRepair).toContain('founderChoice.label과 같으면 실패다');
+      expect(choiceRepair).not.toContain('계약서 또는 입금 증빙 확인을 함께');
+      const claimRepair = followUpRepairMessage([
+        'retention_input_missing:hypotheses',
+        'claim_verification_missing',
+        'decision_mismatch:nextVerification',
+        'follow_up_output_previous:nextQuestion',
+      ]);
+      expect(claimRepair).toContain('founderChoice.label을 그대로 포함하고 계약서 또는 입금 증빙');
+      expect(claimRepair).toContain('previousAnalysis.nextQuestion');
+      expect(claimRepair).toContain('decision은 changed다');
+      expect(claimRepair).not.toContain('온라인 마케팅 효과 검증을 붙이지 마라');
       return reply(validUngatedFollowUpRaw(sections()), { usage: { inputTokens: 20, outputTokens: 7, totalTokens: 27 } });
     };
     const first = await runFirstReview({
@@ -2700,10 +2723,15 @@ describe('AI PM first review', () => {
     expect(emptySystem).toContain('inputLedger');
     expect(emptySystem).toContain('검증 우선순위');
     expect(emptySystem).toContain('previousJudgment와 같은 문장');
+    expect(emptySystem).toContain('inputConsidered가 founderChoice.label과 같으면 실패다');
+    expect(emptySystem).toContain('온라인 마케팅 효과 검증을 뒤에 붙이지 마라');
+    expect(emptySystem).toContain('미확인 상태만 반복하면 실패다');
     expect(claimSystem).toContain('unverified-claim');
     expect(claimSystem).toContain('검증 우선순위');
     expect(claimSystem).toContain('확인된 사실이 아니다');
     expect(claimSystem).toContain('계약서나 입금 증빙');
+    expect(claimSystem).toContain('hypotheses의 inputConsidered와 reason');
+    expect(claimSystem).toContain('선택 문장만 쓰면 실패다');
 
     const experiencePlan = `${choice} 잠재 고객의 체험 참여 의향을 인터뷰로 확인한다. 이 단계는 아직 실행되지 않았다.`;
     const experienceQuestion = '체험 프로그램에 참여할 고객이 있는가?';
@@ -2828,6 +2856,13 @@ describe('AI PM first review', () => {
     expect(rewrittenResult.errors).toContain('judgment_changed_by_choice');
     expect(rewrittenResult.sections).toBeNull();
     expect(JSON.stringify(previous)).toBe(before);
+    const unfocused = JSON.parse(emptyRaw) as { nextVerification: string; changes: Array<Record<string, string>> };
+    unfocused.nextVerification = `${experiencePlan} 온라인 마케팅 효과 검증을 같이 한다.`;
+    const unfocusedChange = unfocused.changes.find((change) => change.field === 'nextVerification');
+    if (unfocusedChange) unfocusedChange.current = unfocused.nextVerification;
+    const unfocusedResult = normalizeIncrementalSections(previous, JSON.stringify(unfocused), contextFor(''));
+    expect(unfocusedResult.errors).toContain('priority_plan_unfocused');
+    expect(unfocusedResult.sections).toBeNull();
 
     const claimRaw = buildRaw({
       supplement: FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM,
@@ -2884,6 +2919,15 @@ describe('AI PM first review', () => {
     const promotedResult = normalizeIncrementalSections(previous, JSON.stringify(promoted), contextFor(FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM));
     expect(promotedResult.errors).toContain('claim_promoted_to_fact:judgment');
     expect(promotedResult.sections).toBeNull();
+    const mismatched = JSON.parse(claimRaw) as { changes: Array<Record<string, string>> };
+    const mismatchedPlan = mismatched.changes.find((change) => change.field === 'nextVerification');
+    if (mismatchedPlan) mismatchedPlan.decision = 'retained';
+    const mismatchedQuestion = mismatched.changes.find((change) => change.field === 'nextQuestion');
+    if (mismatchedQuestion) mismatchedQuestion.previous = '다른 질문인가?';
+    const mismatchedResult = normalizeIncrementalSections(previous, JSON.stringify(mismatched), contextFor(FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM));
+    expect(mismatchedResult.errors).toEqual(expect.arrayContaining(['decision_mismatch:nextVerification', 'follow_up_output_previous:nextQuestion']));
+    expect(mismatchedResult.sections).toBeNull();
+    expect(JSON.stringify(previous)).toBe(before);
   });
 
   it('keeps both input cases unstored when the model does not relate the answer', () => {
@@ -2947,6 +2991,7 @@ describe('AI PM first review', () => {
       'next_verification_choice_absent',
       'hypothesis_unconfirmed_replaced',
       'judgment_changed_by_choice',
+      'priority_plan_unfocused',
     ]);
     const claim = score(
       '../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-input-trace-recorded.json',
@@ -2991,6 +3036,7 @@ describe('AI PM first review', () => {
       'next_verification_choice_absent',
       'hypothesis_unconfirmed_replaced',
       'judgment_changed_by_choice',
+      'priority_plan_unfocused',
     ]);
     expect(reflectionReviewsRepeat(traced.call?.raw ?? '', claim.call?.raw ?? '')).toBe(false);
   });
@@ -3063,6 +3109,7 @@ describe('AI PM first review', () => {
       'review_hold_generic:holdReason:hypotheses',
       'input_echo_only:hypotheses',
       'trace_relation_missing:hypotheses',
+      'priority_plan_unfocused',
     ]);
     expect(score('reflection-output-11:brewery-claim:repair')).toEqual([
       'retention_input_missing:hypotheses',
@@ -3073,6 +3120,230 @@ describe('AI PM first review', () => {
       'claim_verification_missing',
     ]);
     expect(reflectionReviewsRepeat(recorded.report.calls[1]?.raw ?? '', recorded.report.calls[3]?.raw ?? '')).toBe(false);
+  });
+
+  it('accumulates a second synthetic answer on the updated analysis', () => {
+    const choice = '체험 프로그램을 먼저 검증할 것';
+    const originalQuestion = '체험 프로그램과 마케팅 지원 중 어느 쪽을 먼저 검증할지?';
+    const firstPlan = `${choice} 잠재 고객의 체험 참여 의향을 인터뷰로 확인한다. 이 단계는 아직 실행되지 않았다.`;
+    const firstQuestion = '체험 프로그램에 참여할 고객이 있는가?';
+    const base = sections();
+    const original: ReviewSections = {
+      ...base,
+      hypotheses: ['미확인'],
+      nextQuestion: originalQuestion,
+      analysis: {
+        summary: base.judgment,
+        value: '미확인',
+        operatingModel: '구상',
+        payer: '미확인',
+        competition: '미확인',
+        operations: '구상',
+        profitability: '미확인',
+        strengths: ['구상'],
+        assumptions: ['미확인'],
+        evidenceToChange: ['수요'],
+        founderFacts: ['관광객'],
+        inferences: ['추론'],
+        judgmentDetail: '보류',
+        choices: [],
+        nextVerification: '체험 프로그램의 수요 검증 및 온라인 마케팅 효과 검증',
+      },
+    };
+    const parentBefore = JSON.stringify(original);
+    const fieldRow = (
+      field: string,
+      prior: string,
+      current: string,
+      reason: string,
+      review: Record<string, string>,
+    ) => {
+      const decision = current === prior ? 'retained' : 'changed';
+      return {
+        field,
+        previous: prior,
+        current,
+        decision,
+        reason,
+        evidenceStatus: 'unverified-input',
+        sufficiencyAssessment: decision === 'changed' ? 'partial' : 'insufficient',
+        retentionDecision: decision,
+        ...review,
+      };
+    };
+    const firstRaw = JSON.stringify({
+      judgment: original.judgment,
+      hypotheses: ['미확인'],
+      nextVerification: firstPlan,
+      nextQuestion: firstQuestion,
+      revenueModel: original.revenueModel,
+      changes: [
+        fieldRow(
+          'judgment',
+          original.judgment,
+          original.judgment,
+          `${choice} 은 검증 계획이라 저장된 판단의 근거가 아니다. 수요가 확인되지 않아 판단을 바꾸지 않고 유지한다. 판단을 바꾸려면 고객 인터뷰가 필요하다.`,
+          {
+            inputConsidered: `${choice} 은 검증 순서에 대한 계획이며 수요가 확인되지 않은 상태다.`,
+            impactAssessment: '선택한 계획은 저장된 판단과 관련된다. 수요가 확인되지 않아 그 계획을 판단의 근거로 쓰지 않는다.',
+            holdReason: '수요가 확인되지 않아 이 계획은 근거가 아니다. 저장된 판단을 유지한다.',
+            evidenceNeeded: '체험에 참여할 고객 인터뷰가 필요하다.',
+          },
+        ),
+        fieldRow(
+          'hypotheses',
+          '미확인',
+          '미확인',
+          `${choice} 은 가설을 확정하지 못한다. 수요 근거가 부족해 미확인으로 유지한다. 가설을 바꾸려면 고객 인터뷰가 필요하다.`,
+          {
+            inputConsidered: `${choice} 은 가설을 정하는 근거가 아니라 검증 계획이다.`,
+            impactAssessment: '이 계획은 미확인 가설과 관련되지만 근거가 부족해 가설을 확정하지 못한다.',
+            holdReason: '수요 근거가 부족해 가설을 미확인으로 유지한다.',
+            evidenceNeeded: '체험 참여 의향을 묻는 고객 인터뷰 기록이 필요하다.',
+          },
+        ),
+        fieldRow(
+          'nextVerification',
+          original.analysis?.nextVerification ?? '',
+          firstPlan,
+          `${choice} 때문에 검증은 체험 참여 의향을 확인하는 순서로 바뀐다.`,
+          {
+            inputConsidered: `${choice} 은 다음 검증의 우선순위다.`,
+            impactAssessment: '검증 계획이 체험 프로그램 확인으로 바뀐다.',
+            holdReason: '기존 검증 문장을 유지하지 않고 검증 순서를 바꾼다.',
+            evidenceNeeded: '고객 인터뷰 기록이 필요하다.',
+          },
+        ),
+        fieldRow(
+          'nextQuestion',
+          originalQuestion,
+          firstQuestion,
+          `${choice} 은 체험 수요가 확인되지 않은 계획이다. 다음 질문은 참여할 고객이 있는지다.`,
+          {
+            inputConsidered: `${choice} 이후 아직 없는 참여 의향을 묻는다.`,
+            impactAssessment: '질문이 체험 참여 확인으로 바뀐다.',
+            holdReason: '이전 질문을 유지하지 않고 남은 불확실성을 묻는다.',
+            evidenceNeeded: '고객 인터뷰가 필요하다.',
+          },
+        ),
+      ],
+    });
+    const firstContext = {
+      previousJudgment: original.judgment,
+      previousHypotheses: [...original.hypotheses],
+      previousNextVerification: original.analysis?.nextVerification ?? '',
+      previousNextQuestion: original.nextQuestion,
+      previousRevenueModel: original.revenueModel,
+      choiceLabel: choice,
+      supplement: '',
+      answerOrigin: 'synthetic-test-data' as const,
+    };
+    const first = normalizeIncrementalSections(original, firstRaw, firstContext);
+    expect(first.errors).toEqual([]);
+    expect(JSON.stringify(original)).toBe(parentBefore);
+    expect(first.sections?.judgment).toBe(original.judgment);
+    expect(first.sections?.nextQuestion).toBe(firstQuestion);
+    const updated = first.sections;
+    if (!updated?.analysis) throw new Error('first_sections_missing');
+    const updatedBefore = JSON.stringify(updated);
+    const secondSupplement = '잠재 고객 인터뷰 기록은 아직 없다.';
+    const secondPlan = `${choice} 체험 참여 의향을 물을 인터뷰 기록이 아직 없다. 그 기록을 확인한 뒤에 실행 가능성을 본다.`;
+    const secondQuestion = '체험 참여 의향을 물을 고객 인터뷰를 언제 시작할 수 있는가?';
+    const secondRaw = JSON.stringify({
+      judgment: updated.judgment,
+      hypotheses: ['미확인'],
+      nextVerification: secondPlan,
+      nextQuestion: secondQuestion,
+      revenueModel: updated.revenueModel,
+      changes: [
+        fieldRow(
+          'judgment',
+          updated.judgment,
+          updated.judgment,
+          `${secondSupplement} 이 말은 인터뷰가 아직 없다는 입력이라 저장된 판단의 근거가 아니다. 근거가 부족해 판단을 바꾸지 않고 유지한다. 판단을 바꾸려면 인터뷰 기록이 필요하다.`,
+          {
+            inputConsidered: `${secondSupplement} 인터뷰 기록이 없다는 입력이며 판단을 입증하지 않는다.`,
+            impactAssessment: '새 입력은 인터뷰 부재다. 저장된 판단과 관련되지만 근거가 부족해 판단을 바꾸지 않는다.',
+            holdReason: '인터뷰 기록이 없어 근거가 부족하다. 저장된 판단을 유지한다.',
+            evidenceNeeded: '체험 참여 의향을 남긴 고객 인터뷰 기록이 필요하다.',
+          },
+        ),
+        fieldRow(
+          'hypotheses',
+          '미확인',
+          '미확인',
+          `${secondSupplement} 이 입력은 가설을 확정하지 못한다. 인터뷰 기록이 없어 근거가 부족하고 미확인으로 유지한다. 가설을 바꾸려면 인터뷰 기록이 필요하다.`,
+          {
+            inputConsidered: `${secondSupplement} 인터뷰 기록이 없다는 입력이며 가설의 근거가 아니다.`,
+            impactAssessment: '이 입력은 미확인 가설과 관련되지만 근거가 부족해 가설을 확정하지 못한다.',
+            holdReason: '인터뷰 근거가 부족해 가설을 미확인으로 유지한다.',
+            evidenceNeeded: '고객 인터뷰 기록이 필요하다.',
+          },
+        ),
+        fieldRow(
+          'nextVerification',
+          updated.analysis.nextVerification,
+          secondPlan,
+          `${secondSupplement} ${choice} 인터뷰 기록이 없으므로 검증은 그 기록을 확인하는 순서로 남는다.`,
+          {
+            inputConsidered: `${secondSupplement} 때문에 체험 검증은 인터뷰 기록 확인이다.`,
+            impactAssessment: '검증 대상이 아직 없는 인터뷰 기록으로 좁아진다.',
+            holdReason: '이전 검증 문장을 유지하지 않고 기록 확인으로 바꾼다.',
+            evidenceNeeded: '고객 인터뷰 기록이 필요하다.',
+          },
+        ),
+        fieldRow(
+          'nextQuestion',
+          updated.nextQuestion,
+          secondQuestion,
+          `${secondSupplement} 인터뷰 기록이 없어 시작 시점을 질문한다.`,
+          {
+            inputConsidered: `${secondSupplement} 이후 남은 질문은 인터뷰 시작 시점이다.`,
+            impactAssessment: '질문이 인터뷰 실행 가능 시점으로 바뀐다.',
+            holdReason: '이전 질문을 유지하지 않고 남은 불확실성을 묻는다.',
+            evidenceNeeded: '인터뷰 일정이 필요하다.',
+          },
+        ),
+      ],
+    });
+    const second = normalizeIncrementalSections(updated, secondRaw, {
+      previousJudgment: updated.judgment,
+      previousHypotheses: [...updated.hypotheses],
+      previousNextVerification: updated.analysis.nextVerification,
+      previousNextQuestion: updated.nextQuestion,
+      previousRevenueModel: updated.revenueModel,
+      choiceLabel: choice,
+      supplement: secondSupplement,
+      answerOrigin: 'synthetic-test-data',
+    });
+    expect(second.errors).toEqual([]);
+    expect(JSON.stringify(original)).toBe(parentBefore);
+    expect(JSON.stringify(updated)).toBe(updatedBefore);
+    expect(second.sections?.judgment).toBe(original.judgment);
+    expect(second.sections?.hypotheses).toEqual(['미확인']);
+    expect(second.sections?.analysis?.nextVerification).toBe(secondPlan);
+    expect(second.sections?.nextQuestion).toBe(secondQuestion);
+    expect(second.sections?.nextQuestion).not.toBe(firstQuestion);
+    expect(second.sections?.nextQuestion).not.toBe(originalQuestion);
+    expect(secondPlan).toContain(choice);
+    expect(secondPlan).toContain('인터뷰');
+    expect(secondPlan).not.toContain('확정되었');
+    const broken = JSON.parse(secondRaw) as { changes: Array<Record<string, string>> };
+    const brokenQuestion = broken.changes.find((change) => change.field === 'nextQuestion');
+    if (brokenQuestion) brokenQuestion.previous = originalQuestion;
+    const brokenResult = normalizeIncrementalSections(updated, JSON.stringify(broken), {
+      previousJudgment: updated.judgment,
+      previousHypotheses: [...updated.hypotheses],
+      previousNextVerification: updated.analysis.nextVerification,
+      previousNextQuestion: updated.nextQuestion,
+      previousRevenueModel: updated.revenueModel,
+      choiceLabel: choice,
+      supplement: secondSupplement,
+      answerOrigin: 'synthetic-test-data',
+    });
+    expect(brokenResult.errors).toContain('follow_up_output_previous:nextQuestion');
+    expect(brokenResult.sections).toBeNull();
+    expect(JSON.stringify(updated)).toBe(updatedBefore);
   });
 
   it('stores the child from changes, restores the same sections, and ignores a duplicate submit', async () => {
