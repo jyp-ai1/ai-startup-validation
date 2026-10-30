@@ -967,13 +967,16 @@ describe('quality-2 and quality-3 compare requests', () => {
     const followEnd = reviewSource.indexOf('export function needsRevisionGate');
     const followSource = reviewSource.slice(followStart, followEnd);
     expect(followSource).toContain('buildFollowUpRequest');
+    expect(followSource).toContain('buildProductReanalysisRequest');
     expect(followSource).toContain("answerOrigin: 'founder-input'");
     expect(followSource).not.toContain('buildIncrementalStructureRequest');
     const panel = readFileSync(new URL('../../components/ai-pm-review-panel.tsx', import.meta.url), 'utf8');
     const followRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/follow-up/route.ts', import.meta.url), 'utf8');
-    expect(panel).not.toContain('/api/ai-pm-review/follow-up');
     expect(panel).not.toContain('buildIncrementalStructureRequest');
-    expect(panel).toContain('답을 저장했습니다. 모델 호출은 없습니다.');
+    expect(panel).toContain('/api/ai-pm-review/follow-up');
+    expect(panel).toContain('data-testid="ai-pm-history"');
+    expect(panel).toContain('data-testid="ai-pm-reflected-answer"');
+    expect(panel).not.toMatch(/gpt|gemini|openai|token/i);
     expect(followRoute).toContain('runFollowUpReview');
     expect(followRoute).not.toContain('buildIncrementalStructureRequest');
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');

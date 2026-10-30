@@ -109,6 +109,16 @@ export type RevisionGate = {
   failures: RevisionGateFailure[];
 };
 
+/** One founder answer and the analysis that followed it. Absent on a first review. */
+export type ConsultingTurn = {
+  question: string;
+  choiceLabel: string | null;
+  supplement: string;
+  judgment: string;
+  nextVerification: string;
+  nextQuestion: string;
+};
+
 export type StoredReview = {
   reviewId: string;
   userId: string;
@@ -131,6 +141,8 @@ export type StoredReview = {
   firstRawContent?: string | null;
   /** Set when a follow-up was compared with the previous review. Absent on older rows. */
   revisionGate?: RevisionGate | null;
+  /** Founder answer that produced this child. Absent on a first review and on older rows. */
+  consultingTurn?: ConsultingTurn | null;
   promptTokens: number | null;
   completionTokens: number | null;
   totalTokens: number | null;

@@ -47,18 +47,20 @@ type Step = 'result' | 'feedback' | 'revised' | 'question' | 'reflected';
 type AiPmReviewPanelProps = {
   initialText?: string;
   projectId?: string;
+  /** Seeds a stored chain for a render check. The product screen loads reviews from the account. */
+  initialReviews?: AiPmReviewView[];
 };
 
 const LOCAL_PREFIX = 'll-ai-pm-marks:';
 const CHOICE_PREFIX = 'll-ai-pm-choice:';
 
-export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReviewPanelProps) {
+export function AiPmReviewPanel({ initialText = '', projectId = '', initialReviews = [] }: AiPmReviewPanelProps) {
   const [text, setText] = useState(initialText);
   const [purpose, setPurpose] = useState<ReviewPurpose | ''>('');
   const [stage, setStage] = useState<ReviewStage | ''>('');
   const [focusPreset, setFocusPreset] = useState('');
   const [focusText, setFocusText] = useState('');
-  const [reviews, setReviews] = useState<AiPmReviewView[]>([]);
+  const [reviews, setReviews] = useState<AiPmReviewView[]>(initialReviews);
   const [auth, setAuth] = useState<'unknown' | 'in' | 'out'>('unknown');
   const [message, setMessage] = useState('');
   const [pending, setPending] = useState(false);
@@ -119,6 +121,7 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
   }, []);
 
   useEffect(() => {
+    if (pending) return;
     const latestFeedback = active?.feedback?.at(-1)?.feedbackId ?? 'none';
     const key = `${active?.reviewId ?? 'none'}:${latestFeedback}:${text}`;
     if (restoredKey.current === key) return;
@@ -144,7 +147,7 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
       setOtherText(choice.otherText);
       setMessage('저장한 답을 다시 열었습니다. 모델 호출은 없습니다.');
     }
-  }, [active, text, accountChoice]);
+  }, [active, text, accountChoice, pending]);
 
   useEffect(() => {
     if (!revisionForText) return;
@@ -328,7 +331,7 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
       if (where === 'browser') writeStoredChoice(active.reviewId, choice);
       setSavedChoice(choice);
       setSavedWhere(where);
-      setMessage('답을 저장했습니다. 모델 호출은 없습니다.');
+      setMessage('답을 저장했습니다. 다시 검토는 추가 설명을 적은 뒤 진행합니다.');
       void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.aiPmChoiceSaved, {
         screen: '/business-validation',
         status: 'stored',
@@ -336,6 +339,89 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
       });
     } catch {
       setMessage('답을 저장하지 못했습니다.');
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function submitReanalysis() {
+    if (!active?.sections || !analysis || pending || !projectId) return;
+    const selected = analysis.choices.find((choice) => choice.id === choiceId);
+    const note = answer.trim();
+    const choiceText = selected?.id === 'other' ? otherText.trim() : (selected?.label ?? '');
+    const supplement = note || choiceText;
+    if (!supplement) return;
+    if (selected?.id === 'other' && !otherText.trim()) return;
+    setPending(true);
+    setMessage('');
+    try {
+      if (auth !== 'in') {
+        setMessage('로그인 후 이 답을 이전 분석과 함께 다시 검토할 수 있습니다.');
+        return;
+      }
+      if (selected) {
+        const choice: ChoiceAnswer = {
+          choiceId: selected.id,
+          label: selected.label,
+          otherText: selected.id === 'other' ? otherText.trim() : '',
+        };
+        const saved = await fetch('/api/ai-pm-review/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectId,
+            reviewId: active.reviewId,
+            choiceId: choice.choiceId,
+            choiceLabel: choice.label,
+            otherText: choice.otherText,
+          }),
+        });
+        const savedBody = (await saved.json()) as LoadResponse;
+        if (saved.status === 401) {
+          setAuth('out');
+          setMessage('로그인 후 이 답을 이전 분석과 함께 다시 검토할 수 있습니다.');
+          return;
+        }
+        if (!saved.ok || !savedBody.review) {
+          setMessage('답을 저장하지 못했습니다. 선택 항목을 확인해 주세요.');
+          return;
+        }
+        remember(savedBody.review);
+        setSavedChoice(choice);
+      }
+      const response = await fetch('/api/ai-pm-review/follow-up', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId, reviewId: active.reviewId, supplement }),
+      });
+      const payload = (await response.json()) as LoadResponse;
+      if (response.status === 401) {
+        setAuth('out');
+        setMessage('로그인 후 이 답을 이전 분석과 함께 다시 검토할 수 있습니다.');
+        return;
+      }
+      if (!response.ok || !payload.review) {
+        setMessage('다시 검토하지 못했습니다. 이전 분석은 그대로 남아 있습니다.');
+        return;
+      }
+      if (payload.review.status !== 'ready' || !payload.review.sections?.analysis) {
+        remember(payload.review);
+        setMessage('이번 응답은 분석으로 저장하지 못했습니다. 이전 분석은 그대로 남아 있습니다.');
+        return;
+      }
+      remember(payload.review);
+      setAnswer('');
+      setChoiceId('');
+      setOtherText('');
+      setSavedChoice(null);
+      setMessage(payload.reused ? '같은 답의 저장된 재검토를 다시 열었습니다.' : '이번 답을 반영한 분석을 저장했습니다.');
+      void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.aiPmReviewRequested, {
+        screen: '/business-validation',
+        status: payload.review.status,
+        category: 'reanalysis',
+      });
+    } catch {
+      setMessage('다시 검토하지 못했습니다. 이전 분석은 그대로 남아 있습니다.');
     } finally {
       setPending(false);
     }
@@ -368,6 +454,8 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
 
   const needsModelCall = auth === 'in' && !analysis;
   const showIntake = !analysis;
+  const history = useMemo(() => priorAnalyses(reviews, active), [reviews, active]);
+  const reanalysisRound = history.length;
 
   return (
     <section
@@ -377,18 +465,26 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
       data-step={step}
     >
       <header className="space-y-1">
-        <p className="text-xs font-semibold tracking-wide text-primary">AI PM · 1차 사업성 검토</p>
+        <p className="text-xs font-semibold tracking-wide text-primary">
+          AI PM · {analysis && reanalysisRound > 0 ? `${reanalysisRound}차 재분석` : '1차 사업성 검토'}
+        </p>
         <p className="text-sm text-muted-foreground" data-testid="ai-pm-source">
           {analysis ? '이 사업 원문으로 작성한 검토' : '사업 원문 · 검토 전'}
         </p>
         <h2 className="text-lg font-semibold">
-          {analysis ? (savedChoice ? '저장한 답과 다음 방향' : '1차 사업성 검토') : '사업 정보'}
+          {analysis
+            ? reanalysisRound > 0
+              ? `${reanalysisRound}차 재분석`
+              : savedChoice
+                ? '저장한 답과 다음 방향'
+                : '1차 사업성 검토'
+            : '사업 정보'}
         </h2>
         <p className="text-sm text-muted-foreground">
           {analysis
             ? savedChoice
-              ? '확인된 답은 이 워크스페이스에 남습니다. 후속 모델 검토는 실행하지 않습니다.'
-              : '분석을 읽은 뒤, 가장 큰 불확실성 하나를 고르면 답이 저장됩니다.'
+              ? '저장한 답과 이전 분석을 이어서 다시 검토할 수 있습니다.'
+              : '분석을 읽은 뒤, 질문에 답하면 이전 분석과 함께 다시 검토합니다.'
             : '사업 본문과 검토 목적을 보내면 분석과 질문 하나를 받습니다. 단계와 알고 싶은 내용은 비워도 됩니다.'}
         </p>
       </header>
@@ -401,7 +497,7 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
 
       {pending ? (
         <p className="text-sm" data-testid="ai-pm-loading">
-          {analysis ? '답을 저장하고 있습니다. 모델 호출은 없습니다.' : '사업 원문으로 종합 사업성 검토를 읽고 있습니다.'}
+          {analysis ? '이전 분석과 이번 답을 반영해 다시 검토하고 있습니다.' : '사업 원문으로 종합 사업성 검토를 읽고 있습니다.'}
         </p>
       ) : null}
 
@@ -448,16 +544,27 @@ export function AiPmReviewPanel({ initialText = '', projectId = '' }: AiPmReview
               <p data-testid="ai-pm-next-question-text" className="sr-only">
                 {active.sections.nextQuestion}
               </p>
+              <AnalysisHistory items={history} />
+              {active.consultingTurn ? (
+                <div className="space-y-1 text-sm" data-testid="ai-pm-reflected-answer">
+                  <p className="text-xs font-medium text-muted-foreground">{reanalysisRound}차 답변</p>
+                  {active.consultingTurn.choiceLabel ? <p>고른 항목: {active.consultingTurn.choiceLabel}</p> : null}
+                  <p>반영한 답: {active.consultingTurn.supplement}</p>
+                </div>
+              ) : null}
               <AnalysisBlock
                 analysis={analysis}
                 sections={active.sections}
+                round={reanalysisRound}
                 saved={savedChoice}
                 choiceId={choiceId}
                 otherText={otherText}
+                note={answer}
                 pending={pending}
                 onChoice={setChoiceId}
                 onOther={setOtherText}
-                onSave={() => void saveChoice()}
+                onNote={setAnswer}
+                onSave={() => void submitReanalysis()}
               />
             </>
           ) : active?.sections && !needsModelCall ? (
@@ -696,12 +803,15 @@ function IntakeFields(props: {
 function AnalysisBlock(props: {
   analysis: BusinessAnalysis;
   sections: NonNullable<AiPmReviewView['sections']>;
+  round: number;
   saved: ChoiceAnswer | null;
   choiceId: string;
   otherText: string;
+  note: string;
   pending: boolean;
   onChoice: (id: string) => void;
   onOther: (value: string) => void;
+  onNote: (value: string) => void;
   onSave: () => void;
 }) {
   const { analysis, sections } = props;
@@ -765,10 +875,9 @@ function AnalysisBlock(props: {
           props.onSave();
         }}
       >
-        <p className="text-sm font-medium">첫 객관식 피드백</p>
+        <p className="text-sm font-medium">{props.round > 0 ? '다음 질문' : '이번 질문'}</p>
         <p className="text-xs text-muted-foreground">
-          이 선택은 확인된 사실이 아닙니다. 현재 판단으로 저장하면 다음 검토 방향을 안내합니다. 후속 모델 검토는 실행하지
-          않습니다.
+          이 선택과 추가 설명은 확인된 사실이 아닙니다. 제출하면 지금까지의 분석과 함께 다시 검토합니다.
         </p>
         <p>{sections.nextQuestion}</p>
         <p data-testid="ai-pm-next-question-reason">{sections.nextQuestionReason}</p>
@@ -796,6 +905,16 @@ function AnalysisBlock(props: {
             placeholder="기타 / 직접 입력"
           />
         ) : null}
+        <label className="block space-y-1 text-sm">
+          <span className="font-medium">이번 답과 추가 설명</span>
+          <Textarea
+            data-testid="ai-pm-reanalysis-note"
+            rows={4}
+            value={props.note}
+            onChange={(event) => props.onNote(event.target.value)}
+            placeholder="질문에 대한 답, 확인한 사실, 아직 없는 증거를 적습니다."
+          />
+        </label>
         {selectionChanged ? (
           <p className="text-sm" data-testid="ai-pm-choice-preview">
             저장할 답: {selectedText}
@@ -804,9 +923,13 @@ function AnalysisBlock(props: {
         <Button
           type="submit"
           data-testid="ai-pm-choice-submit"
-          disabled={props.pending || !props.choiceId || (props.choiceId === 'other' && !props.otherText.trim())}
+          disabled={
+            props.pending ||
+            (!props.note.trim() && !props.choiceId) ||
+            (props.choiceId === 'other' && !props.otherText.trim())
+          }
         >
-          이 답 저장
+          이 답으로 다시 분석
         </Button>
       </form>
       {props.saved ? (
@@ -859,6 +982,37 @@ function SavedRevision({ notes, where }: { notes: string[]; where: 'account' | '
       <p className="text-xs text-muted-foreground">
         {where === 'account' ? '계정에 저장된 선택입니다.' : '이 브라우저에 남은 선택입니다.'}
       </p>
+    </div>
+  );
+}
+
+function priorAnalyses(reviews: AiPmReviewView[], active: AiPmReviewView | null): AiPmReviewView[] {
+  if (!active) return [];
+  const byId = new Map(reviews.map((item) => [item.reviewId, item]));
+  const chain: AiPmReviewView[] = [];
+  const seen = new Set<string>();
+  let cursor: AiPmReviewView | undefined = active;
+  while (cursor && !seen.has(cursor.reviewId)) {
+    seen.add(cursor.reviewId);
+    chain.push(cursor);
+    cursor = cursor.parentReviewId ? byId.get(cursor.parentReviewId) : undefined;
+  }
+  return chain.reverse().slice(0, -1);
+}
+
+function AnalysisHistory({ items }: { items: AiPmReviewView[] }) {
+  if (items.length === 0) return null;
+  return (
+    <div className="space-y-3" data-testid="ai-pm-history">
+      <p className="text-sm font-medium">이전 분석</p>
+      {items.map((item, index) => (
+        <div key={item.reviewId} className="space-y-1 text-sm" data-testid="ai-pm-history-item">
+          <p className="text-xs font-medium text-muted-foreground">{index === 0 ? '최초 분석' : `${index}차 재분석`}</p>
+          <p>{item.sections?.analysis?.summary ?? item.sections?.judgment}</p>
+          {item.consultingTurn ? <p>반영한 답: {item.consultingTurn.supplement}</p> : null}
+          <p>다음 질문: {item.sections?.nextQuestion}</p>
+        </div>
+      ))}
     </div>
   );
 }

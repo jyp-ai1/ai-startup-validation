@@ -76,5 +76,5 @@ export function isCurrentReviewContract(text: string): boolean {
 export function nextDirectionAfterChoice(input: { label: string; otherText: string; reason: string }): string {
   const stated = /기타/.test(input.label) && input.otherText.trim() ? input.otherText.trim() : input.label;
   const reason = input.reason.trim() || '이 선택에서 아직 확인되지 않은 사실을 다음 검토의 출발점으로 둡니다.';
-  return `사용자가 고른 판단: ${stated}. 이것은 확인된 사실이 아니라 현재 가설입니다. 다음 검토는 이 가설을 전제로 핵심 가정을 좁힙니다. ${reason} 후속 모델 검토는 실행하지 않습니다.`;
+  return `사용자가 고른 판단: ${stated}. 이것은 확인된 사실이 아니라 현재 가설입니다. 다음 분석은 이 답과 지금까지의 검토를 함께 읽습니다. ${reason}`;
 }

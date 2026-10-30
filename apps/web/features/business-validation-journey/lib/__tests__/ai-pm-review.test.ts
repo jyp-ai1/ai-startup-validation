@@ -3,9 +3,12 @@ import { DatabaseSync } from 'node:sqlite';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 import type { ChatRequest, ChatResponse } from '@repo/ai';
 import { describe, expect, it } from 'vitest';
+import { AiPmReviewPanel } from '../../components/ai-pm-review-panel';
 
 import { chooseReviewBackend, openSupabaseReviewStore, type AiPmDurablePort } from '../ai-pm-review-backend';
 import type { ReviewSections } from '../ai-pm-review-store';
@@ -19,6 +22,7 @@ import {
   AI_PM_FOLLOW_UP_MAX_TOKENS,
   buildFirstReviewRequest,
   buildFollowUpRequest,
+  buildProductReanalysisRequest,
   callReviewWithQuotaSwitch,
   estimateReviewTokens,
   FOLLOW_UP_ANALYSIS_CONTRACT,
@@ -47,6 +51,7 @@ import {
   runFollowUpReview,
   saveReviewFeedback,
   toAiPmReviewView,
+  type AiPmReviewView,
 } from '../ai-pm-review';
 import { composeReviewInput, nextDirectionAfterChoice } from '../ai-pm-review-intake';
 import { visibleClaimStates } from '../ai-pm-review-marks';
@@ -58,6 +63,35 @@ const PLAN = 'UNIQUEPLANMARKER 영세 양조장의 온라인 노출을 연결하
 
 function storePath(): string {
   return join(mkdtempSync(join(tmpdir(), 'ai-pm-review-')), 'reviews.sqlite');
+}
+
+function productAnalysisRaw(patch: { judgment: string; nextQuestion: string; nextVerification?: string }): string {
+  return JSON.stringify({
+    summary: '양조장 체험 사업의 지불자는 아직 확인되지 않았다.',
+    customer: '관광객과 양조장 대표',
+    problem: '노출과 수요가 확인되지 않았다.',
+    value: '체험 안내',
+    operatingModel: '구상',
+    alternatives: '직접 방문',
+    differentiation: '미확인',
+    payer: '지불자는 확인되지 않았다.',
+    revenueModel: '가격은 가설이며 원문에 없다.',
+    market: '수요 조사는 입력에 없다.',
+    competition: '경쟁은 확인되지 않았다.',
+    operations: '운영은 구상이다.',
+    profitability: '수익성은 확인되지 않았다.',
+    judgment: patch.judgment,
+    nextVerification: patch.nextVerification ?? '잠재 고객에게 참여 의향을 묻는다.',
+    nextQuestion: patch.nextQuestion,
+    nextQuestionReason: '이번 답 다음에 남은 확인이다.',
+    strengths: ['체험 구상이 있다'],
+    risks: ['수요가 없다'],
+    assumptions: ['체험 수요'],
+    evidenceToChange: ['인터뷰'],
+    founderFacts: ['구상 중이다'],
+    inferences: ['추론: 지불자는 미확인'],
+    choices: ['체험 수요를 먼저 확인한다', '홍보 필요를 먼저 확인한다'],
+  });
 }
 
 function sections(): ReviewSections {
@@ -666,7 +700,7 @@ describe('AI PM first review', () => {
     };
     const panel = readFileSync(new URL('../../components/ai-pm-review-panel.tsx', import.meta.url), 'utf8');
     const followRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/follow-up/route.ts', import.meta.url), 'utf8');
-    expect(panel).not.toContain('/api/ai-pm-review/follow-up');
+    expect(panel).toContain('/api/ai-pm-review/follow-up');
     expect(followRoute).toContain('runFollowUpReview');
     expect(followRoute).not.toContain('answerOrigin');
     const evidenceUrl = new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-product-follow-up-request.json', import.meta.url);
@@ -1881,9 +1915,14 @@ describe('AI PM first review', () => {
     const raw = recorded.report.calls[0]?.raw ?? '';
     expect(parseSections(raw, sent.originalInput)).toBeNull();
     const panel = readFileSync(new URL('../../components/ai-pm-review-panel.tsx', import.meta.url), 'utf8');
-    expect(panel).not.toContain('/api/ai-pm-review/follow-up');
+    expect(panel).toContain('/api/ai-pm-review/follow-up');
     expect(panel).toContain("fetch('/api/ai-pm-review/feedback'");
-    expect(panel).toContain('답을 저장했습니다. 모델 호출은 없습니다.');
+    expect(panel).toContain('data-testid="ai-pm-history"');
+    expect(panel).toContain('data-testid="ai-pm-reflected-answer"');
+    expect(panel).toContain('최초 분석');
+    expect(panel).toContain('`${index}차 재분석`');
+    expect(panel).toContain('답을 저장했습니다. 다시 검토는 추가 설명을 적은 뒤 진행합니다.');
+    expect(panel).not.toMatch(/gpt|gemini|openai|token/i);
   });
 
   it('keeps the parent analysis when a reflection return cannot be stored as sections', async () => {
@@ -1937,16 +1976,15 @@ describe('AI PM first review', () => {
     if (!follow.ok) return;
     const payload = JSON.parse(seen[1]?.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
       originalInput: string;
-      previousAnalysis: { judgment: string };
-      founderChoice: { label: string };
+      latestAnalysis: { judgment: string };
+      founderChoice: { label: string; otherText: string } | null;
       founderSupplement: string;
-      answerOrigin: string;
     };
     expect(payload.originalInput).toBe(PLAN);
-    expect(payload.previousAnalysis.judgment).toBe(sections().judgment);
-    expect(payload.founderChoice.label).toBe('체험 프로그램을 먼저 검증할 것');
+    expect(payload.latestAnalysis.judgment).toBe(sections().judgment);
+    expect(payload.founderChoice?.label).toBe('체험 프로그램을 먼저 검증할 것');
     expect(payload.founderSupplement).toContain('확정된 양조장');
-    expect(payload.answerOrigin).toBe('founder-input');
+    expect(seen[1]?.messages.map((message) => message.content).join('\n')).not.toContain(FOLLOW_UP_OUTPUT_CONTRACT);
     expect(follow.record.parentReviewId).toBe(first.record.reviewId);
     expect(follow.record.sections).toBeNull();
     expect(follow.record.rawContent).toBe(raw);
@@ -1954,7 +1992,7 @@ describe('AI PM first review', () => {
     const parent = await store.readReview('user-a', first.record.reviewId);
     expect(parent?.sections?.judgment).toBe(sections().judgment);
     expect(parent?.sections?.nextQuestion).toBe(sections().nextQuestion);
-    expect(follow.record.error).toContain('follow_up_output_previous');
+    expect(follow.record.error).toContain('unstructured_response');
     store.close();
   });
 
@@ -2376,18 +2414,245 @@ describe('AI PM first review', () => {
     expect(normalizeIncrementalSections(sections(), JSON.stringify(parsed), reviewed.context).sections).toBeNull();
   });
 
+  it('keeps the first two answers in the third reanalysis and drops only old turns', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const sent: string[] = [];
+    let round = 0;
+    const chat = async (request: ChatRequest) => {
+      const product = request.messages.some((message) => message.content.includes('이번 답이 판단'));
+      if (!product) return reply(JSON.stringify(sections()));
+      round += 1;
+      sent.push(request.messages.find((message) => message.role === 'user')?.content ?? '');
+      return reply(
+        productAnalysisRaw({
+          judgment: `라운드 ${round} 판단`,
+          nextQuestion: `라운드 ${round} 다음에 무엇을 확인할까요?`,
+        }),
+      );
+    };
+    const first = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    const parentBefore = JSON.stringify(await store.readReview('user-a', first.record.reviewId));
+    const answers = ['첫번째답변마커', '두번째답변마커', '세번째답변마커'];
+    let parentId = first.record.reviewId;
+    for (const answer of answers) {
+      const follow = await runFollowUpReview({
+        projectId: 'project-test',
+        store,
+        userId: 'user-a',
+        reviewId: parentId,
+        supplement: answer,
+        now: NOW,
+        chat,
+        evidence: 'injected_http',
+      });
+      expect(follow.ok).toBe(true);
+      if (!follow.ok) return;
+      expect(follow.called).toBe(true);
+      expect(follow.record.status).toBe('succeeded');
+      expect(follow.record.sections?.analysis?.judgmentDetail).toContain('라운드');
+      expect(follow.record.parentReviewId).toBe(parentId);
+      expect(follow.record.consultingTurn?.supplement).toBe(answer);
+      parentId = follow.record.reviewId;
+    }
+    const third = JSON.parse(sent[2] ?? '{}') as {
+      originalInput: string;
+      firstAnalysis: { summary: string };
+      priorTurns: Array<{ supplement: string }>;
+      latestAnalysis: { analysis: { judgmentDetail: string } | null };
+      founderSupplement: string;
+    };
+    expect(third.originalInput).toBe(PLAN);
+    expect(third.firstAnalysis.summary).toBe(sections().judgment);
+    expect(third.priorTurns.map((turn) => turn.supplement)).toEqual(['첫번째답변마커', '두번째답변마커']);
+    expect(third.founderSupplement).toBe('세번째답변마커');
+    expect(third.latestAnalysis.analysis?.judgmentDetail).toContain('라운드 2');
+    expect(JSON.stringify(await store.readReview('user-a', first.record.reviewId))).toBe(parentBefore);
+    const duplicate = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement: answers[0] ?? '',
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(duplicate.ok && duplicate.called).toBe(false);
+    const broken = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement: '실패격리마커',
+      now: NOW,
+      chat: async () => reply('{'),
+      evidence: 'injected_http',
+    });
+    expect(broken.ok).toBe(true);
+    if (!broken.ok) return;
+    expect(broken.record.status).toBe('failed');
+    expect(broken.record.sections).toBeNull();
+    const blocked = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: broken.record.reviewId,
+      supplement: '실패 자식은 부모가 아니다',
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(blocked.ok).toBe(false);
+    const trimmed = buildProductReanalysisRequest({
+      originalInput: '최초원문마커',
+      firstAnalysis: {
+        ...sections(),
+        analysis: {
+          summary: '최초분석요약마커',
+          value: '가치',
+          operatingModel: '구상',
+          payer: '미확인',
+          competition: '미확인',
+          operations: '구상',
+          profitability: '미확인',
+          strengths: ['강점'],
+          assumptions: ['가정'],
+          evidenceToChange: ['증거'],
+          founderFacts: ['사실'],
+          inferences: ['추론'],
+          judgmentDetail: '최초 판단',
+          choices: [],
+          nextVerification: '최초 검증',
+        },
+      },
+      priorTurns: Array.from({ length: 6 }, (_, index) => ({
+        question: `질문 ${index}`,
+        choiceLabel: null,
+        supplement: index === 0 ? `가장오래된턴${'오래된턴'.repeat(900)}` : `중간턴${index}${'오래된턴'.repeat(900)}`,
+        judgment: `판단 ${index}`,
+        nextVerification: '검증',
+        nextQuestion: `질문 ${index}?`,
+      })),
+      latestAnalysis: { ...sections(), judgment: '직전분석마커' },
+      founderChoice: { label: '체험을 먼저 확인한다', otherText: '' },
+      founderSupplement: '이번답변마커',
+      founderFeedback: null,
+    });
+    const body = trimmed.messages.find((message) => message.role === 'user')?.content ?? '';
+    expect(body).toContain('최초원문마커');
+    expect(body).toContain('최초분석요약마커');
+    expect(body).toContain('이번답변마커');
+    expect(body).toContain('직전분석마커');
+    expect(body).not.toContain('가장오래된턴');
+    store.close();
+  });
+
+  it('renders both founder answers and keeps a failed review off the current analysis', () => {
+    const inputText = composeReviewInput({ text: PLAN, purpose: 'overall' });
+    const view = (
+      reviewId: string,
+      parentReviewId: string | null,
+      judgment: string,
+      nextQuestion: string,
+      turn: AiPmReviewView['consultingTurn'],
+      finishedAt: string,
+      status: AiPmReviewView['status'] = 'ready',
+    ): AiPmReviewView => {
+      const sections = status === 'ready' ? parseSections(productAnalysisRaw({ judgment, nextQuestion }), inputText) : null;
+      return {
+        reviewId,
+        projectId: 'project-test',
+        version: 1,
+        parentReviewId,
+        status,
+        inputOrigin: 'typed',
+        fileName: null,
+        inputText,
+        sections,
+        questionSource: sections ? 'model-review' : null,
+        finishedAt,
+        feedback: [],
+        revision: null,
+        consultingTurn: turn,
+        failure: status === 'failed' ? 'invalid_json' : null,
+      };
+    };
+    const html = renderToStaticMarkup(
+      createElement(AiPmReviewPanel, {
+        initialText: PLAN,
+        projectId: 'project-test',
+        initialReviews: [
+          view('r0', null, '최초 판단', '수요를 확인했습니까?', null, '2026-10-30T01:00:00.000Z'),
+          view(
+            'r1',
+            'r0',
+            '1차 재분석 판단',
+            '대상을 정했습니까?',
+            {
+              question: '수요를 확인했습니까?',
+              choiceLabel: '체험 수요를 먼저 확인한다',
+              supplement: '첫번째답변마커',
+              judgment: '1차 재분석 판단',
+              nextVerification: '잠재 고객에게 참여 의향을 묻는다.',
+              nextQuestion: '대상을 정했습니까?',
+            },
+            '2026-10-30T02:00:00.000Z',
+          ),
+          view(
+            'r2',
+            'r1',
+            '2차 재분석 판단',
+            '일정을 잡았습니까?',
+            {
+              question: '대상을 정했습니까?',
+              choiceLabel: '홍보 필요를 먼저 확인한다',
+              supplement: '두번째답변마커',
+              judgment: '2차 재분석 판단',
+              nextVerification: '잠재 고객에게 참여 의향을 묻는다.',
+              nextQuestion: '일정을 잡았습니까?',
+            },
+            '2026-10-30T03:00:00.000Z',
+          ),
+          view('r-fail', 'r2', '실패한 판단', '실패한 질문?', null, '2026-10-30T04:00:00.000Z', 'failed'),
+        ],
+      }),
+    );
+    expect(html).toContain('최초 분석');
+    expect(html).toContain('1차 재분석');
+    expect(html).toContain('2차 재분석');
+    expect(html).toContain('첫번째답변마커');
+    expect(html).toContain('두번째답변마커');
+    expect(html).toContain('2차 답변');
+    expect(html).toContain('고른 항목: 홍보 필요를 먼저 확인한다');
+    expect(html).toContain('일정을 잡았습니까?');
+    expect(html).toContain('다음 질문');
+    expect(html).not.toContain('실패한 판단');
+    expect(html).not.toMatch(/gpt|gemini|openai|token/i);
+  });
+
   it('stores one repair, records both responses, and does not call a third time', async () => {
+    expect(followUpRepairMessage(['follow_up_output_unparsed'])).not.toContain('양조장 후보가 있는가');
     const store = openAiPmReviewStore(storePath());
     let followCalls = 0;
     const chat = async (request: ChatRequest) => {
-      const followUp = request.messages.some((message) => message.content.includes(FOLLOW_UP_OUTPUT_CONTRACT));
+      const followUp = request.messages.some((message) => message.content.includes('이번 답이 판단'));
       if (!followUp) return reply(JSON.stringify(sections()));
       followCalls += 1;
-      const repair = request.messages.some((message) => message.role === 'assistant');
-      if (!repair) return reply('{', { usage: { inputTokens: 11, outputTokens: 2, totalTokens: 13 } });
-      expect(request.messages.at(-1)?.content).toBe(followUpRepairMessage(['follow_up_output_unparsed']));
-      expect(followUpRepairMessage(['follow_up_output_unparsed'])).not.toContain('양조장 후보가 있는가');
-      const specificRepair = followUpRepairMessage([
+      return reply(productAnalysisRaw({ judgment: '인터뷰가 없어 지불 판단은 그대로다.', nextQuestion: '인터뷰 일정을 잡았습니까?' }), {
+        usage: { inputTokens: 11, outputTokens: 2, totalTokens: 13 },
+      });
+    };
+    const specificRepair = followUpRepairMessage([
         'choice_promoted_to_judgment',
         'judgment_changed_by_choice',
         'hypothesis_unconfirmed_replaced',
@@ -2434,9 +2699,7 @@ describe('AI PM first review', () => {
       expect(claimRepair).toContain('nextVerification.decision만 changed다');
       expect(claimRepair).toContain('그 decision은 retained다');
       expect(claimRepair).toContain('라벨을 다른 말로 바꾸면 실패다');
-      expect(claimRepair).not.toContain('온라인 마케팅 효과 검증을 붙이지 마라');
-      return reply(validUngatedFollowUpRaw(sections()), { usage: { inputTokens: 20, outputTokens: 7, totalTokens: 27 } });
-    };
+    expect(claimRepair).not.toContain('온라인 마케팅 효과 검증을 붙이지 마라');
     const first = await runFirstReview({
       projectId: 'project-test',
       store,
@@ -2474,16 +2737,15 @@ describe('AI PM first review', () => {
     });
     expect(follow.ok).toBe(true);
     if (!follow.ok) return;
-    expect(followCalls).toBe(2);
-    expect(follow.record.callCount).toBe(2);
+    expect(followCalls).toBe(1);
+    expect(follow.record.callCount).toBe(1);
     expect(follow.record.status).toBe('succeeded');
-    expect(follow.record.firstRawContent).toBe('{');
-    expect(follow.record.rawContent).toContain('inputConsidered');
-    expect(follow.record.sections?.judgment).toBe(sections().judgment);
-    expect(follow.record.sections?.customer).toBe(sections().customer);
-    expect(follow.record.promptTokens).toBe(31);
-    expect(follow.record.completionTokens).toBe(9);
-    expect(follow.record.totalTokens).toBe(40);
+    expect(follow.record.firstRawContent ?? null).toBeNull();
+    expect(follow.record.sections?.analysis?.judgmentDetail).toContain('인터뷰가 없어');
+    expect(follow.record.consultingTurn?.supplement).toContain('인터뷰는 아직 없다');
+    expect(follow.record.promptTokens).toBe(11);
+    expect(follow.record.completionTokens).toBe(2);
+    expect(follow.record.totalTokens).toBe(13);
     const parent = await store.readReview('user-a', first.record.reviewId);
     expect(parent?.sections?.judgment).toBe(sections().judgment);
     store.close();
@@ -2491,7 +2753,7 @@ describe('AI PM first review', () => {
     const failedStore = openAiPmReviewStore(storePath());
     let failedCalls = 0;
     const failing = async (request: ChatRequest) => {
-      const followUp = request.messages.some((message) => message.content.includes(FOLLOW_UP_OUTPUT_CONTRACT));
+      const followUp = request.messages.some((message) => message.content.includes('이번 답이 판단'));
       if (!followUp) return reply(JSON.stringify(sections()));
       failedCalls += 1;
       return reply('{');
@@ -2533,13 +2795,27 @@ describe('AI PM first review', () => {
     });
     expect(failed.ok).toBe(true);
     if (!failed.ok) return;
-    expect(failedCalls).toBe(2);
-    expect(failed.record.callCount).toBe(2);
+    expect(failedCalls).toBe(1);
+    expect(failed.record.callCount).toBe(1);
     expect(failed.record.status).toBe('failed');
     expect(failed.record.sections).toBeNull();
-    expect(failed.record.firstRawContent).toBe('{');
+    expect(failed.record.firstRawContent ?? null).toBeNull();
     expect(failed.record.rawContent).toBe('{');
-    expect(failed.record.error).toContain('follow_up_output_unparsed');
+    expect(failed.record.error).toContain('invalid_json');
+    expect(failed.record.parentReviewId).toBe(parentReview.record.reviewId);
+    const failedParent = await failedStore.readReview('user-a', parentReview.record.reviewId);
+    expect(failedParent?.sections?.judgment).toBe(sections().judgment);
+    const retryOnFailure = await runFollowUpReview({
+      projectId: 'project-test',
+      store: failedStore,
+      userId: 'user-a',
+      reviewId: failed.record.reviewId,
+      supplement: '다른 설명',
+      now: NOW,
+      chat: failing,
+      evidence: 'injected_http',
+    });
+    expect(retryOnFailure.ok).toBe(false);
     failedStore.close();
   });
 
@@ -3770,8 +4046,12 @@ describe('AI PM first review', () => {
   it('stores the child from changes, restores the same sections, and ignores a duplicate submit', async () => {
     const store = openAiPmReviewStore(storePath());
     const chat = async (request: ChatRequest) => {
-      const followUp = request.messages.some((message) => message.content.includes(FOLLOW_UP_OUTPUT_CONTRACT));
-      return reply(followUp ? validUngatedFollowUpRaw(sections()) : JSON.stringify(sections()));
+      const followUp = request.messages.some((message) => message.content.includes('이번 답이 판단'));
+      return reply(
+        followUp
+          ? productAnalysisRaw({ judgment: '추가 설명은 인터뷰가 없다는 말이다.', nextQuestion: '인터뷰 대상을 정했습니까?' })
+          : JSON.stringify(sections()),
+      );
     };
     const first = await runFirstReview({
       projectId: 'project-test',
@@ -3799,8 +4079,8 @@ describe('AI PM first review', () => {
         nextAction: 'verify_hypotheses',
       },
     });
-    const raw = validUngatedFollowUpRaw(sections());
-    expect(parseSections(raw, PLAN)).toBeNull();
+    const raw = productAnalysisRaw({ judgment: '추가 설명은 인터뷰가 없다는 말이다.', nextQuestion: '인터뷰 대상을 정했습니까?' });
+    expect(parseSections(raw, PLAN)?.analysis?.judgmentDetail).toContain('인터뷰가 없다');
     const follow = await runFollowUpReview({
       projectId: 'project-test',
       store,
@@ -3815,11 +4095,9 @@ describe('AI PM first review', () => {
     if (!follow.ok) return;
     expect(follow.called).toBe(true);
     expect(follow.record.status).toBe('succeeded');
-    expect(follow.record.sections?.customer).toBe(sections().customer);
-    expect(follow.record.sections?.problem).toBe(sections().problem);
-    expect(follow.record.sections?.answerHint).toBe(sections().answerHint);
-    expect(follow.record.sections?.judgment).toBe(sections().judgment);
-    expect(follow.record.sections?.nextQuestion).toBe(sections().nextQuestion);
+    expect(follow.record.sections?.analysis?.judgmentDetail).toContain('인터뷰가 없다');
+    expect(follow.record.sections?.nextQuestion).toBe('인터뷰 대상을 정했습니까?');
+    expect(follow.record.consultingTurn?.supplement).toBe('양조장 대표 인터뷰는 아직 없다.');
     expect(follow.record.parentReviewId).toBe(first.record.reviewId);
     const reread = await store.readReview('user-a', follow.record.reviewId);
     expect(reread?.sections).toEqual(follow.record.sections);
@@ -3855,7 +4133,7 @@ describe('AI PM first review', () => {
     expect(broken.record.status).toBe('failed');
     expect(broken.record.sections).toBeNull();
     expect(broken.record.rawContent).toBe('{');
-    expect(broken.record.error).toContain('follow_up_output_unparsed');
+    expect(broken.record.error).toContain('invalid_json');
     expect((await store.readReview('user-a', first.record.reviewId))?.sections?.judgment).toBe(sections().judgment);
     store.close();
   });
@@ -3984,7 +4262,10 @@ describe('AI PM first review', () => {
     const seen: ChatRequest[] = [];
     const chat = async (request: ChatRequest) => {
       seen.push(request);
-      const body = seen.length > 1 ? validUngatedFollowUpRaw(sections()) : JSON.stringify(sections());
+      const body =
+        seen.length > 1
+          ? productAnalysisRaw({ judgment: '인터뷰는 아직 없다.', nextQuestion: '인터뷰 대상을 정했습니까?' })
+          : JSON.stringify(sections());
       return reply(body, { model: seen.length === 1 ? 'gpt-4o-mini' : 'gpt-4o-mini-later' });
     };
     const first = await runFirstReview({
@@ -4029,16 +4310,16 @@ describe('AI PM first review', () => {
     const followUser = seen[1]?.messages.find((message) => message.role === 'user')?.content ?? '';
     const followPayload = JSON.parse(followUser) as {
       originalInput: string;
-      previousReview: { nextQuestion: string };
-      feedback: { comment: string };
-      supplement: string;
-      revision?: unknown;
+      latestAnalysis: { nextQuestion: string };
+      founderFeedback: { comment: string } | null;
+      founderSupplement: string;
+      priorTurns: unknown[];
     };
     expect(followPayload.originalInput).toBe(PLAN);
-    expect(followPayload.previousReview.nextQuestion).toContain('양조장 대표');
-    expect(followPayload.feedback.comment).toContain('양조장 수');
-    expect(followPayload.supplement).toContain('인터뷰');
-    expect(followPayload.revision).toBeUndefined();
+    expect(followPayload.latestAnalysis.nextQuestion).toContain('양조장 대표');
+    expect(followPayload.founderFeedback?.comment).toContain('양조장 수');
+    expect(followPayload.founderSupplement).toContain('인터뷰');
+    expect(followPayload.priorTurns).toEqual([]);
     expect(follow.record.inputText).toBe(PLAN);
     expect(follow.record.parentReviewId).toBe(first.record.reviewId);
     expect(follow.record.model).toBe('gpt-4o-mini-later');
@@ -4250,7 +4531,8 @@ describe('AI PM first review', () => {
     expect(panel).not.toContain('가장 가까운 결제 후보에게 유료로 제안했거나');
     expect(panel).toContain('검토 목적');
     expect(panel).toContain('기타 / 직접 입력');
-    expect(panel).not.toContain('/api/ai-pm-review/follow-up');
+    expect(panel).toContain('/api/ai-pm-review/follow-up');
+    expect(panel).toContain('data-testid="ai-pm-reanalysis-note"');
     expect(panel).toContain('data-testid="ai-pm-choice-submit"');
     const request = buildFirstReviewRequest(PLAN);
     expect(request.messages.map((message) => message.content).join('\n')).not.toContain(
@@ -4308,8 +4590,9 @@ describe('AI PM first review', () => {
         expect(content).toContain(accepted.view.sections?.nextQuestion);
         expect(content).toContain(answer);
         expect(content).not.toContain('UNIQUEPLANMARKER');
-        expect(content).toContain(FOLLOW_UP_OUTPUT_CONTRACT);
-        return reply(validUngatedFollowUpRaw(sections(), answer));
+        expect(content).toContain('이번 답이 판단');
+        expect(content).not.toContain(FOLLOW_UP_OUTPUT_CONTRACT);
+        return reply(productAnalysisRaw({ judgment: `${answer} 그래서 제안 여부는 아직이다.`, nextQuestion: '제안할 양조장을 골랐습니까?' }));
       },
       evidence: 'injected_http',
     });
@@ -5230,7 +5513,7 @@ describe('first review analysis', () => {
     });
     expect(tourist).not.toBe(breweryPay);
     expect(tourist).toContain('현재 가설');
-    expect(tourist).toContain('후속 모델 검토는 실행하지 않습니다');
+    expect(tourist).toContain('다음 분석은 이 답과 지금까지의 검토를 함께 읽습니다');
     expect(composeReviewInput({ text: BREWERY, purpose: 'overall' })).toContain('종합 사업성 검토');
     expect(composeReviewInput({ text: BREWERY, purpose: 'overall', stage: 'idea' })).toContain('아이디어 단계');
     expect(composeReviewInput({ text: BREWERY, purpose: 'overall' })).toContain('검토 계약: comprehensive-1');

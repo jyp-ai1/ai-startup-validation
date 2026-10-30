@@ -9,6 +9,7 @@ import type {
   AiPmReviewStore,
   BusinessAnalysis,
   ChoiceAnswer,
+  ConsultingTurn,
   NextAction,
   ReviewMark,
   ReviewSections,
@@ -223,6 +224,7 @@ export type AiPmReviewView = {
     finishedAt: string;
     feedback: AiPmFeedbackView[];
     revision: { pass: boolean; summary: string; changes: string[] } | null;
+    consultingTurn: ConsultingTurn | null;
     /** Stored error. A type mismatch is not shown as an analysis. */
     failure: string | null;
   };
@@ -411,6 +413,7 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
     revision: record.revisionGate
       ? { pass: record.revisionGate.pass, summary: record.revisionGate.summary, changes: record.revisionGate.changes }
       : null,
+    consultingTurn: record.consultingTurn ?? null,
     failure: clientFailure(record.error),
   };
 }
@@ -588,6 +591,104 @@ export function buildFollowUpRequest(input: {
       { role: 'system', content: revision ? gatedFollowUpPrompt() : reviewSystemPrompt(input.supplement) },
       { role: 'user', content: JSON.stringify(payload) },
     ]),
+  };
+}
+
+/** Root first, then each succeeded child. A failed row is not a parent, so it stays off this chain. */
+export function reviewChain(records: StoredReview[], parent: StoredReview): StoredReview[] {
+  const byId = new Map(records.map((item) => [item.reviewId, item]));
+  const reversed: StoredReview[] = [];
+  const seen = new Set<string>();
+  let cursor: StoredReview | undefined = parent;
+  while (cursor && !seen.has(cursor.reviewId)) {
+    seen.add(cursor.reviewId);
+    reversed.push(cursor);
+    cursor = cursor.parentReviewId ? byId.get(cursor.parentReviewId) : undefined;
+  }
+  return reversed.reverse();
+}
+
+function compactConsultingAnalysis(sections: ReviewSections): {
+  summary: string;
+  judgment: string;
+  assumptions: string[];
+  nextVerification: string;
+  nextQuestion: string;
+} {
+  return {
+    summary: sections.analysis?.summary ?? sections.judgment,
+    judgment: sections.analysis?.judgmentDetail ?? sections.judgment,
+    assumptions: sections.analysis?.assumptions ?? sections.hypotheses,
+    nextVerification: sections.analysis?.nextVerification ?? '',
+    nextQuestion: sections.nextQuestion,
+  };
+}
+
+function productReanalysisSystemPrompt(): string {
+  return [
+    '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
+    '사용자 JSON의 최초 사업 원문, 최초 분석, 이전 턴, 직전 분석, 이번 답을 함께 읽고 사업을 다시 검토한다.',
+    '이번 답이 판단, 가정, 다음 검증, 다음 질문에 반영되어야 한다.',
+    '앞선 답변을 지우지 않는다. 확인되지 않은 가격, 계약, 수요를 사실로 만들지 않는다.',
+    'JSON만 반환한다.',
+    '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
+    'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
+    'nextQuestion은 이번 답 다음에 확인할 질문 하나다. 직전 질문과 같은 문장을 반복하지 않는다.',
+  ].join(' ');
+}
+
+/**
+ * Product reanalysis. The stored shape is the first-review business fields.
+ * Reflection decision fields are not required. Oldest turns drop before the anchors.
+ */
+export function buildProductReanalysisRequest(input: {
+  originalInput: string;
+  firstAnalysis: ReviewSections;
+  priorTurns: ConsultingTurn[];
+  latestAnalysis: ReviewSections;
+  founderChoice: { label: string; otherText: string } | null;
+  founderSupplement: string;
+  founderFeedback: { comment: string } | null;
+}): ChatRequest {
+  const system = productReanalysisSystemPrompt();
+  const anchors = {
+    originalInput: input.originalInput,
+    firstAnalysis: compactConsultingAnalysis(input.firstAnalysis),
+    latestAnalysis: followUpPreviousAnalysis(input.latestAnalysis),
+    founderChoice: input.founderChoice,
+    founderSupplement: input.founderSupplement,
+    founderFeedback: input.founderFeedback,
+    priorQuestion: input.latestAnalysis.nextQuestion,
+  };
+  let turns = [...input.priorTurns];
+  const payload = () => ({ ...anchors, priorTurns: turns });
+  const systemTokens = estimateReviewTokens(system);
+  while (
+    turns.length > 0 &&
+    systemTokens + estimateReviewTokens(JSON.stringify(payload())) > AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET
+  ) {
+    turns = turns.slice(1);
+  }
+  const user = JSON.stringify(payload());
+  const messages = [
+    { role: 'system' as const, content: system },
+    { role: 'user' as const, content: user },
+  ];
+  if (systemTokens + estimateReviewTokens(user) <= AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET) {
+    return {
+      model: AI_PM_REVIEW_MODEL,
+      temperature: 0.2,
+      maxTokens: AI_PM_FOLLOW_UP_MAX_TOKENS,
+      responseFormat: { type: 'json_object' },
+      messages: fitFollowUpMessages(messages),
+    };
+  }
+  return {
+    model: AI_PM_REVIEW_MODEL,
+    temperature: 0.2,
+    maxTokens: AI_PM_FOLLOW_UP_MAX_TOKENS,
+    responseFormat: { type: 'json_object' },
+    messages,
   };
 }
 
@@ -959,6 +1060,20 @@ export async function runFollowUpReview(input: {
   }
   if (!input.chat) return { ok: false, error: input.notRunReason === 'gpt_api_key_missing' ? 'gpt_api_key_missing' : 'engine_unconfigured' };
   const latest = await input.store.latestForInput(input.userId, parent.inputSha, input.projectId);
+  const records = await input.store.listReviews(input.userId, input.projectId);
+  const chain = reviewChain(records, parent);
+  const root = chain[0] ?? parent;
+  const priorTurns = chain.slice(1).flatMap((item) => (item.consultingTurn ? [item.consultingTurn] : []));
+  const choice = feedback?.choiceAnswer ?? null;
+  const productRequest = buildProductReanalysisRequest({
+    originalInput: root.inputText,
+    firstAnalysis: root.sections ?? parent.sections,
+    priorTurns,
+    latestAnalysis: parent.sections,
+    founderChoice: choice ? { label: choice.label, otherText: choice.otherText } : null,
+    founderSupplement: supplement,
+    founderFeedback: feedback ? { comment: feedback.comment } : null,
+  });
   const finished = await finishCall({
     store: input.store,
     input: {
@@ -975,24 +1090,24 @@ export async function runFollowUpReview(input: {
     parentReviewId: parent.reviewId,
     sourceFeedbackId,
     supplementSha,
-    request: buildFollowUpRequest({
-      originalInput: parent.inputText,
-      sections: parent.sections,
-      feedback,
-      supplement,
-      answerOrigin: 'founder-input',
-    }),
-    chat: input.chat,
-    gate: needsRevisionGate(marks) ? { previous: parent.sections, marks } : null,
-    previousSections: needsRevisionGate(marks) ? null : parent.sections,
-    outputContract: needsRevisionGate(marks)
-      ? null
-      : followUpOutputContext({
+    request: needsRevisionGate(marks)
+      ? buildFollowUpRequest({
+          originalInput: parent.inputText,
           sections: parent.sections,
-          choiceLabel: feedback?.choiceAnswer?.label ?? null,
+          feedback,
           supplement,
           answerOrigin: 'founder-input',
-        }),
+        })
+      : productRequest,
+    chat: input.chat,
+    gate: needsRevisionGate(marks) ? { previous: parent.sections, marks } : null,
+    consultingAnswer: needsRevisionGate(marks)
+      ? null
+      : {
+          question: parent.sections.nextQuestion,
+          choiceLabel: choice?.label ?? null,
+          supplement,
+        },
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
 }
@@ -2282,6 +2397,7 @@ async function finishCall(input: {
   gate?: { previous: ReviewSections; marks: ReviewMark[] } | null;
   outputContract?: FollowUpOutputContext | null;
   previousSections?: ReviewSections | null;
+  consultingAnswer?: { question: string; choiceLabel: string | null; supplement: string } | null;
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const started = Date.now();
   try {
@@ -2340,6 +2456,17 @@ async function finishCall(input: {
         ? assessFollowUpRevision({ previous: input.gate.previous, next: sections, marks: input.gate.marks })
         : null;
     const accepted = Boolean(sections) && !outputError && revisionGate?.pass !== false;
+    const consultingTurn =
+      accepted && sections && input.consultingAnswer
+        ? {
+            question: input.consultingAnswer.question,
+            choiceLabel: input.consultingAnswer.choiceLabel,
+            supplement: input.consultingAnswer.supplement,
+            judgment: sections.analysis?.judgmentDetail || sections.judgment,
+            nextVerification: sections.analysis?.nextVerification ?? '',
+            nextQuestion: sections.nextQuestion,
+          }
+        : null;
     const record = baseRecord({
       input: input.input,
       sha: input.sha,
@@ -2357,6 +2484,7 @@ async function finishCall(input: {
       revisionGate,
       rawContent: response.content,
       firstRawContent,
+      consultingTurn,
       promptTokens,
       completionTokens,
       totalTokens,
@@ -2408,6 +2536,7 @@ function baseRecord(input: {
   revisionGate?: RevisionGate | null;
   rawContent?: string | null;
   firstRawContent?: string | null;
+  consultingTurn?: ConsultingTurn | null;
   promptTokens?: number | null;
   completionTokens?: number | null;
   totalTokens?: number | null;
@@ -2434,6 +2563,7 @@ function baseRecord(input: {
     revisionGate: input.revisionGate ?? null,
     rawContent: input.rawContent ?? null,
     ...(input.firstRawContent ? { firstRawContent: input.firstRawContent } : {}),
+    ...(input.consultingTurn ? { consultingTurn: input.consultingTurn } : {}),
     promptTokens: input.promptTokens ?? null,
     completionTokens: input.completionTokens ?? null,
     totalTokens: input.totalTokens ?? null,
