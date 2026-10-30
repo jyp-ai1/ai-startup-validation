@@ -1075,6 +1075,12 @@ function absentInputMarkers(supplement: string): string[] {
   return ABSENT_INPUT_MARKERS.filter((marker) => supplement.includes(marker));
 }
 
+function linksIncrementalAnswer(reason: string, current: string, context: FollowUpOutputContext): boolean {
+  const text = `${reason}\n${current}`;
+  if (citesFollowUpInput(text, context)) return true;
+  return absentInputMarkers(context.supplement).some((marker) => text.includes(marker));
+}
+
 function citesSupplement(text: string, supplement: string): boolean {
   const source = compact(supplement);
   if (source.length === 0) return true;
@@ -1346,9 +1352,8 @@ export function incrementalReflectionErrors(raw: string, context: FollowUpOutput
     else if (decision !== (changed ? 'changed' : 'retained')) errors.push(`decision_mismatch:${field}`);
     if (!reason) errors.push(`reason_missing:${field}`);
     else if (reasonIsGeneric(reason)) errors.push(`reason_generic:${field}`);
-    else if (!citesFollowUpInput(reason, context)) errors.push(`reason_untraced:${field}`);
     else if (!changed && !explainsInsufficiency(reason)) errors.push(`reason_insufficient:${field}`);
-    if (reason && !FIELD_REASON_CUES[field].test(reason)) errors.push(`reason_not_field_specific:${field}`);
+    else if (changed && !linksIncrementalAnswer(reason, current, context)) errors.push(`reason_untraced:${field}`);
     if (field === 'judgment' && context.choiceLabel && reason && choiceOnlyGrounds(reason, context.choiceLabel)) {
       errors.push('reason_choice_copied:judgment');
     }
@@ -1367,9 +1372,6 @@ export function incrementalReflectionErrors(raw: string, context: FollowUpOutput
   }
   const linked = [judgment, hypotheses.join('\n'), nextVerification, nextQuestion, recordedReasons.join('\n')].join('\n');
   if (context.choiceLabel && !linked.includes(context.choiceLabel)) errors.push('choice_unlinked');
-  for (const marker of absentInputMarkers(context.supplement)) {
-    if (!recordedReasons.join('\n').includes(marker)) errors.push(`reason_missing_supplement:${marker}`);
-  }
   if (judgmentRestatesChoice(judgment, context.choiceLabel)) errors.push('choice_promoted_to_judgment');
   if (
     unconfirmedHypotheses(context.previousHypotheses) &&
@@ -1386,6 +1388,8 @@ export function incrementalReflectionErrors(raw: string, context: FollowUpOutput
     errors.push('hypothesis_demand_ungrounded');
   }
   const claimText = [judgment, hypotheses.join('\n'), nextVerification, nextQuestion, recordedReasons.join('\n')].join('\n');
+  const absence = absentInputMarkers(context.supplement);
+  if (absence.length > 0 && !absence.some((marker) => claimText.includes(marker))) errors.push('supplement_unlinked');
   if (inventedPresence(claimText, context.supplement)) errors.push('absent_input_invented');
   const experienceFirst = Boolean(
     context.choiceLabel &&

@@ -1915,6 +1915,64 @@ describe('AI PM first review', () => {
     expect(missing.errors.length).toBeGreaterThan(0);
   });
 
+  it('keeps the normalize run unstored when a retained reason does not explain the answer', () => {
+    const recorded = JSON.parse(
+      readFileSync(
+        new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-incremental-reflection-normalize-recorded.json', import.meta.url),
+        'utf8',
+      ),
+    ) as {
+      runId: string;
+      priorRunId: string;
+      gitSha: string;
+      startedAt: string;
+      finishedAt: string;
+      productFollowUpInvoked: boolean;
+      report: { calls: Array<{ model: string; promptTokens: number; completionTokens: number; totalTokens: number; raw: string; userPrompt: string }> };
+    };
+    expect(recorded.runId).toBe('q1-incremental-reflection-normalize-2026-10-30');
+    expect(recorded.priorRunId).toBe('q1-incremental-reflection-question-2026-10-29');
+    expect(recorded.gitSha).toBe('a68fd6c2a39a52f0945f7c5ad709dcc20dc9ffa8');
+    expect(recorded.startedAt).toBe('2026-10-30T07:11:35.389Z');
+    expect(recorded.finishedAt).toBe('2026-10-30T07:11:43.294Z');
+    expect(recorded.productFollowUpInvoked).toBe(false);
+    expect(recorded.report.calls).toHaveLength(1);
+    expect(recorded.report.calls[0]?.model).toBe('gpt-4o-mini-2024-07-18');
+    expect(recorded.report.calls[0]?.promptTokens).toBe(2497);
+    expect(recorded.report.calls[0]?.completionTokens).toBe(687);
+    expect(recorded.report.calls[0]?.totalTokens).toBe(3184);
+    const sent = JSON.parse(recorded.report.calls[0]?.userPrompt ?? '{}') as {
+      originalInput: string;
+      previousAnalysis: ReviewSections & { analysis: { nextVerification: string } };
+      founderChoice: { label: string };
+      founderSupplement: string;
+      answerOrigin: 'synthetic-test-data';
+    };
+    expect(sent.originalInput.length).toBeGreaterThan(20);
+    expect(sent.previousAnalysis.judgment.length).toBeGreaterThan(0);
+    expect(sent.founderChoice.label).toBe('체험 프로그램을 먼저 검증할 것');
+    expect(sent.founderSupplement).toContain('확정된 양조장');
+    expect(sent.answerOrigin).toBe('synthetic-test-data');
+    const raw = recorded.report.calls[0]?.raw ?? '';
+    const parsed = JSON.parse(raw) as { nextQuestion: string; hypotheses: string[]; nextVerification: string; changes: Array<Record<string, unknown>> };
+    expect(parsed.nextQuestion).toBe('양조장 후보가 있는가?');
+    expect(parsed.hypotheses).toEqual(['미확인']);
+    expect(parsed.nextVerification).toBe(FOLLOW_UP_BREWERY_VERIFICATION_PLAN);
+    expect(parsed.changes.every((change) => change.founderAnswer == null && change.choiceTrace == null)).toBe(true);
+    const normalized = normalizeIncrementalSections(sent.previousAnalysis, raw, {
+      previousJudgment: sent.previousAnalysis.judgment,
+      previousHypotheses: sent.previousAnalysis.hypotheses,
+      previousNextVerification: sent.previousAnalysis.analysis.nextVerification,
+      previousNextQuestion: sent.previousAnalysis.nextQuestion,
+      previousRevenueModel: sent.previousAnalysis.revenueModel,
+      choiceLabel: sent.founderChoice.label,
+      supplement: sent.founderSupplement,
+      answerOrigin: sent.answerOrigin,
+    });
+    expect(normalized.errors).toEqual(['reason_insufficient:judgment', 'reason_insufficient:hypotheses']);
+    expect(normalized.sections).toBeNull();
+  });
+
   it('stores the child from changes, restores the same sections, and ignores a duplicate submit', async () => {
     const store = openAiPmReviewStore(storePath());
     const chat = async (request: ChatRequest) => {
