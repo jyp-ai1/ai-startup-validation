@@ -2410,11 +2410,16 @@ describe('AI PM first review', () => {
         'trace_relation_missing:judgment',
         'reason_insufficient:hypotheses',
         'priority_plan_unfocused',
+        'question_not_from_input',
+        'plan_not_from_input',
       ]);
       expect(choiceRepair).toContain('온라인 마케팅 효과 검증을 붙이지 마라');
       expect(choiceRepair).toContain('고객 인터뷰나 예약 의향');
       expect(choiceRepair).toContain('founderChoice.label과 같으면 실패다');
+      expect(choiceRepair).toContain('근거가 부족');
+      expect(choiceRepair).toContain('입력에 없는 다른 검증 대상으로 바꾸지 마라');
       expect(choiceRepair).not.toContain('계약서 또는 입금 증빙 확인을 함께');
+      expect(choiceRepair).not.toContain('양조장 후보가 있는가');
       const claimRepair = followUpRepairMessage([
         'retention_input_missing:hypotheses',
         'claim_verification_missing',
@@ -2422,8 +2427,10 @@ describe('AI PM first review', () => {
         'follow_up_output_previous:nextQuestion',
       ]);
       expect(claimRepair).toContain('founderChoice.label을 그대로 포함하고 계약서 또는 입금 증빙');
+      expect(claimRepair).toContain('reason에도 양조장 또는 계약');
       expect(claimRepair).toContain('previousAnalysis.nextQuestion');
       expect(claimRepair).toContain('decision은 changed다');
+      expect(claimRepair).toContain('라벨을 다른 말로 바꾸면 실패다');
       expect(claimRepair).not.toContain('온라인 마케팅 효과 검증을 붙이지 마라');
       return reply(validUngatedFollowUpRaw(sections()), { usage: { inputTokens: 20, outputTokens: 7, totalTokens: 27 } });
     };
@@ -2726,12 +2733,18 @@ describe('AI PM first review', () => {
     expect(emptySystem).toContain('inputConsidered가 founderChoice.label과 같으면 실패다');
     expect(emptySystem).toContain('온라인 마케팅 효과 검증을 뒤에 붙이지 마라');
     expect(emptySystem).toContain('미확인 상태만 반복하면 실패다');
+    expect(emptySystem).toContain('근거가 부족');
+    expect(emptySystem).toContain('글자 그대로');
+    expect(emptySystem).not.toContain('양조장 후보가 있는가');
     expect(claimSystem).toContain('unverified-claim');
     expect(claimSystem).toContain('검증 우선순위');
     expect(claimSystem).toContain('확인된 사실이 아니다');
     expect(claimSystem).toContain('계약서나 입금 증빙');
     expect(claimSystem).toContain('hypotheses의 inputConsidered와 reason');
     expect(claimSystem).toContain('선택 문장만 쓰면 실패다');
+    expect(claimSystem).toContain('글자 그대로');
+    expect(claimSystem).toContain('계약서나 입금 증빙');
+    expect(claimSystem).toContain('양조장 주장을 가설');
 
     const experiencePlan = `${choice} 잠재 고객의 체험 참여 의향을 인터뷰로 확인한다. 이 단계는 아직 실행되지 않았다.`;
     const experienceQuestion = '체험 프로그램에 참여할 고객이 있는가?';
@@ -2898,6 +2911,13 @@ describe('AI PM first review', () => {
     expect(claimPlan).toContain(choice);
     expect(experiencePlan).toContain(choice);
     expect(claimPlan).not.toBe(experiencePlan);
+    const droppedChoice = JSON.parse(claimRaw) as { nextVerification: string; changes: Array<Record<string, string>> };
+    droppedChoice.nextVerification = '체험 수요를 확인하고 계약서와 입금 증빙을 확인한다.';
+    const droppedChange = droppedChoice.changes.find((change) => change.field === 'nextVerification');
+    if (droppedChange) droppedChange.current = droppedChoice.nextVerification;
+    const droppedResult = normalizeIncrementalSections(previous, JSON.stringify(droppedChoice), contextFor(FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM));
+    expect(droppedResult.errors).toContain('next_verification_choice_absent');
+    expect(droppedResult.sections).toBeNull();
     const claimParsed = JSON.parse(claimRaw) as { changes: Array<Record<string, string>> };
     const claimJudgment = claimParsed.changes.find((change) => change.field === 'judgment');
     expect(claimJudgment?.decision).toBe('retained');

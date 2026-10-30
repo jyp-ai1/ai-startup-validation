@@ -2,6 +2,7 @@
  * One incremental-reflection call of the frozen product follow-up request.
  * The founder answer in the fixture is synthetic test data.
  * Production builds return immediately. The product second-review route is not called.
+ * The relation call q1-incremental-reflection-relation-2026-10-30 stays RECORDED.
  * The meaning call q1-incremental-reflection-meaning-2026-10-30 stays RECORDED.
  * The choice-repair call q1-incremental-reflection-choice-repair-2026-10-30 stays RECORDED.
  * The input-trace call q1-incremental-reflection-input-trace-2026-10-30 stays RECORDED.
@@ -19,14 +20,14 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-relation-2026-10-30';
-export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-meaning-2026-10-30';
+export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-unified-2026-10-30';
+export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-relation-2026-10-30';
 export const PREVIEW_COMPARE_BUCKET = 'ai-pm-quality-compare';
 export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(scriptDir, '..');
-const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-relation-request.json');
+const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-unified-request.json');
 
 export function shouldRunPreviewQualityCompare(env) {
   return env.VERCEL_ENV === 'preview' && Boolean(env.VERCEL_GIT_COMMIT_REF) && env.VERCEL_GIT_COMMIT_REF !== 'main';
@@ -189,6 +190,25 @@ export function reviewFieldGaps(raw, userPrompt) {
       errors.push(`reason_insufficient:${field}`);
     }
     if (decision === 'retained' && reason && !/유지|바꾸지|그대로|두지|머문/.test(reason)) errors.push(`retention_hold_missing:${field}`);
+    if (decision === 'retained' && reason && !/필요|확인해야|증빙|증거가|계약서/.test(reason)) errors.push(`retention_evidence_missing:${field}`);
+    if (held && reason && supplement.trim()) {
+      const compactReason = compactText(reason);
+      const compactSupplement = compactText(supplement);
+      let cites = choice.length >= 4 && compactReason.includes(compactText(choice));
+      if (!cites && compactSupplement.length >= 8) {
+        for (let index = 0; index + 8 <= compactSupplement.length; index += 1) {
+          if (compactReason.includes(compactSupplement.slice(index, index + 8))) {
+            cites = true;
+            break;
+          }
+        }
+      }
+      const reasonMarkers = ['예약 고객', '예약', '가격', '계약', '확정된 양조장', '양조장'].filter(
+        (marker) => supplement.includes('없') && supplement.includes(marker),
+      );
+      if (reasonMarkers.some((marker) => reason.includes(marker))) cites = true;
+      if (!cites) errors.push(`retention_input_missing:${field}`);
+    }
     if (held && typeof change.holdReason === 'string' && change.holdReason.trim() && genericHold(change.holdReason)) {
       errors.push(`review_hold_generic:holdReason:${field}`);
     }
@@ -262,6 +282,22 @@ export function reviewFieldGaps(raw, userPrompt) {
   const storedQuestion = typeof previous.nextQuestion === 'string' ? previous.nextQuestion.trim() : '';
   if (experience && storedQuestion && nextQuestion.trim() === storedQuestion && (!supplement.trim() || claim)) errors.push('question_unchanged');
   if (experience && claim && !/계약서|증빙|입금/.test(nextQuestion)) errors.push('question_claim_unlinked');
+  if (experience && !supplement.trim() && nextQuestion.includes('양조장 후보')) errors.push('question_not_from_input');
+  if (experience && !nextQuestion.includes('체험')) {
+    const questionMarkers = ['예약 고객', '예약', '가격', '계약', '확정된 양조장', '양조장'].filter(
+      (marker) => supplement.includes('없') && supplement.includes(marker),
+    );
+    const focus = questionMarkers.length > 0 ? questionMarkers : ['체험'];
+    if (!focus.some((marker) => nextQuestion.includes(marker))) errors.push('next_question_unknown_missing');
+  }
+  const linked = [
+    judgment,
+    nextLine,
+    nextVerification,
+    nextQuestion,
+    ...changes.map((item) => (item && typeof item.reason === 'string' ? item.reason : '')),
+  ].join('\n');
+  if (choice && !linked.includes(choice)) errors.push('choice_unlinked');
   const previousJudgment = typeof previous.judgment === 'string' ? previous.judgment.trim() : '';
   if (!supplement.trim() && previousJudgment && judgment.trim() !== previousJudgment) errors.push('judgment_changed_by_choice');
   for (const field of ['judgment', 'hypotheses']) {
@@ -287,16 +323,16 @@ export function repairMessage(errors) {
     lines.push('judgment.current는 입력의 previousJudgment와 같은 문장으로 되돌려라. decision은 retained다. 선택은 검증 우선순위이며 판단의 증거가 아니다.');
   }
   if (has('input_echo_only')) {
-    lines.push('inputConsidered가 founderChoice.label과 같으면 실패다. 그 입력이 판단 또는 가설과 어떤 관계인지 적어라.');
+    lines.push('inputConsidered를 다시 써라. founderChoice.label과 같으면 실패다. 그 문장만 남겨 두지 마라.');
   }
   if (has('status_repeat') || has('trace_relation_missing')) {
     lines.push('impactAssessment와 holdReason에 여전히 유효하다, 변화가 없다, 새로운 정보가 없다만 쓰지 마라. 선택이 판단의 근거인지, 가설과 관련되는지, 검증 계획의 우선순위인지를 구분해 적어라.');
   }
   if (has('retention_hold_missing') || has('reason_insufficient') || has('review_hold_generic') || has('retention_sufficiency_missing')) {
-    lines.push('retained인 reason과 holdReason은 바꾸지 않고 유지하는 이유와, 근거가 부족한 이유를 함께 적는다. 미확인이라는 말만 반복하면 실패다.');
+    lines.push('reason과 holdReason 각각에 바꾸지 않고 유지, 근거가 부족, 아직 필요한 증거를 모두 넣어라. 한 필드에만 나누면 실패다. 미확인이라는 말만 반복하면 실패다.');
   }
   if (has('retention_evidence_missing') || has('trace_evidence_unrelated')) {
-    lines.push('evidenceNeeded와 reason에는 아직 없는 증거를 적는다. 체험 선택이면 고객 인터뷰나 예약 의향이다. 확정 주장이면 계약서나 입금 증빙이다.');
+    lines.push('reason과 holdReason과 evidenceNeeded에 아직 없는 증거를 적어라. 체험 선택이면 고객 인터뷰나 예약 의향이다. 확정 주장이면 계약서나 입금 증빙이다.');
   }
   if (has('hypothesis_unconfirmed_replaced') || has('hypothesis_demand_ungrounded')) {
     lines.push('hypotheses.current는 저장된 가설 그대로다. 미확인이면 미확인만 둔다. 수요가 있다, 있을 것이다, 성공 가능성을 높인다를 넣지 마라.');
@@ -310,18 +346,27 @@ export function repairMessage(errors) {
     has('retention_input_missing');
   if (claimRepair) {
     lines.push(
-      '확정 주장은 주장으로 적고 확인된 사실이 아니라고 적어라. hypotheses의 inputConsidered와 reason도 그 주장을 검토한다. evidenceStatus는 unverified-input이다. nextVerification.current는 founderChoice.label을 그대로 포함하고 계약서 또는 입금 증빙 확인을 함께 담는다. decision은 changed다.',
+      '확정 주장은 주장으로 적고 확인된 사실이 아니라고 적어라. judgment와 hypotheses의 reason에도 양조장 또는 계약을 적어라. evidenceStatus는 unverified-input이다. nextVerification.current는 founderChoice.label을 그대로 포함하고 계약서 또는 입금 증빙 확인을 함께 담는다. 라벨을 다른 말로 바꾸면 실패다. decision은 changed다.',
     );
-  } else if (has('next_verification_choice_absent') || has('choice_unlinked') || has('priority_plan_unfocused')) {
+  } else if (has('next_verification_choice_absent') || has('choice_unlinked') || has('priority_plan_unfocused') || has('plan_not_from_input')) {
     lines.push(
-      'nextVerification.current는 founderChoice.label을 그대로 포함한다. 체험 프로그램의 수요와 실행 가능성을 확인하는 순서를 잇는다. 온라인 마케팅 효과 검증을 붙이지 마라. 수요가 확인되었다고 쓰지 마라. decision은 changed다.',
+      'nextVerification.current는 founderChoice.label을 그대로 포함한다. 라벨을 다른 말로 바꾸면 실패다. 체험 프로그램의 수요와 실행 가능성을 확인하는 순서를 잇는다. 온라인 마케팅 효과 검증을 붙이지 마라. 수요가 확인되었다고 쓰지 마라. decision은 changed다.',
     );
   }
   if (has('decision_mismatch')) {
     lines.push('current가 previous와 다르면 decision은 changed다. 같으면 retained 또는 unresolved다.');
   }
-  if (has('follow_up_output_previous') || has('question_unchanged')) {
-    lines.push('모든 previous는 입력의 저장 값 그대로다. nextQuestion.previous는 previousAnalysis.nextQuestion과 같다. current는 그 질문을 반복하지 않고, 이번 검증에서 남은 불확실성을 묻는다.');
+  if (
+    has('follow_up_output_previous') ||
+    has('question_unchanged') ||
+    has('question_not_from_input') ||
+    has('next_question_unknown_missing') ||
+    has('question_claim_unlinked') ||
+    has('plan_not_from_input')
+  ) {
+    lines.push(
+      'nextQuestion.previous는 previousAnalysis.nextQuestion과 같다. current는 이번 입력의 남은 불확실성을 묻는다. 추가 설명이 없으면 체험 참여 의향이나 고객 인터뷰를 묻는다. 확정 주장이 있으면 계약서나 입금 증빙을 묻는다. 입력에 없는 다른 검증 대상으로 바꾸지 마라.',
+    );
   }
   if (has('sufficiency_conflict')) {
     lines.push('선택만으로 judgment를 changed로 두지 마라. retained의 sufficiencyAssessment는 insufficient다.');
