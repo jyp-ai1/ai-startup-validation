@@ -2,6 +2,7 @@
  * One incremental-reflection call of the frozen product follow-up request.
  * The founder answer in the fixture is synthetic test data.
  * Production builds return immediately. The product second-review route is not called.
+ * The decision call q1-incremental-reflection-decision-2026-10-30 stays RECORDED.
  * The unified call q1-incremental-reflection-unified-2026-10-30 stays RECORDED.
  * The relation call q1-incremental-reflection-relation-2026-10-30 stays RECORDED.
  * The meaning call q1-incremental-reflection-meaning-2026-10-30 stays RECORDED.
@@ -21,14 +22,14 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-decision-2026-10-30';
-export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-unified-2026-10-30';
+export const PREVIEW_COMPARE_RUN_ID = 'q1-incremental-reflection-retention-2026-10-30';
+export const PREVIEW_COMPARE_PRIOR_RUN_ID = 'q1-incremental-reflection-decision-2026-10-30';
 export const PREVIEW_COMPARE_BUCKET = 'ai-pm-quality-compare';
 export const PREVIEW_COMPARE_OBJECT = `${PREVIEW_COMPARE_RUN_ID}.json`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(scriptDir, '..');
-const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-decision-request.json');
+const fixturePath = join(webRoot, 'features/business-validation-journey/lib/incremental-reflection-retention-request.json');
 
 export function shouldRunPreviewQualityCompare(env) {
   return env.VERCEL_ENV === 'preview' && Boolean(env.VERCEL_GIT_COMMIT_REF) && env.VERCEL_GIT_COMMIT_REF !== 'main';
@@ -190,6 +191,7 @@ export function reviewFieldGaps(raw, userPrompt) {
     if (held && reason && !/충분하지|바꾸지 않|확인된 사실이 아니|근거가 아니|부족|확정하지/.test(reason)) {
       errors.push(`reason_insufficient:${field}`);
     }
+    if (decision === 'retained' && reason && !/영향|바꾸|유지|유보|판단|가설|미확인/.test(reason)) errors.push(`retention_effect_missing:${field}`);
     if (decision === 'retained' && reason && !/유지|바꾸지|그대로|두지|머문/.test(reason)) errors.push(`retention_hold_missing:${field}`);
     if (decision === 'retained' && reason && !/필요|확인해야|증빙|증거가|계약서/.test(reason)) errors.push(`retention_evidence_missing:${field}`);
     if (held && reason && supplement.trim()) {
@@ -320,7 +322,26 @@ export function reviewFieldGaps(raw, userPrompt) {
   return [...new Set(errors)];
 }
 
-export function repairMessage(errors) {
+function failedReviewPhrases(raw) {
+  if (!raw) return { judgmentReason: '', hypothesesReason: '', plan: '' };
+  try {
+    const parsed = JSON.parse(raw);
+    const changes = Array.isArray(parsed.changes) ? parsed.changes : [];
+    const reasonFor = (field) => {
+      const change = changes.find((item) => item && item.field === field);
+      return change && typeof change.reason === 'string' ? change.reason.trim().slice(0, 80) : '';
+    };
+    return {
+      judgmentReason: reasonFor('judgment'),
+      hypothesesReason: reasonFor('hypotheses'),
+      plan: typeof parsed.nextVerification === 'string' ? parsed.nextVerification.trim().slice(0, 120) : '',
+    };
+  } catch {
+    return { judgmentReason: '', hypothesesReason: '', plan: '' };
+  }
+}
+
+export function repairMessage(errors, failedRaw) {
   const has = (code) => errors.some((error) => error === code || String(error).startsWith(`${code}:`));
   const lines = [
     '이전 JSON은 저장되지 않았다.',
@@ -330,6 +351,7 @@ export function repairMessage(errors) {
     '없는 확정 사실을 만들지 마라. 수요가 있다고 단정하지 마라.',
     'retentionDecision은 decision과 같아야 한다.',
     'judgment와 hypotheses는 문장이 previous와 같으면 decision이 retained다. nextVerification은 내용이 바뀌면 decision이 changed다. 문장을 유지한 채 changed로 두면 실패다.',
+    'judgment.reason과 hypotheses.reason 각각에 영향, 유지 이유, 근거가 부족, 바꾸려면 필요한 증거를 모두 넣어라. holdReason에만 두면 실패다.',
   ];
   if (has('choice_promoted_to_judgment') || has('judgment_changed_by_choice')) {
     lines.push('judgment.current는 입력의 previousJudgment와 같은 문장으로 되돌려라. decision은 retained다. 선택은 검증 우선순위이며 판단의 증거가 아니다.');
@@ -340,8 +362,14 @@ export function repairMessage(errors) {
   if (has('status_repeat') || has('trace_relation_missing')) {
     lines.push('impactAssessment와 holdReason에 여전히 유효하다, 변화가 없다, 새로운 정보가 없다만 쓰지 마라. 선택이 판단의 근거인지, 가설과 관련되는지, 검증 계획의 우선순위인지를 구분해 적어라. hypotheses.impactAssessment에는 선택 또는 계획, 그리고 가설 또는 미확인을 적어라.');
   }
-  if (has('retention_hold_missing') || has('reason_insufficient') || has('review_hold_generic') || has('retention_sufficiency_missing')) {
-    lines.push('reason과 holdReason은 서로 다른 문장이다. 각각 바꾸지 않고 유지, 근거가 부족, 아직 필요한 증거를 담는다. 동일하며, 추가 정보가 필요하다, 인터뷰가 필요하다만 반복하면 실패다. 선택이 가설의 검증 순서를 어떻게 바꾸는지 적어라. 한 필드에만 나누면 실패다.');
+  if (
+    has('retention_hold_missing') ||
+    has('reason_insufficient') ||
+    has('review_hold_generic') ||
+    has('retention_sufficiency_missing') ||
+    has('retention_effect_missing')
+  ) {
+    lines.push('reason 한 문장 안에 바꾸지 않고 유지, 근거가 부족, 미치는 영향, 아직 필요한 증거를 넣어라. holdReason에만 두면 실패다. 동일하며, 추가 정보가 필요하다, 방향성이 명확하다만 쓰면 실패다.');
   }
   if (has('retention_evidence_missing') || has('trace_evidence_unrelated')) {
     lines.push('reason과 holdReason과 evidenceNeeded에 아직 없는 증거를 적어라. 체험 선택이면 고객 인터뷰나 예약 의향이다. 확정 주장이면 계약서나 입금 증빙이다.');
@@ -358,7 +386,7 @@ export function repairMessage(errors) {
     has('retention_input_missing');
   if (claimRepair) {
     lines.push(
-      '확정 주장은 주장으로 적고 확인된 사실이 아니라고 적어라. judgment와 hypotheses의 reason에도 양조장 또는 계약을 적어라. evidenceStatus는 unverified-input이다. judgment.current와 hypotheses.current가 previous와 같으면 그 decision은 retained다. 문장을 유지한 채 changed로 두면 실패다. nextVerification.current는 founderChoice.label을 그대로 포함하고 계약서 또는 입금 증빙 확인을 함께 담는다. 라벨을 다른 말로 바꾸면 실패다. nextVerification.decision만 changed다. sufficiencyAssessment는 partial이다.',
+      '확정 주장은 주장으로 적고 확인된 사실이 아니라고 적어라. judgment와 hypotheses의 reason에도 양조장 또는 계약, 바꾸지 않고 유지, 근거가 부족, 계약서가 필요를 넣어라. holdReason에만 두면 실패다. evidenceStatus는 unverified-input이다. judgment.current와 hypotheses.current가 previous와 같으면 그 decision은 retained다. 문장을 유지한 채 changed로 두면 실패다. nextVerification.current는 founderChoice.label을 그대로 포함하고 계약서 또는 입금 증빙 확인을 함께 담는다. 라벨을 다른 말로 바꾸면 실패다. nextVerification.decision만 changed다. sufficiencyAssessment는 partial이다.',
     );
   } else if (
     has('next_verification_choice_absent') ||
@@ -389,6 +417,10 @@ export function repairMessage(errors) {
   if (has('sufficiency_conflict')) {
     lines.push('선택만으로 judgment를 changed로 두지 마라. 문장이 같은데 changed이면서 sufficiencyAssessment가 insufficient이면 실패다. retained의 sufficiencyAssessment는 insufficient다. changed인 nextVerification의 sufficiencyAssessment는 partial이다.');
   }
+  const failed = failedReviewPhrases(failedRaw);
+  if (failed.judgmentReason) lines.push(`judgment.reason의 이전 문장은 실패다. 다시 쓰지 마라. ${failed.judgmentReason}`);
+  if (failed.hypothesesReason) lines.push(`hypotheses.reason의 이전 문장은 실패다. 다시 쓰지 마라. ${failed.hypothesesReason}`);
+  if (failed.plan.includes('및')) lines.push(`nextVerification의 이전에 및이 있다. 및을 빼고 그 다음에도 온라인 마케팅 검증은 남아 있다고 적어라. ${failed.plan}`);
   lines.push('같은 스키마의 JSON만 반환하라.');
   return lines.join(' ');
 }
@@ -574,12 +606,12 @@ async function main() {
         messages: [
           ...item.request.messages,
           { role: 'assistant', content: first.raw },
-          { role: 'user', content: repairMessage(first.reviewGaps) },
+          { role: 'user', content: repairMessage(first.reviewGaps, first.raw) },
         ],
       };
       const repair = await oneCall(apiKey, `${item.promptVersion}:repair`, repairRequest);
       repair.reviewGaps = repair.raw ? reviewFieldGaps(repair.raw, first.userPrompt) : [];
-      repair.repairPrompt = repairMessage(first.reviewGaps);
+      repair.repairPrompt = repairMessage(first.reviewGaps, first.raw);
       repair.sameAsFirst = repair.raw === first.raw;
       calls.push(repair);
     }

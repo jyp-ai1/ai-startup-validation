@@ -2064,7 +2064,28 @@ function gatedFollowUpPrompt(): string {
  * Names the failed checks from the first response.
  * It tells the model which stored values to restore. It does not write the review.
  */
-export function followUpRepairMessage(errors: string[]): string {
+function failedReviewPhrases(raw: string | undefined): { judgmentReason: string; hypothesesReason: string; plan: string } {
+  if (!raw) return { judgmentReason: '', hypothesesReason: '', plan: '' };
+  try {
+    const parsed = JSON.parse(raw) as { nextVerification?: unknown; changes?: unknown };
+    const changes = Array.isArray(parsed.changes) ? parsed.changes : [];
+    const reasonFor = (field: string) => {
+      const change = changes.find((item) => item && typeof item === 'object' && (item as { field?: unknown }).field === field) as
+        | { reason?: unknown }
+        | undefined;
+      return typeof change?.reason === 'string' ? change.reason.trim().slice(0, 80) : '';
+    };
+    return {
+      judgmentReason: reasonFor('judgment'),
+      hypothesesReason: reasonFor('hypotheses'),
+      plan: typeof parsed.nextVerification === 'string' ? parsed.nextVerification.trim().slice(0, 120) : '',
+    };
+  } catch {
+    return { judgmentReason: '', hypothesesReason: '', plan: '' };
+  }
+}
+
+export function followUpRepairMessage(errors: string[], failedRaw?: string): string {
   const has = (code: string) => errors.some((error) => error === code || error.startsWith(`${code}:`));
   const lines = [
     '이전 JSON은 저장되지 않았다.',
@@ -2074,6 +2095,7 @@ export function followUpRepairMessage(errors: string[]): string {
     '없는 확정 사실을 만들지 마라. 수요가 있다고 단정하지 마라.',
     'retentionDecision은 decision과 같아야 한다.',
     'judgment와 hypotheses는 문장이 previous와 같으면 decision이 retained다. nextVerification은 내용이 바뀌면 decision이 changed다. 문장을 유지한 채 changed로 두면 실패다.',
+    'judgment.reason과 hypotheses.reason 각각에 영향, 유지 이유, 근거가 부족, 바꾸려면 필요한 증거를 모두 넣어라. holdReason에만 두면 실패다.',
   ];
   if (has('choice_promoted_to_judgment') || has('judgment_changed_by_choice')) {
     lines.push('judgment.current는 입력의 previousJudgment와 같은 문장으로 되돌려라. decision은 retained다. 선택은 검증 우선순위이며 판단의 증거가 아니다.');
@@ -2084,8 +2106,14 @@ export function followUpRepairMessage(errors: string[]): string {
   if (has('status_repeat') || has('trace_relation_missing')) {
     lines.push('impactAssessment와 holdReason에 여전히 유효하다, 변화가 없다, 새로운 정보가 없다만 쓰지 마라. 선택이 판단의 근거인지, 가설과 관련되는지, 검증 계획의 우선순위인지를 구분해 적어라. hypotheses.impactAssessment에는 선택 또는 계획, 그리고 가설 또는 미확인을 적어라.');
   }
-  if (has('retention_hold_missing') || has('reason_insufficient') || has('review_hold_generic') || has('retention_sufficiency_missing')) {
-    lines.push('reason과 holdReason은 서로 다른 문장이다. 각각 바꾸지 않고 유지, 근거가 부족, 아직 필요한 증거를 담는다. 동일하며, 추가 정보가 필요하다, 인터뷰가 필요하다만 반복하면 실패다. 선택이 가설의 검증 순서를 어떻게 바꾸는지 적어라. 한 필드에만 나누면 실패다.');
+  if (
+    has('retention_hold_missing') ||
+    has('reason_insufficient') ||
+    has('review_hold_generic') ||
+    has('retention_sufficiency_missing') ||
+    has('retention_effect_missing')
+  ) {
+    lines.push('reason 한 문장 안에 바꾸지 않고 유지, 근거가 부족, 미치는 영향, 아직 필요한 증거를 넣어라. holdReason에만 두면 실패다. 동일하며, 추가 정보가 필요하다, 방향성이 명확하다만 쓰면 실패다.');
   }
   if (has('retention_evidence_missing') || has('trace_evidence_unrelated')) {
     lines.push('reason과 holdReason과 evidenceNeeded에 아직 없는 증거를 적어라. 체험 선택이면 고객 인터뷰나 예약 의향이다. 확정 주장이면 계약서나 입금 증빙이다.');
@@ -2102,7 +2130,7 @@ export function followUpRepairMessage(errors: string[]): string {
     has('retention_input_missing');
   if (claimRepair) {
     lines.push(
-      '확정 주장은 주장으로 적고 확인된 사실이 아니라고 적어라. judgment와 hypotheses의 reason에도 양조장 또는 계약을 적어라. evidenceStatus는 unverified-input이다. judgment.current와 hypotheses.current가 previous와 같으면 그 decision은 retained다. 문장을 유지한 채 changed로 두면 실패다. nextVerification.current는 founderChoice.label을 그대로 포함하고 계약서 또는 입금 증빙 확인을 함께 담는다. 라벨을 다른 말로 바꾸면 실패다. nextVerification.decision만 changed다. sufficiencyAssessment는 partial이다.',
+      '확정 주장은 주장으로 적고 확인된 사실이 아니라고 적어라. judgment와 hypotheses의 reason에도 양조장 또는 계약, 바꾸지 않고 유지, 근거가 부족, 계약서가 필요를 넣어라. holdReason에만 두면 실패다. evidenceStatus는 unverified-input이다. judgment.current와 hypotheses.current가 previous와 같으면 그 decision은 retained다. 문장을 유지한 채 changed로 두면 실패다. nextVerification.current는 founderChoice.label을 그대로 포함하고 계약서 또는 입금 증빙 확인을 함께 담는다. 라벨을 다른 말로 바꾸면 실패다. nextVerification.decision만 changed다. sufficiencyAssessment는 partial이다.',
     );
   } else if (
     has('next_verification_choice_absent') ||
@@ -2133,6 +2161,10 @@ export function followUpRepairMessage(errors: string[]): string {
   if (has('sufficiency_conflict')) {
     lines.push('선택만으로 judgment를 changed로 두지 마라. 문장이 같은데 changed이면서 sufficiencyAssessment가 insufficient이면 실패다. retained의 sufficiencyAssessment는 insufficient다. changed인 nextVerification의 sufficiencyAssessment는 partial이다.');
   }
+  const failed = failedReviewPhrases(failedRaw);
+  if (failed.judgmentReason) lines.push(`judgment.reason의 이전 문장은 실패다. 다시 쓰지 마라. ${failed.judgmentReason}`);
+  if (failed.hypothesesReason) lines.push(`hypotheses.reason의 이전 문장은 실패다. 다시 쓰지 마라. ${failed.hypothesesReason}`);
+  if (failed.plan.includes('및')) lines.push(`nextVerification의 이전에 및이 있다. 및을 빼고 그 다음에도 온라인 마케팅 검증은 남아 있다고 적어라. ${failed.plan}`);
   lines.push('같은 스키마의 JSON만 반환하라.');
   return lines.join(' ');
 }
@@ -2154,8 +2186,8 @@ function reviewRoute(supplement: string): string[] {
       '확정 주장은 확인된 사실이 아니다. 사실로 승격하지 마라.',
       'judgment.current는 previousJudgment와 같은 문장이다. decision은 retained다. sufficiencyAssessment는 insufficient다. evidenceStatus는 unverified-input이다. 문장이 같은데 decision을 changed로 두면 실패다.',
       'judgment.inputConsidered는 양조장 확정 문장을 주장으로 적고 증빙이 없다고 적는다. 선택 문장만 쓰면 실패다. 계약서가 필요하다고 적는다.',
-      'judgment.reason과 holdReason은 각각 양조장, 주장, 확인된 사실이 아니다, 바꾸지 않고 유지, 계약서가 필요를 담는다. 동일하며만 쓰면 실패다.',
-      'hypotheses가 미확인이면 current도 미확인만 둔다. decision은 retained다. 문장이 같은데 decision을 changed로 두면 실패다. hypotheses의 inputConsidered와 reason은 양조장 주장을 가설의 근거로 쓰지 않고 미확인을 유지하며 계약서가 필요하다고 적는다.',
+      'judgment.reason 한 문장에 판단에 미치는 영향, 양조장, 주장, 확인된 사실이 아니다, 바꾸지 않고 유지, 근거가 부족, 계약서가 필요를 넣어라. holdReason에만 두면 실패다.',
+      'hypotheses가 미확인이면 current도 미확인만 둔다. decision은 retained다. 문장이 같은데 decision을 changed로 두면 실패다. hypotheses의 inputConsidered와 reason은 양조장 주장을 가설의 근거로 쓰지 않고, 가설에 미치는 영향, 미확인으로 유지, 근거가 부족, 계약서가 필요를 한 문장에 넣어라.',
       'nextVerification.current는 founderChoice.label을 글자 그대로 포함한다. 체험 수요와 실행 가능성, 계약서나 입금 증빙 확인을 함께 적는다. 선택 문장만 쓰면 실패다. 수요가 있다고 단정하지 마라. nextVerification.decision만 changed다. sufficiencyAssessment는 partial이다.',
       'nextQuestion.current는 저장된 이전 질문과 다른 질문이다. 계약서나 입금 증빙을 묻는다. 물음표로 끝난다. previous는 previousAnalysis.nextQuestion 그대로다.',
     ];
@@ -2165,12 +2197,12 @@ function reviewRoute(supplement: string): string[] {
       'founderChoice의 kind는 plan-choice다. 이것은 검증 우선순위다. 사업 성공의 증거가 아니다. 가설의 검증 순서를 바꾼다.',
       'founderSupplement의 kind는 absent다. 없는 확정과 수요를 만들지 마라.',
       'judgment.current는 previousJudgment와 같은 문장이다. decision은 retained다. sufficiencyAssessment는 insufficient다. evidenceStatus는 unconfirmed다. 문장이 같은데 decision을 changed로 두면 실패다.',
-      'judgment.inputConsidered가 founderChoice.label과 같으면 실패다. 이 선택은 새 사실이 아니라 검증 순서다. impactAssessment는 선택한 계획이 판단의 근거가 아니라는 관계를 적는다. 동일하며만 반복하면 실패다.',
-      'judgment.reason과 holdReason은 각각 바꾸지 않고 유지, 근거가 부족, 고객 인터뷰가 필요를 담는다.',
+      'judgment.inputConsidered가 founderChoice.label과 같으면 실패다. 선택 문장 뒤에 수요의 증거가 아니라는 말을 적어라. impactAssessment는 선택한 계획이 판단의 근거가 아니라는 관계를 적는다.',
+      'judgment.reason 한 문장에 판단에 미치는 영향, 바꾸지 않고 유지, 근거가 부족, 고객 인터뷰가 필요를 넣어라. holdReason에만 두면 실패다. 방향성이 명확하다는 쓰지 마라.',
       'hypotheses가 미확인이면 current도 미확인만 둔다. decision은 retained다. 수요가 있다를 넣으면 실패다. inputConsidered가 선택 문장과 같으면 실패다.',
       'hypotheses.impactAssessment는 선택 또는 계획과 가설 또는 미확인을 적고, 가설의 검증 순서가 어떻게 바뀌는지 적는다.',
-      'hypotheses.reason과 holdReason은 각각 가설, 미확인, 유지, 근거가 부족, 인터뷰가 필요를 담는다. 미확인 상태만 반복하면 실패다.',
-      'nextVerification.current는 founderChoice.label을 글자 그대로 앞에 둔다. 체험 수요와 실행 가능성을 먼저 확인한다. 그 다음에도 온라인 마케팅 검증은 남아 있다고 적는다. 및, 같이, 함께로 붙이면 실패다. 수요가 있다고 단정하지 마라. nextVerification.decision만 changed다.',
+      'hypotheses.reason 한 문장에 가설에 미치는 영향, 미확인, 유지, 근거가 부족, 인터뷰가 필요를 넣어라. holdReason에만 두면 실패다. 미확인 상태만 반복하면 실패다.',
+      'nextVerification.current는 founderChoice.label을 글자 그대로 앞에 둔다. 체험 수요를 먼저 확인한다. 그 다음에도 온라인 마케팅 검증은 남아 있다고 적는다. 문장에 및이 있으면 실패다. nextVerification.reason은 체험을 먼저 보는 이유를 적는다. 순서가 변경되었다만 쓰면 실패다. nextVerification.decision만 changed다.',
       'nextQuestion.current는 체험 참여 의향을 묻는다. 체험을 포함한다. 물음표로 끝난다. previous는 previousAnalysis.nextQuestion 그대로다. current가 그 질문과 같으면 실패다.',
     ];
   }
@@ -2275,7 +2307,7 @@ async function finishCall(input: {
           messages: [
             ...input.request.messages,
             { role: 'assistant', content: first.content },
-            { role: 'user', content: followUpRepairMessage(failedChecks) },
+            { role: 'user', content: followUpRepairMessage(failedChecks, first.content) },
           ],
         });
         callCount = 2;

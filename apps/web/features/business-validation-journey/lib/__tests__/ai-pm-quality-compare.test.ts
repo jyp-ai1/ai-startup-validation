@@ -8,9 +8,11 @@ import { describe, expect, it } from 'vitest';
 
 import {
   AI_PM_FIRST_PROMPT_VERSION,
+  AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET,
   AI_PM_REVIEW_MODEL,
   buildFirstReviewRequest,
   buildFollowUpRequest,
+  estimateReviewTokens,
   FOLLOW_UP_BREWERY_VERIFICATION_PLAN,
   FOLLOW_UP_UNVERIFIED_BREWERY_CLAIM,
   followUpStructureCoverage,
@@ -169,12 +171,16 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'main' })).toBe(false);
     expect(shouldRunPreviewQualityCompare({})).toBe(false);
-    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-decision-2026-10-30');
+    expect(PREVIEW_COMPARE_RUN_ID).toBe('q1-incremental-reflection-retention-2026-10-30');
     expect(redactComparePayload({ note: 'sk-testsecretvalue and eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaa.bbb' }, ['service-role-secret'])).toEqual({
       note: '[redacted] and [redacted-jwt]',
     });
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
-    expect(script).toContain('incremental-reflection-decision-request.json');
+    expect(script).toContain('incremental-reflection-retention-request.json');
+    expect(script).not.toContain('incremental-reflection-decision-request.json');
+    expect(script).toContain('q1-incremental-reflection-decision-2026-10-30');
+    expect(script).not.toContain('q1-incremental-reflection-decision-2026-10-30.json');
+    expect(script).toContain('holdReason에만 두면 실패다');
     expect(script).not.toContain('incremental-reflection-unified-request.json');
     expect(script).toContain('q1-incremental-reflection-unified-2026-10-30');
     expect(script).not.toContain('q1-incremental-reflection-unified-2026-10-30.json');
@@ -1550,6 +1556,48 @@ describe('quality-2 and quality-3 compare requests', () => {
       supplement: '',
       answerOrigin: 'synthetic-test-data',
     });
+    const fixtureUrl = new URL('../incremental-reflection-decision-request.json', import.meta.url);
+    const frozen = JSON.parse(readFileSync(fixtureUrl, 'utf8')) as {
+      priorRunId: string;
+      requests: Array<{ inputId: string; request: unknown }>;
+    };
+    expect(frozen.priorRunId).toBe('q1-incremental-reflection-unified-2026-10-30');
+    expect(frozen.requests.map((item) => item.inputId)).toEqual(['choice-only', 'brewery-claim']);
+    expect(frozen.requests[0]?.request).not.toEqual(caseA);
+    const unified = JSON.parse(readFileSync(new URL('../incremental-reflection-unified-request.json', import.meta.url), 'utf8')) as {
+      requests: Array<{ request: unknown }>;
+    };
+    expect(frozen.requests[0]?.request).not.toEqual(unified.requests[0]?.request);
+  });
+
+  it('freezes retention requests that put the hold and the missing evidence in reason', () => {
+    const evidence = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json', import.meta.url), 'utf8'),
+    ) as { businessInput: string; report: { calls: Array<{ promptVersion: string; raw: string }> } };
+    const previousRaw = evidence.report.calls.find((call) => call.promptVersion === 'quality-14-cpo-draft:brewery');
+    const parsed = parseSections(previousRaw?.raw ?? '', evidence.businessInput);
+    const selected = parsed?.analysis?.choices.find((choice) => choice.label === '체험 프로그램을 먼저 검증할 것');
+    const feedback = {
+      feedbackId: 'feedback-trace',
+      reviewId: 'review-trace',
+      userId: 'user-trace',
+      agreement: 'need_info' as const,
+      accuracy: 'hard_to_compare' as const,
+      revisionAreas: ['other' as const],
+      comment: selected?.label ?? '',
+      nextAction: 'verify_hypotheses' as const,
+      marks: [],
+      choiceAnswer: { choiceId: selected?.id ?? '', label: selected?.label ?? '', otherText: '' },
+      submittedAt: '2026-10-30T08:00:00.000Z',
+      modelCalls: 0 as const,
+    };
+    const caseA = buildFollowUpRequest({
+      originalInput: evidence.businessInput,
+      sections: parsed!,
+      feedback,
+      supplement: '',
+      answerOrigin: 'synthetic-test-data',
+    });
     const caseB = buildFollowUpRequest({
       originalInput: evidence.businessInput,
       sections: parsed!,
@@ -1564,7 +1612,7 @@ describe('quality-2 and quality-3 compare requests', () => {
       analysisContract: 'parsed-sections-1',
       outputContract: 'reflection-output-11',
       baselineSource: 'docs/evidence/ALABOM/AI-PM/sprint-q1-quality14-independent-recorded.json',
-      priorRunId: 'q1-incremental-reflection-unified-2026-10-30',
+      priorRunId: 'q1-incremental-reflection-decision-2026-10-30',
       confounders: [
         {
           id: 'call_path',
@@ -1572,9 +1620,9 @@ describe('quality-2 and quality-3 compare requests', () => {
             'Preview build reads this frozen request and calls the model directly. It does not call the product second-review route.',
         },
         {
-          id: 'decision',
+          id: 'retention',
           detail:
-            'A retained judgment can sit beside a changed verification plan. The choice reorders the hypothesis check and keeps a still-valid marketing task for later. An unverified claim does not flip decision on an unchanged sentence. One repair names the failed checks. An identical repair is a fail. There is no third call.',
+            'A retained judgment or hypothesis explains the founder input effect, the hold, the missing evidence, and the evidence that would change it inside reason. The experience choice is the first verification. Online marketing stays a later task. An unverified brewery claim stays unverified. One repair quotes the failed sentence. An identical repair is a fail. There is no third call.',
         },
       ],
       requests: [
@@ -1582,13 +1630,41 @@ describe('quality-2 and quality-3 compare requests', () => {
         { inputId: 'brewery-claim', promptVersion: 'reflection-output-11:brewery-claim', request: caseB },
       ],
     };
-    const fixtureUrl = new URL('../incremental-reflection-decision-request.json', import.meta.url);
+    const fixtureUrl = new URL('../incremental-reflection-retention-request.json', import.meta.url);
     if (process.env.WRITE_COMPARE_FIXTURE === '1') writeFileSync(fixtureUrl, `${JSON.stringify(record, null, 2)}\n`);
-    expect(JSON.parse(readFileSync(fixtureUrl, 'utf8'))).toEqual(record);
-    const unified = JSON.parse(readFileSync(new URL('../incremental-reflection-unified-request.json', import.meta.url), 'utf8')) as {
+    const frozen = JSON.parse(readFileSync(fixtureUrl, 'utf8')) as typeof record;
+    expect(frozen).toEqual(record);
+    const decision = JSON.parse(readFileSync(new URL('../incremental-reflection-decision-request.json', import.meta.url), 'utf8')) as {
       requests: Array<{ request: unknown }>;
     };
-    expect(record.requests[0]?.request).not.toEqual(unified.requests[0]?.request);
+    expect(frozen.requests[0]?.request).not.toEqual(decision.requests[0]?.request);
+    const storedPlan = '체험 프로그램의 수요 검증 및 온라인 마케팅 효과 검증';
+    for (const item of frozen.requests) {
+      const request = item.request as { messages: Array<{ role: string; content: string }> };
+      const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+      const user = request.messages.find((message) => message.role === 'user');
+      const payload = JSON.parse(user?.content ?? '') as {
+        previousAnalysis: { judgment: string; analysis: { nextVerification: string } };
+      };
+      expect(payload.previousAnalysis.judgment.length).toBeGreaterThan(20);
+      expect(payload.previousAnalysis.analysis.nextVerification).toContain(storedPlan);
+      expect(estimateReviewTokens(system) + estimateReviewTokens(user?.content ?? '')).toBeLessThanOrEqual(
+        AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET,
+      );
+    }
+    const choiceSystem = (frozen.requests[0]?.request as { messages: Array<{ role: string; content: string }> }).messages.find(
+      (message) => message.role === 'system',
+    )?.content ?? '';
+    const claimSystem = (frozen.requests[1]?.request as { messages: Array<{ role: string; content: string }> }).messages.find(
+      (message) => message.role === 'system',
+    )?.content ?? '';
+    expect(choiceSystem).toContain('그 다음에도 온라인 마케팅 검증은 남아 있다고 적는다');
+    expect(choiceSystem).toContain('문장에 및이 있으면 실패다');
+    expect(claimSystem).toContain('판단에 미치는 영향');
+    expect(claimSystem).toContain('바꾸지 않고 유지');
+    expect(claimSystem).toContain('계약서가 필요');
+    expect(choiceSystem).not.toContain('sk-');
+    expect(claimSystem).not.toContain('eyJhbGci');
   });
 });
 
