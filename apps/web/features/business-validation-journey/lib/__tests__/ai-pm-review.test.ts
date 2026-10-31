@@ -25,8 +25,11 @@ import {
   assembleConsultingHistory,
   buildProductReanalysisRequest,
   AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS,
+  judgmentIsConsistent,
   judgmentSeparatesPotential,
   nextFactToAsk,
+  purposeStage,
+  verificationPurposeAligns,
   questionAsksForPlan,
   questionRepeatsPrior,
   questionSameContactStage,
@@ -5088,6 +5091,73 @@ describe('AI PM first review', () => {
     });
     expect(met.nextPurpose).toBe('terms');
     expect(met.factToAsk).not.toBe(stage.factToAsk);
+  });
+
+  it('accepts a named-target purpose without requiring the word evidence', () => {
+    const question =
+      '협력 가능성을 확인하기 위해 우선 접촉할 양조장을 한 곳 정했나요? 정했다면 양조장 이름과 실제 연락할 수 있는 담당자 또는 연락 경로를 알려주세요.';
+    const verification = '우선 접촉 대상 양조장 선정 여부와 실제 연락 가능한 담당자 또는 연락 경로 확인';
+    const reason =
+      '실제 접촉 전 단계에서 협력 가능성을 검증할 구체적인 대상 양조장이 선정되었는지, 해당 대상에 접근할 현실적인 연락 경로가 있는지 확인하기 위한 것이다.';
+    const contact =
+      '현재까지 실제로 연락하거나 미팅한 양조장이 있나요? 있다면 상대 양조장의 반응과 협력 조건에 대해 어떤 답변을 받았나요?';
+    const reword = '양조장에 연락해 본 적이 있나요? 상대의 반응은 어땠습니까?';
+    const claim = '양조장과의 협력 가능성이 높다.';
+    expect(verificationPurposeAligns({ nextQuestion: question, nextVerification: verification, nextQuestionReason: reason })).toBe(true);
+    expect(purposeStage(verification)).toBe('named_target_and_path');
+    expect(purposeStage(reason)).toBe('named_target_and_path');
+    expect(verification.includes('증거')).toBe(false);
+    expect(reason.includes('증거')).toBe(false);
+    expect(
+      verificationPurposeAligns({
+        nextQuestion: question,
+        nextVerification: verification,
+        nextQuestionReason: '이 질문은 양조장과의 실제 접촉 여부를 확인하기 위한 것이다.',
+      }),
+    ).toBe(false);
+    expect(
+      verificationPurposeAligns({
+        nextQuestion: question,
+        nextVerification: '양조장과의 파트너십 구축 계획 및 실행 가능성',
+        nextQuestionReason: reason,
+      }),
+    ).toBe(false);
+    expect(questionVerificationStage(reword)).toBe('past_contact');
+    expect(questionSameContactStage([contact], reword)).toBe(true);
+    expect(verificationPurposeAligns({ nextQuestion: reword, nextVerification: verification, nextQuestionReason: reason })).toBe(false);
+    expect(question.includes(claim)).toBe(false);
+    const judgment = '양조장과의 협력 가능성이 높지만, 실제 접촉 및 협력 조건에 대한 정보가 부족하여 기존 판단을 유지한다.';
+    expect(judgment.includes('증거')).toBe(false);
+    expect(
+      judgmentIsConsistent({
+        judgment,
+        assumptions: ['이번 답은 검증되지 않은 전제이다. 양조장과의 협력이 이루어질 것이라는 긍정적 가설이 있다.'],
+        evidenceToChange: ['현재 사업성 판단은 유지되며, 양조장과의 협력 가능성이 높다는 긍정적 가설이 있다. 그러나 실제 접촉 및 협력 조건에 대한 구체적인 정보가 부족하다.'],
+      }),
+    ).toBe(true);
+    expect(judgmentSeparatesPotential(judgment)).toBe(false);
+    const mixed = '이는 사업의 실행 가능성에 긍정적 영향을 미칠 것으로 보인다. 기존 판단을 유지한다.';
+    expect(judgmentIsConsistent({ judgment: mixed, assumptions: ['긍정적 가설이다.'], evidenceToChange: ['정보가 부족하다.'] })).toBe(false);
+    const request = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [],
+      previousQuestions: [contact],
+      latestAnalysis: sections(),
+      founderChoice: null,
+      founderSupplement: claim,
+      founderFeedback: null,
+    });
+    const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      founderSupplement: string;
+      priorQuestionTexts: string[];
+      verificationStage: { factToAsk: string; verificationText: string; reasonText: string };
+    };
+    expect(payload.founderSupplement).toBe(claim);
+    expect(payload.priorQuestionTexts).toEqual([contact]);
+    expect(payload.verificationStage.factToAsk).toBe(question);
+    expect(payload.verificationStage.verificationText).toBe(verification);
+    expect(payload.verificationStage.reasonText).toBe(reason);
   });
 
   it('cites a failed review answer without moving it onto the succeeded parent', async () => {

@@ -686,6 +686,10 @@ export function questionVerificationStage(question: string): QuestionVerificatio
 
 const NAMED_TARGET_QUESTION =
   '협력 가능성을 확인하기 위해 우선 접촉할 양조장을 한 곳 정했나요? 정했다면 양조장 이름과 실제 연락할 수 있는 담당자 또는 연락 경로를 알려주세요.';
+const NAMED_TARGET_VERIFICATION =
+  '우선 접촉 대상 양조장 선정 여부와 실제 연락 가능한 담당자 또는 연락 경로 확인';
+const NAMED_TARGET_REASON =
+  '실제 접촉 전 단계에서 협력 가능성을 검증할 구체적인 대상 양조장이 선정되었는지, 해당 대상에 접근할 현실적인 연락 경로가 있는지 확인하기 위한 것이다.';
 
 /**
  * The next fact to ask from the answer and the stages already used.
@@ -697,6 +701,8 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
   answerHasContactResult: boolean;
   nextPurpose: 'named_target_and_path' | 'past_contact' | 'willingness' | 'terms';
   factToAsk: string;
+  verificationText: string;
+  reasonText: string;
 } {
   const supplement = input.supplement.trim();
   const answerHasContactResult = /연락했|미팅했|만났|회신|반응을 받/.test(supplement);
@@ -709,6 +715,8 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
       answerHasContactResult,
       nextPurpose: 'terms',
       factToAsk: '상대와 역할, 비용, 수익 배분, 운영 책임 중 정해진 항목을 알려주세요.',
+      verificationText: '역할, 비용, 수익 배분, 운영 책임 중 정해진 항목 확인',
+      reasonText: '상대의 긍정 반응 다음으로 역할, 비용, 수익 배분, 운영 책임 중 정해진 항목을 확인하기 위한 것이다.',
     };
   }
   if (answerHasContactResult) {
@@ -718,6 +726,8 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
       answerHasContactResult,
       nextPurpose: 'willingness',
       factToAsk: '접촉한 양조장의 반응과 후속 협의 일정을 알려주세요.',
+      verificationText: '접촉한 양조장의 반응과 후속 협의 일정 확인',
+      reasonText: '이미 접촉한 양조장의 반응과 후속 협의 일정을 확인하기 위한 것이다.',
     };
   }
   if (answerHasNamedTarget) {
@@ -727,6 +737,8 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
       answerHasContactResult,
       nextPurpose: 'past_contact',
       factToAsk: '그 양조장에 실제로 연락하거나 미팅했나요? 했다면 상대의 반응을 알려주세요.',
+      verificationText: '선정한 양조장에 실제 연락하거나 미팅했는지와 상대 반응 확인',
+      reasonText: '이미 정한 양조장에 연락하거나 미팅했는지와 상대의 반응을 확인하기 위한 것이다.',
     };
   }
   return {
@@ -735,7 +747,48 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
     answerHasContactResult,
     nextPurpose: 'named_target_and_path',
     factToAsk: NAMED_TARGET_QUESTION,
+    verificationText: NAMED_TARGET_VERIFICATION,
+    reasonText: NAMED_TARGET_REASON,
   };
+}
+
+/** Purpose text for a verification field. A plan label or a past-contact label stays on that stage. */
+export function purposeStage(text: string): QuestionVerificationStage {
+  if (/파트너십 구축|구축 계획|실행 계획/.test(text)) return 'plan';
+  if (/접촉 여부|만났는지|미팅했는지|연락했는지/.test(text) && !/접촉 전|선정|연락 경로|담당/.test(text)) {
+    return 'past_contact';
+  }
+  if (/선정|정했|한 곳/.test(text) && /경로|담당/.test(text)) return 'named_target_and_path';
+  return questionVerificationStage(text);
+}
+
+/** The question, the verification line, and the reason name the same stage. */
+export function verificationPurposeAligns(input: {
+  nextQuestion: string;
+  nextVerification: string;
+  nextQuestionReason: string;
+}): boolean {
+  const question = questionVerificationStage(input.nextQuestion);
+  const verification = purposeStage(input.nextVerification);
+  const reason = purposeStage(input.nextQuestionReason);
+  return question !== 'other' && question !== 'plan' && question === verification && question === reason;
+}
+
+/**
+ * Potential, missing confirmation, and a kept judgment can sit in neighboring fields.
+ * A current positive effect inside the judgment conflicts with keeping it.
+ */
+export function judgmentIsConsistent(input: {
+  judgment: string;
+  assumptions?: string[];
+  evidenceToChange?: string[];
+}): boolean {
+  const around = [input.judgment, ...(input.assumptions ?? []), ...(input.evidenceToChange ?? [])].join('\n');
+  const keeps = /유지/.test(input.judgment);
+  const hypothesis = /가설/.test(around);
+  const unconfirmed = /부족|확인되지|미확인|없다/.test(around);
+  const currentEffect = /긍정적 영향을 미|사업성이 높아졌|긍정적으로 바뀌/.test(input.judgment);
+  return keeps && hypothesis && unconfirmed && !currentEffect;
 }
 
 /** A kept judgment may call the answer a hypothesis. It may not call it a current positive effect. */
@@ -915,7 +968,7 @@ function productReanalysisSchema(): Record<string, unknown> {
       },
       nextVerification: {
         type: 'string',
-        description: '한 곳의 양조장 이름과 연락 경로를 확인한다. 구축 계획이라고 적지 않는다.',
+        description: 'verificationStage.verificationText와 같은 한 문장. 구축 계획으로 바꾸지 않는다.',
       },
       nextQuestion: {
         type: 'string',
@@ -923,7 +976,7 @@ function productReanalysisSchema(): Record<string, unknown> {
       },
       nextQuestionReason: {
         type: 'string',
-        description: '이 질문이 계획 질문이 아닌 이유. 실행 계획이 필요하다고 쓰지 않는다.',
+        description: 'verificationStage.reasonText와 같은 한 문장. 실제 접촉 여부를 확인한다고 바꾸지 않는다.',
       },
       choices: list,
     },
@@ -943,7 +996,8 @@ function productReanalysisSystemPrompt(): string {
     'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 그 문자열에 유지와 이유를 넣는다. 문장은 셋만 쓴다. 이번 답은 Founder의 자체 판단이자 실행 가능성에 대한 긍정적 가설이다. 접촉, 상대 의사, 협력 조건의 구체적 증거는 확인되지 않았다. 그래서 현재 사업성 판단은 유지하고 이유를 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. 가설을 현재의 긍정적 영향으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다. 이전 분석의 시장 설명 문장을 judgment에 다시 쓰지 않는다. priorJudgmentText와 같은 문장이면 실패다.',
     'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉, 상대의 의사, 협력 조건처럼 아직 없는 항목을 적는다. 작성 규칙 문장과 이전 위험만 반복하면 실패다.',
     'nextQuestion은 verificationStage.factToAsk와 같은 한 질문이다. 다른 문장을 붙이지 않는다. 이번 답에 연락하거나 미팅한 결과와 양조장 이름이 없으면 한 곳을 정했는지, 그 이름, 담당자 또는 연락 경로를 사실로 묻는다. 방법, 구축, 계획, 어떻게, 어떤 방식, 방안, 구체화, 다음 단계를 붙이면 실패다. 협력 가능성이 높은지를 다시 묻지 않는다. priorQuestionTexts와 같거나 표현만 바꾼 계획 질문이면 실패다.',
-    'nextQuestionReason에는 그 질문이 접촉 대상과 경로를 확인하며 계획 질문이 아닌 이유를 적는다. 실행 계획이 필요하다고 쓰지 않는다.',
+    'nextVerification은 verificationStage.verificationText와 같은 한 문장이다. 구축 계획으로 바꾸지 않는다.',
+    'nextQuestionReason은 verificationStage.reasonText와 같은 한 문장이다. 실제 접촉 여부를 확인한다고 바꾸지 않는다.',
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
