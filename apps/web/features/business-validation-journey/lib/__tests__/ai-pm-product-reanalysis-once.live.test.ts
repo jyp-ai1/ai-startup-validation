@@ -30,7 +30,7 @@ const ANSWER_ID = '7d2d04e5-93a1-4cd6-aebf-03582eeb003f';
 const SUPPLEMENT = '양조장과의 협력 가능성이 높다.';
 const BUCKET = 'ai-pm-quality-compare';
 const OBJECT = 'product-cumulative-brewery-2026-10-31.json';
-const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-k.json';
+const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-l.json';
 const QUALITY_PARENT_ID = '9e169fef-7428-4d21-a6f0-f3034bcc91d1';
 const SIBLING_ANALYSIS_ID = '8602a92e-0fbd-4d93-a005-9c9f18410ac6';
 
@@ -188,6 +188,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
         'a67d3b7a-60d7-4c0f-bbcd-32f13660f6b4',
         '3da7d534-2aca-407b-9d77-4cda0c4fa15d',
         'cd47a15a-27dd-4ad1-adff-316bc2dfae02',
+        'aaf5759f-8d9a-46cd-ba2b-c7693a31589d',
       ].map((reviewId) => backend.store.readReview(userId, reviewId)),
     );
     const records = await backend.store.listReviews(userId, PROJECT_ID);
@@ -271,7 +272,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
           namedPath &&
           consistent &&
           !claimIsFact &&
-          !repeated &&
+          !(repeated && stage !== 'named_target_and_path') &&
           !planQuestion &&
           !sameContactStage &&
           !reusesPriorPurpose &&

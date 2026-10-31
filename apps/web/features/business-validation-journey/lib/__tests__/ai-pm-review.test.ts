@@ -4962,8 +4962,12 @@ describe('AI PM first review', () => {
     walk(payload);
     expect(names).not.toContain('judgment');
     expect(names).not.toContain('nextQuestion');
+    expect(names).not.toContain('nextVerification');
+    expect(names).not.toContain('nextQuestionReason');
     expect(names).not.toContain('risks');
     expect(names).toContain('priorJudgmentText');
+    expect(names).toContain('priorVerificationText');
+    expect(names).toContain('priorReasonText');
     expect(names).toContain('priorRisks');
     expect(system).toContain('Founder의 주장 또는 기대');
     expect(system).toContain('연락하거나 미팅');

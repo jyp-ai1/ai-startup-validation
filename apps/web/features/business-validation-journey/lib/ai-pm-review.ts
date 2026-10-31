@@ -986,7 +986,7 @@ function productReanalysisSchema(): Record<string, unknown> {
 function productReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
-    '사용자 JSON의 priorJudgmentText, priorQuestionText, priorInferences, priorAssumptions, priorEvidenceNotes, priorRisks는 이전 문장이다. 출력의 judgment, nextQuestion, inferences, assumptions, evidenceToChange, risks에 그 문장을 복사하지 않는다.',
+    '사용자 JSON의 priorJudgmentText, priorQuestionText, priorVerificationText, priorReasonText, priorInferences, priorAssumptions, priorEvidenceNotes, priorRisks는 이전 문장이다. 출력의 judgment, nextQuestion, nextVerification, nextQuestionReason, inferences, assumptions, evidenceToChange, risks에 그 문장을 복사하지 않는다.',
     '이번 답을 여섯 가지로 새 문장에 적는다. 새로 알게 된 내용, 근거 수준, 기존 판단에서 영향을 받는 부분, 바뀐 판단 또는 유지한 판단, 바꾸지 않은 이유, 추가 검증이다.',
     '근거 수준은 검증된 사실, Founder의 경험, Founder의 주장 또는 기대, 실행 계획, 추정 및 가정, 근거가 부족한 정보 중 하나다. 확인된 사실, 경험, 추정, 계획을 섞지 않는다.',
     '가능성이 높다처럼 확인 절차가 없는 답은 Founder의 주장 또는 기대이자 자체 판단이다. 구체적 증거가 없으면 검증된 사실이 아니다. inferences는 이번 답만 해석한다. 답 유형, 증거가 있는지, 확인된 사실, 미확인 사항을 적는다. 시장 관심이나 수요를 확인된 사실로 올리지 않는다. 경험이나 실행 결과를 만들지 않는다.',
@@ -1016,7 +1016,11 @@ function renameEchoKeys(value: unknown): unknown {
         ? 'priorJudgmentText'
         : key === 'nextQuestion' || key === 'priorQuestion'
           ? 'priorQuestionText'
-          : key === 'inferences'
+          : key === 'nextVerification'
+            ? 'priorVerificationText'
+            : key === 'nextQuestionReason'
+              ? 'priorReasonText'
+              : key === 'inferences'
             ? 'priorInferences'
             : key === 'assumptions'
               ? 'priorAssumptions'
