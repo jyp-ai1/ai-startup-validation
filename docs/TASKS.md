@@ -6,7 +6,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 통합 상담 단계
 
-**상태:** 후속 라우트는 단계가 찼을 때 한 번 재분석한다. 단계 요청은 `answerReading`으로 답을 사실·주장·계획·선택에 구분하고, 협력 가능성이 높다는 문장은 주장으로만 보낸다. 확인된 사실 목록에는 넣지 않는다. Preview의 비-main 빌드만 저장된 양조장 답 4개를 1차 2개, 2차 2개로 실호출한다. 3차 통합 호출은 새 질문에 저장된 답이 없어 보내지 않는다. 기존 행은 수정·삭제하지 않는다. 로그인 후 제출 클릭은 이 환경에서 NOT RUN이다. Production은 잠금.  
+**상태:** 2026-10-31 17:49–17:50 KST Preview에서 저장된 양조장 답 4개를 1차·2차로 실호출했다. 1차 저장 행 `9e53349a-3c76-4ebe-8869-813c7aec7df0`의 부모는 새 단계 행 `5393e2d9-85de-4ecc-aab3-da7a47ba37cf`다. 모델 호출은 3회, 토큰 32,513이다. 2차 저장 행 `535db197-9716-4ef8-a26f-47818cb235e8`의 부모는 `c74c26c4-fd14-44b0-adb0-d8da365e1c50`이고, 요청의 `priorStagePairs`는 `hist-1`,`hist-2`다. 모델 호출은 4회, 토큰 45,140이다. 답 저장만 한 제출과 중복 제출은 추가 호출이 없었다. 3차 통합 호출은 NOT RUN이다. 저장된 답이 4개뿐이고 2차 질문에는 해당하는 답이 없다. 품질은 FAIL이다. 2차 요약이 협력 가능성을 현재 상태로 썼고, 2차 `nextVerification`이 방금 답한 기준 질문을 다시 썼다. 판단 문장은 코드가 고치지 않았다. 기존 행의 `finished_at`과 피드백 시각은 그대로다. 로그인 후 제출 클릭은 NOT RUN이다. 원문은 `docs/evidence/ALABOM/AI-PM/consulting-stage-live-2026-10-31-a.json`. Production은 잠금.  
 **Branch:** `cursor/consulting-stage-live-4b88`  
 **결정:** ADR-073, ADR-074, ADR-075.
 
