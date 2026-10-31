@@ -1207,7 +1207,7 @@ export function criterionAnswer(supplement: string): boolean {
 }
 
 /** Names the failed reading checks. It does not supply a replacement judgment. */
-export function productReadingRepairMessage(issues: string[]): string {
+export function productReadingRepairMessage(issues: string[], context?: { supplement?: string }): string {
   const lines = [
     '이전 JSON은 구조 검증에 걸렸다.',
     `실패 코드: ${issues.join(',')}.`,
@@ -1231,7 +1231,12 @@ export function productReadingRepairMessage(issues: string[]): string {
     lines.push('nextVerification과 nextQuestion은 기준, 접근 경로, 협력 의사, 협력 조건 가운데 같은 하나여야 한다.');
   }
   if (issues.includes('new_answer_missing') || issues.includes('answer_promoted_to_fact') || issues.includes('judgment_reason_missing')) {
-    lines.push('이번 답의 체험 기준을 judgment에 계획 또는 선택으로 적는다. 확인된 사실로 올리지 않는다. 후보 부재는 남긴다. 유지하거나 바꾸거나 유보한 이유를 적는다.');
+    const supplement = context?.supplement?.trim();
+    lines.push(
+      supplement
+        ? `이번 Founder 답은 다음 문장이다. ${supplement} 이 문장을 확인된 사실로 올리지 말고 judgment에 계획 또는 선택으로 반영한다. 후보 부재는 남긴다. 유지하거나 바꾸거나 유보한 이유를 적는다.`
+        : '이번 답의 체험 기준을 judgment에 계획 또는 선택으로 적는다. 확인된 사실로 올리지 않는다. 후보 부재는 남긴다. 유지하거나 바꾸거나 유보한 이유를 적는다.',
+    );
   }
   if (issues.includes('answered_question_repeated') || issues.includes('answered_verification_repeated')) {
     lines.push('방금 답한 기준 질문을 다시 묻지 않는다. 다음 질문에는 기준을 넣지 않는다. 접근 경로, 협력 의사, 협력 조건 중 하나만 묻는다.');
@@ -1535,12 +1540,12 @@ function productReanalysisSchema(): Record<string, unknown> {
       judgment: {
         type: 'string',
         description:
-          'founderClaims의 협력 가능성 문장은 검증되지 않은 가설로 적는다. 협력 가능성이 높지만을 현재 상태로 쓰지 않는다. unresolved의 후보 부재를 포함한다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 이유를 적는다.',
+          'founderClaims의 협력 가능성 문장은 검증되지 않은 가설로 judgment 안에 적는다. founderSupplement에 체험 기준이 있으면 그 기준을 계획 또는 선택으로 judgment 안에 적는다. 협력 가능성이 높지만을 현재 상태로 쓰지 않는다. unresolved의 후보 부재를 포함한다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 이유를 적는다.',
       },
       nextVerification: {
         type: 'string',
         description:
-          'priorGoals 문장을 복사하지 않는다. 이미 고른 상위 목표 아래의 다음 한 단계만 적는다. nextQuestion과 같은 대상이다. 기준, 접근 경로, 협력 의사, 협력 조건 중 하나다.',
+          'priorGoals 문장을 복사하지 않는다. 이번 답이 이미 기준이면 기준 확인을 다시 적지 않는다. nextQuestion과 같은 대상만 적는다. 접근 경로, 협력 의사, 협력 조건 중 하나다.',
       },
       nextQuestion: {
         type: 'string',
@@ -1694,6 +1699,12 @@ export function buildProductReanalysisRequest(input: {
   });
   const payload = () =>
     renameEchoKeys({
+      thisAnswer: {
+        choice: input.founderChoice?.label ?? null,
+        supplement: input.founderSupplement,
+        answeredQuestion: input.latestAnalysis.nextQuestion,
+        kind: '이번 답. 선택 또는 계획일 수 있다. 확인된 사실이 아니다. 선택 라벨보다 supplement가 구체적이면 supplement가 이번 답이다.',
+      },
       evidenceLedger,
       readingContract: {
         claim: 'founderClaims는 검증되지 않은 가설이다. 현재 사업성의 긍정 근거로 쓰지 않는다.',
@@ -2196,6 +2207,7 @@ export async function runFollowUpReview(input: {
             answeredVerification: parent.sections.analysis?.nextVerification ?? '',
           });
         },
+    readingRepairContext: needsRevisionGate(marks) ? undefined : { supplement },
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
 }
@@ -3489,6 +3501,7 @@ async function finishCall(input: {
   founderAnswerSource?: FounderAnswerCitation | null;
   /** Structural reading checks. They do not choose the business judgment. */
   readingIssues?: (content: string) => string[];
+  readingRepairContext?: { supplement?: string };
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const started = Date.now();
   try {
@@ -3562,7 +3575,7 @@ async function finishCall(input: {
             messages: [
               ...input.request.messages,
               { role: 'assistant', content: response.content },
-              { role: 'user', content: productReadingRepairMessage(issues) },
+              { role: 'user', content: productReadingRepairMessage(issues, input.readingRepairContext) },
             ],
           });
           callCount += 1;
@@ -3584,8 +3597,15 @@ async function finishCall(input: {
           } else {
             break;
           }
-        } catch {
+        } catch (error) {
           callCount += 1;
+          callLedger.push({
+            index: callLedger.length + 1,
+            promptTokens: null,
+            completionTokens: null,
+            totalTokens: null,
+            readingIssues: [`repair_failed:${error instanceof Error ? error.message.slice(0, 180) : 'review_failed'}`],
+          });
           break;
         }
       }

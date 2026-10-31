@@ -73,7 +73,8 @@ const STEP_ATTEMPT_ID = '2c81bae4-c269-48b9-9729-4f18bbd71c9e';
 const FOLLOW_PARENT_ID = '98736271-9ee5-4de7-96ae-a581461ea738';
 const FOLLOW_CHOICE = '양조장 후보 선정 기준을 구체화한다.';
 const FOLLOW_SUPPLEMENT = '체험으로 만들고 마실 수 있는 양조장인지를 기준으로 후보를 고르겠다. 그 기준에 맞는 양조장은 아직 정하지 못했다.';
-const FOLLOW_OBJECT = 'product-follow-through-2026-10-31.json';
+const FOLLOW_OBJECT = 'product-follow-through-2026-10-31-b.json';
+const FOLLOW_ATTEMPT_ID = '38417d03-2855-40b6-a293-1b0759a203ff';
 const COPIED_EXPERIMENT_JUDGMENT =
   '현재 사업성 판단은 낮아지며, 양조장과의 협력 가능성이 높지만 구체적인 후보가 없다는 점이 부정적인 영향을 미친다.';
 const SEPARATION_REVIEW_ID = 'ad73c33f-7bdc-47ff-b539-0ac9afdcdb82';
@@ -1906,6 +1907,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
       STEP_PRIOR_ID,
       STEP_ATTEMPT_ID,
       FOLLOW_PARENT_ID,
+      FOLLOW_ATTEMPT_ID,
     ];
     const preserved = await Promise.all(preservedIds.map((reviewId) => backend.store.readReview(userId, reviewId)));
     const startedAt = new Date().toISOString();

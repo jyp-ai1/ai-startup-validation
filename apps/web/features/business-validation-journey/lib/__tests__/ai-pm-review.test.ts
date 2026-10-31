@@ -5638,6 +5638,7 @@ describe('AI PM first review', () => {
       founderFeedback: null,
     });
     const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as Record<string, unknown>;
+    expect((payload.thisAnswer as { supplement?: string }).supplement).toBe(supplement);
     expect(followThroughRequestCoverage(payload)).toEqual({
       originalInput: true,
       firstJudgment: true,
