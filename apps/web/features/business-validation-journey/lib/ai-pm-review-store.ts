@@ -119,6 +119,14 @@ export type ConsultingTurn = {
   nextQuestion: string;
 };
 
+export type ReviewCallNote = {
+  index: number;
+  promptTokens: number | null;
+  completionTokens: number | null;
+  totalTokens: number | null;
+  readingIssues: string[];
+};
+
 export type StoredReview = {
   reviewId: string;
   userId: string;
@@ -139,6 +147,11 @@ export type StoredReview = {
   rawContent: string | null;
   /** First model text when one repair call followed it. Absent when the first response was stored. */
   firstRawContent?: string | null;
+  /**
+   * One note per model call. The first note is the first response.
+   * Later notes are structural repairs. Absent on older rows.
+   */
+  callLedger?: ReviewCallNote[];
   /** Set when a follow-up was compared with the previous review. Absent on older rows. */
   revisionGate?: RevisionGate | null;
   /** Founder answer that produced this child. Absent on a first review and on older rows. */

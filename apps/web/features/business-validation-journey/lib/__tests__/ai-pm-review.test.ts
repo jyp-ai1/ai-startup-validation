@@ -39,6 +39,8 @@ import {
   nextStepMatchesQuestion,
   productReadingIssues,
   productReadingRepairMessage,
+  followThroughQuality,
+  followThroughRequestCoverage,
   answerSaysNoCandidate,
   questionRepeatsAnsweredSelection,
   questionVerificationTargets,
@@ -5575,6 +5577,143 @@ describe('AI PM first review', () => {
     expect(system).toContain('이미 고른 상위 목표를 반복하지 않는다');
     expect(system).toContain('문장 중간의 현재 상태로도 쓰지 않는다');
     expect(system).toContain('summary에 협력 가능성이 높지만을 넣지 않는다');
+    expect(system).toContain('이번 답이 체험 기준을 고르는 계획');
+  });
+
+  it('carries the stored history into the next answer and scores that answer without choosing a direction', () => {
+    const asked = '우선 접촉할 양조장 후보를 선정하기 위한 기준은 무엇인가요?';
+    const supplement = '체험으로 만들고 마실 수 있는 양조장인지를 기준으로 후보를 고르겠다. 그 기준에 맞는 양조장은 아직 정하지 못했다.';
+    const answeredVerification = '우선 접촉할 양조장 후보 선정 기준 확인.';
+    const priorJudgment = '양조장과의 협력 가능성에 대한 주장은 검증되지 않은 가설이다. 현재 구체적인 후보가 선정되지 않았다는 점이 미해결로 남아 있다.';
+    const unresolved = ['현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.'];
+    const priorGoals = ['양조장과의 협력 방안 구체화', '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.'];
+    const founderClaims = ['양조장과의 협력 가능성이 높다.'];
+    const request = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [],
+      previousQuestions: [asked],
+      latestAnalysis: { ...sections(), nextQuestion: asked },
+      consultingPath: [
+        {
+          order: 1,
+          reviewId: 'claim',
+          choice: null,
+          supplement: '양조장과의 협력 가능성이 높다.',
+          answeredQuestion: '계획?',
+          judgment: '이전 판단',
+          nextQuestion: '이름?',
+          assumptions: [],
+          risks: [],
+          judgmentStatus: 'adopted',
+        },
+        {
+          order: 2,
+          reviewId: 'plan',
+          choice: '양조장과의 협력 방안 구체화',
+          supplement: '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.',
+          answeredQuestion: '이름?',
+          judgment: '방안 판단',
+          nextQuestion: '후보?',
+          assumptions: [],
+          risks: [],
+          judgmentStatus: 'adopted',
+        },
+        {
+          order: 3,
+          reviewId: 'gap',
+          choice: '아직 떠오르는 양조장이 없다',
+          supplement: unresolved[0],
+          answeredQuestion: '후보?',
+          judgment: '후보가 없다',
+          nextQuestion: asked,
+          assumptions: [],
+          risks: [],
+          judgmentStatus: 'adopted',
+        },
+      ],
+      newFounderInformation: true,
+      founderChoice: { label: '양조장 후보 선정 기준을 구체화한다.', otherText: '' },
+      founderSupplement: supplement,
+      founderFeedback: null,
+    });
+    const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as Record<string, unknown>;
+    expect(followThroughRequestCoverage(payload)).toEqual({
+      originalInput: true,
+      firstJudgment: true,
+      adoptedJudgments: true,
+      priorFounderAnswers: true,
+      currentGoal: true,
+      askedQuestion: true,
+      thisAnswer: true,
+      unresolved: true,
+    });
+    const shared = {
+      summary: priorJudgment,
+      inferences: ['후보가 선정되지 않았다.'],
+      assumptions: ['협력이 가능한지와 그 영향은 확인되지 않았다.'],
+      founderFacts: [] as string[],
+      supplement,
+      answeredQuestion: asked,
+      answeredVerification,
+      unresolved,
+      priorGoals,
+      founderClaims,
+      priorJudgment,
+    };
+    const repeated = followThroughQuality({
+      ...shared,
+      judgment: priorJudgment,
+      nextVerification: answeredVerification,
+      nextQuestion: asked,
+    });
+    expect(repeated.understandsAnswer).toBe(false);
+    expect(repeated.reReviews).toBe(false);
+    expect(repeated.doesNotRepeatQuestion).toBe(false);
+    expect(repeated.newStep).toBe(false);
+    const judgment =
+      '체험으로 만들고 마실 수 있는지를 기준으로 고르겠다는 말은 계획이자 선택이다. 협력 가능성이 높다는 주장은 검증되지 않은 가설로 남아 있다. 그 기준에 맞는 후보는 아직 선정되지 않았다. 그래서 판단은 유지한다. 이유는 접촉이 없기 때문이다.';
+    const nextQuestion = '그 양조장에 닿는 경로는 무엇인가요?';
+    const nextVerification = '그 양조장에 닿는 경로가 있는지를 확인한다.';
+    const advanced = followThroughQuality({
+      ...shared,
+      judgment,
+      summary: judgment,
+      inferences: ['체험 기준은 계획이고, 후보가 선정되지 않아 접촉은 확인되지 않았다.'],
+      nextVerification,
+      nextQuestion,
+    });
+    expect(advanced).toEqual({
+      understandsAnswer: true,
+      separatesClaim: true,
+      classifiesChoice: true,
+      keepsUnresolved: true,
+      reReviews: true,
+      explainsDirection: true,
+      doesNotRepeatQuestion: true,
+      newStep: true,
+    });
+    expect(
+      productReadingIssues({
+        judgment,
+        summary: judgment,
+        assumptions: shared.assumptions,
+        inferences: ['체험 기준은 계획이고, 후보가 선정되지 않아 접촉은 확인되지 않았다.'],
+        nextVerification,
+        nextQuestion,
+        unresolved,
+        priorGoals,
+        founderClaims,
+        founderFacts: [],
+        founderSupplement: supplement,
+        answeredQuestion: asked,
+        answeredVerification,
+      }),
+    ).toEqual([]);
+    const repair = productReadingRepairMessage(['new_answer_missing', 'answered_question_repeated']);
+    expect(repair).toContain('new_answer_missing');
+    expect(repair).toContain('대체 문장을 받지 않는다');
+    expect(repair).not.toContain(judgment);
   });
 
   it('reads the missing-candidate answer as a stated gap', () => {

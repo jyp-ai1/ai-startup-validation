@@ -19,6 +19,8 @@ import {
   nextStepMatchesQuestion,
   productReadingIssues,
   inferenceMissesClaimBoundary,
+  followThroughQuality,
+  followThroughRequestCoverage,
   purposeStage,
   questionAsksForPlan,
   questionRepeatsPrior,
@@ -68,6 +70,10 @@ const READING_PRIOR_ID = '783030ad-13f4-4a77-a454-c2ca49b50d0a';
 const STEP_OBJECT = 'product-claim-step-2026-10-31-b.json';
 const STEP_PRIOR_ID = 'ccb19a1d-5c4d-432c-8a46-6695e746c7f3';
 const STEP_ATTEMPT_ID = '2c81bae4-c269-48b9-9729-4f18bbd71c9e';
+const FOLLOW_PARENT_ID = '98736271-9ee5-4de7-96ae-a581461ea738';
+const FOLLOW_CHOICE = '양조장 후보 선정 기준을 구체화한다.';
+const FOLLOW_SUPPLEMENT = '체험으로 만들고 마실 수 있는 양조장인지를 기준으로 후보를 고르겠다. 그 기준에 맞는 양조장은 아직 정하지 못했다.';
+const FOLLOW_OBJECT = 'product-follow-through-2026-10-31.json';
 const COPIED_EXPERIMENT_JUDGMENT =
   '현재 사업성 판단은 낮아지며, 양조장과의 협력 가능성이 높지만 구체적인 후보가 없다는 점이 부정적인 영향을 미친다.';
 const SEPARATION_REVIEW_ID = 'ad73c33f-7bdc-47ff-b539-0ac9afdcdb82';
@@ -1861,6 +1867,214 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
     } finally {
       await writeMarker(config, marker, STEP_OBJECT);
       console.log(`preview-claim-step stored status=${marker.status}`);
+    }
+    expect(marker.status).toBe('RECORDED');
+  }, 240_000);
+
+  it('follows the criterion question with one founder answer and records both calls', async () => {
+    const config = supabaseConfig();
+    expect(config).not.toBeNull();
+    if (!config) return;
+    const preview = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_GIT_COMMIT_REF !== 'main';
+    const apiKey = process.env.GPT_API_KEY?.trim() ?? '';
+    if (!preview || !apiKey) {
+      console.log(`preview-follow-through hold preview=${preview} gpt_key=${apiKey ? 'present' : 'absent'}`);
+      return;
+    }
+    const existing = await readMarker(config, FOLLOW_OBJECT);
+    if (existing && ['RECORDED', 'failed', 'limited', 'quality_failed', 'blocked'].includes(String(existing.status))) {
+      console.log(`preview-follow-through skip status=${existing.status}`);
+      return;
+    }
+    const parentRow = await restGet(config, `ai_pm_reviews?select=user_id&review_id=eq.${FOLLOW_PARENT_ID}`);
+    const userId = (parentRow[0] as { user_id?: string } | undefined)?.user_id ?? '';
+    const backend = openReviewBackend();
+    const parent = await backend.store.readReview(userId, FOLLOW_PARENT_ID);
+    expect(parent?.status).toBe('succeeded');
+    expect(parent?.sections?.nextQuestion).toBe('우선 접촉할 양조장 후보를 선정하기 위한 기준은 무엇인가요?');
+    const selected = parent?.sections?.analysis?.choices.find((choice) => choice.label === FOLLOW_CHOICE);
+    expect(selected?.id).toBeTruthy();
+    const preservedIds = [
+      PARENT_ID,
+      QUALITY_PARENT_ID,
+      CHOICE_PARENT_ID,
+      ROUND3_PARENT_ID,
+      SEPARATION_REVIEW_ID,
+      CONTEXT_PRIOR_ID,
+      PATH_PRIOR_ID,
+      READING_PRIOR_ID,
+      STEP_PRIOR_ID,
+      STEP_ATTEMPT_ID,
+      FOLLOW_PARENT_ID,
+    ];
+    const preserved = await Promise.all(preservedIds.map((reviewId) => backend.store.readReview(userId, reviewId)));
+    const startedAt = new Date().toISOString();
+    await writeMarker(config, { status: 'started', startedAt, parentReviewId: FOLLOW_PARENT_ID }, FOLLOW_OBJECT);
+    let marker: Record<string, unknown> = { status: 'failed', startedAt, parentReviewId: FOLLOW_PARENT_ID };
+    try {
+      const priorFeedback = await backend.store.listFeedback(userId, FOLLOW_PARENT_ID);
+      let saved = priorFeedback.find((item) => item.choiceAnswer?.label === FOLLOW_CHOICE);
+      if (!saved) {
+        const inserted = await saveReviewFeedback({
+          store: backend.store,
+          userId,
+          projectId: PROJECT_ID,
+          now: startedAt,
+          body: { reviewId: FOLLOW_PARENT_ID, choiceId: selected?.id, choiceLabel: FOLLOW_CHOICE, otherText: '' },
+        });
+        expect(inserted.ok).toBe(true);
+        if (!inserted.ok) return;
+        saved = inserted.feedback;
+      }
+      const records = await backend.store.listReviews(userId, PROJECT_ID);
+      const feedback = (await backend.store.listFeedback(userId)).filter((item) =>
+        records.some((record) => record.reviewId === item.reviewId),
+      );
+      const history = assembleConsultingHistory({ records, parent: parent!, supplement: FOLLOW_SUPPLEMENT, feedback });
+      const previewRequest = buildProductReanalysisRequest({
+        originalInput: history.root.inputText,
+        firstAnalysis: history.root.sections ?? parent!.sections!,
+        priorTurns: history.priorTurns,
+        priorAnalyses: history.priorAnalyses,
+        previousQuestions: history.previousQuestions,
+        latestAnalysis: parent!.sections!,
+        consultingPath: history.consultingPath,
+        experimentRecords: history.experimentRecords,
+        failedCalls: history.failedCalls,
+        newFounderInformation: history.newFounderInformation,
+        founderChoice: { label: FOLLOW_CHOICE, otherText: '' },
+        founderSupplement: FOLLOW_SUPPLEMENT,
+        founderFeedback: { comment: FOLLOW_CHOICE },
+      });
+      const previewPayload = JSON.parse(previewRequest.messages.find((message) => message.role === 'user')?.content ?? '{}') as Record<string, unknown>;
+      const coverage = followThroughRequestCoverage(previewPayload);
+      const ledger = previewPayload.evidenceLedger as {
+        unresolved?: string[];
+        priorGoals?: string[];
+        founderClaims?: string[];
+        verifiedFacts?: string[];
+      };
+      if (!Object.values(coverage).every(Boolean)) {
+        marker = { ...marker, status: 'blocked', coverage, newFounderInformation: history.newFounderInformation };
+      } else {
+      const result = await runFollowUpReview({
+        store: backend.store,
+        userId,
+        projectId: PROJECT_ID,
+        reviewId: FOLLOW_PARENT_ID,
+        supplement: FOLLOW_SUPPLEMENT,
+        now: startedAt,
+        chat: openReviewChat(),
+        evidence: 'live_network',
+        forceNew: true,
+      });
+      for (const before of preserved) {
+        if (!before) continue;
+        const after = await backend.store.readReview(userId, before.reviewId);
+        expect(after?.finishedAt).toBe(before.finishedAt);
+        expect(after?.status).toBe(before.status);
+        expect(after?.parentReviewId).toBe(before.parentReviewId);
+      }
+      if (!result.ok || result.record.status !== 'succeeded' || !result.record.sections?.analysis) {
+        marker = {
+          ...marker,
+          status: 'failed',
+          error: result.ok ? result.record.error : result.error,
+          reviewId: result.ok ? result.record.reviewId : null,
+          called: result.ok ? result.called : false,
+          callCount: result.ok ? result.record.callCount : null,
+          coverage,
+        };
+      } else {
+        const sections = result.record.sections;
+        const analysis = sections.analysis!;
+        const raw = JSON.parse(result.record.rawContent ?? '{}') as {
+          judgment?: string;
+          summary?: string;
+          assumptions?: string[];
+          inferences?: string[];
+          founderFacts?: string[];
+          nextVerification?: string;
+          nextQuestion?: string;
+        };
+        const first = result.record.firstRawContent ? (JSON.parse(result.record.firstRawContent) as typeof raw) : raw;
+        const score = (value: typeof raw) =>
+          followThroughQuality({
+            judgment: value.judgment ?? '',
+            summary: value.summary ?? '',
+            inferences: value.inferences ?? [],
+            assumptions: value.assumptions ?? [],
+            founderFacts: value.founderFacts ?? [],
+            nextVerification: value.nextVerification ?? '',
+            nextQuestion: value.nextQuestion ?? '',
+            supplement: FOLLOW_SUPPLEMENT,
+            answeredQuestion: parent?.sections?.nextQuestion ?? '',
+            answeredVerification: parent?.sections?.analysis?.nextVerification ?? '',
+            unresolved: ledger.unresolved ?? [],
+            priorGoals: ledger.priorGoals ?? [],
+            founderClaims: ledger.founderClaims ?? [],
+            priorJudgment: parent?.sections?.analysis?.judgmentDetail || parent?.sections?.judgment || '',
+          });
+        const firstQuality = score(first);
+        const finalQuality = score({
+          judgment: analysis.judgmentDetail,
+          summary: analysis.summary,
+          inferences: analysis.inferences,
+          assumptions: analysis.assumptions,
+          founderFacts: analysis.founderFacts,
+          nextVerification: analysis.nextVerification,
+          nextQuestion: sections.nextQuestion,
+        });
+        const storedMatchesRaw =
+          raw.judgment === analysis.judgmentDetail &&
+          raw.summary === analysis.summary &&
+          raw.nextVerification === analysis.nextVerification &&
+          raw.nextQuestion === sections.nextQuestion &&
+          JSON.stringify(raw.assumptions ?? []) === JSON.stringify(analysis.assumptions);
+        const finalPass = Object.values(finalQuality).every(Boolean) && storedMatchesRaw;
+        const ledgerNotes = result.record.callLedger ?? [];
+        marker = {
+          status: finalPass ? 'RECORDED' : 'quality_failed',
+          startedAt,
+          finishedAt: new Date().toISOString(),
+          called: result.called,
+          reviewId: result.record.reviewId,
+          parentOfChild: result.record.parentReviewId,
+          sourceFeedbackId: result.record.sourceFeedbackId,
+          feedbackId: saved?.feedbackId ?? null,
+          model: result.record.model,
+          callCount: result.record.callCount,
+          repaired: (result.record.callCount ?? 1) > 1,
+          promptTokens: result.record.promptTokens,
+          completionTokens: result.record.completionTokens,
+          totalTokens: result.record.totalTokens,
+          callLedger: ledgerNotes,
+          firstQuality,
+          firstPass: Object.values(firstQuality).every(Boolean),
+          finalQuality,
+          finalPass,
+          storedMatchesRaw,
+          coverage,
+          newFounderInformation: history.newFounderInformation,
+          judgment: analysis.judgmentDetail,
+          summary: analysis.summary,
+          assumptions: analysis.assumptions,
+          inferences: analysis.inferences,
+          founderFacts: analysis.founderFacts,
+          nextQuestion: sections.nextQuestion,
+          nextVerification: analysis.nextVerification,
+          firstJudgment: first.judgment ?? null,
+          firstSummary: first.summary ?? null,
+          firstAssumptions: first.assumptions ?? null,
+          firstNextVerification: first.nextVerification ?? null,
+          firstNextQuestion: first.nextQuestion ?? null,
+          rawContent: result.record.rawContent,
+        };
+      }
+      }
+    } finally {
+      await writeMarker(config, marker, FOLLOW_OBJECT);
+      console.log(`preview-follow-through stored status=${marker.status}`);
     }
     expect(marker.status).toBe('RECORDED');
   }, 240_000);
