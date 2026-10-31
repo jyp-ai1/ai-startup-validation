@@ -12,9 +12,11 @@ import { AiPmReviewPanel } from '../../components/ai-pm-review-panel';
 import { composeReviewInput } from '../ai-pm-review-intake';
 import {
   acceptedStageQuestions,
+  buildEvidenceLedger,
   buildFirstReviewRequest,
   buildProductReanalysisRequest,
   consultingQuestions,
+  founderAnswerKinds,
   pairConsultingStage,
   parseFeedbackBody,
   parseSections,
@@ -181,7 +183,66 @@ describe('consulting stage batch', () => {
     });
     const payload = userPayload(request);
     expect(payload.stagePairs).toBeUndefined();
+    expect(payload.answerReading).toBeUndefined();
     expect(payload.thisAnswer).toMatchObject({ supplement: '직장인을 고객으로 본다' });
+  });
+
+  it('labels stored brewery answers without turning the cooperation claim into a fact', () => {
+    expect(
+      founderAnswerKinds({ choiceLabel: '양조장과의 협력 가능성이 높다.', supplement: '양조장과의 협력 가능성이 높다.' }),
+    ).toEqual(['claim', 'choice']);
+    expect(founderAnswerKinds({ choiceLabel: null, supplement: '양조장과의 협력 가능성이 높다.' })).toEqual(['claim']);
+    expect(
+      founderAnswerKinds({
+        choiceLabel: '양조장과의 협력 방안 구체화',
+        supplement: '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.',
+      }),
+    ).toEqual(['plan', 'choice']);
+    expect(
+      founderAnswerKinds({
+        choiceLabel: '아직 떠오르는 양조장이 없다',
+        supplement: '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.',
+      }),
+    ).toEqual(['fact', 'choice']);
+    expect(
+      founderAnswerKinds({
+        choiceLabel: '양조장 후보 선정 기준을 구체화한다.',
+        supplement: '체험으로 만들고 마실 수 있는 양조장인지를 기준으로 후보를 고르겠다. 그 기준에 맞는 양조장은 아직 정하지 못했다.',
+      }),
+    ).toEqual(['fact', 'plan', 'choice']);
+    const ledger = buildEvidenceLedger({
+      consultingPath: [],
+      founderSupplement: '양조장과의 협력 가능성이 높다.\n양조장 후보 선정과 연락 경로 확보를 우선 검증한다.',
+    });
+    expect(ledger.verifiedFacts).toEqual([]);
+    expect(ledger.founderClaims).toEqual([]);
+    const sections = parseSections(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS), IDEA);
+    expect(sections).not.toBeNull();
+    if (!sections) return;
+    const request = buildProductReanalysisRequest({
+      originalInput: IDEA,
+      firstAnalysis: sections,
+      priorTurns: [],
+      latestAnalysis: sections,
+      founderChoice: null,
+      founderSupplement: '',
+      founderFeedback: null,
+      stagePairs: [
+        {
+          questionId: 'hist-1',
+          question: '어떤 방식으로 양조장과의 파트너십을 구축할 계획인가?',
+          choiceLabel: '양조장과의 협력 가능성이 높다.',
+          supplement: '양조장과의 협력 가능성이 높다.',
+          status: 'answered',
+        },
+      ],
+    });
+    const stagePayload = userPayload(request);
+    const stageLedger = stagePayload.evidenceLedger as { verifiedFacts: string[]; founderClaims: string[] };
+    expect(stageLedger.verifiedFacts).toEqual([]);
+    expect(stageLedger.founderClaims).toEqual(['양조장과의 협력 가능성이 높다.']);
+    expect(stagePayload.answerReading).toEqual([{ questionId: 'hist-1', kinds: ['claim', 'choice'] }]);
+    expect(stagePayload.thisAnswer).toBeUndefined();
   });
 
   it('collects N answers with no model call, then sends one paired reanalysis and repeats', async () => {
@@ -603,6 +664,11 @@ describe('consulting stage batch', () => {
     expect(JSON.stringify(payload)).toContain(firstJudgment);
     expect(payload.thisAnswer).toBeUndefined();
     expect(payload.stagePairs).toEqual(integrated.record.stageAnswers);
+    expect(payload.answerReading).toEqual([
+      { questionId: 'q1', kinds: [] },
+      { questionId: 'q2', kinds: ['choice'] },
+      { questionId: 'q3', kinds: [] },
+    ]);
     expect(consultingQuestions(integrated.record.sections).length).toBeGreaterThanOrEqual(2);
 
     const duplicate = await submitConsultingStage({

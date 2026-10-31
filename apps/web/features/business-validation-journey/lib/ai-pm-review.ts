@@ -1684,6 +1684,7 @@ function productReanalysisSystemPrompt(): string {
     'founderChoice와 founderSupplement는 이번 답이다. 양조장을 정했거나 연락한 사실이 아니면 founderFacts에 넣지 않는다. 후보가 없다는 선택은 협력 불가능이 아니다. choices는 이번 질문에 대한 서로 다른 답 두 개 이상이다. priorChoices와 같은 문장을 앞에 두지 않는다.',
     'JSON만 반환한다.',
     'stagePairs가 있으면 이번 상담 단계다. questionId가 질문과 답을 잇는다. 질문과 답을 따로 뭉치지 말고 쌍으로 함께 읽는다. status가 open인 질문은 답하지 않은 것이다. 답한 질문만으로 단계를 끝낸 것처럼 판단하지 않는다. questions는 다음 단계의 서로 다른 검증 질문 N개다. nextQuestion은 questions의 첫 질문과 같다. 이미 답한 질문을 반복하지 않는다.',
+    'answerReading.kinds는 그 답의 성격이다. fact는 후보가 아직 없다는 현재 상태이고 확인된 협력이 아니다. claim은 Founder의 주장이고 확인된 사실이 아니다. 가능성이 높다는 문장은 claim이며 fact가 아니다. plan은 앞으로의 계획이다. choice는 고른 항목이다. 이 구분은 사업성 점수가 아니다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
     'questions는 다음 단계의 서로 다른 검증 질문 2개 이상이다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 첫 text와 같다. 배열이 없거나 질문 하나면 실패다.',
@@ -1803,6 +1804,12 @@ export function buildProductReanalysisRequest(input: {
   });
   const stagePairs = input.stagePairs ?? [];
   const stageBatch = stagePairs.length > 0;
+  if (stageBatch) {
+    const claimLines = [...(input.priorStagePairs ?? []), ...stagePairs]
+      .map((pair) => pair.supplement.trim())
+      .filter((line) => /가능성이 높/.test(line));
+    evidenceLedger.founderClaims = uniqueTexts([...evidenceLedger.founderClaims, ...claimLines]);
+  }
   const payload = () =>
     renameEchoKeys({
       ...(stageBatch
@@ -1822,6 +1829,10 @@ export function buildProductReanalysisRequest(input: {
               status: pair.status,
             })),
             stagePartial: input.stagePartial === true,
+            answerReading: [...(input.priorStagePairs ?? []), ...stagePairs].map((pair) => ({
+              questionId: pair.questionId,
+              kinds: founderAnswerKinds(pair),
+            })),
           }
         : {
             thisAnswer: {
@@ -2424,6 +2435,20 @@ export function pairConsultingStage(questions: ConsultingQuestion[], feedback: S
 
 export function stageComplete(pairs: StagePair[]): boolean {
   return pairs.length > 0 && pairs.every((pair) => pair.status === 'answered');
+}
+
+/** 사실·주장·계획·선택. A label for the request. It is not a business score. */
+export type FounderAnswerKind = 'fact' | 'claim' | 'plan' | 'choice';
+
+export function founderAnswerKinds(pair: { choiceLabel: string | null; supplement: string }): FounderAnswerKind[] {
+  const text = `${pair.choiceLabel ?? ''}\n${pair.supplement}`;
+  const claim = /가능성이 높/.test(text);
+  const kinds: FounderAnswerKind[] = [];
+  if (!claim && /선정하지 못|떠오르는 양조장이 없다|아직 정하지|후보를 선정하지|선정되지/.test(text)) kinds.push('fact');
+  if (claim) kinds.push('claim');
+  if (/계획|검증한다|고르겠|기준으로/.test(text)) kinds.push('plan');
+  if ((pair.choiceLabel ?? '').trim().length > 0) kinds.push('choice');
+  return kinds;
 }
 
 /** A new stage needs the model's question array. A lone nextQuestion is not a successful stage. */

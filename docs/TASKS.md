@@ -6,9 +6,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 통합 상담 단계
 
-**상태:** `POST /api/ai-pm-review/follow-up`은 질문별 답을 저장한 뒤, 단계가 찼을 때만 `runStageReanalysis`를 한 번 호출한다. 질문 배열이 없거나 하나면 최초 검토는 `stage_questions_missing`이며 성공한 상담 단계가 아니다. 화면은 질문이 2개 이상일 때 질문마다 답 칸을 보여 준다. 단위 테스트는 주입 응답으로 1·2·3차를 확인했다. 실 GPT 1·2·3차는 이 환경에 키가 없어 NOT RUN이다. Production은 잠금.  
-**Branch:** `cursor/consulting-stage-route-4b88`  
-**결정:** ADR-073, ADR-074.
+**상태:** 후속 라우트는 단계가 찼을 때 한 번 재분석한다. 단계 요청은 `answerReading`으로 답을 사실·주장·계획·선택에 구분하고, 협력 가능성이 높다는 문장은 주장으로만 보낸다. 확인된 사실 목록에는 넣지 않는다. Preview의 비-main 빌드만 저장된 양조장 답 4개를 1차 2개, 2차 2개로 실호출한다. 3차 통합 호출은 새 질문에 저장된 답이 없어 보내지 않는다. 기존 행은 수정·삭제하지 않는다. 로그인 후 제출 클릭은 이 환경에서 NOT RUN이다. Production은 잠금.  
+**Branch:** `cursor/consulting-stage-live-4b88`  
+**결정:** ADR-073, ADR-074, ADR-075.
 
 ---
 

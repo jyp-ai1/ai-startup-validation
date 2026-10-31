@@ -2484,6 +2484,48 @@ ADR-073 stored N questions and N answers as one stage and proved `runStageReanal
 
 ---
 
+## ADR-075: Stored brewery answers are labeled in the stage request
+
+**Status:** Accepted  
+**Date:** 2026-10-31  
+**Sprint:** AI PM consulting stage  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The stage route stores N answers and calls the model once when the stage is complete. The stored brewery reviews have no `questions` array, so that route will not call the model for them. The four stored founder answers are still the only answers that can be reused. A third integrated call would need a new answer to a question the model has not asked yet.
+
+### Decision
+
+1. A stage request includes `answerReading`. Each item is a `questionId` and `kinds` of `fact`, `claim`, `plan`, or `choice`. `fact` is a stated absence of a candidate. `claim` is the founder's unverified statement, including a high cooperation likelihood, and it is not a verified fact. `verifiedFacts` stays empty for that sentence.
+2. The same stage request adds that claim sentence to `evidenceLedger.founderClaims`. It does not add it to `verifiedFacts`. The one-answer request does not gain `answerReading`.
+3. Preview, and only a non-main preview, may insert new stage rows for the stored brewery project and call the model for two complete stages. The third stage submits no invented answer and does not call the model. Existing review and feedback rows are not updated or deleted.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Ask the founder to answer the new questions | A third model call would have real input | The founder would be asked to re-enter work that is already stored |
+| Treat the cooperation sentence as a verified fact | The request would look more certain | The sentence was not verified |
+
+### Consequences
+
+**Positive:**
+
+- The model receives the stored question, the stored answer, and the answer's kind together.
+- Saving part of a stage still does not call the model.
+
+**Negative:**
+
+- The third integrated call cannot run until a stored answer exists for the new questions.
+- A logged-in click through the submit button is not part of this harness.
+
+**Neutral:**
+
+- Production stays locked.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
