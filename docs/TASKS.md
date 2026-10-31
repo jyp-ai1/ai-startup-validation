@@ -6,9 +6,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 통합 상담 단계
 
-**상태:** `POST /api/ai-pm-review/follow-up`은 질문별 답을 저장한 뒤, 단계가 찼을 때만 `runStageReanalysis`를 한 번 호출한다. 질문 배열이 없거나 하나면 최초 검토는 `stage_questions_missing`이며 성공한 상담 단계가 아니다. 화면은 질문이 2개 이상일 때 질문마다 답 칸을 보여 준다. 단위 테스트는 주입 응답으로 1·2·3차를 확인했다. 실 GPT 1·2·3차는 이 환경에 키가 없어 NOT RUN이다. Production은 잠금.  
-**Branch:** `cursor/consulting-stage-route-4b88`  
-**결정:** ADR-073, ADR-074.
+**상태:** 2026-10-31 17:49–17:50 KST Preview에서 저장된 양조장 답 4개를 1차·2차로 실호출했다. 1차 저장 행 `9e53349a-3c76-4ebe-8869-813c7aec7df0`의 부모는 새 단계 행 `5393e2d9-85de-4ecc-aab3-da7a47ba37cf`다. 모델 호출은 3회, 토큰 32,513이다. 2차 저장 행 `535db197-9716-4ef8-a26f-47818cb235e8`의 부모는 `c74c26c4-fd14-44b0-adb0-d8da365e1c50`이고, 요청의 `priorStagePairs`는 `hist-1`,`hist-2`다. 모델 호출은 4회, 토큰 45,140이다. 답 저장만 한 제출과 중복 제출은 추가 호출이 없었다. 3차 통합 호출은 NOT RUN이다. 저장된 답이 4개뿐이고 2차 질문에는 해당하는 답이 없다. 품질은 FAIL이다. 2차 요약이 협력 가능성을 현재 상태로 썼고, 2차 `nextVerification`이 방금 답한 기준 질문을 다시 썼다. 판단 문장은 코드가 고치지 않았다. 기존 행의 `finished_at`과 피드백 시각은 그대로다. 로그인 후 제출 클릭은 NOT RUN이다. 원문은 `docs/evidence/ALABOM/AI-PM/consulting-stage-live-2026-10-31-a.json`. Production은 잠금.  
+**Branch:** `cursor/consulting-stage-live-4b88`  
+**결정:** ADR-073, ADR-074, ADR-075.
 
 ---
 
