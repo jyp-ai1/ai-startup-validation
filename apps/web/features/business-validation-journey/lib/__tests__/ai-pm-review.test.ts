@@ -4892,6 +4892,75 @@ describe('AI PM first review', () => {
     expect(system).toContain('유지와 이유');
   });
 
+  it('asks once more when the draft copies the prior judgment and question', async () => {
+    const store = openAiPmReviewStore(storePath());
+    let productCalls = 0;
+    let repairUser = '';
+    const copied = productAnalysisRaw({ judgment: sections().judgment, nextQuestion: sections().nextQuestion });
+    const follow = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat: async () => reply(JSON.stringify(sections())),
+      evidence: 'injected_http',
+    }).then((first) =>
+      runFollowUpReview({
+        projectId: 'project-test',
+        store,
+        userId: 'user-a',
+        reviewId: first.record.reviewId,
+        supplement: '양조장과의 협력 가능성이 높다.',
+        now: NOW,
+        chat: async (request) => {
+          productCalls += 1;
+          if (productCalls === 1) return reply(copied);
+          repairUser = request.messages.find((message) => message.role === 'user')?.content ?? '';
+          return reply(
+            productAnalysisRaw({
+              judgment: '근거가 부족해 기존 판단을 유지하는 이유는 접촉 기록이 없기 때문이다.',
+              nextQuestion: '양조장 한 곳에 협력 의사를 확인한 적이 있습니까?',
+            }),
+          );
+        },
+        evidence: 'injected_http',
+      }),
+    );
+    expect(follow.ok).toBe(true);
+    if (!follow.ok) return;
+    expect(productCalls).toBe(2);
+    expect(follow.record.callCount).toBe(2);
+    expect(follow.record.sections?.analysis?.judgmentDetail).toContain('유지');
+    expect(follow.record.sections?.analysis?.judgmentDetail).toContain('이유');
+    expect(follow.record.sections?.nextQuestion).toBe('양조장 한 곳에 협력 의사를 확인한 적이 있습니까?');
+    expect(follow.record.firstRawContent).toBe(copied);
+    const payload = JSON.parse(repairUser) as { draftRejected?: boolean; founderClaim?: string; context?: unknown };
+    expect(payload.draftRejected).toBe(true);
+    expect(payload.founderClaim).toBe('양조장과의 협력 가능성이 높다.');
+    const names: string[] = [];
+    const walk = (value: unknown) => {
+      if (Array.isArray(value)) {
+        value.forEach(walk);
+        return;
+      }
+      if (!value || typeof value !== 'object') return;
+      for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+        names.push(key);
+        walk(child);
+      }
+    };
+    walk(payload);
+    expect(names).not.toContain('judgment');
+    expect(names).not.toContain('nextQuestion');
+    expect(names).toContain('priorJudgmentText');
+    const parent = await store.readReview('user-a', follow.record.parentReviewId ?? '');
+    expect(parent?.sections?.judgment).toBe(sections().judgment);
+    store.close();
+  });
+
   it('treats a reworded partnership question as the same question', () => {
     const first = '어떤 방식으로 양조장과의 파트너십을 구축할 계획인가?';
     const second = '양조장과의 파트너십을 위한 구체적인 실행 계획은 무엇인가?';

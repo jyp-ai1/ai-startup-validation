@@ -1245,6 +1245,13 @@ export async function runFollowUpReview(input: {
           choiceLabel: choice?.label ?? null,
           supplement,
         },
+    productGuard: needsRevisionGate(marks)
+      ? null
+      : {
+          previousQuestions: history.previousQuestions,
+          bannedJudgment: parent.sections.analysis?.judgmentDetail || parent.sections.judgment,
+          founderSupplement: supplement,
+        },
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
 }
@@ -2513,6 +2520,77 @@ function firstReviewSystemPrompt(): string {
   ].join(' ');
 }
 
+function productDraftCopies(
+  sections: ReviewSections,
+  guard: { previousQuestions: string[]; bannedJudgment: string },
+): boolean {
+  const compactText = (value: string) => value.replace(/\s+/g, '').replace(/[.?？!]/g, '');
+  const judgment = sections.analysis?.judgmentDetail || sections.judgment;
+  if (compactText(judgment) === compactText(guard.bannedJudgment)) return true;
+  return questionRepeatsPrior(guard.previousQuestions, sections.nextQuestion);
+}
+
+/** Output-shaped keys make the model echo the previous judgment and question. */
+function renameEchoKeys(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(renameEchoKeys);
+  if (!value || typeof value !== 'object') return value;
+  const renamed: Record<string, unknown> = {};
+  for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+    const name =
+      key === 'judgment' || key === 'judgmentDetail'
+        ? 'priorJudgmentText'
+        : key === 'nextQuestion' || key === 'priorQuestion'
+          ? 'priorQuestionText'
+          : key;
+    renamed[name] = renameEchoKeys(child);
+  }
+  return renamed;
+}
+
+function productCopyRepairRequest(
+  request: ChatRequest,
+  guard: { previousQuestions: string[]; bannedJudgment: string; founderSupplement: string },
+): ChatRequest {
+  const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+  const user = request.messages.find((message) => message.role === 'user')?.content ?? '{}';
+  let context: unknown = {};
+  try {
+    context = JSON.parse(user) as unknown;
+  } catch {
+    context = { unparsed: true };
+  }
+  return {
+    ...request,
+    messages: [
+      {
+        role: 'system',
+        content: [
+          system,
+          '직전 초안은 실패다. 출력 JSON의 judgment와 nextQuestion에 priorJudgmentText나 priorQuestionText를 복사하지 않는다.',
+          'judgment는 새 문장이다. 유지와 이유를 모두 넣는다. 근거가 부족하면 기존 판단을 유지하고 그 이유를 적는다.',
+          '파운더의 협력 가능성 판단은 추정이다. 확정된 협력이나 사실로 쓰지 않고, founderFacts에 넣지 않는다. inferences와 assumptions에 추정으로 남긴다.',
+          'risks에는 실제 접촉과 협력 의사가 확인되지 않았다는 새 문장을 더한다. 이전 위험 문장만 반복하면 실패다.',
+          'nextQuestion은 하나다. 파트너십 구축, 실행 계획, 어떤 방식, 구체적인 계획이라는 질문을 하지 않는다.',
+          '지금 가장 큰 불확실성 하나만 묻는다. 실제 접촉과 협력 의사, 협력 조건과 수익 배분, 체험 운영 주체, 예약 경로, 누가 비용을 내는가 가운데 하나다.',
+        ].join(' '),
+      },
+      {
+        role: 'user',
+        content: JSON.stringify({
+          draftRejected: true,
+          founderClaim: guard.founderSupplement,
+          claimLevel: 'estimate',
+          doNotRepeat: {
+            priorJudgmentText: guard.bannedJudgment,
+            priorQuestionTexts: guard.previousQuestions,
+          },
+          context: renameEchoKeys(context),
+        }),
+      },
+    ],
+  };
+}
+
 async function finishCall(input: {
   store: AiPmReviewStore;
   input: {
@@ -2535,6 +2613,7 @@ async function finishCall(input: {
   outputContract?: FollowUpOutputContext | null;
   previousSections?: ReviewSections | null;
   consultingAnswer?: { question: string; choiceLabel: string | null; supplement: string } | null;
+  productGuard?: { previousQuestions: string[]; bannedJudgment: string; founderSupplement: string } | null;
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const started = Date.now();
   try {
@@ -2583,6 +2662,31 @@ async function finishCall(input: {
           sections: null,
           errors: [...failedChecks, `repair_failed:${repairMessage.slice(0, 180)}`],
         };
+      }
+    }
+    if (input.productGuard && !input.outputContract) {
+      const draft = parseSections(response.content, input.input.text);
+      if (draft && productDraftCopies(draft, input.productGuard)) {
+        firstRawContent = first.content;
+        try {
+          const repair = await input.chat(productCopyRepairRequest(input.request, input.productGuard));
+          callCount = 2;
+          if (usageKnown && repair.usageKnown === true) {
+            promptTokens = (promptTokens ?? 0) + repair.usage.inputTokens;
+            completionTokens = (completionTokens ?? 0) + repair.usage.outputTokens;
+            totalTokens = (totalTokens ?? 0) + repair.usage.totalTokens;
+          } else {
+            usageKnown = false;
+            promptTokens = null;
+            completionTokens = null;
+            totalTokens = null;
+          }
+          if (parseSections(repair.content, input.input.text)) response = repair;
+        } catch (repairError) {
+          callCount = 2;
+          const repairMessage = repairError instanceof Error ? repairError.message : 'review_failed';
+          if (isProviderLimitError(repairMessage)) throw repairError;
+        }
       }
     }
     const sections = normalized ? normalized.sections : parseSections(response.content, input.input.text);

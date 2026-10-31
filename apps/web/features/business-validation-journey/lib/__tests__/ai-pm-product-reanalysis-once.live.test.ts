@@ -23,7 +23,7 @@ const ANSWER_ID = '7d2d04e5-93a1-4cd6-aebf-03582eeb003f';
 const SUPPLEMENT = '양조장과의 협력 가능성이 높다.';
 const BUCKET = 'ai-pm-quality-compare';
 const OBJECT = 'product-cumulative-brewery-2026-10-31.json';
-const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-b.json';
+const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-c.json';
 const QUALITY_PARENT_ID = '9e169fef-7428-4d21-a6f0-f3034bcc91d1';
 const SIBLING_ANALYSIS_ID = '8602a92e-0fbd-4d93-a005-9c9f18410ac6';
 
@@ -167,9 +167,13 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
     const backend = openReviewBackend();
     const parent = await backend.store.readReview(userId, QUALITY_PARENT_ID);
     const preserved = await Promise.all(
-      [PARENT_ID, QUALITY_PARENT_ID, '3be5715e-7294-44bd-b163-f3af1dec4259'].map((reviewId) =>
-        backend.store.readReview(userId, reviewId),
-      ),
+      [
+        PARENT_ID,
+        QUALITY_PARENT_ID,
+        '3be5715e-7294-44bd-b163-f3af1dec4259',
+        '02dbf55a-eaf4-49fd-ba4c-ab043f16d39c',
+        'dac12cd4-9958-405c-900b-deb2a5418c41',
+      ].map((reviewId) => backend.store.readReview(userId, reviewId)),
     );
     const records = await backend.store.listReviews(userId, PROJECT_ID);
     const feedback = (await backend.store.listFeedback(userId)).filter((item) =>
@@ -270,7 +274,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
       console.log(`preview-consulting-quality stored status=${marker.status}`);
     }
     expect(marker.status).toBe('RECORDED');
-  }, 180_000);
+  }, 240_000);
 });
 
 function supabaseConfig(): { url: string; key: string } | null {
