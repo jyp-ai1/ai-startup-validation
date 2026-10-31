@@ -205,16 +205,19 @@ describe('consulting stage batch', () => {
     expect(pairs[1]).toMatchObject({ questionId: 'q2', choiceLabel: '가격은 아직 없다', supplement: '가격은 정하지 않았다' });
     const unlabeled = pairConsultingStage(questions, [feedback({ comment: '직장인을 고객으로 본다' })]);
     expect(unlabeled.every((pair) => pair.status === 'open')).toBe(true);
-    const legacy = pairConsultingStage([{ questionId: 'q1', text: '누구인가?' }], [feedback({ comment: '직장인' })]);
-    expect(legacy).toEqual([
+    const unlabeledOne = pairConsultingStage(
+      [{ questionId: 'q1', text: '누구인가?' }],
+      [feedback({ comment: '양조장과의 협력 가능성이 높다.', choiceAnswer: { choiceId: 'c1', label: '양조장과의 협력 가능성이 높다.', otherText: '양조장과의 협력 가능성이 높다.' } })],
+    );
+    expect(unlabeledOne).toEqual([
       {
         questionId: 'q1',
         question: '누구인가?',
         offeredChoices: [],
         choiceId: null,
         choiceLabel: null,
-        supplement: '직장인',
-        status: 'answered',
+        supplement: '',
+        status: 'open',
       },
     ]);
     expect(pairs[1]?.choiceId).toBe('c1');
@@ -841,6 +844,94 @@ describe('consulting stage batch', () => {
     expect(html).toContain('지불 의사를 누구에게 확인하는가?');
     expect(html).toContain('답 저장');
     expect(html).not.toContain('질문 2개 이상');
+  });
+
+  it('does not attach an answer that has no question id, then sends only the linked answer', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const calls: ChatRequest[] = [];
+    const one = ['누구를 고객으로 하는가?'];
+    const next = ['지불 의사를 누구에게 확인하는가?'];
+    const chat = async (request: ChatRequest) => {
+      calls.push(request);
+      const payload = requestPayload(request);
+      if (!payload || !Array.isArray(payload.stagePairs)) {
+        return reply(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', one));
+      }
+      return reply(contractReply(request, '직장인 답을 반영했다. 이유는 지불 확인이 없기 때문이다.', next));
+    };
+    const base = {
+      store,
+      userId: 'user-unlabeled',
+      projectId: 'project-unlabeled',
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const first = await runFirstReview({ ...base, text: `${IDEA} 식별자 없는 답.`, origin: 'typed', fileName: null });
+    expect(first.called).toBe(true);
+    expect(first.record.callCount).toBe(1);
+    expect(first.record.status).toBe('succeeded');
+    const parentFinishedAt = first.record.finishedAt;
+    const unlabeled = await saveReviewFeedback({
+      store,
+      userId: 'user-unlabeled',
+      projectId: 'project-unlabeled',
+      now: NOW,
+      body: {
+        reviewId: first.record.reviewId,
+        choiceId: 'c1',
+        choiceLabel: '양조장과의 협력 가능성이 높다.',
+        otherText: '양조장과의 협력 가능성이 높다.',
+      },
+    });
+    expect(unlabeled.ok).toBe(true);
+    if (!unlabeled.ok) return;
+    expect(unlabeled.feedback.questionId).toBeUndefined();
+    expect(unlabeled.feedback.modelCalls).toBe(0);
+    const held = await submitConsultingStage({ ...base, reviewId: first.record.reviewId, answers: [] });
+    expect(held.ok && held.pending && !held.called).toBe(true);
+    expect(calls).toHaveLength(1);
+    const integrated = await submitConsultingStage({
+      ...base,
+      reviewId: first.record.reviewId,
+      answers: [{ questionId: 'q1', comment: '참가자는 직장인이다' }],
+    });
+    expect(integrated.ok).toBe(true);
+    if (!integrated.ok) return;
+    expect(integrated.pending).toBe(false);
+    expect(integrated.called).toBe(true);
+    expect(integrated.record.callCount).toBe(1);
+    expect(integrated.record.status).toBe('succeeded');
+    expect(integrated.record.parentReviewId).toBe(first.record.reviewId);
+    expect(integrated.record.stageAnswers).toEqual([
+      expect.objectContaining({ questionId: 'q1', supplement: '참가자는 직장인이다', status: 'answered' }),
+    ]);
+    expect(JSON.stringify(integrated.record.stageAnswers)).not.toContain('양조장');
+    const payload = userPayload(calls[1]!);
+    expect(JSON.stringify(payload.stagePairs)).toContain('참가자는 직장인이다');
+    expect(JSON.stringify(payload)).not.toContain('양조장');
+    expect(integrated.record.sourceFeedbackId).not.toBe(unlabeled.feedback.feedbackId);
+    const duplicate = await submitConsultingStage({
+      ...base,
+      reviewId: first.record.reviewId,
+      answers: [{ questionId: 'q1', comment: '참가자는 직장인이다' }],
+    });
+    expect(duplicate.ok && !duplicate.called && !duplicate.pending).toBe(true);
+    if (!duplicate.ok) return;
+    expect(duplicate.record.reviewId).toBe(integrated.record.reviewId);
+    expect(calls).toHaveLength(2);
+    expect((await store.readReview('user-unlabeled', first.record.reviewId))?.finishedAt).toBe(parentFinishedAt);
+    const second = await submitConsultingStage({
+      ...base,
+      reviewId: integrated.record.reviewId,
+      answers: [{ questionId: 'q1', comment: '참가자에게 먼저 확인한다' }],
+    });
+    expect(second.ok && second.called && second.record.callCount === 1).toBe(true);
+    if (!second.ok) return;
+    expect(calls).toHaveLength(3);
+    const secondPayload = userPayload(calls[2]!);
+    expect(secondPayload.priorStagePairs).toEqual(integrated.record.stageAnswers);
+    expect(JSON.stringify(secondPayload.priorStagePairs)).not.toContain('양조장');
   });
 
   it('stores a stage response with no next question as failed after one call', async () => {

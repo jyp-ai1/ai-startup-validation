@@ -83,7 +83,7 @@
 
 ## 5. 위험
 
-- 질문 1개 단계에 질문 식별자 없는 옛 피드백이 있으면 `pairConsultingStage`가 그 답을 그 질문에 연결한다. 새 저장은 `questionId`를 쓴다.
+- 질문 식별자가 없는 피드백은 질문 1개 단계에도 붙지 않는다. 근거는 `docs/evidence/ALABOM/AI-PM/SPRINT-1-REVIEW-CLOSURE.md`다.
 - 다음 실호출부터 모델은 질문 1개를 내도 단계로 저장될 수 있다. 그 문장이 사업을 진전시키는지는 Sprint 2다.
 - 실패 행 `3be5715e`의 답은 여전히 성공 사슬의 `priorStagePairs`에 없다. 계보 표 없이 그 답을 다른 질문 아래에 넣지 않는다.
 - 단계가 아닌 예전 후속 경로 `runFollowUpReview`는 수리 호출이 있다. 제품 후속 라우트는 그 함수를 호출하지 않는다.

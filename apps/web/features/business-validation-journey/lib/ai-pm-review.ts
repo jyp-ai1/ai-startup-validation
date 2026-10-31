@@ -2550,7 +2550,7 @@ export function consultingQuestions(sections: ReviewSections | null | undefined)
 
 /**
  * Links each question to the latest feedback with that questionId.
- * A feedback row without questionId answers q1 only when the stage has one question.
+ * A feedback row without questionId stays unused. It is not an answer to q1.
  */
 function offeredFrom(question: ConsultingQuestion): StagePair['offeredChoices'] {
   return (question.choices ?? [])
@@ -2560,12 +2560,7 @@ function offeredFrom(question: ConsultingQuestion): StagePair['offeredChoices'] 
 
 export function pairConsultingStage(questions: ConsultingQuestion[], feedback: StoredFeedback[]): StagePair[] {
   return questions.map((question) => {
-    const matched = [...feedback].reverse().find((item) => item.questionId === question.questionId);
-    const legacy =
-      !matched && questions.length === 1
-        ? [...feedback].reverse().find((item) => !item.questionId && (item.choiceAnswer || item.comment.trim()))
-        : undefined;
-    const item = matched ?? legacy;
+    const item = [...feedback].reverse().find((item) => item.questionId === question.questionId);
     const offeredChoices = offeredFrom(question);
     if (!item) {
       return {
@@ -2908,8 +2903,6 @@ export async function runStageReanalysis(input: {
   const supplementSha = sha256(supplementKey);
   const sourceFeedbackId =
     [...feedback].reverse().find((item) => item.questionId && answered.some((pair) => pair.questionId === item.questionId))?.feedbackId ??
-    (questions.length === 1 ? ([...feedback].reverse().find((item) => !item.questionId)?.feedbackId ?? null) : null) ??
-    feedback.at(-1)?.feedbackId ??
     null;
   const stagePartial = !stageComplete(pairs);
   const records = await input.store.listReviews(input.userId, input.projectId);
