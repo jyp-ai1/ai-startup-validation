@@ -650,13 +650,14 @@ export function questionRepeatsPrior(previous: string[], next: string): boolean 
   const nextCompact = compact(next);
   if (!nextCompact) return false;
   if (previous.some((item) => compact(item) === nextCompact)) return true;
-  const partnershipPlan = (value: string) => /파트너십|협력/.test(value) && /계획|방식|구축|어떻게|구체적/.test(value);
+  const partnershipPlan = (value: string) =>
+    /파트너십|협력/.test(value) && /계획|방식|구축|어떻게|구체적|구체화|방안|다음 단계/.test(value);
   return partnershipPlan(next) && previous.some(partnershipPlan);
 }
 
 /** A plan question does not check whether the event already happened. */
 export function questionAsksForPlan(question: string): boolean {
-  return /계획|어떻게|어떤 방식|구축/.test(question);
+  return /계획|어떻게|어떤 방식|구축|다음 단계|방안|구체화/.test(question);
 }
 
 /**
@@ -817,17 +818,22 @@ function productReanalysisSchema(): Record<string, unknown> {
       founderFacts: { ...list, description: '확인된 접촉, 계약, 입금, 예약만. 없으면 빈 배열.' },
       inferences: {
         ...list,
-        description: '답 유형, 구체적 근거의 유무, 확인된 사실, 미확인 사항을 구분한다. 이전 문장을 복사하지 않는다.',
+        description:
+          '이번 답만 해석한다. 주장 또는 기대 또는 자체 판단인지, 증거가 있는지, 미확인인지를 적는다. 시장 관심을 확인된 사실로 쓰지 않는다.',
       },
       judgment: {
         type: 'string',
-        description: '문자열이다. 유지 또는 변경, 이유, 답이 판단에 주는 영향을 한 문자열에 적는다. 객체가 아니다.',
+        description:
+          '사업 설명문이 아니다. 유지 또는 변경과 이유를 적는다. 이유에는 자체 판단, 증거가 없음, 접촉과 조건이 없어 판단을 바꾸지 못함을 넣는다.',
       },
-      nextVerification: text,
+      nextVerification: {
+        type: 'string',
+        description: '접촉 결과가 없으면 양조장 선정과 닿을 경로. 구축 계획이나 다음 단계를 적지 않는다.',
+      },
       nextQuestion: {
         type: 'string',
         description:
-          '이전 질문이 연락이나 미팅 결과를 물었으면 그 단계를 반복하지 않는다. 접촉 결과가 없으면 양조장 선정과 닿을 경로를 묻는 질문 하나. 계획, 어떻게, 구축을 넣지 않는다.',
+          '접촉 결과가 없으면 양조장을 골랐는지와 닿을 경로가 있는지만 묻는다. 다음 단계, 방안, 구체화, 계획, 어떻게, 구축은 실패다.',
       },
       nextQuestionReason: text,
       choices: list,
@@ -841,13 +847,13 @@ function productReanalysisSystemPrompt(): string {
     '사용자 JSON의 priorJudgmentText, priorQuestionText, priorInferences, priorAssumptions, priorEvidenceNotes, priorRisks는 이전 문장이다. 출력의 judgment, nextQuestion, inferences, assumptions, evidenceToChange, risks에 그 문장을 복사하지 않는다.',
     '이번 답을 여섯 가지로 새 문장에 적는다. 새로 알게 된 내용, 근거 수준, 기존 판단에서 영향을 받는 부분, 바뀐 판단 또는 유지한 판단, 바꾸지 않은 이유, 추가 검증이다.',
     '근거 수준은 검증된 사실, Founder의 경험, Founder의 주장 또는 기대, 실행 계획, 추정 및 가정, 근거가 부족한 정보 중 하나다. 확인된 사실, 경험, 추정, 계획을 섞지 않는다.',
-    '가능성이 높다처럼 확인 절차가 없는 답은 Founder의 주장 또는 기대이자 자체 판단이다. 구체적 증거가 없으면 검증된 사실이 아니다. inferences에는 답 유형, 근거가 제시됐는지, 확인된 사실, 미확인 사항을 실제 답과 누적 맥락으로 구분해서 적는다. 경험이나 실행 결과를 만들지 않는다.',
+    '가능성이 높다처럼 확인 절차가 없는 답은 Founder의 주장 또는 기대이자 자체 판단이다. 구체적 증거가 없으면 검증된 사실이 아니다. inferences는 이번 답만 해석한다. 답 유형, 증거가 있는지, 확인된 사실, 미확인 사항을 적는다. 시장 관심이나 수요를 확인된 사실로 올리지 않는다. 경험이나 실행 결과를 만들지 않는다.',
     '확인되지 않은 협력 가능성, 추정, 기대, 계획은 founderFacts에 넣지 않는다. founderFacts는 접촉, 계약, 입금, 예약처럼 확인된 사실만 담는다. 근거가 없으면 빈 배열이다.',
     'assumptions의 첫 문장은 이번 답을 검증되지 않은 전제라고 적는다. 그 전제가 사업 실행에 주는 긍정적 가설도 적는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
     'evidenceToChange에는 이 답이 판단에 어떤 영향을 주는지, 파트너십 실행 가능성에 대한 긍정적 가설인지, 판단을 바꾸기에는 무엇이 부족한지를 적는다. 답 문장만 다시 적으면 실패다. 판단을 유지해도 사업성 평가의 잠재적 의미를 적는다.',
-    'judgment는 문자열이다. 객체로 나누면 실패다. 그 문자열에 유지와 이유를 넣는다. 기존 판단, 이번 답에서 새로 확인된 내용, 판단 변경 또는 유지, 그 이유를 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. priorJudgmentText와 같은 문장이면 실패다.',
-    'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉, 상대의 의사, 협력 조건처럼 아직 없는 항목을 적는다. 이전 위험만 반복하면 실패다.',
-    'nextQuestion은 하나다. 계획, 어떻게, 어떤 방식, 구축을 묻으면 실패다. priorQuestionTexts와 같은 문장이면 실패다. priorQuestionTexts가 이미 연락하거나 미팅과 상대의 반응을 물었다면 그 질문을 반복하거나 표현만 바꾸지 않는다. 이번 답에 실제 접촉이 없으면 접촉할 양조장을 골랐는지와 닿을 경로가 있는지를 묻는다. 접촉은 했으나 반응이 없으면 상대 반응과 후속 협의를 묻는다. 긍정 반응이 있으면 협력 조건과 실행 가능성을 묻는다. 협의가 있으면 역할, 비용, 수익 배분, 운영 책임을 묻는다.',
+    'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 그 문자열에 유지와 이유를 넣는다. 이유에는 이번 답이 자체 판단이라는 점, 구체적 증거가 없다는 점, 접촉과 상대 의사와 협력 조건이 없어 사업성 판단을 바꿀 근거가 없다는 점을 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. 이전 분석의 시장 설명 문장을 judgment에 다시 쓰지 않는다. priorJudgmentText와 같은 문장이면 실패다.',
+    'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉, 상대의 의사, 협력 조건처럼 아직 없는 항목을 적는다. 작성 규칙 문장과 이전 위험만 반복하면 실패다.',
+    'nextVerification과 nextQuestion은 같은 단계다. nextQuestion은 하나다. 이번 답에 연락하거나 미팅한 결과가 없으면, 먼저 접촉할 양조장을 골랐는지와 그 양조장에 닿을 경로가 있는지만 묻는다. 다음 단계, 방안, 구체화, 계획, 어떻게, 어떤 방식, 구축을 넣으면 실패다. priorQuestionTexts와 같거나 표현만 바꾼 질문이면 실패다. 접촉은 했으나 반응이 없으면 상대 반응과 후속 협의를 묻는다. 긍정 반응이 있으면 협력 조건을 묻는다. 협의가 있으면 역할, 비용, 수익 배분, 운영 책임을 묻는다.',
     'nextQuestionReason에는 그 질문이 이전 질문과 다른 검증 단계인 이유를 적는다.',
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',

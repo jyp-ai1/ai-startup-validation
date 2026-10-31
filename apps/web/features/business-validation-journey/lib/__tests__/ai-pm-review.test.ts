@@ -5029,6 +5029,10 @@ describe('AI PM first review', () => {
     expect(questionRepeatsPrior([stored], reword)).toBe(false);
     expect(questionSameContactStage([stored], nextStage)).toBe(false);
     expect(questionAsksForPlan(nextStage)).toBe(false);
+    const drifted = '양조장과의 협력 방안을 구체화하기 위한 다음 단계는 무엇인가?';
+    expect(questionAsksForPlan(drifted)).toBe(true);
+    expect(questionRepeatsPrior(['양조장과의 파트너십을 위한 구체적인 실행 계획은 무엇인가?'], drifted)).toBe(true);
+    expect(questionSameContactStage([stored], drifted)).toBe(false);
   });
 
   it('cites a failed review answer without moving it onto the succeeded parent', async () => {

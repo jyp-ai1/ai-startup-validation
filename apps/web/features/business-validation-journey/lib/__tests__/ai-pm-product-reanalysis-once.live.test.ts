@@ -25,7 +25,7 @@ const ANSWER_ID = '7d2d04e5-93a1-4cd6-aebf-03582eeb003f';
 const SUPPLEMENT = '양조장과의 협력 가능성이 높다.';
 const BUCKET = 'ai-pm-quality-compare';
 const OBJECT = 'product-cumulative-brewery-2026-10-31.json';
-const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-h.json';
+const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-i.json';
 const QUALITY_PARENT_ID = '9e169fef-7428-4d21-a6f0-f3034bcc91d1';
 const SIBLING_ANALYSIS_ID = '8602a92e-0fbd-4d93-a005-9c9f18410ac6';
 
@@ -180,6 +180,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
         '287badc3-444e-4a09-8cd8-3d012671afa9',
         '970b8ce1-3e4b-4840-834f-2c6a87b2ec54',
         'd1a1ed43-b830-46e9-8da6-beaa9afcec74',
+        'a67d3b7a-60d7-4c0f-bbcd-32f13660f6b4',
       ].map((reviewId) => backend.store.readReview(userId, reviewId)),
     );
     const records = await backend.store.listReviews(userId, PROJECT_ID);
@@ -311,6 +312,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
           risksMoved,
           assumptionsMoved,
           evidenceLevel,
+          separated,
           evidenceMoved,
           oneCall,
           copiedJudgment,
