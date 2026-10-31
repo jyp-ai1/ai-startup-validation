@@ -28,7 +28,7 @@ const enabled = process.env.AI_PM_CONSULTING_STAGE_JUDGMENT === '1';
 const PROJECT_ID = '3a5fc4a0-2e90-45e6-8370-350beda67342';
 const SOURCE_ANALYSIS_ID = '9e169fef-7428-4d21-a6f0-f3034bcc91d1';
 const BUCKET = 'ai-pm-quality-compare';
-const OBJECT = 'product-consulting-judgment-logic-2026-10-31-e.json';
+const OBJECT = 'product-consulting-judgment-logic-2026-10-31-f.json';
 
 const PAIRS = {
   claim: {

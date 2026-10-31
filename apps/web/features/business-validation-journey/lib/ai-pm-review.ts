@@ -1718,7 +1718,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
     properties: {
       answerInterpretation: {
         type: 'array',
-        description: '답한 질문마다 하나. 질문, 보존된 선택지, 실제 선택, 보충 설명을 한 답으로 해석한다.',
+        description: '이번 stagePairs의 답만 담는다. priorStagePairs의 questionId는 넣지 않는다. 질문, 보존된 선택지, 실제 선택, 보충 설명을 한 답으로 해석한다.',
         items: {
           type: 'object',
           additionalProperties: false,
@@ -1815,7 +1815,7 @@ function stageReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
     '이 호출은 후속 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
-    '1. 각 답을 읽는다. stagePairs와 priorStagePairs에서 question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. questionId가 질문과 답을 잇는다. choiceLabel만 반복하면 해석이 아니다. supplement의 기준, 계획, 아직 없는 사실을 meaning에 포함한다. offeredChoices가 고른 항목 하나뿐이면 다른 선택지는 보존되지 않은 정보다.',
+    '1. 각 답을 읽는다. stagePairs와 priorStagePairs에서 question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. questionId가 질문과 답을 잇는다. choiceLabel만 반복하면 해석이 아니다. 이번 stagePairs의 supplement에 있는 기준, 계획, 아직 없는 사실을 그 questionId의 meaning에 포함한다. priorStagePairs는 판단의 맥락이고 answerInterpretation에 넣지 않는다. offeredChoices가 고른 항목 하나뿐이면 다른 선택지는 보존되지 않은 정보다.',
     'answerReading.kinds는 답의 성격이다. fact, claim, plan, choice다. 점수가 아니다. claim은 검증되지 않은 주장이다. 가능성이 높다는 문장은 claim이다. plan은 계획이다. fact는 현재 상태일 수 있으나 확인된 협력은 아니다.',
     '2. 진전과 미해결을 먼저 적는다. 계획이 구체화된 것은 진전이다. supplement가 선정 기준을 말하면 그 기준 문장을 resolvedIssues에 적고 닫힌 항목으로 둔다. choiceLabel의 기준을 구체화한다만 적으면 진전 내용이 빠진 것이다. 후보가 없거나 접촉과 협력 의사가 없으면 unresolvedIssues에 남긴다. 기준이 생겼다고 미해결을 지우지 않는다. 기준이 생겼다고 협력이 확인된 것도 아니다.',
     '3. 신뢰 수준을 적는다. 주장과 기대는 unverifiedClaims다. 그 가설에는 잠재력이 있을 수 있다. 잠재력과 현재 확인된 실행 가능성은 별개다. verifiedFacts에는 접촉, 계약, 입금, 예약처럼 별도 증거가 있는 것만 넣고 없으면 빈 배열이다. 주장은 verifiedFacts에 넣지 않는다. assumptions에는 아직 검증되지 않은 가설과 판단이 바뀔 추가 증거를 적는다.',
@@ -1824,7 +1824,7 @@ function stageReanalysisSystemPrompt(): string {
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'JSON만 반환한다.',
     '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
-    'answerInterpretation은 답한 questionId마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
+    'answerInterpretation은 이번 stagePairs의 questionId만 담는다. priorStagePairs의 questionId는 넣지 않는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
     'nextQuestions는 서로 다른 질문 2개 이상이다. 각 원소는 text와 choices다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
   ].join(' ');
