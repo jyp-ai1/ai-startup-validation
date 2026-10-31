@@ -53,6 +53,8 @@ const REREVIEW_FIRST_REWRITE_ID = '5b16e3ed-c011-4f2a-8034-ab662fca0717';
 const REREVIEW_RECORDED_ID = 'b2738daf-dd3f-4190-9ffd-669e075e4a4e';
 const SEPARATION_OBJECT = 'product-judgment-separation-2026-10-31.json';
 const CONSISTENCY_OBJECT = 'product-judgment-consistency-2026-10-31.json';
+const CONTEXT_OBJECT = 'product-context-ledger-2026-10-31.json';
+const CONTEXT_PRIOR_ID = '7b4bafd6-ac74-42f3-9aa4-4b1f32f40ac2';
 const SEPARATION_REVIEW_ID = 'ad73c33f-7bdc-47ff-b539-0ac9afdcdb82';
 const COPIED_JUDGMENT =
   '현재 사업성 판단은 유지되며, 양조장과의 협력 가능성이 높지만, 실제 접촉 및 협력 조건에 대한 구체적인 증거가 부족하다.';
@@ -1212,6 +1214,150 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
     } finally {
       await writeMarker(config, marker, CONSISTENCY_OBJECT);
       console.log(`preview-judgment-consistency stored status=${marker.status}`);
+    }
+    expect(marker.status).toBe('RECORDED');
+  }, 240_000);
+
+  it('sends the consulting ledger and stores one new analysis', async () => {
+    const config = supabaseConfig();
+    expect(config).not.toBeNull();
+    if (!config) return;
+    const preview = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_GIT_COMMIT_REF !== 'main';
+    const apiKey = process.env.GPT_API_KEY?.trim() ?? '';
+    if (!preview || !apiKey) {
+      console.log(`preview-context-ledger hold preview=${preview} gpt_key=${apiKey ? 'present' : 'absent'}`);
+      return;
+    }
+    const existing = await readMarker(config, CONTEXT_OBJECT);
+    if (existing && ['RECORDED', 'failed', 'limited', 'quality_failed'].includes(String(existing.status))) {
+      console.log(`preview-context-ledger skip status=${existing.status}`);
+      return;
+    }
+    const parentRow = await restGet(config, `ai_pm_reviews?select=user_id&review_id=eq.${ROUND3_PARENT_ID}`);
+    const userId = (parentRow[0] as { user_id?: string } | undefined)?.user_id ?? '';
+    const backend = openReviewBackend();
+    const parent = await backend.store.readReview(userId, ROUND3_PARENT_ID);
+    expect(parent?.status).toBe('succeeded');
+    const saved = (await backend.store.listFeedback(userId, ROUND3_PARENT_ID)).find((item) => item.choiceAnswer?.label === ROUND3_LABEL);
+    expect(saved?.modelCalls).toBe(0);
+    const preservedIds = [PARENT_ID, QUALITY_PARENT_ID, CHOICE_PARENT_ID, ROUND3_PARENT_ID, REREVIEW_RECORDED_ID, SEPARATION_REVIEW_ID, CONTEXT_PRIOR_ID];
+    const preserved = await Promise.all(preservedIds.map((reviewId) => backend.store.readReview(userId, reviewId)));
+    const startedAt = new Date().toISOString();
+    await writeMarker(config, { status: 'started', startedAt, parentReviewId: ROUND3_PARENT_ID }, CONTEXT_OBJECT);
+    let marker: Record<string, unknown> = { status: 'failed', startedAt, parentReviewId: ROUND3_PARENT_ID };
+    let requestAudit: Record<string, unknown> | null = null;
+    try {
+      const result = await runFollowUpReview({
+        store: backend.store,
+        userId,
+        projectId: PROJECT_ID,
+        reviewId: ROUND3_PARENT_ID,
+        supplement: ROUND3_SUPPLEMENT,
+        now: startedAt,
+        chat: async (request) => {
+          const user = request.messages.find((message) => message.role === 'user')?.content ?? '';
+          const payload = JSON.parse(user) as {
+            priorAnalyses?: Array<{ reviewId?: string }>;
+            founderAnswers?: Array<{ supplement?: string }>;
+            founderSupplement?: string;
+          };
+          requestAudit = {
+            priorAnalysisIds: (payload.priorAnalyses ?? []).map((item) => item.reviewId),
+            founderAnswers: (payload.founderAnswers ?? []).map((item) => item.supplement),
+            hasOriginal: user.includes('양조장'),
+            hasLatest: user.includes('priorJudgmentText'),
+            hasNoCandidate: user.includes(ROUND3_SUPPLEMENT),
+            hasPlanChoice: user.includes(CHOICE_SUPPLEMENT),
+            hasLikelihoodClaim: user.includes(SUPPLEMENT),
+            hasNewestDifferent: user.includes(SEPARATION_REVIEW_ID),
+            hasCopiedLatest: user.includes(CONTEXT_PRIOR_ID),
+          };
+          return openReviewChat()(request);
+        },
+        evidence: 'live_network',
+        forceNew: true,
+      });
+      for (const before of preserved) {
+        if (!before) continue;
+        const after = await backend.store.readReview(userId, before.reviewId);
+        expect(after?.finishedAt).toBe(before.finishedAt);
+        expect(after?.status).toBe(before.status);
+        expect(after?.totalTokens).toBe(before.totalTokens);
+      }
+      if (!result.ok || result.record.status !== 'succeeded' || !result.record.sections?.analysis) {
+        marker = {
+          ...marker,
+          status: 'failed',
+          error: result.ok ? result.record.error : result.error,
+          reviewId: result.ok ? result.record.reviewId : null,
+          called: result.ok ? result.called : false,
+          requestAudit,
+        };
+      } else {
+        const sections = result.record.sections;
+        const analysis = sections.analysis!;
+        const judgment = analysis.judgmentDetail;
+        const summary = analysis.summary;
+        const inferences = analysis.inferences;
+        const assumptions = analysis.assumptions;
+        const evidence = analysis.evidenceToChange;
+        const nextQuestion = sections.nextQuestion;
+        const targets = questionVerificationTargets(nextQuestion);
+        const openTargets = targets.filter((target) => target !== 'selection');
+        const checks = {
+          ledgerSent: Boolean(
+            requestAudit &&
+              requestAudit.hasNoCandidate &&
+              requestAudit.hasPlanChoice &&
+              requestAudit.hasLikelihoodClaim &&
+              requestAudit.hasNewestDifferent,
+          ),
+          claimNotFact: !founderClaimTreatedAsFact(judgment) && !founderClaimTreatedAsFact(summary) && analysis.founderFacts.length === 0,
+          consistentWithInference: !judgmentContradictsUnverifiedClaim(judgment, inferences) && !founderClaimTreatedAsFact(summary),
+          assumptionNotHope: !assumptionRestatesUnverifiedHope(assumptions),
+          answerReflected: /후보/.test(judgment) && /없|못|선정|비어/.test(judgment),
+          reevaluated: !preserved.some((row) => row?.sections?.analysis?.judgmentDetail === judgment),
+          reasonClear: /없|못|부족|확인|근거|영향|비어|유보/.test(judgment),
+          evidenceConcrete: evidence.length > 0 && evidence.every((item) => item !== judgment) && /후보|기준|경로|접근|접촉|의사|조건/.test(evidence.join('\n')),
+          doesNotReselect: !questionRepeatsAnsweredSelection(nextQuestion),
+          newPurpose: openTargets.length === 1 && !questionRepeatsAnsweredSelection(nextQuestion) && !/떠오르는/.test(nextQuestion),
+          choicesReady: analysis.choices.filter((choice) => choice.id !== 'other' && !/아직 핵심을 정하지/.test(choice.label)).length >= 2,
+          preserved: result.record.parentReviewId === ROUND3_PARENT_ID && result.record.sourceFeedbackId === saved?.feedbackId,
+        };
+        marker = {
+          status: Object.values(checks).every(Boolean) ? 'RECORDED' : 'quality_failed',
+          startedAt,
+          finishedAt: new Date().toISOString(),
+          called: result.called,
+          reviewId: result.record.reviewId,
+          parentOfChild: result.record.parentReviewId,
+          sourceFeedbackId: result.record.sourceFeedbackId,
+          feedbackId: saved?.feedbackId ?? null,
+          model: result.record.model,
+          promptTokens: result.record.promptTokens,
+          completionTokens: result.record.completionTokens,
+          totalTokens: result.record.totalTokens,
+          callCount: result.record.callCount,
+          requestAudit,
+          judgment,
+          summary,
+          assumptions,
+          inferences,
+          risks: sections.risks,
+          evidenceToChange: evidence,
+          founderFacts: analysis.founderFacts,
+          nextQuestion,
+          nextQuestionReason: sections.nextQuestionReason,
+          nextVerification: analysis.nextVerification,
+          choices: analysis.choices.map((choice) => choice.label),
+          targets,
+          checks,
+          rawContent: result.record.rawContent,
+        };
+      }
+    } finally {
+      await writeMarker(config, marker, CONTEXT_OBJECT);
+      console.log(`preview-context-ledger stored status=${marker.status}`);
     }
     expect(marker.status).toBe('RECORDED');
   }, 240_000);

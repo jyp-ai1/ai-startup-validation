@@ -2580,6 +2580,69 @@ describe('AI PM first review', () => {
     store.close();
   });
 
+  it('keeps the newest analysis and every founder answer in the product request', () => {
+    const older = Array.from({ length: 8 }, (_, index) => ({
+      reviewId: `old-${index}`,
+      judgment: `오래된판단${index}${'가'.repeat(500)}`,
+      nextQuestion: `오래된질문${index}?`,
+      assumptions: ['오래된가정'],
+      risks: ['오래된위험'],
+    }));
+    const request = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [
+        {
+          question: '어떤 방식으로 양조장과의 파트너십을 구축할 계획인가?',
+          choiceLabel: null,
+          supplement: '양조장과의 협력 가능성이 높다.',
+          judgment: '이전 판단',
+          nextVerification: '검증',
+          nextQuestion: '다음?',
+        },
+        {
+          question: '협력 가능성을 확인하기 위해 우선 접촉할 양조장을 한 곳 정했나요?',
+          choiceLabel: '양조장과의 협력 방안 구체화',
+          supplement: '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.',
+          judgment: '이전 판단',
+          nextVerification: '검증',
+          nextQuestion: '다음?',
+        },
+      ],
+      priorAnalyses: [
+        ...older,
+        {
+          reviewId: 'ad73c33f-7bdc-47ff-b539-0ac9afdcdb82',
+          judgment: '구체적인 후보가 없다는 점이 판단에 남아 있다.',
+          nextQuestion: '체험을 운영할 양조장을 고를 기준이 있나요?',
+          assumptions: ['후보가 없다는 답은 확인된 상태다.'],
+          risks: ['운영 경로가 비어 있다.'],
+        },
+      ],
+      latestAnalysis: sections(),
+      founderChoice: { label: '아직 떠오르는 양조장이 없다', otherText: '' },
+      founderSupplement: '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.',
+      founderFeedback: { comment: '아직 떠오르는 양조장이 없다' },
+    });
+    const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      priorAnalyses: Array<{ reviewId: string }>;
+      priorTurns: Array<{ supplement: string }>;
+      founderAnswers: Array<{ supplement: string }>;
+      founderSupplement: string;
+    };
+    expect(payload.priorAnalyses.at(-1)?.reviewId).toBe('ad73c33f-7bdc-47ff-b539-0ac9afdcdb82');
+    expect(payload.priorTurns.map((turn) => turn.supplement)).toEqual([
+      '양조장과의 협력 가능성이 높다.',
+      '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.',
+    ]);
+    expect(payload.founderSupplement).toBe('현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.');
+    expect(payload.founderAnswers.map((item) => item.supplement)).toEqual([
+      '양조장과의 협력 가능성이 높다.',
+      '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.',
+      '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.',
+    ]);
+  });
+
   it('renders both founder answers and keeps a failed review off the current analysis', () => {
     const inputText = composeReviewInput({ text: PLAN, purpose: 'overall' });
     const view = (

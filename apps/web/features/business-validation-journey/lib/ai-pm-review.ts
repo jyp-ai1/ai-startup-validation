@@ -32,7 +32,8 @@ export const AI_PM_REVIEW_INPUT_TOKEN_BUDGET = 3_000;
 export const AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET = 8_000;
 /** Full consulting text. History is not cut to chase a smaller bill. */
 export const AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS = 2_400;
-export const AI_PM_PRODUCT_REANALYSIS_INPUT_TOKEN_BUDGET = AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET;
+/** The Hangul estimator over-counts. This room keeps the newest analyses and the founder answers. */
+export const AI_PM_PRODUCT_REANALYSIS_INPUT_TOKEN_BUDGET = 24_000;
 
 /**
  * Follow-up sends the parser's stored sections, not a byte copy of the first model JSON.
@@ -930,7 +931,8 @@ export function assembleConsultingHistory(input: {
     .slice(1)
     .flatMap((item) => (item.consultingTurn ? [item.consultingTurn] : []))
     .filter((turn) => turn.supplement.trim() !== supplement);
-  const priorAnalyses = input.records
+  const parentJudgment = input.parent.sections?.analysis?.judgmentDetail || input.parent.sections?.judgment || '';
+  const sameInput = input.records
     .filter(
       (record) =>
         record.status === 'succeeded' &&
@@ -939,12 +941,13 @@ export function assembleConsultingHistory(input: {
         record.reviewId !== root.reviewId &&
         record.reviewId !== input.parent.reviewId,
     )
+    .sort((left, right) => left.finishedAt.localeCompare(right.finishedAt) || left.version - right.version);
+  const newestId = sameInput.at(-1)?.reviewId ?? null;
+  const priorAnalyses = sameInput
     .filter((record) => {
       const judgment = record.sections?.analysis?.judgmentDetail || record.sections?.judgment || '';
-      const parentJudgment = input.parent.sections?.analysis?.judgmentDetail || input.parent.sections?.judgment || '';
-      return judgment !== parentJudgment;
+      return record.reviewId === newestId || judgment !== parentJudgment;
     })
-    .sort((left, right) => left.finishedAt.localeCompare(right.finishedAt) || left.version - right.version)
     .map((record) => ({
       reviewId: record.reviewId,
       judgment: record.sections?.analysis?.judgmentDetail || record.sections?.judgment || '',
@@ -1142,7 +1145,7 @@ function renameEchoKeys(value: unknown): unknown {
 
 /**
  * Product reanalysis. The stored shape is the first-review business fields.
- * Reflection decision fields are not required. Oldest turns drop before the anchors.
+ * Reflection decision fields are not required. Oldest analyses drop before founder answers.
  */
 /** The model sees which stage is already covered. It does not receive sentences to copy. */
 function coveredStage(stage: ReturnType<typeof nextFactToAsk>, answeredText: string): {
@@ -1200,14 +1203,24 @@ export function buildProductReanalysisRequest(input: {
   let analyses = [...(input.priorAnalyses ?? [])];
   let turns = [...input.priorTurns];
   const payload = () =>
-    renameEchoKeys({ ...anchors, priorAnalyses: analyses, priorTurns: turns }) as Record<string, unknown>;
+    renameEchoKeys({
+      ...anchors,
+      founderAnswers: [
+        ...turns.map((turn) => ({ choice: turn.choiceLabel, supplement: turn.supplement, answeredQuestion: turn.question })),
+        { choice: input.founderChoice?.label ?? null, supplement: input.founderSupplement, answeredQuestion: input.latestAnalysis.nextQuestion },
+      ],
+      priorAnalyses: analyses,
+      priorTurns: turns,
+    }) as Record<string, unknown>;
   const systemTokens = estimateReviewTokens(system);
-  while (
-    (analyses.length > 1 || turns.length > 0) &&
-    systemTokens + estimateReviewTokens(JSON.stringify(payload())) > AI_PM_PRODUCT_REANALYSIS_INPUT_TOKEN_BUDGET
-  ) {
-    if (analyses.length > 1) analyses = analyses.slice(0, -1);
-    else turns = turns.slice(1);
+  const overBudget = () =>
+    systemTokens + estimateReviewTokens(JSON.stringify(payload())) > AI_PM_PRODUCT_REANALYSIS_INPUT_TOKEN_BUDGET;
+  while (overBudget()) {
+    if (analyses.length > 1) analyses = analyses.slice(1);
+    else if (turns.length > 1) turns = turns.slice(1);
+    else if (analyses.length === 1) analyses = [];
+    else if (turns.length === 1) turns = [];
+    else break;
   }
   const user = JSON.stringify(payload());
   return {
