@@ -5164,6 +5164,47 @@ describe('AI PM first review', () => {
     expect(payload.verificationStage.reasonText).toBe(reason);
   });
 
+  it('moves a cooperation choice past the question that already asked for a brewery name', () => {
+    const previous =
+      '협력 가능성을 확인하기 위해 우선 접촉할 양조장을 한 곳 정했나요? 정했다면 양조장 이름과 실제 연락할 수 있는 담당자 또는 연락 경로를 알려주세요.';
+    const choice = '양조장과의 협력 방안 구체화';
+    const supplement = '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.';
+    const stage = nextFactToAsk({ supplement, previousQuestions: [previous], choiceLabel: choice });
+    expect(stage.nextPurpose).toBe('candidate_name');
+    expect(questionVerificationStage(stage.factToAsk)).toBe('candidate_name');
+    expect(questionRepeatsPrior([previous], stage.factToAsk)).toBe(false);
+    expect(questionVerificationStage(previous)).toBe('named_target_and_path');
+    expect(
+      verificationPurposeAligns({
+        nextQuestion: stage.factToAsk,
+        nextVerification: stage.verificationText,
+        nextQuestionReason: stage.reasonText,
+      }),
+    ).toBe(true);
+    expect(unverifiedClaimStoredAsFact(supplement, [])).toBe(false);
+    expect(unverifiedClaimStoredAsFact(supplement, [supplement])).toBe(true);
+    expect(nextFactToAsk({ supplement, previousQuestions: [previous] }).nextPurpose).toBe('named_target_and_path');
+    const request = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [],
+      previousQuestions: [previous],
+      latestAnalysis: { ...sections(), nextQuestion: previous },
+      founderChoice: { label: choice, otherText: '' },
+      founderSupplement: supplement,
+      founderFeedback: { comment: choice },
+    });
+    const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      founderChoice: { label: string };
+      founderSupplement: string;
+      verificationStage: { nextPurpose: string; factToAsk: string };
+    };
+    expect(payload.founderChoice.label).toBe(choice);
+    expect(payload.founderSupplement).toBe(supplement);
+    expect(payload.verificationStage.nextPurpose).toBe('candidate_name');
+    expect(payload.verificationStage.factToAsk).not.toBe(previous);
+  });
+
   it('cites a failed review answer without moving it onto the succeeded parent', async () => {
     const store = openAiPmReviewStore(storePath());
     const ready = await runFirstReview({

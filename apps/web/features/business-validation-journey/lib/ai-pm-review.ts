@@ -664,6 +664,7 @@ export type QuestionVerificationStage =
   | 'plan'
   | 'past_contact'
   | 'named_target_and_path'
+  | 'candidate_name'
   | 'willingness'
   | 'terms'
   | 'other';
@@ -671,6 +672,7 @@ export type QuestionVerificationStage =
 /** What a question is trying to verify. A method clause keeps it on the plan stage. */
 export function questionVerificationStage(question: string): QuestionVerificationStage {
   if (questionAsksForPlan(question)) return 'plan';
+  if (/떠오르는/.test(question) && /이름/.test(question) && !/담당|경로/.test(question)) return 'candidate_name';
   if (/정했|골랐|한 곳/.test(question) && /이름/.test(question) && /담당|경로|연락/.test(question)) return 'named_target_and_path';
   if (/역할|비용|수익 배분|운영 책임/.test(question)) return 'terms';
   if (
@@ -690,16 +692,21 @@ const NAMED_TARGET_VERIFICATION =
   '우선 접촉 대상 양조장 선정 여부와 실제 연락 가능한 담당자 또는 연락 경로 확인';
 const NAMED_TARGET_REASON =
   '실제 접촉 전 단계에서 협력 가능성을 검증할 구체적인 대상 양조장이 선정되었는지, 해당 대상에 접근할 현실적인 연락 경로가 있는지 확인하기 위한 것이다.';
+const CANDIDATE_NAME_QUESTION =
+  '후보 선정을 시작하면서 가장 먼저 떠오르는 양조장 이름이 있나요? 있으면 그 이름만 알려 주세요. 없으면 아직 떠오른 곳이 없다고 적어 주세요.';
+const CANDIDATE_NAME_VERIFICATION = '가장 먼저 떠오르는 양조장 후보의 이름 유무 확인';
+const CANDIDATE_NAME_REASON =
+  '협력 방안을 우선하기로 한 다음, 떠오르는 양조장 후보의 이름이 있는지를 확인하기 위한 것이다.';
 
 /**
  * The next fact to ask from the answer and the stages already used.
  * A likelihood with no named brewery stays on the target-and-path step.
  */
-export function nextFactToAsk(input: { supplement: string; previousQuestions: string[] }): {
+export function nextFactToAsk(input: { supplement: string; previousQuestions: string[]; choiceLabel?: string | null }): {
   priorStages: QuestionVerificationStage[];
   answerHasNamedTarget: boolean;
   answerHasContactResult: boolean;
-  nextPurpose: 'named_target_and_path' | 'past_contact' | 'willingness' | 'terms';
+  nextPurpose: 'named_target_and_path' | 'candidate_name' | 'past_contact' | 'willingness' | 'terms';
   factToAsk: string;
   verificationText: string;
   reasonText: string;
@@ -741,6 +748,20 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
       reasonText: '이미 정한 양조장에 연락하거나 미팅했는지와 상대의 반응을 확인하기 위한 것이다.',
     };
   }
+  const askedNamedTarget = input.previousQuestions.some((question) => questionVerificationStage(question) === 'named_target_and_path');
+  const intendsSelection = /선정|확보|우선/.test(supplement);
+  const cooperationChoice = /협력 방안|구체화/.test(input.choiceLabel ?? '');
+  if (askedNamedTarget && intendsSelection && cooperationChoice) {
+    return {
+      priorStages,
+      answerHasNamedTarget,
+      answerHasContactResult,
+      nextPurpose: 'candidate_name',
+      factToAsk: CANDIDATE_NAME_QUESTION,
+      verificationText: CANDIDATE_NAME_VERIFICATION,
+      reasonText: CANDIDATE_NAME_REASON,
+    };
+  }
   return {
     priorStages,
     answerHasNamedTarget,
@@ -755,6 +776,7 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
 /** Purpose text for a verification field. A plan label or a past-contact label stays on that stage. */
 export function purposeStage(text: string): QuestionVerificationStage {
   if (/파트너십 구축|구축 계획|실행 계획/.test(text)) return 'plan';
+  if (/떠오르는 양조장/.test(text) && /이름/.test(text)) return 'candidate_name';
   if (/접촉 여부|만났는지|미팅했는지|연락했는지/.test(text) && !/접촉 전|선정|연락 경로|담당/.test(text)) {
     return 'past_contact';
   }
@@ -978,7 +1000,7 @@ function productReanalysisSchema(): Record<string, unknown> {
         type: 'string',
         description: 'verificationStage.reasonText와 같은 한 문장. 실제 접촉 여부를 확인한다고 바꾸지 않는다.',
       },
-      choices: list,
+      choices: { ...list, description: '이번 질문이 묻는 다음 행동 두 개 이상. 이전 선택지와 같은 문장을 두지 않는다.' },
     },
   };
 }
@@ -986,7 +1008,7 @@ function productReanalysisSchema(): Record<string, unknown> {
 function productReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
-    '사용자 JSON의 priorJudgmentText, priorQuestionText, priorVerificationText, priorReasonText, priorInferences, priorAssumptions, priorEvidenceNotes, priorRisks는 이전 문장이다. 출력의 judgment, nextQuestion, nextVerification, nextQuestionReason, inferences, assumptions, evidenceToChange, risks에 그 문장을 복사하지 않는다.',
+    '사용자 JSON의 priorJudgmentText, priorQuestionText, priorVerificationText, priorReasonText, priorChoices, priorInferences, priorAssumptions, priorEvidenceNotes, priorRisks는 이전 문장이다. 출력의 judgment, nextQuestion, nextVerification, nextQuestionReason, choices, inferences, assumptions, evidenceToChange, risks에 그 문장을 복사하지 않는다.',
     '이번 답을 여섯 가지로 새 문장에 적는다. 새로 알게 된 내용, 근거 수준, 기존 판단에서 영향을 받는 부분, 바뀐 판단 또는 유지한 판단, 바꾸지 않은 이유, 추가 검증이다.',
     '근거 수준은 검증된 사실, Founder의 경험, Founder의 주장 또는 기대, 실행 계획, 추정 및 가정, 근거가 부족한 정보 중 하나다. 확인된 사실, 경험, 추정, 계획을 섞지 않는다.',
     '가능성이 높다처럼 확인 절차가 없는 답은 Founder의 주장 또는 기대이자 자체 판단이다. 구체적 증거가 없으면 검증된 사실이 아니다. inferences는 이번 답만 해석한다. 답 유형, 증거가 있는지, 확인된 사실, 미확인 사항을 적는다. 시장 관심이나 수요를 확인된 사실로 올리지 않는다. 경험이나 실행 결과를 만들지 않는다.',
@@ -998,6 +1020,7 @@ function productReanalysisSystemPrompt(): string {
     'nextQuestion은 verificationStage.factToAsk와 같은 한 질문이다. 다른 문장을 붙이지 않는다. 이번 답에 연락하거나 미팅한 결과와 양조장 이름이 없으면 한 곳을 정했는지, 그 이름, 담당자 또는 연락 경로를 사실로 묻는다. 방법, 구축, 계획, 어떻게, 어떤 방식, 방안, 구체화, 다음 단계를 붙이면 실패다. 협력 가능성이 높은지를 다시 묻지 않는다. priorQuestionTexts와 같거나 표현만 바꾼 계획 질문이면 실패다.',
     'nextVerification은 verificationStage.verificationText와 같은 한 문장이다. 구축 계획으로 바꾸지 않는다.',
     'nextQuestionReason은 verificationStage.reasonText와 같은 한 문장이다. 실제 접촉 여부를 확인한다고 바꾸지 않는다.',
+    'founderChoice는 다음에 검증할 우선순위다. 양조장을 정했거나 연락했다는 사실이 아니다. founderFacts에 넣지 않는다. priorChoices와 같은 문장을 choices에 두지 않는다.',
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
@@ -1028,7 +1051,9 @@ function renameEchoKeys(value: unknown): unknown {
                 ? 'priorEvidenceNotes'
                 : key === 'risks'
                   ? 'priorRisks'
-                  : key;
+                  : key === 'choices'
+                    ? 'priorChoices'
+                    : key;
     renamed[name] = renameEchoKeys(child);
   }
   return renamed;
@@ -1061,7 +1086,11 @@ export function buildProductReanalysisRequest(input: {
     founderFeedback: input.founderFeedback,
     founderAnswerSource: input.founderAnswerSource ?? null,
     priorQuestionTexts: previousQuestions,
-    verificationStage: nextFactToAsk({ supplement: input.founderSupplement, previousQuestions }),
+    verificationStage: nextFactToAsk({
+      supplement: input.founderSupplement,
+      previousQuestions,
+      choiceLabel: input.founderChoice?.label ?? null,
+    }),
     doNotCopy: {
       priorJudgmentText: input.latestAnalysis.analysis?.judgmentDetail || input.latestAnalysis.judgment,
       priorQuestionText: input.latestAnalysis.nextQuestion,
