@@ -352,7 +352,7 @@ export function openReviewChat(env: Record<string, string | undefined> = process
     callReviewWithQuotaSwitch({
       request,
       openAI: async (chatRequest) => {
-        if (openAICalls >= 3) throw new Error('review_retry_blocked');
+        if (openAICalls >= 4) throw new Error('review_retry_blocked');
         openAICalls += 1;
         return new OpenAIProviderAdapter({ apiKey: openAIKey }).chat(chatRequest);
       },
@@ -1256,6 +1256,18 @@ export function productReadingRepairMessage(issues: string[], context?: { supple
   }
   if (issues.includes('selection_question_repeated')) {
     lines.push('이미 후보가 없다. 이름, 선정했는지, 정했는지를 nextQuestion과 nextVerification에 다시 넣지 마라. 접근 경로, 협력 의사, 협력 조건 중 하나만 물어라.');
+  }
+  const verificationOnly = issues.every((code) =>
+    [
+      'verification_question_mismatch',
+      'answered_criterion_still_open',
+      'verification_asserts_positive_effect',
+      'prior_goal_repeated',
+      'answered_verification_repeated',
+    ].includes(code),
+  );
+  if (verificationOnly && issues.length > 0) {
+    lines.push('judgment, summary, assumptions, inferences는 그대로 둔다. nextVerification만 nextQuestion과 같은 대상 하나로 다시 쓴다.');
   }
   lines.push('사업성을 유지할지 바꿀지, 긍정인지 부정인지는 네가 근거로 다시 정한다. 대체 문장을 받지 않는다.');
   lines.push('같은 문장을 다시 내면 실패다.');
@@ -3646,8 +3658,8 @@ async function finishCall(input: {
       let issues = input.readingIssues(response.content);
       let bestCount = issues.length;
       let draft = response.content;
-      // The provider allows the first call and two repairs. A repair is kept only when it has fewer failures.
-      for (let attempt = 0; attempt < 2 && issues.length > 0; attempt += 1) {
+      // The provider allows the first call and three repairs. A repair is kept only when it has fewer failures.
+      for (let attempt = 0; attempt < 3 && issues.length > 0; attempt += 1) {
         firstRawContent = firstRawContent ?? first.content;
         try {
           const repair = await input.chat({
@@ -3680,9 +3692,14 @@ async function finishCall(input: {
             issues = repairIssues;
             bestCount = repairIssues.length;
             draft = repair.content;
-          } else if (attempt === 0 && parsed) {
-            issues = [...new Set([...issues, ...repairIssues])];
-            draft = repair.content;
+          } else if (attempt < 2 && parsed) {
+            if (attempt === 0) {
+              issues = [...new Set([...issues, ...repairIssues])];
+              draft = repair.content;
+            } else {
+              draft = response.content;
+              issues = input.readingIssues(response.content);
+            }
           } else {
             break;
           }

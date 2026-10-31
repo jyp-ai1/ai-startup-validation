@@ -5903,22 +5903,24 @@ describe('AI PM first review', () => {
     });
     expect(follow.ok).toBe(true);
     if (!follow.ok) return;
-    expect(calls).toHaveLength(3);
+    expect(calls).toHaveLength(4);
     expect(calls[1]).toContain('new_answer_missing');
     expect(calls[1]).toContain('judgment에 체험이 없다');
     expect(calls[2]).toContain('verification_asserts_positive_effect');
     expect(calls[2]).toContain('answered_criterion_still_open');
-    expect(follow.record.callCount).toBe(3);
+    expect(calls[3]).toContain('judgment, summary, assumptions, inferences는 그대로 둔다');
+    expect(follow.record.callCount).toBe(4);
     expect(follow.record.callLedger?.map((note) => note.readingIssues.some((issue) => issue.startsWith('repair_failed')))).toEqual([
+      false,
       false,
       false,
       false,
     ]);
     expect(follow.record.firstRawContent).toContain('근거가 부족하다');
     expect(follow.record.sections?.nextQuestion).toBe('그 양조장에 닿는 경로는 무엇인가요?');
-    expect(follow.record.promptTokens).toBe(34);
-    expect(follow.record.completionTokens).toBe(14);
-    expect(follow.record.totalTokens).toBe(48);
+    expect(follow.record.promptTokens).toBe(46);
+    expect(follow.record.completionTokens).toBe(19);
+    expect(follow.record.totalTokens).toBe(65);
     const parent = await store.readReview('user-a', first.record.reviewId);
     expect(parent?.finishedAt).toBe(first.record.finishedAt);
     store.close();

@@ -73,12 +73,13 @@ const STEP_ATTEMPT_ID = '2c81bae4-c269-48b9-9729-4f18bbd71c9e';
 const FOLLOW_PARENT_ID = '98736271-9ee5-4de7-96ae-a581461ea738';
 const FOLLOW_CHOICE = '양조장 후보 선정 기준을 구체화한다.';
 const FOLLOW_SUPPLEMENT = '체험으로 만들고 마실 수 있는 양조장인지를 기준으로 후보를 고르겠다. 그 기준에 맞는 양조장은 아직 정하지 못했다.';
-const FOLLOW_OBJECT = 'product-follow-through-2026-10-31-f.json';
+const FOLLOW_OBJECT = 'product-follow-through-2026-10-31-g.json';
 const FOLLOW_ATTEMPT_ID = '38417d03-2855-40b6-a293-1b0759a203ff';
 const FOLLOW_SECOND_ID = 'fa3ed0f4-5e7e-45ed-9c76-dfbfb035436f';
 const FOLLOW_THIRD_ID = '2b71aa2c-a03e-4ade-ad61-6e8c59aaffcd';
 const FOLLOW_FOURTH_ID = '599dc4c4-fd39-47a7-8122-9f8f8ae4d25f';
 const FOLLOW_FIFTH_ID = '6fd3cac0-451c-4c89-b93c-548f47773017';
+const FOLLOW_SIXTH_ID = '7daa145c-f0d6-43bb-9a5b-399d44554396';
 const COPIED_EXPERIMENT_JUDGMENT =
   '현재 사업성 판단은 낮아지며, 양조장과의 협력 가능성이 높지만 구체적인 후보가 없다는 점이 부정적인 영향을 미친다.';
 const SEPARATION_REVIEW_ID = 'ad73c33f-7bdc-47ff-b539-0ac9afdcdb82';
@@ -1916,6 +1917,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
       FOLLOW_THIRD_ID,
       FOLLOW_FOURTH_ID,
       FOLLOW_FIFTH_ID,
+      FOLLOW_SIXTH_ID,
     ];
     const preserved = await Promise.all(preservedIds.map((reviewId) => backend.store.readReview(userId, reviewId)));
     const startedAt = new Date().toISOString();
