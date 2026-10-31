@@ -4893,6 +4893,11 @@ describe('AI PM first review', () => {
     expect(system).toContain('이유를 적는다');
     expect(system).toContain('유지와 이유');
     expect(request.maxTokens).toBe(AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS);
+    expect(request.responseFormat?.type).toBe('json_schema');
+    if (request.responseFormat?.type === 'json_schema') {
+      const properties = request.responseFormat.schema.properties as { judgment: { type: string } };
+      expect(properties.judgment.type).toBe('string');
+    }
   });
 
   it('does not call again when the draft copies the prior judgment', async () => {

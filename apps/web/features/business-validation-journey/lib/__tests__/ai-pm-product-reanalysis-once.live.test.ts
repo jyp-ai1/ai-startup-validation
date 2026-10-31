@@ -24,7 +24,7 @@ const ANSWER_ID = '7d2d04e5-93a1-4cd6-aebf-03582eeb003f';
 const SUPPLEMENT = '양조장과의 협력 가능성이 높다.';
 const BUCKET = 'ai-pm-quality-compare';
 const OBJECT = 'product-cumulative-brewery-2026-10-31.json';
-const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-d.json';
+const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-e.json';
 const QUALITY_PARENT_ID = '9e169fef-7428-4d21-a6f0-f3034bcc91d1';
 const SIBLING_ANALYSIS_ID = '8602a92e-0fbd-4d93-a005-9c9f18410ac6';
 
@@ -72,7 +72,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
     expect(userPayload).toHaveProperty('latestAnalysis');
     expect(userPayload).toHaveProperty('founderFeedback');
     expect(userPayload).toHaveProperty('priorTurns');
-    expect(request.responseFormat).toEqual({ type: 'json_object' });
+    expect(request.responseFormat?.type).toBe('json_schema');
     const preview = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_GIT_COMMIT_REF !== 'main';
     const apiKey = process.env.GPT_API_KEY?.trim() ?? '';
     if (!preview || !apiKey) {
@@ -175,6 +175,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
         '02dbf55a-eaf4-49fd-ba4c-ab043f16d39c',
         'dac12cd4-9958-405c-900b-deb2a5418c41',
         '17c3d2ea-dfb2-480d-b2cf-47f7fecf7c06',
+        'eb645c94-c0eb-4a27-afee-32dca258ee6b',
       ].map((reviewId) => backend.store.readReview(userId, reviewId)),
     );
     const records = await backend.store.listReviews(userId, PROJECT_ID);

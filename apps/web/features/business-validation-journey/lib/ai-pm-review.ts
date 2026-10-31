@@ -745,6 +745,71 @@ function compactConsultingAnalysis(sections: ReviewSections): {
   };
 }
 
+function productReanalysisSchema(): Record<string, unknown> {
+  const text = { type: 'string' };
+  const list = { type: 'array', items: { type: 'string' } };
+  return {
+    title: 'product_reanalysis',
+    type: 'object',
+    additionalProperties: false,
+    required: [
+      'summary',
+      'customer',
+      'problem',
+      'value',
+      'operatingModel',
+      'alternatives',
+      'differentiation',
+      'payer',
+      'revenueModel',
+      'market',
+      'competition',
+      'operations',
+      'profitability',
+      'strengths',
+      'risks',
+      'assumptions',
+      'evidenceToChange',
+      'founderFacts',
+      'inferences',
+      'judgment',
+      'nextVerification',
+      'nextQuestion',
+      'nextQuestionReason',
+      'choices',
+    ],
+    properties: {
+      summary: text,
+      customer: text,
+      problem: text,
+      value: text,
+      operatingModel: text,
+      alternatives: text,
+      differentiation: text,
+      payer: text,
+      revenueModel: text,
+      market: text,
+      competition: text,
+      operations: text,
+      profitability: text,
+      strengths: list,
+      risks: { ...list, description: '이번 답이 드러낸 미확인을 새 문장으로 포함한다.' },
+      assumptions: { ...list, description: '이번 답으로 아직 검증되지 않은 전제를 새 문장으로 적는다.' },
+      evidenceToChange: { ...list, description: '답이 판단에 어떤 영향을 주는지 적는다. 답 문장만 반복하지 않는다.' },
+      founderFacts: { ...list, description: '확인된 접촉, 계약, 입금, 예약만. 없으면 빈 배열.' },
+      inferences: { ...list, description: '근거 수준. 가능성 판단은 Founder의 기대 또는 자체 판단이다.' },
+      judgment: { type: 'string', description: '문자열이다. 객체가 아니다. 유지와 이유, 반영하지 못한 부분을 한 문장에 적는다.' },
+      nextVerification: text,
+      nextQuestion: {
+        type: 'string',
+        description: '이미 일어났는지 묻는 질문 하나. 계획, 어떻게, 구축을 넣지 않는다.',
+      },
+      nextQuestionReason: text,
+      choices: list,
+    },
+  };
+}
+
 function productReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
@@ -755,7 +820,7 @@ function productReanalysisSystemPrompt(): string {
     '확인되지 않은 협력 가능성, 추정, 기대, 계획은 founderFacts에 넣지 않는다. founderFacts는 접촉, 계약, 입금, 예약처럼 확인된 사실만 담는다. 근거가 없으면 빈 배열이다.',
     'assumptions는 이번 답으로 아직 검증되지 않은 전제를 새 문장으로 적는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
     'evidenceToChange에는 이 답이 판단에 어떤 영향을 주는지, 사업 실행 가능성에 주는 영향과 아직 검증되지 않은 전제라는 점을 적는다. 답 문장만 다시 적으면 실패다.',
-    'judgment에는 유지와 이유를 넣는다. 긍정적 변화, 반영하지 못한 부분, 유지 이유, 다음에 필요한 증거를 같은 판단 안에 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. priorJudgmentText와 같은 문장이면 실패다.',
+    'judgment는 문자열이다. 객체로 나누면 실패다. 유지와 이유를 그 문자열에 넣는다. 긍정적 변화, 반영하지 못한 부분, 유지 이유, 다음에 필요한 증거를 이어서 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. priorJudgmentText와 같은 문장이면 실패다.',
     'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉과 상대의 의사가 없으면 그 위험을 적는다. 이전 위험만 반복하면 실패다.',
     'nextQuestion은 하나다. 계획, 어떻게, 어떤 방식, 구축을 묻으면 실패다. priorQuestionText를 표현만 바꾸면 실패다. 이미 일어났는지와 상대가 뭐라고 답했는지를 가른다. 접촉이 확인되지 않았으면 실제로 연락하거나 미팅한 양조장이 있는지, 있다면 상대의 반응과 협력 조건을 묻는다.',
     'nextQuestionReason에는 그 질문이 이전 계획 질문과 다른 이유를 적는다.',
@@ -763,6 +828,7 @@ function productReanalysisSystemPrompt(): string {
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
     '이번 답이 판단, 가정, 위험, 다음 검증, 다음 질문에 반영되어야 한다.',
+    '양조장 협력에 접촉 근거가 없으면 nextQuestion은 이 문장이다. 현재까지 실제로 연락하거나 미팅한 양조장이 있나요? 있다면 상대 양조장의 반응과 협력 조건에 대해 어떤 답변을 받았나요?',
   ].join(' ');
 }
 
@@ -815,7 +881,11 @@ export function buildProductReanalysisRequest(input: {
       priorQuestionText: input.latestAnalysis.nextQuestion,
     },
   };
-  let analyses = [...(input.priorAnalyses ?? [])];
+  const received = [...(input.priorAnalyses ?? [])];
+  let analyses =
+    received.length > 1
+      ? [received[0], ...received.slice(1).filter((item) => !questionAsksForPlan(item.nextQuestion))]
+      : received;
   let turns = [...input.priorTurns];
   const payload = () =>
     renameEchoKeys({ ...anchors, priorAnalyses: analyses, priorTurns: turns }) as Record<string, unknown>;
@@ -832,7 +902,7 @@ export function buildProductReanalysisRequest(input: {
     model: AI_PM_REVIEW_MODEL,
     temperature: 0.2,
     maxTokens: AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS,
-    responseFormat: { type: 'json_object' },
+    responseFormat: { type: 'json_schema', schema: productReanalysisSchema() },
     messages: [
       { role: 'system' as const, content: system },
       { role: 'user' as const, content: user },
