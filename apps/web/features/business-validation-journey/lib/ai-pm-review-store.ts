@@ -119,6 +119,24 @@ export type ConsultingTurn = {
   nextQuestion: string;
 };
 
+/** One question in a consulting stage. Ids are q1, q2, … in the order the model returned them. */
+export type ConsultingQuestion = {
+  questionId: string;
+  text: string;
+};
+
+/**
+ * One question and the founder answer that belongs to it.
+ * Open means this stage has not received that answer yet.
+ */
+export type StagePair = {
+  questionId: string;
+  question: string;
+  choiceLabel: string | null;
+  supplement: string;
+  status: 'answered' | 'open';
+};
+
 export type ReviewCallNote = {
   index: number;
   promptTokens: number | null;
@@ -159,6 +177,13 @@ export type StoredReview = {
   revisionGate?: RevisionGate | null;
   /** Founder answer that produced this child. Absent on a first review and on older rows. */
   consultingTurn?: ConsultingTurn | null;
+  /**
+   * Answered question-answer pairs this integrated reanalysis read.
+   * The next stage's questions are sections.analysis.questions. Absent on older rows.
+   */
+  stageAnswers?: StagePair[];
+  /** True when analysis was requested before every question in the stage had an answer. */
+  stagePartial?: boolean;
   /** Where that answer already lives. Citing it does not move the feedback row. */
   founderAnswerSource?: {
     feedbackId: string;
@@ -201,6 +226,8 @@ export type BusinessAnalysis = {
   alternatives?: string;
   differentiation?: string;
   nextVerification?: string;
+  /** Follow-up questions for the next stage. Absent when the model returned only nextQuestion. */
+  questions?: ConsultingQuestion[];
 };
 
 export type ChoiceAnswer = {
@@ -265,8 +292,10 @@ export type StoredFeedback = {
   comment: string;
   nextAction: NextAction;
   marks: ReviewMark[];
-  /** Founder's choice on the first question. Saving it does not call a model. */
+  /** Founder's choice on one question. Saving it does not call a model. */
   choiceAnswer?: ChoiceAnswer | null;
+  /** Links this answer to one question of the parent stage. Absent on older rows. */
+  questionId?: string | null;
   submittedAt: string;
   modelCalls: 0;
 };

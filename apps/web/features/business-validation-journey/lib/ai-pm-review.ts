@@ -9,7 +9,9 @@ import type {
   AiPmReviewStore,
   BusinessAnalysis,
   ChoiceAnswer,
+  ConsultingQuestion,
   ConsultingTurn,
+  StagePair,
   NextAction,
   ReviewMark,
   ReviewSections,
@@ -488,7 +490,7 @@ export function buildFirstReviewRequest(text: string): ChatRequest {
       { role: 'system', content: firstReviewSystemPrompt() },
       {
         role: 'user',
-        content: `사업 입력:\n${text}\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다.`,
+        content: `사업 입력:\n${text}\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 2개 이상이다. nextQuestion은 questions의 첫 질문이다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다.`,
       },
     ]),
   };
@@ -1307,6 +1309,9 @@ export function productReadingRepairMessage(issues: string[], context?: { supple
   if (issues.includes('answered_question_repeated') || issues.includes('answered_verification_repeated')) {
     lines.push('방금 답한 기준 질문을 다시 묻지 않는다. 다음 질문에는 기준을 넣지 않는다. 접근 경로, 협력 의사, 협력 조건 중 하나만 묻는다.');
   }
+  if (issues.includes('stage_questions_missing') || issues.includes('stage_questions_repeated')) {
+    lines.push('questions는 다음 단계의 서로 다른 검증 질문 2개 이상이다. 이미 답한 질문 문장을 반복하지 않는다. nextQuestion은 questions의 첫 질문과 같다.');
+  }
   lines.push('JSON만 반환한다.');
   return lines.join(' ');
 }
@@ -1569,6 +1574,7 @@ function productReanalysisSchema(): Record<string, unknown> {
       'nextQuestion',
       'nextQuestionReason',
       'choices',
+      'questions',
     ],
     properties: {
       summary: {
@@ -1625,6 +1631,11 @@ function productReanalysisSchema(): Record<string, unknown> {
         description: '그 답이 다음 사업성 판단에 왜 필요한지. priorReasonText와 같으면 실패다.',
       },
       choices: { ...list, description: '이번 질문에 답하는 서로 다른 선택 두 개 이상. priorChoices와 같은 문장을 두지 않는다.' },
+      questions: {
+        ...list,
+        description:
+          '다음 상담 단계의 서로 다른 검증 질문 2개 이상. 첫 원소는 nextQuestion과 같다. 이미 답한 질문 문장을 반복하지 않는다.',
+      },
     },
   };
 }
@@ -1655,8 +1666,10 @@ function productReanalysisSystemPrompt(): string {
     'nextVerification과 nextQuestionReason은 이번 질문이 다음 판단을 어떻게 돕는지 새 문장으로 적는다. priorVerificationText, priorReasonText와 같으면 실패다.',
     'founderChoice와 founderSupplement는 이번 답이다. 양조장을 정했거나 연락한 사실이 아니면 founderFacts에 넣지 않는다. 후보가 없다는 선택은 협력 불가능이 아니다. choices는 이번 질문에 대한 서로 다른 답 두 개 이상이다. priorChoices와 같은 문장을 앞에 두지 않는다.',
     'JSON만 반환한다.',
-    '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
+    'stagePairs가 있으면 이번 상담 단계다. questionId가 질문과 답을 잇는다. 질문과 답을 따로 뭉치지 말고 쌍으로 함께 읽는다. status가 open인 질문은 답하지 않은 것이다. 답한 질문만으로 단계를 끝낸 것처럼 판단하지 않는다. questions는 다음 단계의 서로 다른 검증 질문 N개다. nextQuestion은 questions의 첫 질문과 같다. 이미 답한 질문을 반복하지 않는다.',
+    '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
+    'questions는 다음 단계의 서로 다른 검증 질문 2개 이상의 문자열 배열이다.',
     '새 답이 없어도 evidenceLedger.unresolved는 판단, 가정, 위험, 다음 검증, 다음 질문에 남는다.',
   ].join(' ');
 }
@@ -1728,6 +1741,12 @@ export function buildProductReanalysisRequest(input: {
   experimentRecords?: ExperimentRecord[];
   failedCalls?: FailedCallRecord[];
   newFounderInformation?: boolean;
+  /** This stage's questions and answers, linked by questionId. Absent on the one-answer path. */
+  stagePairs?: StagePair[];
+  /** Answered pairs from earlier stages, oldest first. */
+  priorStagePairs?: StagePair[];
+  /** True only when the founder asked for analysis before every question was answered. */
+  stagePartial?: boolean;
 }): ChatRequest {
   const previousQuestions = input.previousQuestions ?? [input.latestAnalysis.nextQuestion];
   const system = productReanalysisSystemPrompt();
@@ -1765,14 +1784,36 @@ export function buildProductReanalysisRequest(input: {
     founderChoice: input.founderChoice?.label ?? null,
     founderSupplement: input.founderSupplement,
   });
+  const stagePairs = input.stagePairs ?? [];
+  const stageBatch = stagePairs.length > 0;
   const payload = () =>
     renameEchoKeys({
-      thisAnswer: {
-        choice: input.founderChoice?.label ?? null,
-        supplement: input.founderSupplement,
-        answeredQuestion: input.latestAnalysis.nextQuestion,
-        kind: '이번 답. 선택 또는 계획일 수 있다. 확인된 사실이 아니다. 선택 라벨보다 supplement가 구체적이면 supplement가 이번 답이다.',
-      },
+      ...(stageBatch
+        ? {
+            stagePairs: stagePairs.map((pair) => ({
+              questionId: pair.questionId,
+              question: pair.question,
+              choiceLabel: pair.choiceLabel,
+              supplement: pair.supplement,
+              status: pair.status,
+            })),
+            priorStagePairs: (input.priorStagePairs ?? []).map((pair) => ({
+              questionId: pair.questionId,
+              question: pair.question,
+              choiceLabel: pair.choiceLabel,
+              supplement: pair.supplement,
+              status: pair.status,
+            })),
+            stagePartial: input.stagePartial === true,
+          }
+        : {
+            thisAnswer: {
+              choice: input.founderChoice?.label ?? null,
+              supplement: input.founderSupplement,
+              answeredQuestion: input.latestAnalysis.nextQuestion,
+              kind: '이번 답. 선택 또는 계획일 수 있다. 확인된 사실이 아니다. 선택 라벨보다 supplement가 구체적이면 supplement가 이번 답이다.',
+            },
+          }),
       evidenceLedger,
       readingContract: {
         claim: 'founderClaims는 검증되지 않은 가설이다. 현재 사업성의 긍정 근거로 쓰지 않는다.',
@@ -1792,7 +1833,7 @@ export function buildProductReanalysisRequest(input: {
         ...((input.consultingPath ?? []).length === 0
           ? turns.map((turn) => ({ choice: turn.choiceLabel, supplement: turn.supplement, answeredQuestion: turn.question }))
           : []),
-        ...(input.newFounderInformation === false
+        ...(stageBatch || input.newFounderInformation === false
           ? []
           : [{ choice: input.founderChoice?.label ?? null, supplement: input.founderSupplement, answeredQuestion: input.latestAnalysis.nextQuestion }]),
       ],
@@ -2081,10 +2122,17 @@ export async function runFirstReview(input: {
   });
 }
 
+function readQuestionId(source: Record<string, unknown>): string | null {
+  const questionId = typeof source.questionId === 'string' ? source.questionId.trim().slice(0, 80) : '';
+  return questionId || null;
+}
+
 export function parseFeedbackBody(body: unknown): { ok: true; value: Omit<StoredFeedback, 'feedbackId' | 'userId' | 'submittedAt' | 'modelCalls'> } | { ok: false; error: 'feedback_incomplete' } {
   if (!body || typeof body !== 'object') return { ok: false, error: 'feedback_incomplete' };
   const source = body as Record<string, unknown>;
   const reviewId = typeof source.reviewId === 'string' ? source.reviewId.trim() : '';
+  const questionId = readQuestionId(source);
+  const linked = questionId ? { questionId } : {};
   const choiceAnswer = readChoiceAnswer(source);
   if (reviewId && choiceAnswer) {
     return {
@@ -2098,6 +2146,7 @@ export function parseFeedbackBody(body: unknown): { ok: true; value: Omit<Stored
         nextAction: 'verify_hypotheses',
         marks: [],
         choiceAnswer,
+        ...linked,
       },
     };
   }
@@ -2111,14 +2160,30 @@ export function parseFeedbackBody(body: unknown): { ok: true; value: Omit<Stored
   const marks = normalizeMarks(source.marks);
   if (reviewId && marks.length > 0) {
     const derived = feedbackFromMarks(marks, comment);
-    return { ok: true, value: { reviewId, ...derived, choiceAnswer: null } };
+    return { ok: true, value: { reviewId, ...derived, choiceAnswer: null, ...linked } };
+  }
+  if (reviewId && questionId && comment && !agreement) {
+    return {
+      ok: true,
+      value: {
+        reviewId,
+        agreement: 'need_info',
+        accuracy: 'hard_to_compare',
+        revisionAreas: ['other'],
+        comment,
+        nextAction: 'verify_hypotheses',
+        marks: [],
+        choiceAnswer: null,
+        questionId,
+      },
+    };
   }
   if (!reviewId || !agreement || !accuracy || !nextAction || !revisionAreas) {
     return { ok: false, error: 'feedback_incomplete' };
   }
   return {
     ok: true,
-    value: { reviewId, agreement, accuracy, revisionAreas, comment, nextAction, marks: [], choiceAnswer: null },
+    value: { reviewId, agreement, accuracy, revisionAreas, comment, nextAction, marks: [], choiceAnswer: null, ...linked },
   };
 }
 
@@ -2290,6 +2355,214 @@ export function needsRevisionGate(marks: ReviewMark[]): boolean {
 function reuseFollowUp(record: StoredReview, marks: ReviewMark[]): boolean {
   if (!needsRevisionGate(marks)) return record.status === 'succeeded';
   return record.revisionGate?.pass === true || record.revisionGate?.pass === false;
+}
+
+/** Questions for one stage. Older rows that stored only nextQuestion stay a one-question stage. */
+export function consultingQuestions(sections: ReviewSections | null | undefined): ConsultingQuestion[] {
+  const listed = sections?.analysis?.questions?.filter((item) => item.questionId.trim() && item.text.trim()) ?? [];
+  if (listed.length > 0) {
+    return listed.map((item) => ({ questionId: item.questionId.trim(), text: item.text.trim() }));
+  }
+  const text = sections?.nextQuestion.trim() ?? '';
+  return text ? [{ questionId: 'q1', text }] : [];
+}
+
+/**
+ * Links each question to the latest feedback with that questionId.
+ * A feedback row without questionId answers q1 only when the stage has one question.
+ */
+export function pairConsultingStage(questions: ConsultingQuestion[], feedback: StoredFeedback[]): StagePair[] {
+  return questions.map((question) => {
+    const matched = [...feedback].reverse().find((item) => item.questionId === question.questionId);
+    const legacy =
+      !matched && questions.length === 1
+        ? [...feedback].reverse().find((item) => !item.questionId && (item.choiceAnswer || item.comment.trim()))
+        : undefined;
+    const item = matched ?? legacy;
+    if (!item) {
+      return {
+        questionId: question.questionId,
+        question: question.text,
+        choiceLabel: null,
+        supplement: '',
+        status: 'open' as const,
+      };
+    }
+    const choiceLabel = item.choiceAnswer?.label?.trim() || null;
+    const supplement = (item.choiceAnswer?.otherText || item.comment || '').trim();
+    const answered = supplement.length > 0 || Boolean(choiceLabel);
+    return {
+      questionId: question.questionId,
+      question: question.text,
+      choiceLabel,
+      supplement,
+      status: answered ? ('answered' as const) : ('open' as const),
+    };
+  });
+}
+
+export function stageComplete(pairs: StagePair[]): boolean {
+  return pairs.length > 0 && pairs.every((pair) => pair.status === 'answered');
+}
+
+function stageSupplementKey(pairs: StagePair[]): string {
+  return pairs
+    .filter((pair) => pair.status === 'answered')
+    .map((pair) => `${pair.questionId}\n${pair.question}\n${pair.choiceLabel ?? ''}\n${pair.supplement}`)
+    .join('\n---\n');
+}
+
+function stageQuestionIssues(content: string, asked: Set<string>, sourceText: string): string[] {
+  const parsed = parseSections(content, sourceText);
+  if (!parsed?.analysis) return [];
+  const texts = consultingQuestions(parsed).map((item) => item.text.trim());
+  const issues: string[] = [];
+  if (texts.length < 2 || new Set(texts).size < texts.length) issues.push('stage_questions_missing');
+  if (texts.some((text) => asked.has(text))) issues.push('stage_questions_repeated');
+  return issues;
+}
+
+/**
+ * One integrated reanalysis after a stage's answers are collected.
+ * Saving answers does not call this. An open stage returns stage_incomplete and does not call the model.
+ * allowPartial is the explicit mid-stage analysis. It is not a completed stage.
+ * The follow-up HTTP route still sends one supplement per call. This function is the stage contract.
+ */
+export async function runStageReanalysis(input: {
+  store: AiPmReviewStore;
+  userId: string;
+  projectId: string;
+  reviewId: string;
+  now: string;
+  chat?: ReviewChat;
+  evidence: StoredReview['evidence'];
+  notRunReason?: string;
+  allowPartial?: boolean;
+  forceNew?: boolean;
+}): Promise<
+  | { ok: true; called: boolean; record: StoredReview; view: AiPmReviewView }
+  | { ok: false; error: 'review_missing' | 'feedback_required' | 'stage_incomplete' | 'engine_unconfigured' | 'gpt_api_key_missing' }
+> {
+  const parent = await input.store.readReview(input.userId, input.reviewId);
+  if (!parent || parent.projectId !== input.projectId || parent.status !== 'succeeded' || !parent.sections) {
+    return { ok: false, error: 'review_missing' };
+  }
+  const feedback = await input.store.listFeedback(input.userId, parent.reviewId);
+  const questions = consultingQuestions(parent.sections);
+  const pairs = pairConsultingStage(questions, feedback);
+  const answered = pairs.filter((pair) => pair.status === 'answered');
+  if (answered.length === 0) return { ok: false, error: 'feedback_required' };
+  if (!stageComplete(pairs) && !input.allowPartial) return { ok: false, error: 'stage_incomplete' };
+  const supplementKey = stageSupplementKey(pairs);
+  const supplementSha = sha256(supplementKey);
+  const sourceFeedbackId =
+    [...feedback].reverse().find((item) => item.questionId && answered.some((pair) => pair.questionId === item.questionId))?.feedbackId ??
+    (questions.length === 1 ? ([...feedback].reverse().find((item) => !item.questionId)?.feedbackId ?? null) : null) ??
+    feedback.at(-1)?.feedbackId ??
+    null;
+  const prior = (await input.store.listReviews(input.userId, input.projectId))
+    .filter(
+      (record) =>
+        record.parentReviewId === parent.reviewId &&
+        record.sourceFeedbackId === sourceFeedbackId &&
+        record.supplementSha === supplementSha,
+    )
+    .at(-1);
+  if (prior && prior.status === 'succeeded' && !input.forceNew) {
+    return {
+      ok: true,
+      called: false,
+      record: prior,
+      view: toAiPmReviewView(prior, await input.store.listFeedback(input.userId, prior.reviewId)),
+    };
+  }
+  if (!input.chat) return { ok: false, error: input.notRunReason === 'gpt_api_key_missing' ? 'gpt_api_key_missing' : 'engine_unconfigured' };
+  const latest = await input.store.latestForInput(input.userId, parent.inputSha, input.projectId);
+  const records = await input.store.listReviews(input.userId, input.projectId);
+  const projectFeedback = (await input.store.listFeedback(input.userId)).filter((item) =>
+    records.some((record) => record.reviewId === item.reviewId),
+  );
+  const history = assembleConsultingHistory({ records, parent, supplement: supplementKey, feedback: projectFeedback });
+  const root = history.root;
+  const priorStagePairs = reviewChain(records, parent).flatMap((record) => record.stageAnswers ?? []);
+  const stagePartial = !stageComplete(pairs);
+  const supplementText = answered.map((pair) => pair.supplement).join('\n');
+  const ledger = buildEvidenceLedger({
+    consultingPath: history.consultingPath,
+    newFounderInformation: history.newFounderInformation,
+    founderChoice: null,
+    founderSupplement: supplementText,
+  });
+  const asked = new Set(
+    [...priorStagePairs, ...pairs].map((pair) => pair.question.trim()).filter((question) => question.length > 0),
+  );
+  const productRequest = buildProductReanalysisRequest({
+    originalInput: root.inputText,
+    firstAnalysis: root.sections ?? parent.sections,
+    priorTurns: history.priorTurns,
+    priorAnalyses: history.priorAnalyses,
+    previousQuestions: history.previousQuestions,
+    founderAnswerSource: history.founderAnswerSource,
+    latestAnalysis: parent.sections,
+    consultingPath: history.consultingPath,
+    experimentRecords: history.experimentRecords,
+    failedCalls: history.failedCalls,
+    newFounderInformation: history.newFounderInformation,
+    founderChoice: null,
+    founderSupplement: '',
+    founderFeedback: null,
+    stagePairs: pairs,
+    priorStagePairs,
+    stagePartial,
+  });
+  const finished = await finishCall({
+    store: input.store,
+    input: {
+      userId: input.userId,
+      projectId: input.projectId,
+      text: parent.inputText,
+      origin: parent.inputOrigin,
+      fileName: parent.fileName,
+      now: input.now,
+      evidence: input.evidence,
+    },
+    sha: parent.inputSha,
+    version: (latest?.version ?? parent.version) + 1,
+    parentReviewId: parent.reviewId,
+    sourceFeedbackId,
+    supplementSha,
+    request: productRequest,
+    chat: input.chat,
+    consultingAnswer: null,
+    stageAnswers: answered,
+    stagePartial,
+    founderAnswerSource: history.founderAnswerSource,
+    readingIssues: (content) => {
+      const parsed = parseSections(content, parent.inputText);
+      const analysis = parsed?.analysis;
+      if (!parsed || !analysis) return [];
+      return [
+        ...productReadingIssues({
+          judgment: analysis.judgmentDetail,
+          summary: analysis.summary,
+          assumptions: analysis.assumptions,
+          inferences: analysis.inferences,
+          nextVerification: analysis.nextVerification ?? '',
+          nextQuestion: parsed.nextQuestion,
+          unresolved: ledger.unresolved,
+          priorGoals: ledger.priorGoals,
+          founderClaims: ledger.founderClaims,
+          founderFacts: analysis.founderFacts,
+          founderSupplement: supplementText,
+          answeredQuestion: questions.map((question) => question.text).join('\n'),
+          answeredVerification: parent.sections?.analysis?.nextVerification ?? '',
+        }),
+        ...stageQuestionIssues(content, asked, parent.inputText),
+      ];
+    },
+    readingRepairContext: { supplement: supplementText },
+  });
+  return { ok: true, called: finished.called, record: finished.record, view: finished.view };
 }
 
 function revisionPayload(sections: ReviewSections, marks: ReviewMark[]) {
@@ -3538,11 +3811,11 @@ function firstReviewSystemPrompt(): string {
     '사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다.',
     '고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다.',
     '가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다.',
-    '분석을 마친 뒤, 한 번의 답으로 불확실성이 가장 많이 줄어드는 미확인 가정 하나만 질문으로 만든다.',
+    '분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 2개 이상으로 questions에 둔다. nextQuestion은 그 중 첫 질문이다.',
     '모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다.',
     '선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다.',
     'JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다.',
-    '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
+    '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다.',
     'summary는 원문을 반영한 설명, judgment는 예비 판단과 근거, nextVerification은 적은 비용의 확인 행동이다. assumptions는 1개에서 3개다.',
   ].join(' ');
 }
@@ -3586,6 +3859,8 @@ async function finishCall(input: {
   outputContract?: FollowUpOutputContext | null;
   previousSections?: ReviewSections | null;
   consultingAnswer?: { question: string; choiceLabel: string | null; supplement: string } | null;
+  stageAnswers?: StagePair[];
+  stagePartial?: boolean;
   founderAnswerSource?: FounderAnswerCitation | null;
   /** Structural reading checks. They do not choose the business judgment. */
   readingIssues?: (content: string) => string[];
@@ -3760,6 +4035,8 @@ async function finishCall(input: {
       rawContent: response.content,
       firstRawContent,
       consultingTurn,
+      stageAnswers: input.stageAnswers,
+      stagePartial: input.stagePartial,
       founderAnswerSource: input.founderAnswerSource ?? null,
       callLedger: callLedger.length > 0 ? callLedger : undefined,
       promptTokens,
@@ -3782,6 +4059,8 @@ async function finishCall(input: {
       evidence: input.input.evidence,
       callCount: 1,
       error: error instanceof Error ? error.message : 'review_failed',
+      stageAnswers: input.stageAnswers,
+      stagePartial: input.stagePartial,
       latencyMs: Date.now() - started,
     });
     await input.store.insertReview(record);
@@ -3814,6 +4093,8 @@ function baseRecord(input: {
   rawContent?: string | null;
   firstRawContent?: string | null;
   consultingTurn?: ConsultingTurn | null;
+  stageAnswers?: StagePair[];
+  stagePartial?: boolean;
   founderAnswerSource?: FounderAnswerCitation | null;
   callLedger?: ReviewCallNote[];
   promptTokens?: number | null;
@@ -3843,6 +4124,8 @@ function baseRecord(input: {
     rawContent: input.rawContent ?? null,
     ...(input.firstRawContent ? { firstRawContent: input.firstRawContent } : {}),
     ...(input.consultingTurn ? { consultingTurn: input.consultingTurn } : {}),
+    ...(input.stageAnswers && input.stageAnswers.length > 0 ? { stageAnswers: input.stageAnswers } : {}),
+    ...(input.stagePartial ? { stagePartial: true } : {}),
     ...(input.founderAnswerSource ? { founderAnswerSource: input.founderAnswerSource } : {}),
     ...(input.callLedger && input.callLedger.length > 0 ? { callLedger: input.callLedger } : {}),
     promptTokens: input.promptTokens ?? null,
@@ -3997,6 +4280,20 @@ function readChoiceAnswer(source: Record<string, unknown>): ChoiceAnswer | null 
   return { choiceId, label, otherText };
 }
 
+/** Keeps the model's question list when it sent one. An empty list leaves nextQuestion as the only question. */
+function readConsultingQuestions(value: unknown): { questions: ConsultingQuestion[] } | Record<string, never> {
+  const texts = stringList(value);
+  if (!texts || texts.length === 0) return {};
+  const seen = new Set<string>();
+  const questions: ConsultingQuestion[] = [];
+  for (const text of texts) {
+    if (seen.has(text)) continue;
+    seen.add(text);
+    questions.push({ questionId: `q${questions.length + 1}`, text });
+  }
+  return questions.length > 0 ? { questions } : {};
+}
+
 function readBusinessAnalysis(parsed: Record<string, unknown>, sourceText: string): ReviewSections | null {
   const summary = scrubFigures(textField(parsed.summary), sourceText);
   const customer = textField(parsed.customer);
@@ -4044,6 +4341,7 @@ function readBusinessAnalysis(parsed: Record<string, unknown>, sourceText: strin
     nextVerification:
       textField(parsed.nextVerification) ??
       (assumptions[0] ? `적은 비용으로 먼저 확인할 가정: ${assumptions[0]}` : ''),
+    ...readConsultingQuestions(parsed.questions),
   };
   return {
     customer,
