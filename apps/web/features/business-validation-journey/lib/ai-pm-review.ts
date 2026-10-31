@@ -1012,9 +1012,18 @@ export function judgmentIsConsistent(input: {
   return input.judgment.trim().length > 0 && explained && !currentEffect;
 }
 
-/** An unverified likelihood claim is stated as the current conclusion. */
+/**
+ * The high-likelihood wording is used as the current state.
+ * Naming it as the founder's claim or an unverified hypothesis is not that use.
+ * A later "확인되지" about contact does not relabel the claim.
+ */
 export function founderClaimTreatedAsFact(text: string): boolean {
-  return /협력 가능성이 높/.test(text) && !/주장|가설|확인되지|미확인|검증되지/.test(text);
+  if (!/협력 가능성이 높/.test(text)) return false;
+  const labeled =
+    /협력 가능성이 높다는\s*(주장|가설|기대)/.test(text) ||
+    /협력 가능성이 높다고/.test(text) ||
+    /검증되지 않은 가설/.test(text);
+  return !labeled;
 }
 
 /** Inferences call the claim unverified, while the judgment still uses it as a premise. */
@@ -1024,9 +1033,15 @@ export function judgmentContradictsUnverifiedClaim(judgment: string, inferences:
   return inferenceUnverified && founderClaimTreatedAsFact(judgment);
 }
 
-/** The assumption repeats the founder's hope as an effect that will happen. */
+/** The assumption states that an unverified hypothesis will have a positive effect. */
 export function assumptionRestatesUnverifiedHope(assumptions: string[]): boolean {
-  return assumptions.some((item) => /긍정적 영향을 미칠|사업성이 높아질 것이다/.test(item) && !/경우|만약|확인되면|성립하면/.test(item));
+  return assumptions.some((item) => {
+    const assertsEffect = /긍정적 영향을 미칠|사업성이 높아질|긍정적인 영향을 미칠/.test(item);
+    if (!assertsEffect) return false;
+    const effectUnverified =
+      /(영향|효과).{0,24}(확인되지|미확인|검증되지|단정하지)|(확인되지|미확인|검증되지).{0,24}(영향|효과)/.test(item);
+    return !effectUnverified;
+  });
 }
 
 /** The stored answer says no brewery candidate is selected yet. */
@@ -1097,6 +1112,75 @@ export function verificationRepeatsPriorGoal(nextVerification: string, priorGoal
     const prior = compact(goal);
     return prior.length > 8 && (next === prior || next.includes(prior) || prior.includes(next));
   });
+}
+
+/** Inferences still state the claim as the current likelihood, or skip a known candidate gap. */
+export function inferenceMissesClaimBoundary(inferences: string[], unresolved: string[]): boolean {
+  if (inferences.some((item) => founderClaimTreatedAsFact(item))) return true;
+  if (!unresolved.some(answerSaysNoCandidate)) return false;
+  const text = inferences.join('\n');
+  return !(/후보/.test(text) && /없|못|선정|증거|확인되지|미확인/.test(text));
+}
+
+/**
+ * The question and the verification name the same next step.
+ * Selection is the step the founder already answered.
+ */
+export function nextStepMatchesQuestion(nextVerification: string, nextQuestion: string): boolean {
+  const question = questionVerificationTargets(nextQuestion).filter((target) => target !== 'selection');
+  if (question.length !== 1) return false;
+  return questionVerificationTargets(nextVerification).includes(question[0]);
+}
+
+/** Structural reading failures. These do not choose the business judgment. */
+export function productReadingIssues(input: {
+  judgment: string;
+  summary: string;
+  assumptions: string[];
+  inferences: string[];
+  nextVerification: string;
+  nextQuestion: string;
+  unresolved: string[];
+  priorGoals: string[];
+}): string[] {
+  const issues: string[] = [];
+  if (founderClaimTreatedAsFact(input.judgment) || founderClaimTreatedAsFact(input.summary)) issues.push('claim_used_as_premise');
+  if (inferenceMissesClaimBoundary(input.inferences, input.unresolved)) issues.push('inference_misses_boundary');
+  if (assumptionRestatesUnverifiedHope(input.assumptions)) issues.push('assumption_asserts_positive_effect');
+  if (!judgmentAccountsForUnresolved(input.judgment, input.unresolved)) issues.push('unresolved_gap_missing');
+  if (verificationRepeatsPriorGoal(input.nextVerification, input.priorGoals)) issues.push('prior_goal_repeated');
+  if (input.priorGoals.length > 0 && !nextStepMatchesQuestion(input.nextVerification, input.nextQuestion)) {
+    issues.push('verification_question_mismatch');
+  }
+  return issues;
+}
+
+/** Names the failed reading checks. It does not supply a replacement judgment. */
+export function productReadingRepairMessage(issues: string[]): string {
+  const lines = [
+    '이전 JSON은 구조 검증에 걸렸다.',
+    `실패 코드: ${issues.join(',')}.`,
+    '사업성을 유지할지 바꿀지, 긍정인지 부정인지는 네가 근거로 다시 정한다. 대체 문장을 받지 않는다.',
+    '같은 문장을 다시 내면 실패다.',
+  ];
+  if (issues.includes('product_reading_unparsed')) lines.push('JSON 스키마의 키를 모두 채워라.');
+  if (issues.includes('claim_used_as_premise') || issues.includes('inference_misses_boundary')) {
+    lines.push(
+      '협력 가능성이 높다를 현재 상태나 긍정 근거로 쓰지 않는다. 그 문장이 필요하면 Founder의 주장이고 검증되지 않은 가설이라고 같은 문장에 적는다. inferences는 후보 부재와 확인되지 않은 근거에서 도출한다.',
+    );
+  }
+  if (issues.includes('assumption_asserts_positive_effect')) {
+    lines.push('assumptions에서 긍정적 영향을 미칠 것이다라고 단정하지 않는다. 가설이 성립하는지도, 성립할 때의 영향도 확인되지 않았다고 적는다.');
+  }
+  if (issues.includes('unresolved_gap_missing')) lines.push('구체적인 후보가 선정되지 않았다는 미해결을 judgment에 남긴다.');
+  if (issues.includes('prior_goal_repeated')) {
+    lines.push('nextVerification에 이미 선택한 상위 목표 문장을 다시 넣지 않는다. 그 목표 아래의 다음 한 단계만 적는다.');
+  }
+  if (issues.includes('verification_question_mismatch')) {
+    lines.push('nextVerification과 nextQuestion은 기준, 접근 경로, 협력 의사, 협력 조건 가운데 같은 하나여야 한다.');
+  }
+  lines.push('JSON만 반환한다.');
+  return lines.join(' ');
 }
 
 /** The question asks again whether a brewery candidate has already been chosen. */
@@ -1261,7 +1345,8 @@ function productReanalysisSchema(): Record<string, unknown> {
     properties: {
       summary: {
         type: 'string',
-        description: 'judgment와 같은 결론. 협력 가능성이 높지만으로 시작하지 않는다. 미확인 주장을 현재 가능성으로 쓰지 않는다.',
+        description:
+          'judgment와 같은 결론. 협력 가능성이 높다를 현재 상태로 쓰지 않는다. 그 문장이 필요하면 검증되지 않은 가설이라고 같은 문장에 적는다.',
       },
       customer: text,
       problem: text,
@@ -1280,7 +1365,7 @@ function productReanalysisSchema(): Record<string, unknown> {
       assumptions: {
         ...list,
         description:
-          '확인되지 않은 주장, 그 주장이 나중에 맞을 때의 잠재 효과, 지금 증거가 없는 상태를 서로 다른 문장으로 적는다. 긍정적 영향을 미칠 것이다라고 쓰지 않는다. 이전 가정만 반복하면 실패다.',
+          '가설이 성립하는지도, 그 영향도 확인되지 않았다고 적는다. 긍정적 영향을 미칠 것이다라고 쓰지 않는다. 만약이라는 말로 긍정 효과를 단정하지 않는다.',
       },
       evidenceToChange: {
         ...list,
@@ -1290,16 +1375,17 @@ function productReanalysisSchema(): Record<string, unknown> {
       inferences: {
         ...list,
         description:
-          '협력 가능성이 높다는 문장은 검증되지 않은 주장이라고 적는다. 구체적인 후보가 없다는 답은 확인된 상태로 적는다. judgment는 이 구분과 같은 결론이어야 한다.',
+          '협력 가능성이 높다를 현재 상태로 반복하지 않는다. 후보 부재와 접촉, 협력 의사, 협력 조건이 확인되지 않은 데서 추론한다. 주장을 적으면 검증되지 않은 가설이라고 적는다.',
       },
       judgment: {
         type: 'string',
         description:
-          'evidenceLedger.unresolved를 빠뜨리지 않는다. newFounderInformation이 false여도 빼지 않는다. 협력 가능성이 높지만으로 시작하지 않는다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 그 이유를 적는다. 협력이 불가능하다고 쓰지 않는다.',
+          '협력 가능성이 높다를 현재 전제로 쓰지 않는다. 그 문장이 필요하면 Founder의 주장이고 검증되지 않은 가설이라고 같은 문장에 적는다. unresolved의 후보 부재를 포함한다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 이유를 적는다.',
       },
       nextVerification: {
         type: 'string',
-        description: 'evidenceLedger.priorGoals의 문장을 반복하지 않는다. nextQuestion과 같은 다음 검증 목표를 새 문장으로 적는다.',
+        description:
+          'priorGoals 문장을 복사하지 않는다. 이미 고른 상위 목표 아래의 다음 한 단계만 적는다. nextQuestion과 같은 대상이다. 기준, 접근 경로, 협력 의사, 협력 조건 중 하나다.',
       },
       nextQuestion: {
         type: 'string',
@@ -1323,7 +1409,7 @@ function productReanalysisSystemPrompt(): string {
     'consultingPath는 Founder 답변의 시간 순서다. experimentRecords는 같은 답변을 다시 호출한 기록이다. 재호출을 다음 상담 턴으로 세지 않고, 그 판단을 복사하지 않는다. failedCalls는 실패한 호출이다.',
     'evidenceLedger를 먼저 읽는다. newFounderInformation이 false여도 unresolvedStillApplies가 true면 unresolved를 판단에 넣는다. false는 이번 호출에 새 답이 없다는 뜻이지, 미해결 답을 빼도 된다는 뜻이 아니다.',
     'founderClaims는 확인된 사실이 아니다. verifiedFacts만 확인된 사실이다. stillUnknown은 아직 없는 근거다. 판단을 유지하거나 바꾸거나 유보할 수 있다. 후보 부재가 실행 가능성에 주는 영향을 이유로 적는다. 이전 판단 문장과 같으면 실패다.',
-    'nextVerification은 priorGoals의 문장을 다시 쓰지 않는다. 그 목표를 확인하는 다음 질문과 같은 목적을 새 문장으로 적는다.',
+    'nextVerification은 priorGoals의 문장을 다시 쓰지 않는다. 이미 고른 상위 목표를 반복하지 않는다. 그 아래의 다음 한 단계만 적고, nextQuestion과 같은 대상을 새 문장으로 적는다.',
     '증거 구분에서 구체적인 양조장 후보가 아직 없다는 Founder의 답은 확인된 상태다. 양조장 협력 가능성이 높다는 문장은 Founder의 주장 또는 기대다. 접촉, 협력 의사, 협력 조건, 실제 협력 가능성은 미확인이다. 주장을 했다는 사실과 가능성이 실제로 높다는 결론을 섞지 않는다.',
     '사업성 재평가는 고객과 문제, 가치의 실현, 운영, 파트너십 확보, 수익 구조, 확인된 근거와 불확실성, 이번 답이 기존 판단에 주는 영향을 본다. 유지하거나 높이거나 낮추거나 유보할 수 있다. 점수를 만들지 않는다.',
     'inferences가 주장을 검증되지 않았다고 적으면 judgment와 summary는 그 주장을 현재 가능성으로 쓰지 않는다.',
@@ -1332,9 +1418,9 @@ function productReanalysisSystemPrompt(): string {
     '근거 수준은 검증된 사실, Founder의 경험, Founder의 주장 또는 기대, 실행 계획, 추정 및 가정, 근거가 부족한 정보 중 하나다. 확인된 사실, 경험, 추정, 계획을 섞지 않는다.',
     '가능성이 높다처럼 확인 절차가 없는 답은 Founder의 주장 또는 기대이자 자체 판단이다. 구체적 증거가 없으면 검증된 사실이 아니다. inferences는 이번 답만 해석한다. 답 유형, 증거가 있는지, 확인된 사실, 미확인 사항을 적는다. 시장 관심이나 수요를 확인된 사실로 올리지 않는다. 경험이나 실행 결과를 만들지 않는다.',
     '확인되지 않은 협력 가능성, 추정, 기대, 계획은 founderFacts에 넣지 않는다. founderFacts는 접촉, 계약, 입금, 예약처럼 확인된 사실만 담는다. 근거가 없으면 빈 배열이다.',
-    'assumptions는 확인되지 않은 주장, 그 주장이 나중에 맞을 때의 잠재 효과, 지금 그 주장을 뒷받침하는 증거가 없는 상태를 서로 다른 문장으로 적는다. 긍정적 영향을 미칠 것이다라고 쓰지 않는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
+    'assumptions는 가설이 성립하는지도, 성립할 때의 영향도 확인되지 않았다고 적는다. 긍정적 영향을 미칠 것이다라고 쓰지 않는다. 만약이라는 말로 긍정 효과를 단정하지 않는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
     'evidenceToChange에는 다음에 확인되면 판단을 바꾸게 되는 항목을 적는다. 이번 답이 판단에 어떤 영향을 주는지는 judgment에 적는다. 답 문장만 다시 적으면 실패다. judgment와 같은 문장을 두지 않는다.',
-    'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 매 회차 최초 사업 아이디어와 이전 판단과 누적 답변을 다시 읽고 새 문장으로 사업성을 판단한다. priorJudgmentText와 같으면 실패다. 이전 문장을 복사하지 않는다. 이번 답이 판단에 어떤 영향을 주는지 이유를 적는다. 유지하거나 높이거나 낮출 수 있다. 근거가 부족하면 유지할 수 있으나 그 이유를 새 문장으로 적는다. 확인되지 않은 주장을 현재의 긍정적 영향으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다. 가능성이 높다는 주장을 현재 결론으로 쓰지 않는다. 협력 가능성이 높지만으로 시작하지 않는다. priorJudgmentText 안의 그 문장도 다시 쓰지 않는다. 그 문장은 확인되지 않은 주장으로 적는다. 후보가 아직 없다는 답만으로 사업성이 없다고 쓰지 않는다. 그 답이 실행 경로의 빈칸이면 그 빈칸을 판단에 적는다.',
+    'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 매 회차 최초 사업 아이디어와 이전 판단과 누적 답변을 다시 읽고 새 문장으로 사업성을 판단한다. priorJudgmentText와 같으면 실패다. 이전 문장을 복사하지 않는다. 이번 답이 판단에 어떤 영향을 주는지 이유를 적는다. 유지하거나 높이거나 낮출 수 있다. 근거가 부족하면 유지할 수 있으나 그 이유를 새 문장으로 적는다. 확인되지 않은 주장을 현재의 긍정적 영향으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다. 가능성이 높다는 주장을 현재 결론으로 쓰지 않는다. 협력 가능성이 높지만으로 시작하지 않는다. 그 표현을 문장 중간의 현재 상태로도 쓰지 않는다. priorJudgmentText 안의 그 문장도 다시 쓰지 않는다. 그 문장이 필요하면 Founder의 주장이고 검증되지 않은 가설이라고 같은 문장에 적는다. 후보가 아직 없다는 답만으로 사업성이 없다고 쓰지 않는다. 그 답이 실행 경로의 빈칸이면 그 빈칸을 판단에 적는다.',
     'risks는 이번 답의 빈칸을 새 문장으로 적는다. 위험을 매번 늘리지 않는다. 접촉 여부 문장만 반복하면 실패다. 사업이 불가능하다고 단정하지 않는다.',
     'nextQuestion은 이번 사업성 판단을 더 정확하게 만들기 위해 아직 없는 정보 하나를 묻는다. priorQuestionTexts와 같거나 표현만 바꾼 질문이면 실패다. 질문의 검증 대상이 이전 질문과 같아도 실패다. 떠오르는을 쓰지 않는다. verificationStage.alreadyAnswered에 no_named_brewery_candidate가 있으면 후보를 정했는지, 한 곳인지, 이름인지, 떠오르는 곳인지를 다시 묻지 않는다. 기준, 접근 경로, 협력 의사, 협력 조건 가운데 지금 판단에 가장 중요한 하나만 묻는다. 둘을 한 질문에 잇지 않는다. verificationStage.nextPurpose는 이미 다룬 단계다. 그 목적의 질문을 반복하지 않는다. 이미 founderChoice와 founderSupplement와 이전 답에 있는 내용을 다시 묻지 않는다. 연락하거나 미팅한 결과가 없으면 그 결과를 만들지 않는다. 협력 가능성이 높은지를 다시 묻지 않는다.',
     'nextVerification과 nextQuestionReason은 이번 질문이 다음 판단을 어떻게 돕는지 새 문장으로 적는다. priorVerificationText, priorReasonText와 같으면 실패다.',
@@ -1453,6 +1539,11 @@ export function buildProductReanalysisRequest(input: {
   const payload = () =>
     renameEchoKeys({
       evidenceLedger,
+      readingContract: {
+        claim: 'founderClaims는 검증되지 않은 가설이다. 현재 사업성의 긍정 근거로 쓰지 않는다.',
+        effect: '가설의 성립과 그 영향은 확인되지 않았다. 긍정적 영향을 미칠 것이다라고 단정하지 않는다.',
+        nextStep: 'priorGoals는 이미 고른 상위 목표다. nextVerification은 그 문장을 반복하지 않고 한 단계 아래를 적는다.',
+      },
       ...anchors,
       founderAnswers: [
         ...(input.consultingPath ?? []).map((step) => ({
@@ -1870,6 +1961,12 @@ export async function runFollowUpReview(input: {
   const history = assembleConsultingHistory({ records, parent, supplement, feedback: projectFeedback });
   const root = history.root;
   const choice = feedback?.choiceAnswer ?? null;
+  const ledger = buildEvidenceLedger({
+    consultingPath: history.consultingPath,
+    newFounderInformation: history.newFounderInformation,
+    founderChoice: choice?.label ?? null,
+    founderSupplement: supplement,
+  });
   const productRequest = buildProductReanalysisRequest({
     originalInput: root.inputText,
     firstAnalysis: root.sections ?? parent.sections,
@@ -1921,6 +2018,23 @@ export async function runFollowUpReview(input: {
           supplement,
         },
     founderAnswerSource: needsRevisionGate(marks) ? null : history.founderAnswerSource,
+    readingIssues: needsRevisionGate(marks)
+      ? undefined
+      : (content) => {
+          const parsed = parseSections(content, parent.inputText);
+          const analysis = parsed?.analysis;
+          if (!parsed || !analysis) return [];
+          return productReadingIssues({
+            judgment: analysis.judgmentDetail,
+            summary: analysis.summary,
+            assumptions: analysis.assumptions,
+            inferences: analysis.inferences,
+            nextVerification: analysis.nextVerification,
+            nextQuestion: parsed.nextQuestion,
+            unresolved: ledger.unresolved,
+            priorGoals: ledger.priorGoals,
+          });
+        },
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
 }
@@ -3212,6 +3326,8 @@ async function finishCall(input: {
   previousSections?: ReviewSections | null;
   consultingAnswer?: { question: string; choiceLabel: string | null; supplement: string } | null;
   founderAnswerSource?: FounderAnswerCitation | null;
+  /** Structural reading checks. They do not choose the business judgment. */
+  readingIssues?: (content: string) => string[];
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const started = Date.now();
   try {
@@ -3260,6 +3376,37 @@ async function finishCall(input: {
           sections: null,
           errors: [...failedChecks, `repair_failed:${repairMessage.slice(0, 180)}`],
         };
+      }
+    }
+    if (input.readingIssues && !input.outputContract) {
+      const issues = input.readingIssues(response.content);
+      if (issues.length > 0) {
+        firstRawContent = firstRawContent ?? first.content;
+        try {
+          const repair = await input.chat({
+            ...input.request,
+            messages: [
+              ...input.request.messages,
+              { role: 'assistant', content: response.content },
+              { role: 'user', content: productReadingRepairMessage(issues) },
+            ],
+          });
+          callCount += 1;
+          if (usageKnown && repair.usageKnown === true) {
+            promptTokens = (promptTokens ?? 0) + repair.usage.inputTokens;
+            completionTokens = (completionTokens ?? 0) + repair.usage.outputTokens;
+            totalTokens = (totalTokens ?? 0) + repair.usage.totalTokens;
+          } else {
+            usageKnown = false;
+            promptTokens = null;
+            completionTokens = null;
+            totalTokens = null;
+          }
+          const repairIssues = input.readingIssues(repair.content);
+          if (repairIssues.length < issues.length && parseSections(repair.content, input.input.text)) response = repair;
+        } catch {
+          callCount += 1;
+        }
       }
     }
     const sections = normalized ? normalized.sections : parseSections(response.content, input.input.text);

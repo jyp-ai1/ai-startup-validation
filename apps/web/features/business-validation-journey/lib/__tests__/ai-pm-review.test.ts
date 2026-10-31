@@ -34,6 +34,10 @@ import {
   founderClaimTreatedAsFact,
   judgmentContradictsUnverifiedClaim,
   assumptionRestatesUnverifiedHope,
+  inferenceMissesClaimBoundary,
+  nextStepMatchesQuestion,
+  productReadingIssues,
+  productReadingRepairMessage,
   answerSaysNoCandidate,
   questionRepeatsAnsweredSelection,
   questionVerificationTargets,
@@ -5492,7 +5496,77 @@ describe('AI PM first review', () => {
 
   it('flags an assumption that repeats an unverified hope as a positive effect', () => {
     expect(assumptionRestatesUnverifiedHope(['양조장과의 협력 가능성이 높다는 가설이 사업 실행에 긍정적 영향을 미칠 것이다.'])).toBe(true);
+    expect(assumptionRestatesUnverifiedHope(['만약 협력이 되면 사업 실행에 긍정적 영향을 미칠 것이다.'])).toBe(true);
+    expect(assumptionRestatesUnverifiedHope(['협력이 가능한지와 그 영향은 모두 확인되지 않았다.'])).toBe(false);
     expect(assumptionRestatesUnverifiedHope(['체험을 운영할 양조장에 닿는 경로는 아직 확인되지 않았다.'])).toBe(false);
+  });
+
+  it('separates the cooperation claim from the judgment and advances the verification step', () => {
+    const unresolved = ['현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.'];
+    const priorGoals = ['양조장과의 협력 방안 구체화', '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.'];
+    const premise = '현재 사업성 판단은 유지되며, 양조장과의 협력 가능성이 높지만, 구체적인 양조장 후보가 선정되지 않아 실행 경로가 비어 있다.';
+    expect(founderClaimTreatedAsFact(premise)).toBe(true);
+    expect(founderClaimTreatedAsFact('양조장과의 협력 가능성이 높지만, 실제 접촉은 확인되지 않았다.')).toBe(true);
+    const repeated = productReadingIssues({
+      judgment: premise,
+      summary: premise,
+      assumptions: ['양조장과의 협력 가능성이 높다는 가설이 사업 실행에 긍정적 영향을 미칠 것이다.'],
+      inferences: ['양조장과의 협력 가능성이 높지만, 실제 접촉은 확인되지 않았다.'],
+      nextVerification: '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.',
+      nextQuestion: '체험을 운영할 양조장을 고를 때 가장 중요한 기준은 무엇인가?',
+      unresolved,
+      priorGoals,
+    });
+    expect(repeated).toEqual(
+      expect.arrayContaining([
+        'claim_used_as_premise',
+        'inference_misses_boundary',
+        'assumption_asserts_positive_effect',
+        'prior_goal_repeated',
+        'verification_question_mismatch',
+      ]),
+    );
+    expect(repeated).not.toContain('unresolved_gap_missing');
+    const judgment =
+      'Founder는 양조장과의 협력 가능성이 높다고 보고 있으나, 구체적인 협력 후보가 선정되지 않았고 접촉과 협력 의사는 확인되지 않았다. 협력 가능성은 아직 검증되지 않은 가설이라 실행 근거로 두기 어렵다.';
+    const nextVerification = '체험을 운영할 양조장을 고를 기준이 있는지를 확인한다.';
+    const nextQuestion = '체험을 운영할 양조장을 고를 때 가장 중요한 기준은 무엇인가?';
+    const separated = productReadingIssues({
+      judgment,
+      summary: judgment,
+      assumptions: ['양조장과 협력이 가능한지와, 그 협력이 사업 실행에 미치는 영향은 모두 확인되지 않았다.'],
+      inferences: ['구체적인 후보가 선정되지 않았고 접촉이 확인되지 않아 실행 경로가 비어 있다.'],
+      nextVerification,
+      nextQuestion,
+      unresolved,
+      priorGoals,
+    });
+    expect(separated).toEqual([]);
+    expect(inferenceMissesClaimBoundary(['구체적인 후보가 선정되지 않았고 증거가 확인되지 않았다.'], unresolved)).toBe(false);
+    expect(nextStepMatchesQuestion(nextVerification, nextQuestion)).toBe(true);
+    expect(nextStepMatchesQuestion('양조장 후보 선정과 연락 경로 확보를 우선 검증한다.', nextQuestion)).toBe(false);
+    const repair = productReadingRepairMessage(repeated);
+    expect(repair).toContain('claim_used_as_premise');
+    expect(repair).toContain('대체 문장을 받지 않는다');
+    expect(repair).not.toContain('Founder는 양조장과의 협력 가능성이 높다고 보고 있으나');
+    const request = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [],
+      latestAnalysis: sections(),
+      founderChoice: null,
+      founderSupplement: '양조장과의 협력 가능성이 높다.',
+      founderFeedback: null,
+    });
+    const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      readingContract: { claim: string; effect: string; nextStep: string };
+    };
+    expect(payload.readingContract.claim).toContain('검증되지 않은 가설');
+    expect(payload.readingContract.effect).toContain('긍정적 영향을 미칠 것이다라고 단정하지 않는다');
+    expect(payload.readingContract.nextStep).toContain('한 단계 아래');
+    const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+    expect(system).toContain('이미 고른 상위 목표를 반복하지 않는다');
+    expect(system).toContain('문장 중간의 현재 상태로도 쓰지 않는다');
   });
 
   it('reads the missing-candidate answer as a stated gap', () => {

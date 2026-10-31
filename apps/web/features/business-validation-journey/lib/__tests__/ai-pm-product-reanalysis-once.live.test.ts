@@ -15,6 +15,9 @@ import {
   questionVerificationTargets,
   judgmentAccountsForUnresolved,
   verificationRepeatsPriorGoal,
+  nextStepMatchesQuestion,
+  productReadingIssues,
+  inferenceMissesClaimBoundary,
   purposeStage,
   questionAsksForPlan,
   questionRepeatsPrior,
@@ -61,6 +64,8 @@ const PATH_OBJECT = 'product-consulting-path-2026-10-31.json';
 const PATH_PRIOR_ID = 'd6ae77b6-3de5-4a8b-aee2-d35fdc84e0ec';
 const READING_OBJECT = 'product-unresolved-reading-2026-10-31.json';
 const READING_PRIOR_ID = '783030ad-13f4-4a77-a454-c2ca49b50d0a';
+const STEP_OBJECT = 'product-claim-step-2026-10-31.json';
+const STEP_PRIOR_ID = 'ccb19a1d-5c4d-432c-8a46-6695e746c7f3';
 const COPIED_EXPERIMENT_JUDGMENT =
   '현재 사업성 판단은 낮아지며, 양조장과의 협력 가능성이 높지만 구체적인 후보가 없다는 점이 부정적인 영향을 미친다.';
 const SEPARATION_REVIEW_ID = 'ad73c33f-7bdc-47ff-b539-0ac9afdcdb82';
@@ -1660,6 +1665,196 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
     } finally {
       await writeMarker(config, marker, READING_OBJECT);
       console.log(`preview-unresolved-reading stored status=${marker.status}`);
+    }
+    expect(marker.status).toBe('RECORDED');
+  }, 240_000);
+
+  it('keeps the cooperation claim unverified and advances one verification step', async () => {
+    const config = supabaseConfig();
+    expect(config).not.toBeNull();
+    if (!config) return;
+    const preview = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_GIT_COMMIT_REF !== 'main';
+    const apiKey = process.env.GPT_API_KEY?.trim() ?? '';
+    if (!preview || !apiKey) {
+      console.log(`preview-claim-step hold preview=${preview} gpt_key=${apiKey ? 'present' : 'absent'}`);
+      return;
+    }
+    const existing = await readMarker(config, STEP_OBJECT);
+    if (existing && ['RECORDED', 'failed', 'limited', 'quality_failed'].includes(String(existing.status))) {
+      console.log(`preview-claim-step skip status=${existing.status}`);
+      return;
+    }
+    const parentRow = await restGet(config, `ai_pm_reviews?select=user_id&review_id=eq.${ROUND3_PARENT_ID}`);
+    const userId = (parentRow[0] as { user_id?: string } | undefined)?.user_id ?? '';
+    const backend = openReviewBackend();
+    const parent = await backend.store.readReview(userId, ROUND3_PARENT_ID);
+    expect(parent?.status).toBe('succeeded');
+    const saved = (await backend.store.listFeedback(userId, ROUND3_PARENT_ID)).find((item) => item.choiceAnswer?.label === ROUND3_LABEL);
+    const preservedIds = [
+      PARENT_ID,
+      QUALITY_PARENT_ID,
+      CHOICE_PARENT_ID,
+      ROUND3_PARENT_ID,
+      SEPARATION_REVIEW_ID,
+      CONTEXT_PRIOR_ID,
+      PATH_PRIOR_ID,
+      READING_PRIOR_ID,
+      STEP_PRIOR_ID,
+    ];
+    const preserved = await Promise.all(preservedIds.map((reviewId) => backend.store.readReview(userId, reviewId)));
+    const startedAt = new Date().toISOString();
+    await writeMarker(config, { status: 'started', startedAt, parentReviewId: ROUND3_PARENT_ID }, STEP_OBJECT);
+    let marker: Record<string, unknown> = { status: 'failed', startedAt, parentReviewId: ROUND3_PARENT_ID };
+    let requestAudit: Record<string, unknown> | null = null;
+    try {
+      const result = await runFollowUpReview({
+        store: backend.store,
+        userId,
+        projectId: PROJECT_ID,
+        reviewId: ROUND3_PARENT_ID,
+        supplement: ROUND3_SUPPLEMENT,
+        now: startedAt,
+        chat: async (request) => {
+          const user = request.messages.find((message) => message.role === 'user')?.content ?? '';
+          if (!requestAudit) {
+            const payload = JSON.parse(user) as {
+              evidenceLedger?: {
+                newFounderInformation?: boolean;
+                unresolvedStillApplies?: boolean;
+                unresolved?: string[];
+                founderClaims?: string[];
+                priorGoals?: string[];
+                verifiedFacts?: string[];
+                stillUnknown?: string[];
+              };
+              readingContract?: { claim?: string; effect?: string; nextStep?: string };
+            };
+            const ledger = payload.evidenceLedger;
+            requestAudit = {
+              newFounderInformation: ledger?.newFounderInformation ?? null,
+              unresolvedStillApplies: ledger?.unresolvedStillApplies ?? null,
+              unresolved: ledger?.unresolved ?? [],
+              founderClaims: ledger?.founderClaims ?? [],
+              priorGoals: ledger?.priorGoals ?? [],
+              verifiedFacts: ledger?.verifiedFacts ?? [],
+              stillUnknown: ledger?.stillUnknown ?? [],
+              readingClaim: payload.readingContract?.claim ?? null,
+            };
+          }
+          return openReviewChat()(request);
+        },
+        evidence: 'live_network',
+        forceNew: true,
+      });
+      for (const before of preserved) {
+        if (!before) continue;
+        const after = await backend.store.readReview(userId, before.reviewId);
+        expect(after?.finishedAt).toBe(before.finishedAt);
+        expect(after?.status).toBe(before.status);
+        expect(after?.totalTokens).toBe(before.totalTokens);
+        expect(after?.parentReviewId).toBe(before.parentReviewId);
+      }
+      if (!result.ok || result.record.status !== 'succeeded' || !result.record.sections?.analysis) {
+        marker = {
+          ...marker,
+          status: 'failed',
+          error: result.ok ? result.record.error : result.error,
+          reviewId: result.ok ? result.record.reviewId : null,
+          called: result.ok ? result.called : false,
+          callCount: result.ok ? result.record.callCount : null,
+          requestAudit,
+        };
+      } else {
+        const sections = result.record.sections;
+        const analysis = sections.analysis!;
+        const judgment = analysis.judgmentDetail;
+        const raw = JSON.parse(result.record.rawContent ?? '{}') as {
+          judgment?: string;
+          summary?: string;
+          assumptions?: string[];
+          inferences?: string[];
+          nextVerification?: string;
+          nextQuestion?: string;
+        };
+        const ledger = requestAudit as {
+          unresolved?: string[];
+          priorGoals?: string[];
+          founderClaims?: string[];
+          verifiedFacts?: string[];
+          newFounderInformation?: boolean;
+          unresolvedStillApplies?: boolean;
+        } | null;
+        const unresolved = ledger?.unresolved ?? [];
+        const priorGoals = ledger?.priorGoals ?? [];
+        const issues = productReadingIssues({
+          judgment,
+          summary: analysis.summary,
+          assumptions: analysis.assumptions,
+          inferences: analysis.inferences,
+          nextVerification: analysis.nextVerification,
+          nextQuestion: sections.nextQuestion,
+          unresolved,
+          priorGoals,
+        });
+        const kept = /유지/.test(judgment);
+        const checks = {
+          claimIsHypothesis:
+            !founderClaimTreatedAsFact(judgment) &&
+            !founderClaimTreatedAsFact(analysis.summary) &&
+            analysis.inferences.every((item) => !founderClaimTreatedAsFact(item)) &&
+            analysis.founderFacts.length === 0 &&
+            (ledger?.verifiedFacts ?? []).length === 0,
+          effectNotPresupposed: !assumptionRestatesUnverifiedHope(analysis.assumptions) && !/긍정적 영향을 미/.test(judgment),
+          gapInJudgment: judgmentAccountsForUnresolved(judgment, unresolved),
+          keptExplainsGap: !kept || (judgmentAccountsForUnresolved(judgment, unresolved) && /없|못|비어|근거|영향|확인되지/.test(judgment)),
+          inferenceFromGap: !inferenceMissesClaimBoundary(analysis.inferences, unresolved),
+          goalNotRepeated: !verificationRepeatsPriorGoal(analysis.nextVerification, priorGoals),
+          stepAdvanced: nextStepMatchesQuestion(analysis.nextVerification, sections.nextQuestion),
+          questionMatchesStep:
+            nextStepMatchesQuestion(analysis.nextVerification, sections.nextQuestion) &&
+            questionVerificationTargets(sections.nextQuestion).filter((target) => target !== 'selection').length === 1,
+          storedMatchesRaw:
+            raw.judgment === judgment &&
+            raw.nextVerification === analysis.nextVerification &&
+            JSON.stringify(raw.assumptions ?? []) === JSON.stringify(analysis.assumptions),
+          preserved:
+            result.record.parentReviewId === ROUND3_PARENT_ID &&
+            result.record.sourceFeedbackId === saved?.feedbackId &&
+            ledger?.newFounderInformation === false &&
+            ledger?.unresolvedStillApplies === true,
+          readingClean: issues.length === 0,
+        };
+        marker = {
+          status: Object.values(checks).every(Boolean) ? 'RECORDED' : 'quality_failed',
+          startedAt,
+          finishedAt: new Date().toISOString(),
+          called: result.called,
+          reviewId: result.record.reviewId,
+          parentOfChild: result.record.parentReviewId,
+          sourceFeedbackId: result.record.sourceFeedbackId,
+          feedbackId: saved?.feedbackId ?? null,
+          model: result.record.model,
+          promptTokens: result.record.promptTokens,
+          completionTokens: result.record.completionTokens,
+          totalTokens: result.record.totalTokens,
+          callCount: result.record.callCount,
+          firstRawContent: result.record.firstRawContent ?? null,
+          requestAudit,
+          judgment,
+          summary: analysis.summary,
+          assumptions: analysis.assumptions,
+          inferences: analysis.inferences,
+          founderFacts: analysis.founderFacts,
+          nextQuestion: sections.nextQuestion,
+          nextVerification: analysis.nextVerification,
+          readingIssues: issues,
+          checks,
+          rawContent: result.record.rawContent,
+        };
+      }
+    } finally {
+      await writeMarker(config, marker, STEP_OBJECT);
+      console.log(`preview-claim-step stored status=${marker.status}`);
     }
     expect(marker.status).toBe('RECORDED');
   }, 240_000);
