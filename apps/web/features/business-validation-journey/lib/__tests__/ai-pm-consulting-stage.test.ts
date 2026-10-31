@@ -52,6 +52,46 @@ function reply(content: string): ChatResponse {
   };
 }
 
+function requestPayload(request: ChatRequest): Record<string, unknown> | null {
+  const content = request.messages.find((message) => message.role === 'user')?.content ?? '';
+  try {
+    const parsed = JSON.parse(content) as unknown;
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    return parsed as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function contractReply(request: ChatRequest, judgment: string, questions: string[]): string {
+  const payload = requestPayload(request);
+  if (!payload || !Array.isArray(payload.stagePairs)) return stageRaw(judgment, questions);
+  const pairs = payload.stagePairs as Array<{ questionId: string; choiceId: string | null; status: string }>;
+  const answered = pairs.filter((pair) => pair.status === 'answered');
+  const nextQuestions = questions.map((text) => ({
+    text,
+    choices: [`${text} 쪽을 먼저 본다`, `${text} 쪽은 아직 정하지 못했다`],
+  }));
+  return JSON.stringify({
+    answerInterpretation: answered.map((pair) => ({
+      questionId: pair.questionId,
+      choiceId: pair.choiceId ?? '',
+      meaning: `${pair.questionId} 선택의 의미`,
+    })),
+    impactOnPreviousJudgment: '이번 답이 기존 판단에 준 영향이다.',
+    updatedJudgment: judgment,
+    judgmentReason: '지불 확인이 없어 판단을 유지한다.',
+    verifiedFacts: [],
+    unverifiedClaims: [],
+    assumptions: ['가격은 확인되지 않았다'],
+    resolvedIssues: [],
+    unresolvedIssues: ['지불 의사는 확인되지 않았다'],
+    nextVerification: '지불 의사를 확인한다.',
+    nextQuestions,
+    nextQuestionChoices: nextQuestions.map((item) => item.choices),
+  });
+}
+
 function stageRaw(judgment: string, questions: string[]): string {
   return JSON.stringify({
     summary: '가격은 미확인이라 판단을 유지한다.',
@@ -164,8 +204,18 @@ describe('consulting stage batch', () => {
     expect(unlabeled.every((pair) => pair.status === 'open')).toBe(true);
     const legacy = pairConsultingStage([{ questionId: 'q1', text: '누구인가?' }], [feedback({ comment: '직장인' })]);
     expect(legacy).toEqual([
-      { questionId: 'q1', question: '누구인가?', choiceLabel: null, supplement: '직장인', status: 'answered' },
+      {
+        questionId: 'q1',
+        question: '누구인가?',
+        offeredChoices: [],
+        choiceId: null,
+        choiceLabel: null,
+        supplement: '직장인',
+        status: 'answered',
+      },
     ]);
+    expect(pairs[1]?.choiceId).toBe('c1');
+    expect(pairs[1]?.offeredChoices).toEqual([]);
   });
 
   it('keeps the one-answer request free of a stage batch', () => {
@@ -222,15 +272,28 @@ describe('consulting stage batch', () => {
     const request = buildProductReanalysisRequest({
       originalInput: IDEA,
       firstAnalysis: sections,
-      priorTurns: [],
       latestAnalysis: sections,
       founderChoice: null,
       founderSupplement: '',
       founderFeedback: null,
+      experimentRecords: [{ reviewId: 'exp-1', supplement: '반복 실험', role: 'repeat_experiment' }],
+      failedCalls: [{ reviewId: 'fail-1', role: 'failed_call' }],
+      priorTurns: [
+        {
+          question: '실험 질문',
+          choiceLabel: null,
+          supplement: '실험 답',
+          judgment: '실험 판단',
+          nextVerification: '',
+          nextQuestion: '실험 질문',
+        },
+      ],
       stagePairs: [
         {
           questionId: 'hist-1',
           question: '어떤 방식으로 양조장과의 파트너십을 구축할 계획인가?',
+          offeredChoices: [{ choiceId: 'c1', label: '양조장과의 협력 가능성이 높다.' }],
+          choiceId: 'c1',
           choiceLabel: '양조장과의 협력 가능성이 높다.',
           supplement: '양조장과의 협력 가능성이 높다.',
           status: 'answered',
@@ -238,11 +301,40 @@ describe('consulting stage batch', () => {
       ],
     });
     const stagePayload = userPayload(request);
-    const stageLedger = stagePayload.evidenceLedger as { verifiedFacts: string[]; founderClaims: string[] };
+    const stageLedger = stagePayload.evidenceLedger as { verifiedFacts: string[]; founderClaims: string[]; stillUnknown: string[] };
     expect(stageLedger.verifiedFacts).toEqual([]);
     expect(stageLedger.founderClaims).toEqual(['양조장과의 협력 가능성이 높다.']);
+    expect(stageLedger.stillUnknown).toEqual([]);
     expect(stagePayload.answerReading).toEqual([{ questionId: 'hist-1', kinds: ['claim', 'choice'] }]);
     expect(stagePayload.thisAnswer).toBeUndefined();
+    expect(stagePayload.verificationStage).toBeUndefined();
+    expect(stagePayload.experimentRecords).toBeUndefined();
+    expect(stagePayload.failedCalls).toBeUndefined();
+    expect(stagePayload.priorTurns).toBeUndefined();
+    expect(JSON.stringify(stagePayload.stagePairs)).toContain('offeredChoices');
+    expect(JSON.stringify(stagePayload.stagePairs)).not.toContain('priorChoices');
+    expect(stagePayload.stagePairs).toMatchObject([
+      { choiceId: 'c1', offeredChoices: [{ choiceId: 'c1', label: '양조장과의 협력 가능성이 높다.' }] },
+    ]);
+    const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+    expect(system).toContain('answerInterpretation');
+    expect(system).not.toContain('verificationStage');
+    if (request.responseFormat?.type === 'json_schema') {
+      expect(request.responseFormat.schema.required).toEqual([
+        'answerInterpretation',
+        'impactOnPreviousJudgment',
+        'updatedJudgment',
+        'judgmentReason',
+        'verifiedFacts',
+        'unverifiedClaims',
+        'assumptions',
+        'resolvedIssues',
+        'unresolvedIssues',
+        'nextVerification',
+        'nextQuestions',
+        'nextQuestionChoices',
+      ]);
+    }
   });
 
   it('collects N answers with no model call, then sends one paired reanalysis and repeats', async () => {
@@ -255,10 +347,10 @@ describe('consulting stage batch', () => {
     const chat = async (request: ChatRequest) => {
       calls.push(request);
       const index = calls.length;
-      if (index === 1) return reply(stageRaw(firstJudgment, FIRST_QUESTIONS));
-      if (index === 2) return reply(stageRaw(secondJudgment, SECOND_QUESTIONS));
-      if (index === 3) return reply(stageRaw(thirdJudgment, THIRD_QUESTIONS));
-      return reply(stageRaw(fourthJudgment, ['홍보 문구는 무엇인가?', '첫 모임 인원은 몇 명인가?']));
+      if (index === 1) return reply(contractReply(request, firstJudgment, FIRST_QUESTIONS));
+      if (index === 2) return reply(contractReply(request, secondJudgment, SECOND_QUESTIONS));
+      if (index === 3) return reply(contractReply(request, thirdJudgment, THIRD_QUESTIONS));
+      return reply(contractReply(request, fourthJudgment, ['홍보 문구는 무엇인가?', '첫 모임 인원은 몇 명인가?']));
     };
     const first = await runFirstReview({
       store,
@@ -275,6 +367,20 @@ describe('consulting stage batch', () => {
     expect(first.record.callCount).toBe(1);
     expect(consultingQuestions(first.record.sections).map((item) => item.text)).toEqual(FIRST_QUESTIONS);
     const parentFinishedAt = first.record.finishedAt;
+    const siblingSections = structuredClone(first.record.sections);
+    if (siblingSections?.analysis) siblingSections.analysis.judgmentDetail = '형제 실험 판단은 상담 이력이 아니다.';
+    if (siblingSections) siblingSections.judgment = '형제 실험 판단은 상담 이력이 아니다.';
+    expect(
+      (
+        await store.insertReview({
+          ...first.record,
+          reviewId: 'sibling-experiment',
+          parentReviewId: null,
+          version: first.record.version + 40,
+          sections: siblingSections,
+        })
+      ).wrote,
+    ).toBe(true);
 
     const saved = await saveReviewFeedback({
       store,
@@ -338,6 +444,8 @@ describe('consulting stage batch', () => {
       {
         questionId: 'q1',
         question: FIRST_QUESTIONS[0],
+        offeredChoices: [],
+        choiceId: null,
         choiceLabel: null,
         supplement: '직장인을 고객으로 본다',
         status: 'answered',
@@ -345,6 +453,8 @@ describe('consulting stage batch', () => {
       {
         questionId: 'q2',
         question: FIRST_QUESTIONS[1],
+        offeredChoices: [],
+        choiceId: 'c1',
         choiceLabel: '가격은 아직 없다',
         supplement: '가격은 정하지 않았다',
         status: 'answered',
@@ -352,12 +462,15 @@ describe('consulting stage batch', () => {
       {
         questionId: 'q3',
         question: FIRST_QUESTIONS[2],
+        offeredChoices: [],
+        choiceId: null,
         choiceLabel: null,
         supplement: '온라인 게시로 알린다',
         status: 'answered',
       },
     ]);
     expect(integrated.record.stagePartial).toBeUndefined();
+    expect(integrated.record.stageReading?.updatedJudgment).toBe(secondJudgment);
     expect(consultingQuestions(integrated.record.sections).map((item) => item.text)).toEqual(SECOND_QUESTIONS);
     expect(integrated.record.sections?.analysis?.judgmentDetail).toBe(secondJudgment);
     const firstPayload = userPayload(calls[1]!);
@@ -367,6 +480,10 @@ describe('consulting stage batch', () => {
     expect(firstPayload.stagePartial).toBe(false);
     expect(firstPayload.priorStagePairs).toEqual([]);
     expect(firstPayload.stagePairs).toEqual(integrated.record.stageAnswers);
+    expect(firstPayload.verificationStage).toBeUndefined();
+    expect(firstPayload.experimentRecords).toBeUndefined();
+    expect(firstPayload.priorTurns).toBeUndefined();
+    expect(JSON.stringify(firstPayload.priorAnalyses ?? [])).not.toContain('형제 실험');
     const again = await runStageReanalysis({
       store,
       userId: 'user-stage',
@@ -487,7 +604,16 @@ describe('consulting stage batch', () => {
       allowPartial: true,
       chat: async (request) => {
         calls.push(request);
-        return reply(stageRaw('고객 답만 반영해 판단을 유지한다. 이유는 나머지 답이 없기 때문이다.', SECOND_QUESTIONS));
+        const stage = Array.isArray(requestPayload(request)?.stagePairs);
+        return reply(
+          contractReply(
+            request,
+            stage
+              ? '고객 답만 반영해 판단을 유지한다. 이유는 나머지 답이 없기 때문이다.'
+              : '가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.',
+            stage ? SECOND_QUESTIONS : FIRST_QUESTIONS,
+          ),
+        );
       },
       evidence: 'injected_http',
     });
@@ -503,12 +629,30 @@ describe('consulting stage batch', () => {
       {
         questionId: 'q1',
         question: FIRST_QUESTIONS[0],
+        offeredChoices: [],
+        choiceId: null,
         choiceLabel: null,
         supplement: '직장인을 고객으로 본다',
         status: 'answered',
       },
-      { questionId: 'q2', question: FIRST_QUESTIONS[1], choiceLabel: null, supplement: '', status: 'open' },
-      { questionId: 'q3', question: FIRST_QUESTIONS[2], choiceLabel: null, supplement: '', status: 'open' },
+      {
+        questionId: 'q2',
+        question: FIRST_QUESTIONS[1],
+        offeredChoices: [],
+        choiceId: null,
+        choiceLabel: null,
+        supplement: '',
+        status: 'open',
+      },
+      {
+        questionId: 'q3',
+        question: FIRST_QUESTIONS[2],
+        offeredChoices: [],
+        choiceId: null,
+        choiceLabel: null,
+        supplement: '',
+        status: 'open',
+      },
     ]);
   });
 
@@ -581,10 +725,10 @@ describe('consulting stage batch', () => {
     const chat = async (request: ChatRequest) => {
       calls.push(request);
       const index = calls.length;
-      if (index === 1) return reply(stageRaw(firstJudgment, FIRST_QUESTIONS));
-      if (index === 2) return reply(stageRaw(secondJudgment, SECOND_QUESTIONS));
-      if (index === 3) return reply(stageRaw(thirdJudgment, THIRD_QUESTIONS));
-      return reply(stageRaw(fourthJudgment, ['홍보 문구는 무엇인가?', '첫 모임 인원은 몇 명인가?']));
+      if (index === 1) return reply(contractReply(request, firstJudgment, FIRST_QUESTIONS));
+      if (index === 2) return reply(contractReply(request, secondJudgment, SECOND_QUESTIONS));
+      if (index === 3) return reply(contractReply(request, thirdJudgment, THIRD_QUESTIONS));
+      return reply(contractReply(request, fourthJudgment, ['홍보 문구는 무엇인가?', '첫 모임 인원은 몇 명인가?']));
     };
     const base = {
       store,
@@ -638,6 +782,8 @@ describe('consulting stage batch', () => {
       {
         questionId: 'q1',
         question: FIRST_QUESTIONS[0],
+        offeredChoices: [],
+        choiceId: null,
         choiceLabel: null,
         supplement: '직장인을 고객으로 본다',
         status: 'answered',
@@ -645,6 +791,8 @@ describe('consulting stage batch', () => {
       {
         questionId: 'q2',
         question: FIRST_QUESTIONS[1],
+        offeredChoices: [],
+        choiceId: 'c1',
         choiceLabel: '가격은 아직 없다',
         supplement: '가격은 정하지 않았다',
         status: 'answered',
@@ -652,6 +800,8 @@ describe('consulting stage batch', () => {
       {
         questionId: 'q3',
         question: FIRST_QUESTIONS[2],
+        offeredChoices: [],
+        choiceId: null,
         choiceLabel: null,
         supplement: '온라인 게시로 알린다',
         status: 'answered',
@@ -721,6 +871,86 @@ describe('consulting stage batch', () => {
     expect(consultingQuestions(third.record.sections).length).toBeGreaterThanOrEqual(2);
     expect((await store.readReview('user-product', first.record.reviewId))?.finishedAt).toBe(parentFinishedAt);
     expect((await store.readReview('user-product', integrated.record.reviewId))?.finishedAt).toBe(integrated.record.finishedAt);
+  });
+
+  it('stores a malformed stage response once and does not call again', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const calls: ChatRequest[] = [];
+    const chat = async (request: ChatRequest) => {
+      calls.push(request);
+      if (Array.isArray(requestPayload(request)?.stagePairs)) return reply('not-json');
+      return reply(contractReply(request, '가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS));
+    };
+    const base = {
+      store,
+      userId: 'user-format',
+      projectId: 'project-format',
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const first = await runFirstReview({ ...base, text: IDEA, origin: 'typed', fileName: null });
+    expect(first.record.status).toBe('succeeded');
+    const answers = [
+      { questionId: 'q1', comment: '직장인을 고객으로 본다' },
+      { questionId: 'q2', comment: '가격은 정하지 않았다' },
+      { questionId: 'q3', comment: '온라인 게시로 알린다' },
+    ];
+    const failed = await submitConsultingStage({ ...base, reviewId: first.record.reviewId, answers });
+    expect(failed.ok).toBe(true);
+    if (!failed.ok) return;
+    expect(failed.called).toBe(true);
+    expect(failed.pending).toBe(false);
+    expect(failed.record.status).toBe('failed');
+    expect(failed.record.callCount).toBe(1);
+    expect(failed.record.rawContent).toBe('not-json');
+    expect(failed.record.sections).toBeNull();
+    expect(failed.record.error).toContain('invalid_json');
+    expect(calls).toHaveLength(2);
+    const again = await submitConsultingStage({ ...base, reviewId: first.record.reviewId, answers });
+    expect(again.ok && !again.called).toBe(true);
+    expect(calls).toHaveLength(2);
+    if (again.ok) expect(again.record.status).toBe('failed');
+  });
+
+  it('stores a repeated stage question as failed after one call', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const calls: ChatRequest[] = [];
+    const chat = async (request: ChatRequest) => {
+      calls.push(request);
+      const payload = requestPayload(request);
+      if (!payload || !Array.isArray(payload.stagePairs)) {
+        return reply(contractReply(request, '가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS));
+      }
+      const repeated = contractReply(request, '질문을 반복한 응답이다. 이유는 형식 확인이다.', [FIRST_QUESTIONS[0]!, '새 질문인가?']);
+      return reply(repeated);
+    };
+    const base = {
+      store,
+      userId: 'user-repeat',
+      projectId: 'project-repeat',
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const first = await runFirstReview({ ...base, text: `${IDEA} 반복.`, origin: 'typed', fileName: null });
+    const failed = await submitConsultingStage({
+      ...base,
+      reviewId: first.record.reviewId,
+      answers: [
+        { questionId: 'q1', comment: '직장인을 고객으로 본다' },
+        { questionId: 'q2', comment: '가격은 정하지 않았다' },
+        { questionId: 'q3', comment: '온라인 게시로 알린다' },
+      ],
+    });
+    expect(failed.ok).toBe(true);
+    if (!failed.ok) return;
+    expect(calls).toHaveLength(2);
+    expect(failed.record.callCount).toBe(1);
+    expect(failed.record.status).toBe('failed');
+    expect(failed.record.sections).toBeNull();
+    expect(failed.record.error).toContain('stage_questions_repeated');
+    expect(failed.record.rawContent).toContain(FIRST_QUESTIONS[0]);
   });
 
   it('renders one answer field per question and does not reuse one shared choice list', () => {
