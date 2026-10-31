@@ -2,10 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { openReviewBackend } from '../ai-pm-review-backend';
 import {
+  assembleConsultingHistory,
   buildProductReanalysisRequest,
   needsRevisionGate,
   openReviewChat,
+  questionRepeatsPrior,
   runFollowUpReview,
+  unverifiedClaimStoredAsFact,
 } from '../ai-pm-review';
 
 /**
@@ -20,6 +23,9 @@ const ANSWER_ID = '7d2d04e5-93a1-4cd6-aebf-03582eeb003f';
 const SUPPLEMENT = '양조장과의 협력 가능성이 높다.';
 const BUCKET = 'ai-pm-quality-compare';
 const OBJECT = 'product-cumulative-brewery-2026-10-31.json';
+const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31.json';
+const QUALITY_PARENT_ID = '9e169fef-7428-4d21-a6f0-f3034bcc91d1';
+const SIBLING_ANALYSIS_ID = '8602a92e-0fbd-4d93-a005-9c9f18410ac6';
 
 describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
   it('reuses the stored answer for one product follow-up', async () => {
@@ -72,7 +78,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
       console.log(`preview-product-reanalysis hold preview=${preview} gpt_key=${apiKey ? 'present' : 'absent'}`);
       return;
     }
-    const existing = await readMarker(config);
+    const existing = await readMarker(config, OBJECT);
     if (existing && ['RECORDED', 'failed', 'limited'].includes(String(existing.status))) {
       console.log(`preview-product-reanalysis skip status=${existing.status}`);
       return;
@@ -85,7 +91,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
       }
     }
     const startedAt = new Date().toISOString();
-    await writeMarker(config, { status: 'started', startedAt, parentReviewId: PARENT_ID, answerId: ANSWER_ID });
+    await writeMarker(config, { status: 'started', startedAt, parentReviewId: PARENT_ID, answerId: ANSWER_ID }, OBJECT);
     const before = parent?.finishedAt;
     let marker: Record<string, unknown> = { status: 'failed', startedAt, parentReviewId: PARENT_ID, answerId: ANSWER_ID };
     try {
@@ -135,10 +141,134 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
         };
       }
     } finally {
-      await writeMarker(config, marker);
+      await writeMarker(config, marker, OBJECT);
       console.log(`preview-product-reanalysis stored status=${marker.status}`);
     }
     expect(marker.status === 'RECORDED' || marker.status === 'limited' || marker.called === false).toBe(true);
+  }, 180_000);
+
+  it('rechecks the brewery answer without rewriting the saved reviews', async () => {
+    const config = supabaseConfig();
+    expect(config).not.toBeNull();
+    if (!config) return;
+    const preview = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_GIT_COMMIT_REF !== 'main';
+    const apiKey = process.env.GPT_API_KEY?.trim() ?? '';
+    if (!preview || !apiKey) {
+      console.log(`preview-consulting-quality hold preview=${preview} gpt_key=${apiKey ? 'present' : 'absent'}`);
+      return;
+    }
+    const existing = await readMarker(config, QUALITY_OBJECT);
+    if (existing && ['RECORDED', 'failed', 'limited', 'quality_failed'].includes(String(existing.status))) {
+      console.log(`preview-consulting-quality skip status=${existing.status}`);
+      return;
+    }
+    const parentRow = await restGet(config, `ai_pm_reviews?select=user_id,finished_at&review_id=eq.${QUALITY_PARENT_ID}`);
+    const userId = (parentRow[0] as { user_id?: string } | undefined)?.user_id ?? '';
+    const backend = openReviewBackend();
+    const parent = await backend.store.readReview(userId, QUALITY_PARENT_ID);
+    const preserved = await Promise.all(
+      [PARENT_ID, QUALITY_PARENT_ID, '3be5715e-7294-44bd-b163-f3af1dec4259'].map((reviewId) =>
+        backend.store.readReview(userId, reviewId),
+      ),
+    );
+    const records = await backend.store.listReviews(userId, PROJECT_ID);
+    const feedback = (await backend.store.listFeedback(userId)).filter((item) =>
+      records.some((record) => record.reviewId === item.reviewId),
+    );
+    const history = assembleConsultingHistory({
+      records,
+      parent: parent!,
+      supplement: SUPPLEMENT,
+      feedback,
+    });
+    expect(history.priorAnalyses.map((item) => item.reviewId)).toContain(SIBLING_ANALYSIS_ID);
+    expect(history.founderAnswerSource).toEqual({ feedbackId: ANSWER_ID, reviewId: '3be5715e-7294-44bd-b163-f3af1dec4259', onThisReview: false });
+    expect(history.priorTurns.some((turn) => turn.supplement === SUPPLEMENT)).toBe(false);
+    const startedAt = new Date().toISOString();
+    await writeMarker(config, { status: 'started', startedAt, parentReviewId: QUALITY_PARENT_ID, answerId: ANSWER_ID }, QUALITY_OBJECT);
+    let marker: Record<string, unknown> = { status: 'failed', startedAt, parentReviewId: QUALITY_PARENT_ID, answerId: ANSWER_ID };
+    try {
+      const result = await runFollowUpReview({
+        store: backend.store,
+        userId,
+        projectId: PROJECT_ID,
+        reviewId: QUALITY_PARENT_ID,
+        supplement: SUPPLEMENT,
+        now: startedAt,
+        chat: openReviewChat(),
+        evidence: 'live_network',
+      });
+      for (const before of preserved) {
+        if (!before) continue;
+        const after = await backend.store.readReview(userId, before.reviewId);
+        expect(after?.finishedAt).toBe(before.finishedAt);
+        expect(after?.status).toBe(before.status);
+        expect(after?.totalTokens).toBe(before.totalTokens);
+      }
+      const answerRows = await restGet(config, `ai_pm_feedback?select=record_json&feedback_id=eq.${ANSWER_ID}`);
+      const answer = (answerRows[0] as { record_json?: { choiceAnswer?: { label?: string }; modelCalls?: number } }).record_json;
+      expect(answer?.choiceAnswer?.label).toBe(SUPPLEMENT);
+      expect(answer?.modelCalls).toBe(0);
+      if (!result.ok) {
+        marker = { ...marker, status: 'failed', error: result.error };
+      } else if (isLimited(result.record.error)) {
+        marker = { ...marker, status: 'limited', reviewId: result.record.reviewId, error: result.record.error };
+      } else if (result.record.status !== 'succeeded' || !result.record.consultingTurn || !result.record.sections?.analysis) {
+        marker = {
+          ...marker,
+          status: 'failed',
+          reviewId: result.record.reviewId,
+          error: result.record.error,
+          called: result.called,
+        };
+      } else {
+        const facts = result.record.sections.analysis.founderFacts;
+        const judgment = result.record.sections.analysis.judgmentDetail;
+        const nextQuestion = result.record.sections.nextQuestion;
+        const previousQuestions = history.previousQuestions;
+        const claimIsFact = unverifiedClaimStoredAsFact(SUPPLEMENT, facts);
+        const repeated = questionRepeatsPrior(previousQuestions, nextQuestion);
+        const explains = /유지|이유|확인되지|추정|가설/.test(judgment);
+        const touched = [judgment, ...result.record.sections.risks, ...result.record.sections.analysis.assumptions, ...result.record.sections.analysis.inferences, ...result.record.sections.analysis.evidenceToChange].join('\n');
+        const reflects = /협력/.test(touched);
+        const risksMoved = result.record.sections.risks.some((item) => item !== '가격, 인원, 매출은 입력에 없으면 적지 않는다.');
+        const qualityPass = !claimIsFact && !repeated && explains && reflects && risksMoved;
+        marker = {
+          status: qualityPass ? 'RECORDED' : 'quality_failed',
+          startedAt,
+          finishedAt: new Date().toISOString(),
+          called: result.called,
+          reviewId: result.record.reviewId,
+          parentOfChild: result.record.parentReviewId,
+          sourceFeedbackId: result.record.sourceFeedbackId,
+          founderAnswerSource: history.founderAnswerSource,
+          priorAnalysisIds: history.priorAnalyses.map((item) => item.reviewId),
+          model: result.record.model,
+          promptTokens: result.record.promptTokens,
+          completionTokens: result.record.completionTokens,
+          totalTokens: result.record.totalTokens,
+          callCount: result.record.callCount,
+          consultingTurn: result.record.consultingTurn,
+          judgment,
+          nextQuestion,
+          nextQuestionReason: result.record.sections.nextQuestionReason,
+          founderFacts: facts,
+          risks: result.record.sections.risks,
+          assumptions: result.record.sections.analysis.assumptions,
+          inferences: result.record.sections.analysis.inferences,
+          evidenceToChange: result.record.sections.analysis.evidenceToChange,
+          claimIsFact,
+          repeated,
+          explains,
+          reflects,
+          risksMoved,
+        };
+      }
+    } finally {
+      await writeMarker(config, marker, QUALITY_OBJECT);
+      console.log(`preview-consulting-quality stored status=${marker.status}`);
+    }
+    expect(marker.status).toBe('RECORDED');
   }, 180_000);
 });
 
@@ -158,22 +288,22 @@ async function restGet(config: { url: string; key: string }, query: string): Pro
   return Array.isArray(body) ? body : [];
 }
 
-async function readMarker(config: { url: string; key: string }): Promise<Record<string, unknown> | null> {
-  const response = await fetch(`${config.url}/storage/v1/object/${BUCKET}/${OBJECT}`, {
+async function readMarker(config: { url: string; key: string }, objectName: string): Promise<Record<string, unknown> | null> {
+  const response = await fetch(`${config.url}/storage/v1/object/${BUCKET}/${objectName}`, {
     headers: { apikey: config.key, Authorization: `Bearer ${config.key}` },
   });
   if (!response.ok) return null;
   return (await response.json()) as Record<string, unknown>;
 }
 
-async function writeMarker(config: { url: string; key: string }, payload: Record<string, unknown>): Promise<void> {
+async function writeMarker(config: { url: string; key: string }, payload: Record<string, unknown>, objectName: string): Promise<void> {
   const secrets = [config.key, process.env.GPT_API_KEY, process.env.SUPABASE_ANON_KEY, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY];
   let text = JSON.stringify(payload);
   for (const secret of secrets) {
     if (typeof secret === 'string' && secret.length > 8) text = text.split(secret).join('[redacted]');
   }
   text = text.replace(/sk-[A-Za-z0-9_-]+/g, '[redacted]');
-  const response = await fetch(`${config.url}/storage/v1/object/${BUCKET}/${OBJECT}`, {
+  const response = await fetch(`${config.url}/storage/v1/object/${BUCKET}/${objectName}`, {
     method: 'POST',
     headers: {
       apikey: config.key,

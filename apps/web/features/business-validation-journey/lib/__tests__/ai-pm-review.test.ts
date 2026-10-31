@@ -22,7 +22,10 @@ import {
   AI_PM_FOLLOW_UP_MAX_TOKENS,
   buildFirstReviewRequest,
   buildFollowUpRequest,
+  assembleConsultingHistory,
   buildProductReanalysisRequest,
+  questionRepeatsPrior,
+  unverifiedClaimStoredAsFact,
   callReviewWithQuotaSwitch,
   estimateReviewTokens,
   FOLLOW_UP_ANALYSIS_CONTRACT,
@@ -4835,6 +4838,265 @@ describe('AI PM first review', () => {
     expect((await store.listReviews('user-a', 'project-test')).filter((record) => record.status === 'succeeded')).toHaveLength(1);
     expect(isProviderLimitError('OpenAI rate limit exceeded provider_http')).toBe(true);
     expect(isProviderLimitError('OpenAI connection failed')).toBe(false);
+    store.close();
+  });
+
+  it('does not store a founder estimate as a confirmed fact', () => {
+    const claim = '양조장과의 협력 가능성이 높다.';
+    expect(unverifiedClaimStoredAsFact(claim, [claim])).toBe(true);
+    expect(unverifiedClaimStoredAsFact(claim, ['양조장 접촉 기록은 없다.'])).toBe(false);
+    const request = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [],
+      latestAnalysis: sections(),
+      founderChoice: null,
+      founderSupplement: claim,
+      founderFeedback: null,
+    });
+    const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+    expect(system).toContain('founderFacts에 넣지 않는다');
+    expect(system).toContain('확인된 사실, 경험, 추정, 계획');
+  });
+
+  it('puts the founder answer into the judgment update', () => {
+    const claim = '양조장과의 협력 가능성이 높다.';
+    const request = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [],
+      latestAnalysis: sections(),
+      founderChoice: null,
+      founderSupplement: claim,
+      founderFeedback: null,
+    });
+    const joined = request.messages.map((message) => message.content).join('\n');
+    expect(joined).toContain(claim);
+    expect(joined).toContain('판단에 어떤 영향');
+    expect(joined).toContain('이번 답이 판단');
+  });
+
+  it('requires a reason when the judgment stays', () => {
+    const request = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [],
+      latestAnalysis: sections(),
+      founderChoice: null,
+      founderSupplement: '양조장과의 협력 가능성이 높다.',
+      founderFeedback: null,
+    });
+    const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+    expect(system).toContain('근거가 부족하면 기존 판단을 유지');
+    expect(system).toContain('이유를 적는다');
+  });
+
+  it('treats a reworded partnership question as the same question', () => {
+    const first = '어떤 방식으로 양조장과의 파트너십을 구축할 계획인가?';
+    const second = '양조장과의 파트너십을 위한 구체적인 실행 계획은 무엇인가?';
+    expect(questionRepeatsPrior([first], second)).toBe(true);
+    expect(questionRepeatsPrior([first, second], '양조장 한 곳에 협력 조건을 제안해 본 적이 있습니까?')).toBe(false);
+  });
+
+  it('cites a failed review answer without moving it onto the succeeded parent', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const ready = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat: async () => reply(JSON.stringify(sections())),
+      evidence: 'injected_http',
+    });
+    const failed = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: '다른 양조장 메모입니다. 협력 여부는 아직 없습니다.',
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat: async () => {
+        throw new Error('review failed before an analysis');
+      },
+      evidence: 'injected_http',
+    });
+    expect(failed.record.status).toBe('failed');
+    const claim = '양조장과의 협력 가능성이 높다.';
+    await store.insertFeedback({
+      feedbackId: 'fb-failed-answer',
+      reviewId: failed.record.reviewId,
+      userId: 'user-a',
+      agreement: 'partial',
+      accuracy: 'mostly_accurate',
+      revisionAreas: ['payer'],
+      comment: claim,
+      nextAction: 'verify_hypotheses',
+      marks: [],
+      choiceAnswer: { choiceId: 'c1', label: claim, otherText: '' },
+      submittedAt: NOW,
+      modelCalls: 0,
+    });
+    let seen = '';
+    const follow = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: ready.record.reviewId,
+      supplement: claim,
+      now: NOW,
+      chat: async (request) => {
+        seen = request.messages.find((message) => message.role === 'user')?.content ?? '';
+        return reply(productAnalysisRaw({ judgment: '협력 가능성은 추정이다.', nextQuestion: '양조장 한 곳과 조건을 논의했습니까?' }));
+      },
+      evidence: 'injected_http',
+    });
+    expect(follow.ok).toBe(true);
+    if (!follow.ok) return;
+    expect(follow.record.sourceFeedbackId).toBeNull();
+    expect(follow.record.parentReviewId).toBe(ready.record.reviewId);
+    const payload = JSON.parse(seen) as { founderAnswerSource: { feedbackId: string; reviewId: string; onThisReview: boolean } };
+    expect(payload.founderAnswerSource).toEqual({
+      feedbackId: 'fb-failed-answer',
+      reviewId: failed.record.reviewId,
+      onThisReview: false,
+    });
+    expect((await store.listFeedback('user-a', failed.record.reviewId))[0]?.feedbackId).toBe('fb-failed-answer');
+    expect(await store.listFeedback('user-a', ready.record.reviewId)).toHaveLength(0);
+    store.close();
+  });
+
+  it('builds prior analyses from succeeded siblings and keeps the current answer once', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const chat = async (request: ChatRequest) => {
+      const product = request.messages.some((message) => message.content.includes('이번 답이 판단'));
+      if (!product) return reply(JSON.stringify(sections()));
+      const body = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+        founderSupplement: string;
+      };
+      return reply(productAnalysisRaw({ judgment: `${body.founderSupplement} 판단`, nextQuestion: `${body.founderSupplement} 다음 질문?` }));
+    };
+    const first = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    const sibling = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement: '형제분석답변',
+      now: '2026-10-27T09:40:00.000Z',
+      chat,
+      evidence: 'injected_http',
+    });
+    const chainChild = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement: '체인답변',
+      now: '2026-10-27T09:50:00.000Z',
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(sibling.ok && chainChild.ok).toBe(true);
+    if (!sibling.ok || !chainChild.ok) return;
+    let seen = '';
+    const next = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: chainChild.record.reviewId,
+      supplement: '새검증답변',
+      now: '2026-10-27T10:00:00.000Z',
+      chat: async (request) => {
+        seen = request.messages.find((message) => message.role === 'user')?.content ?? '';
+        return reply(productAnalysisRaw({ judgment: '새 검증 판단', nextQuestion: '양조장 한 곳과 조건을 논의했습니까?' }));
+      },
+      evidence: 'injected_http',
+    });
+    expect(next.ok && next.called).toBe(true);
+    const payload = JSON.parse(seen) as {
+      priorAnalyses: Array<{ reviewId: string }>;
+      priorTurns: Array<{ supplement: string }>;
+      founderSupplement: string;
+    };
+    expect(payload.priorAnalyses.map((item) => item.reviewId)).toContain(sibling.record.reviewId);
+    expect(payload.priorAnalyses.map((item) => item.reviewId)).not.toContain(first.record.reviewId);
+    expect(payload.priorAnalyses.map((item) => item.reviewId)).not.toContain(chainChild.record.reviewId);
+    expect(payload.priorTurns.map((turn) => turn.supplement)).toEqual(['체인답변']);
+    expect(payload.founderSupplement).toBe('새검증답변');
+    const records = await store.listReviews('user-a', 'project-test');
+    const assembled = assembleConsultingHistory({
+      records,
+      parent: chainChild.record,
+      supplement: '새검증답변',
+      feedback: [],
+    });
+    expect(assembled.priorAnalyses.map((item) => item.reviewId)).toContain(sibling.record.reviewId);
+    expect(assembled.priorTurns.map((turn) => turn.supplement)).toEqual(['체인답변']);
+    store.close();
+  });
+
+  it('stores a new analysis without replacing the saved parent or the earlier child', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const chat = async (request: ChatRequest) => {
+      const product = request.messages.some((message) => message.content.includes('이번 답이 판단'));
+      if (!product) return reply(JSON.stringify(sections()));
+      return reply(productAnalysisRaw({ judgment: '이어서 저장한 판단', nextQuestion: '양조장 한 곳과 조건을 논의했습니까?' }));
+    };
+    const first = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    const child = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement: '첫번째답변',
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(child.ok).toBe(true);
+    if (!child.ok) return;
+    const parentBefore = JSON.stringify(await store.readReview('user-a', first.record.reviewId));
+    const childBefore = JSON.stringify(await store.readReview('user-a', child.record.reviewId));
+    const again = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: child.record.reviewId,
+      supplement: '두번째답변',
+      now: '2026-10-27T10:10:00.000Z',
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(again.ok && again.called).toBe(true);
+    if (!again.ok) return;
+    expect(again.record.reviewId).not.toBe(child.record.reviewId);
+    expect(again.record.parentReviewId).toBe(child.record.reviewId);
+    expect(JSON.stringify(await store.readReview('user-a', first.record.reviewId))).toBe(parentBefore);
+    expect(JSON.stringify(await store.readReview('user-a', child.record.reviewId))).toBe(childBefore);
     store.close();
   });
 

@@ -620,6 +620,102 @@ export function reviewChain(records: StoredReview[], parent: StoredReview): Stor
   return reversed.reverse();
 }
 
+export type PriorAnalysisBrief = {
+  reviewId: string;
+  judgment: string;
+  nextQuestion: string;
+  assumptions: string[];
+  risks: string[];
+};
+
+/** Where the founder sentence already lives. Citing it does not move the row. */
+export type FounderAnswerCitation = {
+  feedbackId: string;
+  reviewId: string;
+  onThisReview: boolean;
+};
+
+export function unverifiedClaimStoredAsFact(claim: string, facts: string[]): boolean {
+  const needle = claim.replace(/\s+/g, '');
+  if (!needle) return false;
+  return facts.some((fact) => fact.replace(/\s+/g, '').includes(needle));
+}
+
+/** Same sentence, or another wording of the partnership-plan question. */
+export function questionRepeatsPrior(previous: string[], next: string): boolean {
+  const compact = (value: string) => value.replace(/\s+/g, '').replace(/[.?？!]/g, '');
+  const nextCompact = compact(next);
+  if (!nextCompact) return false;
+  if (previous.some((item) => compact(item) === nextCompact)) return true;
+  const partnershipPlan = (value: string) => /파트너십|협력/.test(value) && /계획|방식|구축|어떻게|구체적/.test(value);
+  return partnershipPlan(next) && previous.some(partnershipPlan);
+}
+
+/**
+ * Prior succeeded analyses of the same input, excluding the root and the current parent.
+ * A failed review stays out. A turn that only repeats the current answer is not sent twice.
+ * The citation points at the stored feedback row and does not copy it onto this parent.
+ */
+export function assembleConsultingHistory(input: {
+  records: StoredReview[];
+  parent: StoredReview;
+  supplement: string;
+  feedback: StoredFeedback[];
+}): {
+  root: StoredReview;
+  priorTurns: ConsultingTurn[];
+  priorAnalyses: PriorAnalysisBrief[];
+  previousQuestions: string[];
+  founderAnswerSource: FounderAnswerCitation | null;
+} {
+  const chain = reviewChain(input.records, input.parent);
+  const root = chain[0] ?? input.parent;
+  const supplement = input.supplement.trim();
+  const priorTurns = chain
+    .slice(1)
+    .flatMap((item) => (item.consultingTurn ? [item.consultingTurn] : []))
+    .filter((turn) => turn.supplement.trim() !== supplement);
+  const priorAnalyses = input.records
+    .filter(
+      (record) =>
+        record.status === 'succeeded' &&
+        record.sections &&
+        record.inputSha === input.parent.inputSha &&
+        record.reviewId !== root.reviewId &&
+        record.reviewId !== input.parent.reviewId,
+    )
+    .sort((left, right) => left.finishedAt.localeCompare(right.finishedAt) || left.version - right.version)
+    .map((record) => ({
+      reviewId: record.reviewId,
+      judgment: record.sections?.analysis?.judgmentDetail || record.sections?.judgment || '',
+      nextQuestion: record.sections?.nextQuestion ?? '',
+      assumptions: record.sections?.analysis?.assumptions ?? record.sections?.hypotheses ?? [],
+      risks: record.sections?.risks ?? [],
+    }));
+  const previousQuestions = [
+    root.sections?.nextQuestion ?? '',
+    ...priorAnalyses.map((item) => item.nextQuestion),
+    ...priorTurns.map((turn) => turn.nextQuestion),
+    input.parent.sections?.nextQuestion ?? '',
+  ].filter((question, index, all) => question.trim().length > 0 && all.indexOf(question) === index);
+  const reviewIds = new Set(input.records.map((record) => record.reviewId));
+  const cited = input.feedback.find((item) => {
+    if (!reviewIds.has(item.reviewId)) return false;
+    const label = item.choiceAnswer?.label.trim() ?? '';
+    const comment = item.comment.trim();
+    return (label.length > 0 && label === supplement) || (comment.length > 0 && comment === supplement);
+  });
+  return {
+    root,
+    priorTurns,
+    priorAnalyses,
+    previousQuestions,
+    founderAnswerSource: cited
+      ? { feedbackId: cited.feedbackId, reviewId: cited.reviewId, onThisReview: cited.reviewId === input.parent.reviewId }
+      : null,
+  };
+}
+
 function compactConsultingAnalysis(sections: ReviewSections): {
   summary: string;
   judgment: string;
@@ -639,13 +735,18 @@ function compactConsultingAnalysis(sections: ReviewSections): {
 function productReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
-    '사용자 JSON의 최초 사업 원문, 최초 분석, 이전 턴, 직전 분석, 이번 답을 함께 읽고 사업을 다시 검토한다.',
-    '이번 답이 판단, 가정, 다음 검증, 다음 질문에 반영되어야 한다.',
-    '앞선 답변을 지우지 않는다. 확인되지 않은 가격, 계약, 수요를 사실로 만들지 않는다.',
+    '사용자 JSON의 최초 사업 원문, 최초 분석, 이전 분석, 직전 분석, 이전 질문, 이번 답을 함께 읽고 사업을 다시 검토한다.',
+    '이번 답은 네 단계로 다룬다. 첫째, 파운더가 무엇을 주장하거나 답했는지 해석한다. 둘째, 그 답의 근거 수준을 확인된 사실, 경험, 추정, 계획 중 하나로 판단한다. 셋째, 기존 판단에서 유지되는 부분과 답 때문에 달라지는 부분을 나누고 이유를 적는다. 넷째, 이전 질문과 다른 불확실성 하나만 다음 질문으로 고른다.',
+    '확인되지 않은 협력 가능성, 추정, 기대, 계획은 founderFacts에 넣지 않는다. founderFacts는 접촉, 계약, 입금, 예약처럼 확인된 사실만 담는다. 근거가 없으면 빈 배열이다.',
+    '추정과 기대는 inferences에 두고, 아직 확인되지 않은 가정은 assumptions에 둔다. 답을 지우지 않는다. evidenceToChange에는 그 답이 판단에 어떤 영향을 주는지를 적는다.',
+    'judgment에는 유지되는 판단, 답을 유지하거나 반영하는 이유, 여전히 불확실한 점을 함께 적는다. 근거가 부족하면 기존 판단을 유지한다. 최초 분석 문장을 그대로 반복하지 않는다.',
+    'risks에는 답으로 드러난 미확인 위험을 포함한다. 이전 위험 문장만 복사하지 않는다.',
+    'nextQuestion은 하나다. previousQuestions와 같은 문장이나, 파트너십을 어떻게 구축할지 묻는 질문을 표현만 바꾸어 반복하지 않는다. 접촉 여부, 협력 조건, 운영 주체, 예약 경로, 누가 비용을 내는 것 가운데 지금 가장 큰 불확실성 하나만 묻는다.',
+    'nextQuestionReason에는 그 질문이 이전 질문과 다른 이유를 적는다.',
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
-    'nextQuestion은 이번 답 다음에 확인할 질문 하나다. 직전 질문과 같은 문장을 반복하지 않는다.',
+    '이번 답이 판단, 가정, 위험, 다음 검증, 다음 질문에 반영되어야 한다.',
   ].join(' ');
 }
 
@@ -657,6 +758,9 @@ export function buildProductReanalysisRequest(input: {
   originalInput: string;
   firstAnalysis: ReviewSections;
   priorTurns: ConsultingTurn[];
+  priorAnalyses?: PriorAnalysisBrief[];
+  previousQuestions?: string[];
+  founderAnswerSource?: FounderAnswerCitation | null;
   latestAnalysis: ReviewSections;
   founderChoice: { label: string; otherText: string } | null;
   founderSupplement: string;
@@ -670,16 +774,20 @@ export function buildProductReanalysisRequest(input: {
     founderChoice: input.founderChoice,
     founderSupplement: input.founderSupplement,
     founderFeedback: input.founderFeedback,
+    founderAnswerSource: input.founderAnswerSource ?? null,
+    previousQuestions: input.previousQuestions ?? [input.latestAnalysis.nextQuestion],
     priorQuestion: input.latestAnalysis.nextQuestion,
   };
+  let analyses = [...(input.priorAnalyses ?? [])];
   let turns = [...input.priorTurns];
-  const payload = () => ({ ...anchors, priorTurns: turns });
+  const payload = () => ({ ...anchors, priorAnalyses: analyses, priorTurns: turns });
   const systemTokens = estimateReviewTokens(system);
   while (
-    turns.length > 0 &&
+    (analyses.length > 0 || turns.length > 0) &&
     systemTokens + estimateReviewTokens(JSON.stringify(payload())) > AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET
   ) {
-    turns = turns.slice(1);
+    if (analyses.length > 0) analyses = analyses.slice(1);
+    else turns = turns.slice(1);
   }
   const user = JSON.stringify(payload());
   const messages = [
@@ -1073,14 +1181,19 @@ export async function runFollowUpReview(input: {
   if (!input.chat) return { ok: false, error: input.notRunReason === 'gpt_api_key_missing' ? 'gpt_api_key_missing' : 'engine_unconfigured' };
   const latest = await input.store.latestForInput(input.userId, parent.inputSha, input.projectId);
   const records = await input.store.listReviews(input.userId, input.projectId);
-  const chain = reviewChain(records, parent);
-  const root = chain[0] ?? parent;
-  const priorTurns = chain.slice(1).flatMap((item) => (item.consultingTurn ? [item.consultingTurn] : []));
+  const projectFeedback = (await input.store.listFeedback(input.userId)).filter((item) =>
+    records.some((record) => record.reviewId === item.reviewId),
+  );
+  const history = assembleConsultingHistory({ records, parent, supplement, feedback: projectFeedback });
+  const root = history.root;
   const choice = feedback?.choiceAnswer ?? null;
   const productRequest = buildProductReanalysisRequest({
     originalInput: root.inputText,
     firstAnalysis: root.sections ?? parent.sections,
-    priorTurns,
+    priorTurns: history.priorTurns,
+    priorAnalyses: history.priorAnalyses,
+    previousQuestions: history.previousQuestions,
+    founderAnswerSource: history.founderAnswerSource,
     latestAnalysis: parent.sections,
     founderChoice: choice ? { label: choice.label, otherText: choice.otherText } : null,
     founderSupplement: supplement,
