@@ -795,7 +795,10 @@ function productReanalysisSchema(): Record<string, unknown> {
       strengths: list,
       risks: { ...list, description: '이번 답이 드러낸 미확인을 새 문장으로 포함한다.' },
       assumptions: { ...list, description: '첫 문장은 이번 답을 검증되지 않은 전제라고 적는다. 이전 가정만 반복하면 실패다.' },
-      evidenceToChange: { ...list, description: '판단에 어떤 영향인지 적는다. 검증되지 않은 전제라 판단을 바꾸지 못하면 그 이유를 적는다.' },
+      evidenceToChange: {
+        ...list,
+        description: '검증되지 않은 전제라 판단을 바꾸지 못한다고 적는다. 답 문장만 두지 않는다.',
+      },
       founderFacts: { ...list, description: '확인된 접촉, 계약, 입금, 예약만. 없으면 빈 배열.' },
       inferences: { ...list, description: '근거 수준은 Founder의 기대 또는 자체 판단이라고 적는다.' },
       judgment: {
@@ -825,8 +828,9 @@ function productReanalysisSystemPrompt(): string {
     'evidenceToChange에는 이 답이 판단에 어떤 영향을 주는지, 사업 실행 가능성을 높일 잠재는 있으나 검증되지 않은 전제라 판단을 바꾸지 못한다는 이유를 적는다. 답 문장만 다시 적으면 실패다.',
     'judgment는 문자열이다. 객체로 나누면 실패다. 그 문자열에 유지와 이유를 넣는다. 긍정적 변화는 Founder가 그 가능성을 높게 본다는 점이다. 반영하지 못한 부분은 상대의 협력 의사와 협의 결과가 없다는 점이다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. 다음에 필요한 증거는 실제 연락이나 미팅과 상대의 반응이다. priorJudgmentText와 같은 문장이면 실패다.',
     'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉과 상대의 협력 의사가 확인되지 않았다는 문장을 적는다. 이전 위험만 반복하면 실패다.',
-    'nextQuestion은 하나다. 계획, 어떻게, 어떤 방식, 구축을 묻으면 실패다. priorQuestionTexts에 있는 문장을 다시 쓰지 않는다. 접촉이 확인되지 않았으면 실제로 연락하거나 미팅했는지, 했다면 상대가 협력에 동의했는지를 묻는다.',
-    'nextQuestionReason에는 그 질문이 이전 계획 질문과 다른 이유를 적는다.',
+    'judgment 문자열은 두 문장을 포함한다. 근거 수준은 Founder의 기대 또는 자체 판단이다. 유지 이유는 상대의 협력 의사와 협의 결과가 없어 사업성 판단을 바꿀 검증 근거가 없기 때문이다.',
+    'nextQuestion은 하나다. 계획, 어떻게, 어떤 방식, 구축을 묻으면 실패다. priorQuestionTexts와 같은 문장이면 실패다. 아직 연락하거나 미팅한 결과가 없다면, 그 양조장이 협력에 동의했는지 아니면 아직 답이 없는지를 묻는다.',
+    'nextQuestionReason에는 그 질문이 이전 질문과 다른 이유를 적는다.',
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
