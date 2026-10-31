@@ -2569,6 +2569,50 @@ A stage answer was stored and sent to the model, but the request dropped the cho
 
 ---
 
+## ADR-077: Follow-up reading keeps the call structure and tightens the judgment contract
+
+**Status:** Accepted  
+**Date:** 2026-10-31  
+**Sprint:** AI PM consulting stage  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The stage request already carries `questionId`, `choiceId`, `choiceLabel`, `offeredChoices`, and the supplement. One model call is stored, and a format error stays failed. The stored brewery judgment still treated an unverified cooperation claim as confirmed, repeated the choice label instead of the supplement, and asked again for a selection criterion the founder had already stated.
+
+The stage-2 analysis parent is the stage row that holds the next questions. That stage row's parent is the stage-1 analysis. The links are not rewritten.
+
+### Decision
+
+1. The follow-up prompt and response-field descriptions require one reading of the question, the preserved choices, the selection, and the supplement. Repeating the choice label is not an interpretation. A single preserved choice is not a reconstructed menu.
+2. A sentence in `unverifiedClaims` stays out of `verifiedFacts` and is not written as a confirmed fact or as the current high likelihood. The model writes the judgment. Code does not score it and does not repair the call.
+3. The next question is still the model's choice. The contract tells it not to ask again for a criterion already present in the supplement.
+4. `questionId`, `choiceId`, `offeredChoices`, the ancestor chain, one call per stage, and raw preservation stay as they are.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Reject a contradictory judgment and call the model again | The stored row would look consistent | A repair call would hide the first reading |
+| Restore the missing historical choice menu | The request would look complete | The unselected options were never stored |
+
+### Consequences
+
+**Positive:**
+
+- The model is told to use the supplement and to keep claims unverified.
+- The existing parent links stay in place.
+
+**Negative:**
+
+- A schema-valid judgment can still be a weak business judgment. That text is kept for review.
+
+**Neutral:**
+
+- Production stays locked. Existing review rows are not updated.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
