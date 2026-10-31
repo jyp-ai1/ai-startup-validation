@@ -125,6 +125,9 @@ export type ReviewCallNote = {
   completionTokens: number | null;
   totalTokens: number | null;
   readingIssues: string[];
+  judgment?: string;
+  nextQuestion?: string;
+  nextVerification?: string;
 };
 
 export type StoredReview = {

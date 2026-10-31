@@ -5717,6 +5717,23 @@ describe('AI PM first review', () => {
     expect(stalled.explainsDirection).toBe(true);
     expect(stalled.doesNotRepeatQuestion).toBe(true);
     expect(stalled.newStep).toBe(false);
+    const collapsedJudgment =
+      '현재 사업성 판단은 유지되며, 양조장 후보 선정 기준이 구체화되었지만, 아직 구체적인 양조장 후보가 선정되지 않았다는 점이 미해결로 남아 있다.';
+    const collapsedQuestion = '체험으로 만들고 마실 수 있는 양조장 후보를 선정하기 위한 구체적인 양조장 이름이 있는가?';
+    const collapsedVerification = '양조장 후보 선정 기준을 바탕으로 실제 접촉할 양조장 후보를 선정했는지 확인한다.';
+    const collapsed = followThroughQuality({
+      ...shared,
+      judgment: collapsedJudgment,
+      summary: collapsedJudgment,
+      inferences: ['양조장 후보 선정 기준이 구체화되었지만, 아직 구체적인 양조장 후보가 선정되지 않았다.'],
+      nextVerification: collapsedVerification,
+      nextQuestion: collapsedQuestion,
+    });
+    expect(collapsed.understandsAnswer).toBe(false);
+    expect(collapsed.classifiesChoice).toBe(false);
+    expect(collapsed.keepsUnresolved).toBe(true);
+    expect(collapsed.doesNotRepeatQuestion).toBe(false);
+    expect(collapsed.newStep).toBe(false);
     expect(verificationAssertsUngroundedGain(stalledVerification)).toBe(true);
     expect(verificationStaysOnAnsweredCriterion(stalledVerification)).toBe(true);
     expect(verificationAssertsUngroundedGain('그 효과는 확인되지 않았다.')).toBe(false);
@@ -5746,6 +5763,32 @@ describe('AI PM first review', () => {
     );
     expect(
       productReadingIssues({
+        judgment: collapsedJudgment,
+        summary: collapsedJudgment,
+        assumptions: shared.assumptions,
+        inferences: ['양조장 후보 선정 기준이 구체화되었지만, 아직 구체적인 양조장 후보가 선정되지 않았다.'],
+        nextVerification: collapsedVerification,
+        nextQuestion: collapsedQuestion,
+        unresolved,
+        priorGoals,
+        founderClaims,
+        founderFacts: [],
+        founderSupplement: supplement,
+        answeredQuestion: asked,
+        answeredVerification,
+      }),
+    ).toEqual(
+      expect.arrayContaining([
+        'claim_not_labeled',
+        'new_answer_missing',
+        'answer_not_classified',
+        'answer_collapsed_to_choice',
+        'selection_question_repeated',
+        'verification_question_mismatch',
+      ]),
+    );
+    expect(
+      productReadingIssues({
         judgment,
         summary: judgment,
         assumptions: shared.assumptions,
@@ -5770,7 +5813,7 @@ describe('AI PM first review', () => {
     expect(repair).not.toContain(judgment);
   });
 
-  it('repairs a criterion answer once and does not spend a blocked third call', async () => {
+  it('keeps an improving repair and stops when the next repair does not reduce the failures', async () => {
     const store = openAiPmReviewStore(storePath());
     const supplement = '체험으로 만들고 마실 수 있는 양조장인지를 기준으로 후보를 고르겠다. 그 기준에 맞는 양조장은 아직 정하지 못했다.';
     const calls: string[] = [];
@@ -5817,19 +5860,22 @@ describe('AI PM first review', () => {
     });
     expect(follow.ok).toBe(true);
     if (!follow.ok) return;
-    expect(calls).toHaveLength(2);
-    expect(calls[1]).toContain('verification_asserts_positive_effect');
-    expect(calls[1]).toContain('고르겠다는 문장만으로는 미해결이 아니다');
-    expect(follow.record.callCount).toBe(2);
+    expect(calls).toHaveLength(3);
+    expect(calls[1]).toContain('new_answer_missing');
+    expect(calls[1]).toContain('judgment에 체험이 없다');
+    expect(calls[2]).toContain('verification_asserts_positive_effect');
+    expect(calls[2]).toContain('answered_criterion_still_open');
+    expect(follow.record.callCount).toBe(3);
     expect(follow.record.callLedger?.map((note) => note.readingIssues.some((issue) => issue.startsWith('repair_failed')))).toEqual([
+      false,
       false,
       false,
     ]);
     expect(follow.record.firstRawContent).toContain('근거가 부족하다');
     expect(follow.record.sections?.nextQuestion).toBe('그 양조장에 닿는 경로는 무엇인가요?');
-    expect(follow.record.promptTokens).toBe(22);
-    expect(follow.record.completionTokens).toBe(9);
-    expect(follow.record.totalTokens).toBe(31);
+    expect(follow.record.promptTokens).toBe(34);
+    expect(follow.record.completionTokens).toBe(14);
+    expect(follow.record.totalTokens).toBe(48);
     const parent = await store.readReview('user-a', first.record.reviewId);
     expect(parent?.finishedAt).toBe(first.record.finishedAt);
     store.close();

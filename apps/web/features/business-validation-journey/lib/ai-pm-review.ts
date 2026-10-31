@@ -352,7 +352,7 @@ export function openReviewChat(env: Record<string, string | undefined> = process
     callReviewWithQuotaSwitch({
       request,
       openAI: async (chatRequest) => {
-        if (openAICalls >= 2) throw new Error('review_retry_blocked');
+        if (openAICalls >= 3) throw new Error('review_retry_blocked');
         openAICalls += 1;
         return new OpenAIProviderAdapter({ apiKey: openAIKey }).chat(chatRequest);
       },
@@ -1200,9 +1200,19 @@ export function productReadingIssues(input: {
   if (criterionAnswer(input.founderSupplement ?? '') && verificationStaysOnAnsweredCriterion(input.nextVerification)) {
     issues.push('answered_criterion_still_open');
   }
+  if (
+    input.unresolved.some(answerSaysNoCandidate) &&
+    (questionRepeatsAnsweredSelection(input.nextQuestion) || questionRepeatsAnsweredSelection(input.nextVerification))
+  ) {
+    issues.push('selection_question_repeated');
+  }
   if (criterionAnswer(input.founderSupplement ?? '')) {
     const reviewed = `${input.judgment}\n${input.inferences.join('\n')}`;
     if (!/체험/.test(reviewed)) issues.push('new_answer_missing');
+    if (!/계획|선택/.test(input.judgment)) issues.push('answer_not_classified');
+    if (/구체화되었|구체화했/.test(`${input.judgment}\n${input.summary}`) && !/체험/.test(reviewed)) {
+      issues.push('answer_collapsed_to_choice');
+    }
     const answered = input.answeredQuestion ?? '';
     const repeatsAnswered =
       (answered.length > 0 && questionRepeatsPrior([answered], input.nextQuestion)) ||
@@ -1231,9 +1241,20 @@ export function productReadingRepairMessage(issues: string[], context?: { supple
   const lines = [
     '이전 JSON은 구조 검증에 걸렸다.',
     `실패 코드: ${issues.join(',')}.`,
-    '사업성을 유지할지 바꿀지, 긍정인지 부정인지는 네가 근거로 다시 정한다. 대체 문장을 받지 않는다.',
-    '같은 문장을 다시 내면 실패다.',
   ];
+  if (issues.includes('new_answer_missing') || issues.includes('answer_collapsed_to_choice') || issues.includes('answer_not_classified')) {
+    const supplement = context?.supplement?.trim();
+    lines.push(
+      supplement
+        ? `judgment에 체험이 없다. 기준이 구체화되었다로 이번 답을 바꾸지 마라. 선택 라벨이 아니라 다음 문장을 계획 또는 선택으로 적어라. ${supplement}`
+        : 'judgment에 체험이 없다. 기준이 구체화되었다로 이번 답을 바꾸지 마라. supplement의 체험을 계획 또는 선택으로 적어라.',
+    );
+  }
+  if (issues.includes('selection_question_repeated')) {
+    lines.push('이미 후보가 없다. 이름, 선정했는지, 정했는지를 nextQuestion과 nextVerification에 다시 넣지 마라. 접근 경로, 협력 의사, 협력 조건 중 하나만 물어라.');
+  }
+  lines.push('사업성을 유지할지 바꿀지, 긍정인지 부정인지는 네가 근거로 다시 정한다. 대체 문장을 받지 않는다.');
+  lines.push('같은 문장을 다시 내면 실패다.');
   if (issues.includes('product_reading_unparsed')) lines.push('JSON 스키마의 키를 모두 채워라.');
   if (issues.includes('claim_used_as_premise') || issues.includes('claim_in_summary') || issues.includes('claim_not_labeled') || issues.includes('inference_misses_boundary')) {
     lines.push(
@@ -1311,7 +1332,7 @@ export function followThroughQuality(input: {
       !founderClaimTreatedAsFact(input.summary) &&
       !claimLeftUnlabeled(input.judgment, input.founderClaims),
     classifiesChoice:
-      /계획|선택|기준/.test(reviewed) &&
+      (criterionAnswer(input.supplement) ? /계획|선택/.test(input.judgment) : /계획|선택|기준/.test(reviewed)) &&
       !unverifiedClaimStoredAsFact(input.supplement, input.founderFacts) &&
       !assumptionRestatesUnverifiedHope(input.assumptions),
     keepsUnresolved: judgmentAccountsForUnresolved(input.judgment, input.unresolved),
@@ -1581,7 +1602,7 @@ function productReanalysisSchema(): Record<string, unknown> {
       nextQuestion: {
         type: 'string',
         description:
-          '이미 후보가 없다고 답했다. 정했나요, 한 곳, 이름, 떠오르는을 묻지 않는다. 이번 답이 기준을 골랐으면 기준을 다시 묻지 않는다. 접근 경로, 협력 의사, 협력 조건 중 하나만 묻는다.',
+          '이미 후보가 없다고 답했다. 정했나요, 한 곳, 이름, 떠오르는, 이름이 있는가, 선정했는지를 묻지 않는다. 이번 답이 기준을 골랐으면 기준을 다시 묻지 않는다. 기준이 구체화되었다만 쓰면 실패다. 접근 경로, 협력 의사, 협력 조건 중 하나만 묻는다.',
       },
       nextQuestionReason: {
         type: 'string',
@@ -1601,7 +1622,7 @@ function productReanalysisSystemPrompt(): string {
     'evidenceLedger를 먼저 읽는다. newFounderInformation이 false여도 unresolvedStillApplies가 true면 unresolved를 판단에 넣는다. false는 이번 호출에 새 답이 없다는 뜻이지, 미해결 답을 빼도 된다는 뜻이 아니다.',
     'founderClaims는 확인된 사실이 아니다. verifiedFacts만 확인된 사실이다. stillUnknown은 아직 없는 근거다. 판단을 유지하거나 바꾸거나 유보할 수 있다. 후보 부재가 실행 가능성에 주는 영향을 이유로 적는다. 이전 판단 문장과 같으면 실패다.',
     'nextVerification은 priorGoals의 문장을 다시 쓰지 않는다. 이미 고른 상위 목표를 반복하지 않는다. 그 아래의 다음 한 단계만 적고, nextQuestion과 같은 대상을 새 문장으로 적는다.',
-    '이번 답이 체험 기준을 고르는 계획이나 선택이면 그 답을 확인된 사실로 올리지 않는다. judgment에 그 기준을 계획으로 적고, 그와 별도로 후보가 아직 선정되지 않았다는 미해결을 적는다. 고르겠다는 계획만으로는 미해결이 아니다. 유지하거나 바꾸거나 유보한 이유를 적는다. 그 기준 질문을 다시 내지 않는다. nextQuestion과 nextVerification은 같은 대상이다. 다음 질문에는 기준을 넣지 않고, 접근 경로, 협력 의사, 협력 조건 중 아직 없는 하나만 묻는다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다.',
+    '이번 답이 체험 기준을 고르는 계획이나 선택이면 그 답을 확인된 사실로 올리지 않는다. judgment에 체험을 계획 또는 선택으로 적고, 그와 별도로 후보가 아직 선정되지 않았다는 미해결을 적는다. 고르겠다는 계획만으로는 미해결이 아니다. 기준이 구체화되었다는 말로 supplement를 바꾸지 않는다. 선택 라벨을 판단으로 쓰지 않는다. 유지하거나 바꾸거나 유보한 이유를 적는다. 그 기준 질문을 다시 내지 않는다. 이름, 선정했는지, 정했는지를 다시 묻지 않는다. nextQuestion과 nextVerification은 같은 대상이다. 다음 질문에는 기준을 넣지 않고, 접근 경로, 협력 의사, 협력 조건 중 아직 없는 하나만 묻는다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다.',
     '증거 구분에서 구체적인 양조장 후보가 아직 없다는 Founder의 답은 확인된 상태다. 양조장 협력 가능성이 높다는 문장은 Founder의 주장 또는 기대다. 접촉, 협력 의사, 협력 조건, 실제 협력 가능성은 미확인이다. 주장을 했다는 사실과 가능성이 실제로 높다는 결론을 섞지 않는다.',
     '사업성 재평가는 고객과 문제, 가치의 실현, 운영, 파트너십 확보, 수익 구조, 확인된 근거와 불확실성, 이번 답이 기존 판단에 주는 영향을 본다. 유지하거나 높이거나 낮추거나 유보할 수 있다. 점수를 만들지 않는다.',
     'inferences가 주장을 검증되지 않았다고 적으면 judgment와 summary는 그 주장을 현재 가능성으로 쓰지 않는다. summary에 협력 가능성이 높지만을 넣지 않는다. judgment에는 그 문장을 검증되지 않은 가설로 적는다.',
@@ -1742,6 +1763,8 @@ export function buildProductReanalysisRequest(input: {
         effect: '가설의 성립과 그 영향은 확인되지 않았다. 긍정적 영향을 미칠 것이다라고 단정하지 않는다.',
         nextStep:
           'priorGoals는 이미 고른 상위 목표다. nextVerification은 그 문장을 반복하지 않고 한 단계 아래를 적는다. nextQuestion과 같은 대상만 적는다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다.',
+        thisAnswer:
+          'supplement가 이번 답이다. 선택 라벨의 구체화로 바꾸지 않는다. 체험이 있으면 judgment에 체험을 계획으로 남긴다. 이름이나 선정 여부를 다시 묻지 않는다.',
       },
       ...anchors,
       founderAnswers: [
@@ -3508,6 +3531,23 @@ function firstReviewSystemPrompt(): string {
   ].join(' ');
 }
 
+function readingCallExcerpt(content: string): Pick<ReviewCallNote, 'judgment' | 'nextQuestion' | 'nextVerification'> {
+  try {
+    const parsed = JSON.parse(content) as Record<string, unknown>;
+    const pick = (key: string) => (typeof parsed[key] === 'string' ? parsed[key].slice(0, 400) : '');
+    const judgment = pick('judgment');
+    const nextQuestion = pick('nextQuestion');
+    const nextVerification = pick('nextVerification');
+    return {
+      ...(judgment ? { judgment } : {}),
+      ...(nextQuestion ? { nextQuestion } : {}),
+      ...(nextVerification ? { nextVerification } : {}),
+    };
+  } catch {
+    return {};
+  }
+}
+
 async function finishCall(input: {
   store: AiPmReviewStore;
   input: {
@@ -3551,6 +3591,7 @@ async function finishCall(input: {
         completionTokens: known ? result.usage.outputTokens : null,
         totalTokens: known ? result.usage.totalTokens : null,
         readingIssues: input.readingIssues(content),
+        ...readingCallExcerpt(content),
       });
     };
     noteCall(first.content, first);
@@ -3599,15 +3640,17 @@ async function finishCall(input: {
     }
     if (input.readingIssues && !input.outputContract) {
       let issues = input.readingIssues(response.content);
-      // The provider chat allows the first call plus one repair. A second repair is blocked before it is sent.
-      for (let attempt = 0; attempt < 1 && issues.length > 0; attempt += 1) {
+      let bestCount = issues.length;
+      let draft = response.content;
+      // The provider allows the first call and two repairs. A repair is kept only when it has fewer failures.
+      for (let attempt = 0; attempt < 2 && issues.length > 0; attempt += 1) {
         firstRawContent = firstRawContent ?? first.content;
         try {
           const repair = await input.chat({
             ...input.request,
             messages: [
               ...input.request.messages,
-              { role: 'assistant', content: response.content },
+              { role: 'assistant', content: draft },
               { role: 'user', content: productReadingRepairMessage(issues, input.readingRepairContext) },
             ],
           });
@@ -3624,9 +3667,15 @@ async function finishCall(input: {
             totalTokens = null;
           }
           const repairIssues = input.readingIssues(repair.content);
-          if (repairIssues.length < issues.length && parseSections(repair.content, input.input.text)) {
+          const parsed = Boolean(parseSections(repair.content, input.input.text));
+          if (repairIssues.length < bestCount && parsed) {
             response = repair;
             issues = repairIssues;
+            bestCount = repairIssues.length;
+            draft = repair.content;
+          } else if (attempt === 0 && parsed) {
+            issues = [...new Set([...issues, ...repairIssues])];
+            draft = repair.content;
           } else {
             break;
           }
