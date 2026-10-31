@@ -2648,7 +2648,7 @@ The stored judgment still used an unverified cooperation claim as the current li
 
 **Negative:**
 
-- A schema-valid judgment can still treat a claim as confirmed. That text is kept for review.
+- A schema-valid judgment can still treat a claim as confirmed, and the next question can still ask for a criterion already stated. Those texts are kept. Preview markers d, e, and f record the three calls.
 
 **Neutral:**
 
