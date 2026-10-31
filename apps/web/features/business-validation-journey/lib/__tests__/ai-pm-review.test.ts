@@ -32,6 +32,7 @@ import {
   judgmentIsConsistent,
   judgmentSeparatesPotential,
   founderClaimTreatedAsFact,
+  claimLeftUnlabeled,
   judgmentContradictsUnverifiedClaim,
   assumptionRestatesUnverifiedHope,
   inferenceMissesClaimBoundary,
@@ -5504,6 +5505,7 @@ describe('AI PM first review', () => {
   it('separates the cooperation claim from the judgment and advances the verification step', () => {
     const unresolved = ['현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.'];
     const priorGoals = ['양조장과의 협력 방안 구체화', '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.'];
+    const founderClaims = ['양조장과의 협력 가능성이 높다.'];
     const premise = '현재 사업성 판단은 유지되며, 양조장과의 협력 가능성이 높지만, 구체적인 양조장 후보가 선정되지 않아 실행 경로가 비어 있다.';
     expect(founderClaimTreatedAsFact(premise)).toBe(true);
     expect(founderClaimTreatedAsFact('양조장과의 협력 가능성이 높지만, 실제 접촉은 확인되지 않았다.')).toBe(true);
@@ -5516,10 +5518,14 @@ describe('AI PM first review', () => {
       nextQuestion: '체험을 운영할 양조장을 고를 때 가장 중요한 기준은 무엇인가?',
       unresolved,
       priorGoals,
+      founderClaims,
     });
+    expect(claimLeftUnlabeled(premise, founderClaims)).toBe(true);
     expect(repeated).toEqual(
       expect.arrayContaining([
         'claim_used_as_premise',
+        'claim_in_summary',
+        'claim_not_labeled',
         'inference_misses_boundary',
         'assumption_asserts_positive_effect',
         'prior_goal_repeated',
@@ -5540,6 +5546,7 @@ describe('AI PM first review', () => {
       nextQuestion,
       unresolved,
       priorGoals,
+      founderClaims,
     });
     expect(separated).toEqual([]);
     expect(inferenceMissesClaimBoundary(['구체적인 후보가 선정되지 않았고 증거가 확인되지 않았다.'], unresolved)).toBe(false);
@@ -5567,6 +5574,7 @@ describe('AI PM first review', () => {
     const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
     expect(system).toContain('이미 고른 상위 목표를 반복하지 않는다');
     expect(system).toContain('문장 중간의 현재 상태로도 쓰지 않는다');
+    expect(system).toContain('summary에 협력 가능성이 높지만을 넣지 않는다');
   });
 
   it('reads the missing-candidate answer as a stated gap', () => {

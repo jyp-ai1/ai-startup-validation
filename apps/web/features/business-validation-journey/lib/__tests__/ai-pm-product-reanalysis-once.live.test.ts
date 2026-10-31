@@ -9,6 +9,7 @@ import {
   judgmentIsConsistent,
   judgmentSeparatesPotential,
   founderClaimTreatedAsFact,
+  claimLeftUnlabeled,
   judgmentContradictsUnverifiedClaim,
   assumptionRestatesUnverifiedHope,
   questionRepeatsAnsweredSelection,
@@ -64,8 +65,9 @@ const PATH_OBJECT = 'product-consulting-path-2026-10-31.json';
 const PATH_PRIOR_ID = 'd6ae77b6-3de5-4a8b-aee2-d35fdc84e0ec';
 const READING_OBJECT = 'product-unresolved-reading-2026-10-31.json';
 const READING_PRIOR_ID = '783030ad-13f4-4a77-a454-c2ca49b50d0a';
-const STEP_OBJECT = 'product-claim-step-2026-10-31.json';
+const STEP_OBJECT = 'product-claim-step-2026-10-31-b.json';
 const STEP_PRIOR_ID = 'ccb19a1d-5c4d-432c-8a46-6695e746c7f3';
+const STEP_ATTEMPT_ID = '2c81bae4-c269-48b9-9729-4f18bbd71c9e';
 const COPIED_EXPERIMENT_JUDGMENT =
   '현재 사업성 판단은 낮아지며, 양조장과의 협력 가능성이 높지만 구체적인 후보가 없다는 점이 부정적인 영향을 미친다.';
 const SEPARATION_REVIEW_ID = 'ad73c33f-7bdc-47ff-b539-0ac9afdcdb82';
@@ -1700,6 +1702,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
       PATH_PRIOR_ID,
       READING_PRIOR_ID,
       STEP_PRIOR_ID,
+      STEP_ATTEMPT_ID,
     ];
     const preserved = await Promise.all(preservedIds.map((reviewId) => backend.store.readReview(userId, reviewId)));
     const startedAt = new Date().toISOString();
@@ -1795,18 +1798,21 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
           nextQuestion: sections.nextQuestion,
           unresolved,
           priorGoals,
+          founderClaims: ledger?.founderClaims ?? [],
         });
         const kept = /유지/.test(judgment);
         const checks = {
           claimIsHypothesis:
             !founderClaimTreatedAsFact(judgment) &&
             !founderClaimTreatedAsFact(analysis.summary) &&
+            !claimLeftUnlabeled(judgment, ledger?.founderClaims ?? []) &&
             analysis.inferences.every((item) => !founderClaimTreatedAsFact(item)) &&
             analysis.founderFacts.length === 0 &&
             (ledger?.verifiedFacts ?? []).length === 0,
           effectNotPresupposed: !assumptionRestatesUnverifiedHope(analysis.assumptions) && !/긍정적 영향을 미/.test(judgment),
           gapInJudgment: judgmentAccountsForUnresolved(judgment, unresolved),
-          keptExplainsGap: !kept || (judgmentAccountsForUnresolved(judgment, unresolved) && /없|못|비어|근거|영향|확인되지/.test(judgment)),
+          keptExplainsGap:
+            !kept || (judgmentAccountsForUnresolved(judgment, unresolved) && /선정|없|못|비어|충족|확인|근거|영향/.test(judgment)),
           inferenceFromGap: !inferenceMissesClaimBoundary(analysis.inferences, unresolved),
           goalNotRepeated: !verificationRepeatsPriorGoal(analysis.nextVerification, priorGoals),
           stepAdvanced: nextStepMatchesQuestion(analysis.nextVerification, sections.nextQuestion),

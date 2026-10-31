@@ -1026,6 +1026,16 @@ export function founderClaimTreatedAsFact(text: string): boolean {
   return !labeled;
 }
 
+/** A stored likelihood claim is missing from the judgment, or is not marked as a hypothesis. */
+export function claimLeftUnlabeled(judgment: string, founderClaims: string[]): boolean {
+  if (!founderClaims.some((item) => /협력 가능성이 높/.test(item))) return false;
+  return !(
+    /협력 가능성이 높다는\s*(주장|가설|기대)/.test(judgment) ||
+    /협력 가능성이 높다고/.test(judgment) ||
+    /검증되지 않은 가설/.test(judgment)
+  );
+}
+
 /** Inferences call the claim unverified, while the judgment still uses it as a premise. */
 export function judgmentContradictsUnverifiedClaim(judgment: string, inferences: string[]): boolean {
   const inferenceText = inferences.join('\n');
@@ -1142,9 +1152,12 @@ export function productReadingIssues(input: {
   nextQuestion: string;
   unresolved: string[];
   priorGoals: string[];
+  founderClaims?: string[];
 }): string[] {
   const issues: string[] = [];
-  if (founderClaimTreatedAsFact(input.judgment) || founderClaimTreatedAsFact(input.summary)) issues.push('claim_used_as_premise');
+  if (founderClaimTreatedAsFact(input.judgment)) issues.push('claim_used_as_premise');
+  if (founderClaimTreatedAsFact(input.summary)) issues.push('claim_in_summary');
+  if (claimLeftUnlabeled(input.judgment, input.founderClaims ?? [])) issues.push('claim_not_labeled');
   if (inferenceMissesClaimBoundary(input.inferences, input.unresolved)) issues.push('inference_misses_boundary');
   if (assumptionRestatesUnverifiedHope(input.assumptions)) issues.push('assumption_asserts_positive_effect');
   if (!judgmentAccountsForUnresolved(input.judgment, input.unresolved)) issues.push('unresolved_gap_missing');
@@ -1164,9 +1177,9 @@ export function productReadingRepairMessage(issues: string[]): string {
     '같은 문장을 다시 내면 실패다.',
   ];
   if (issues.includes('product_reading_unparsed')) lines.push('JSON 스키마의 키를 모두 채워라.');
-  if (issues.includes('claim_used_as_premise') || issues.includes('inference_misses_boundary')) {
+  if (issues.includes('claim_used_as_premise') || issues.includes('claim_in_summary') || issues.includes('claim_not_labeled') || issues.includes('inference_misses_boundary')) {
     lines.push(
-      '협력 가능성이 높다를 현재 상태나 긍정 근거로 쓰지 않는다. 그 문장이 필요하면 Founder의 주장이고 검증되지 않은 가설이라고 같은 문장에 적는다. inferences는 후보 부재와 확인되지 않은 근거에서 도출한다.',
+      'summary에 협력 가능성이 높지만을 넣지 않는다. summary는 judgment와 같은 결론이다. judgment에는 Founder의 협력 가능성 문장을 검증되지 않은 가설로 적는다. 현재 전제로 쓰지 않는다. inferences는 후보 부재와 확인되지 않은 근거에서 도출한다.',
     );
   }
   if (issues.includes('assumption_asserts_positive_effect')) {
@@ -1346,7 +1359,7 @@ function productReanalysisSchema(): Record<string, unknown> {
       summary: {
         type: 'string',
         description:
-          'judgment와 같은 결론. 협력 가능성이 높다를 현재 상태로 쓰지 않는다. 그 문장이 필요하면 검증되지 않은 가설이라고 같은 문장에 적는다.',
+          'judgment와 같은 결론. 협력 가능성이 높지만을 넣지 않는다. 협력 가능성이 높다를 쓰려면 검증되지 않은 가설이라고 같은 문장에 적는다.',
       },
       customer: text,
       problem: text,
@@ -1380,7 +1393,7 @@ function productReanalysisSchema(): Record<string, unknown> {
       judgment: {
         type: 'string',
         description:
-          '협력 가능성이 높다를 현재 전제로 쓰지 않는다. 그 문장이 필요하면 Founder의 주장이고 검증되지 않은 가설이라고 같은 문장에 적는다. unresolved의 후보 부재를 포함한다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 이유를 적는다.',
+          'founderClaims의 협력 가능성 문장은 검증되지 않은 가설로 적는다. 협력 가능성이 높지만을 현재 상태로 쓰지 않는다. unresolved의 후보 부재를 포함한다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 이유를 적는다.',
       },
       nextVerification: {
         type: 'string',
@@ -1412,7 +1425,7 @@ function productReanalysisSystemPrompt(): string {
     'nextVerification은 priorGoals의 문장을 다시 쓰지 않는다. 이미 고른 상위 목표를 반복하지 않는다. 그 아래의 다음 한 단계만 적고, nextQuestion과 같은 대상을 새 문장으로 적는다.',
     '증거 구분에서 구체적인 양조장 후보가 아직 없다는 Founder의 답은 확인된 상태다. 양조장 협력 가능성이 높다는 문장은 Founder의 주장 또는 기대다. 접촉, 협력 의사, 협력 조건, 실제 협력 가능성은 미확인이다. 주장을 했다는 사실과 가능성이 실제로 높다는 결론을 섞지 않는다.',
     '사업성 재평가는 고객과 문제, 가치의 실현, 운영, 파트너십 확보, 수익 구조, 확인된 근거와 불확실성, 이번 답이 기존 판단에 주는 영향을 본다. 유지하거나 높이거나 낮추거나 유보할 수 있다. 점수를 만들지 않는다.',
-    'inferences가 주장을 검증되지 않았다고 적으면 judgment와 summary는 그 주장을 현재 가능성으로 쓰지 않는다.',
+    'inferences가 주장을 검증되지 않았다고 적으면 judgment와 summary는 그 주장을 현재 가능성으로 쓰지 않는다. summary에 협력 가능성이 높지만을 넣지 않는다. judgment에는 그 문장을 검증되지 않은 가설로 적는다.',
     '사용자 JSON의 priorJudgmentText, priorQuestionText, priorVerificationText, priorReasonText, priorChoices, priorInferences, priorAssumptions, priorEvidenceNotes, priorRisks는 이전 문장이다. 출력의 judgment, nextQuestion, nextVerification, nextQuestionReason, choices, inferences, assumptions, evidenceToChange, risks에 그 문장을 복사하지 않는다.',
     '이번 답을 여섯 가지로 새 문장에 적는다. 새로 알게 된 내용, 근거 수준, 기존 판단에서 영향을 받는 부분, 유지하거나 높이거나 낮춘 판단, 그 이유, 추가 검증이다.',
     '근거 수준은 검증된 사실, Founder의 경험, Founder의 주장 또는 기대, 실행 계획, 추정 및 가정, 근거가 부족한 정보 중 하나다. 확인된 사실, 경험, 추정, 계획을 섞지 않는다.',
@@ -2033,6 +2046,7 @@ export async function runFollowUpReview(input: {
             nextQuestion: parsed.nextQuestion,
             unresolved: ledger.unresolved,
             priorGoals: ledger.priorGoals,
+            founderClaims: ledger.founderClaims,
           });
         },
   });
@@ -3379,8 +3393,8 @@ async function finishCall(input: {
       }
     }
     if (input.readingIssues && !input.outputContract) {
-      const issues = input.readingIssues(response.content);
-      if (issues.length > 0) {
+      let issues = input.readingIssues(response.content);
+      for (let attempt = 0; attempt < 2 && issues.length > 0; attempt += 1) {
         firstRawContent = firstRawContent ?? first.content;
         try {
           const repair = await input.chat({
@@ -3403,9 +3417,15 @@ async function finishCall(input: {
             totalTokens = null;
           }
           const repairIssues = input.readingIssues(repair.content);
-          if (repairIssues.length < issues.length && parseSections(repair.content, input.input.text)) response = repair;
+          if (repairIssues.length < issues.length && parseSections(repair.content, input.input.text)) {
+            response = repair;
+            issues = repairIssues;
+          } else {
+            break;
+          }
         } catch {
           callCount += 1;
+          break;
         }
       }
     }
