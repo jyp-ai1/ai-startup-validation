@@ -35,6 +35,7 @@ import {
   followUpReflectionSchema,
   followUpRepairMessage,
   incrementalReflectionErrors,
+  isProviderLimitError,
   normalizeIncrementalSections,
   reflectionReviewsRepeat,
   FOLLOW_UP_SEPARATION_RULES,
@@ -53,6 +54,7 @@ import {
   toAiPmReviewView,
   type AiPmReviewView,
 } from '../ai-pm-review';
+import { reviewFailureCopy } from '../ai-pm-review-failure-copy';
 import { composeReviewInput, nextDirectionAfterChoice } from '../ai-pm-review-intake';
 import { visibleClaimStates } from '../ai-pm-review-marks';
 import { projectLinksForUnscopedReviews } from '../ai-pm-review-project';
@@ -4752,6 +4754,88 @@ describe('AI PM first review', () => {
       },
     });
     await expect(rateLimited).rejects.toThrow(/rate_limit_exceeded/);
+  });
+
+  it('keeps the saved analysis and founder answer when the next call is limited', async () => {
+    const store = openAiPmReviewStore(storePath());
+    let calls = 0;
+    const chat = async () => {
+      calls += 1;
+      if (calls === 1) return reply(JSON.stringify(sections()));
+      throw new Error('OpenAI rate limit exceeded provider_http=429 code=rate_limit_exceeded type=tokens');
+    };
+    const first = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    const saved = await saveReviewFeedback({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      now: NOW,
+      body: {
+        reviewId: first.record.reviewId,
+        agreement: 'partial',
+        accuracy: 'mostly_accurate',
+        revisionAreas: ['payer'],
+        comment: '양조장 대표 답은 그대로 둔다.',
+        nextAction: 'verify_hypotheses',
+      },
+    });
+    expect(saved.ok).toBe(true);
+    const follow = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement: '양조장 대표 인터뷰는 아직 없다.',
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(follow.ok).toBe(true);
+    if (!follow.ok) return;
+    expect(follow.called).toBe(true);
+    expect(calls).toBe(2);
+    expect(follow.view.status).toBe('failed');
+    expect(follow.view.failure).toBe('call_limited');
+    expect(follow.view.sections).toBeNull();
+    expect(follow.record.error).toContain('rate_limit_exceeded');
+    expect(follow.record.parentReviewId).toBe(first.record.reviewId);
+    expect(follow.record.status).toBe('failed');
+    expect(JSON.stringify(follow.view).toLowerCase()).not.toMatch(/openai|gemini|\bgpt\b|token/);
+    const copy = reviewFailureCopy(follow.view.failure);
+    expect(copy).toContain('호출 한도');
+    expect(copy).toContain('다시 시도');
+    expect(copy.toLowerCase()).not.toMatch(/gpt|gemini|openai|token/);
+    const parent = await store.readReview('user-a', first.record.reviewId);
+    expect(parent?.status).toBe('succeeded');
+    expect(parent?.sections?.judgment).toBe(sections().judgment);
+    expect(parent?.error).toBeNull();
+    expect((await store.listFeedback('user-a', first.record.reviewId))[0]?.comment).toContain('양조장 대표 답');
+    const retry = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement: '양조장 대표 인터뷰는 아직 없다.',
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(retry.ok && retry.called).toBe(true);
+    expect(calls).toBe(3);
+    expect((await store.listReviews('user-a', 'project-test')).filter((record) => record.status === 'succeeded')).toHaveLength(1);
+    expect(isProviderLimitError('OpenAI rate limit exceeded provider_http')).toBe(true);
+    expect(isProviderLimitError('OpenAI connection failed')).toBe(false);
+    store.close();
   });
 
   it('reads GPT_API_KEY and leaves OPENAI_API_KEY unused', () => {

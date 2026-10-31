@@ -11,5 +11,8 @@ export function reviewFailureCopy(failure: string | null): string {
   if (failure === 'invalid_json' || failure === 'unstructured_response') {
     return '응답이 제품이 읽는 필드와 달라 분석으로 표시하지 않습니다.';
   }
+  if (failure === 'call_limited') {
+    return '호출 한도에 도달해 이번 검토는 저장하지 못했습니다. 이전 분석과 입력한 답은 남아 있고, 한도가 풀리면 다시 시도할 수 있습니다.';
+  }
   return '검토가 끝나기 전에 실패했습니다. 결과 원문은 없습니다.';
 }

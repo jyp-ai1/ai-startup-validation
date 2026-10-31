@@ -409,7 +409,11 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
       }
       if (payload.review.status !== 'ready' || !payload.review.sections?.analysis) {
         remember(payload.review);
-        setMessage('이번 응답은 분석으로 저장하지 못했습니다. 이전 분석은 그대로 남아 있습니다.');
+        setMessage(
+          payload.review.failure === 'call_limited'
+            ? reviewFailureCopy(payload.review.failure)
+            : '이번 응답은 분석으로 저장하지 못했습니다. 이전 분석은 그대로 남아 있습니다.',
+        );
         return;
       }
       remember(payload.review);

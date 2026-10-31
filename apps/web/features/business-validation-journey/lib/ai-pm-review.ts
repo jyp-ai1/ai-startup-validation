@@ -299,6 +299,16 @@ export function isProviderQuotaError(error: unknown): boolean {
     || /(?:^|\s)type=insufficient_quota(?:\s|$)/.test(error.message);
 }
 
+/** Quota, rate limit, or the in-request retry cap. The raw provider string stays on the server row. */
+export function isProviderLimitError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : typeof error === 'string' ? error : '';
+  if (!message) return false;
+  return isProviderQuotaError(new Error(message))
+    || /rate limit exceeded/i.test(message)
+    || /(?:^|\s)code=rate_limit_exceeded(?:\s|$)/.test(message)
+    || /(?:^|\s)review_retry_blocked(?:\s|$)/.test(message);
+}
+
 /** One OpenAI call. A quota error may switch once. No retry loop. */
 export async function callReviewWithQuotaSwitch(input: {
   request: ChatRequest;
@@ -418,9 +428,11 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
   };
 }
 
-const CLIENT_FAILURES = ['revenue_model_type', 'invalid_json', 'unstructured_response'] as const;
+const CLIENT_FAILURES = ['revenue_model_type', 'invalid_json', 'unstructured_response', 'call_limited'] as const;
 
 function clientFailure(error: string | null): (typeof CLIENT_FAILURES)[number] | null {
+  if (!error) return null;
+  if (isProviderLimitError(error)) return 'call_limited';
   return CLIENT_FAILURES.find((code) => code === error) ?? null;
 }
 
