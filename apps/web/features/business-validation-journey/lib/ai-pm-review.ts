@@ -651,13 +651,100 @@ export function questionRepeatsPrior(previous: string[], next: string): boolean 
   if (!nextCompact) return false;
   if (previous.some((item) => compact(item) === nextCompact)) return true;
   const partnershipPlan = (value: string) =>
-    /파트너십|협력/.test(value) && /계획|방식|구축|어떻게|구체적|구체화|방안|다음 단계/.test(value);
+    /파트너십|협력/.test(value) && /계획|방식|구축|어떻게|구체적|구체화|방안|다음 단계|방법/.test(value);
   return partnershipPlan(next) && previous.some(partnershipPlan);
 }
 
-/** A plan question does not check whether the event already happened. */
+/** A plan question asks for a method. A fact question asks what already exists. */
 export function questionAsksForPlan(question: string): boolean {
-  return /계획|어떻게|어떤 방식|구축|다음 단계|방안|구체화/.test(question);
+  return /계획|어떻게|어떤 방식|구축|다음 단계|방안|구체화|방법/.test(question);
+}
+
+export type QuestionVerificationStage =
+  | 'plan'
+  | 'past_contact'
+  | 'named_target_and_path'
+  | 'willingness'
+  | 'terms'
+  | 'other';
+
+/** What a question is trying to verify. A method clause keeps it on the plan stage. */
+export function questionVerificationStage(question: string): QuestionVerificationStage {
+  if (questionAsksForPlan(question)) return 'plan';
+  if (/정했|골랐|한 곳/.test(question) && /이름/.test(question) && /담당|경로|연락/.test(question)) return 'named_target_and_path';
+  if (/역할|비용|수익 배분|운영 책임/.test(question)) return 'terms';
+  if (
+    /연락|미팅|만나|접촉/.test(question) &&
+    /한 적|했나|있나요|받았|답변/.test(question) &&
+    !/정했|골랐|이름|담당|경로/.test(question)
+  ) {
+    return 'past_contact';
+  }
+  if (/반응|협력 의사|의향/.test(question)) return 'willingness';
+  return 'other';
+}
+
+const NAMED_TARGET_QUESTION =
+  '협력 가능성을 확인하기 위해 우선 접촉할 양조장을 한 곳 정했나요? 정했다면 양조장 이름과 실제 연락할 수 있는 담당자 또는 연락 경로를 알려주세요.';
+
+/**
+ * The next fact to ask from the answer and the stages already used.
+ * A likelihood with no named brewery stays on the target-and-path step.
+ */
+export function nextFactToAsk(input: { supplement: string; previousQuestions: string[] }): {
+  priorStages: QuestionVerificationStage[];
+  answerHasNamedTarget: boolean;
+  answerHasContactResult: boolean;
+  nextPurpose: 'named_target_and_path' | 'past_contact' | 'willingness' | 'terms';
+  factToAsk: string;
+} {
+  const supplement = input.supplement.trim();
+  const answerHasContactResult = /연락했|미팅했|만났|회신|반응을 받/.test(supplement);
+  const answerHasNamedTarget = /담당자|연락처|양조장 이름/.test(supplement);
+  const priorStages = [...new Set(input.previousQuestions.map(questionVerificationStage))];
+  if (answerHasContactResult && /긍정|하겠다|가능하다고 했|협력하겠/.test(supplement)) {
+    return {
+      priorStages,
+      answerHasNamedTarget,
+      answerHasContactResult,
+      nextPurpose: 'terms',
+      factToAsk: '상대와 역할, 비용, 수익 배분, 운영 책임 중 정해진 항목을 알려주세요.',
+    };
+  }
+  if (answerHasContactResult) {
+    return {
+      priorStages,
+      answerHasNamedTarget,
+      answerHasContactResult,
+      nextPurpose: 'willingness',
+      factToAsk: '접촉한 양조장의 반응과 후속 협의 일정을 알려주세요.',
+    };
+  }
+  if (answerHasNamedTarget) {
+    return {
+      priorStages,
+      answerHasNamedTarget,
+      answerHasContactResult,
+      nextPurpose: 'past_contact',
+      factToAsk: '그 양조장에 실제로 연락하거나 미팅했나요? 했다면 상대의 반응을 알려주세요.',
+    };
+  }
+  return {
+    priorStages,
+    answerHasNamedTarget,
+    answerHasContactResult,
+    nextPurpose: 'named_target_and_path',
+    factToAsk: NAMED_TARGET_QUESTION,
+  };
+}
+
+/** A kept judgment may call the answer a hypothesis. It may not call it a current positive effect. */
+export function judgmentSeparatesPotential(judgment: string): boolean {
+  const keeps = /유지/.test(judgment);
+  const hypothesis = /가설/.test(judgment);
+  const unconfirmed = /확인되지|증거가 없|미확인/.test(judgment);
+  const currentEffect = /긍정적 영향을 미|사업성이 높아졌|긍정적으로 바뀌/.test(judgment);
+  return keeps && hypothesis && unconfirmed && !currentEffect;
 }
 
 /**
@@ -824,18 +911,20 @@ function productReanalysisSchema(): Record<string, unknown> {
       judgment: {
         type: 'string',
         description:
-          '사업 설명문이 아니다. 유지 또는 변경과 이유를 적는다. 이유에는 자체 판단, 증거가 없음, 접촉과 조건이 없어 판단을 바꾸지 못함을 넣는다.',
+          '세 문장만. 자체 판단이자 긍정적 가설, 접촉과 조건은 확인되지 않음, 그래서 현재 판단 유지. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다.',
       },
       nextVerification: {
         type: 'string',
-        description: '접촉 결과가 없으면 양조장 선정과 닿을 경로. 구축 계획이나 다음 단계를 적지 않는다.',
+        description: '한 곳의 양조장 이름과 연락 경로를 확인한다. 구축 계획이라고 적지 않는다.',
       },
       nextQuestion: {
         type: 'string',
-        description:
-          '접촉 결과가 없으면 양조장을 골랐는지와 닿을 경로가 있는지만 묻는다. 다음 단계, 방안, 구체화, 계획, 어떻게, 구축은 실패다.',
+        description: 'verificationStage.factToAsk와 같은 한 질문. 방법, 구축, 계획, 어떻게를 붙이지 않는다.',
       },
-      nextQuestionReason: text,
+      nextQuestionReason: {
+        type: 'string',
+        description: '이 질문이 계획 질문이 아닌 이유. 실행 계획이 필요하다고 쓰지 않는다.',
+      },
       choices: list,
     },
   };
@@ -851,10 +940,10 @@ function productReanalysisSystemPrompt(): string {
     '확인되지 않은 협력 가능성, 추정, 기대, 계획은 founderFacts에 넣지 않는다. founderFacts는 접촉, 계약, 입금, 예약처럼 확인된 사실만 담는다. 근거가 없으면 빈 배열이다.',
     'assumptions의 첫 문장은 이번 답을 검증되지 않은 전제라고 적는다. 그 전제가 사업 실행에 주는 긍정적 가설도 적는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
     'evidenceToChange에는 이 답이 판단에 어떤 영향을 주는지, 파트너십 실행 가능성에 대한 긍정적 가설인지, 판단을 바꾸기에는 무엇이 부족한지를 적는다. 답 문장만 다시 적으면 실패다. 판단을 유지해도 사업성 평가의 잠재적 의미를 적는다.',
-    'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 그 문자열에 유지와 이유를 넣는다. 이유에는 이번 답이 자체 판단이라는 점, 구체적 증거가 없다는 점, 접촉과 상대 의사와 협력 조건이 없어 사업성 판단을 바꿀 근거가 없다는 점을 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. 이전 분석의 시장 설명 문장을 judgment에 다시 쓰지 않는다. priorJudgmentText와 같은 문장이면 실패다.',
+    'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 그 문자열에 유지와 이유를 넣는다. 문장은 셋만 쓴다. 이번 답은 Founder의 자체 판단이자 실행 가능성에 대한 긍정적 가설이다. 접촉, 상대 의사, 협력 조건의 구체적 증거는 확인되지 않았다. 그래서 현재 사업성 판단은 유지하고 이유를 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. 가설을 현재의 긍정적 영향으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다. 이전 분석의 시장 설명 문장을 judgment에 다시 쓰지 않는다. priorJudgmentText와 같은 문장이면 실패다.',
     'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉, 상대의 의사, 협력 조건처럼 아직 없는 항목을 적는다. 작성 규칙 문장과 이전 위험만 반복하면 실패다.',
-    'nextVerification과 nextQuestion은 같은 단계다. nextQuestion은 하나다. 이번 답에 연락하거나 미팅한 결과가 없으면, 먼저 접촉할 양조장을 골랐는지와 그 양조장에 닿을 경로가 있는지만 묻는다. 다음 단계, 방안, 구체화, 계획, 어떻게, 어떤 방식, 구축을 넣으면 실패다. priorQuestionTexts와 같거나 표현만 바꾼 질문이면 실패다. 접촉은 했으나 반응이 없으면 상대 반응과 후속 협의를 묻는다. 긍정 반응이 있으면 협력 조건을 묻는다. 협의가 있으면 역할, 비용, 수익 배분, 운영 책임을 묻는다.',
-    'nextQuestionReason에는 그 질문이 이전 질문과 다른 검증 단계인 이유를 적는다.',
+    'nextQuestion은 verificationStage.factToAsk와 같은 한 질문이다. 다른 문장을 붙이지 않는다. 이번 답에 연락하거나 미팅한 결과와 양조장 이름이 없으면 한 곳을 정했는지, 그 이름, 담당자 또는 연락 경로를 사실로 묻는다. 방법, 구축, 계획, 어떻게, 어떤 방식, 방안, 구체화, 다음 단계를 붙이면 실패다. 협력 가능성이 높은지를 다시 묻지 않는다. priorQuestionTexts와 같거나 표현만 바꾼 계획 질문이면 실패다.',
+    'nextQuestionReason에는 그 질문이 접촉 대상과 경로를 확인하며 계획 질문이 아닌 이유를 적는다. 실행 계획이 필요하다고 쓰지 않는다.',
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
@@ -914,6 +1003,7 @@ export function buildProductReanalysisRequest(input: {
     founderFeedback: input.founderFeedback,
     founderAnswerSource: input.founderAnswerSource ?? null,
     priorQuestionTexts: previousQuestions,
+    verificationStage: nextFactToAsk({ supplement: input.founderSupplement, previousQuestions }),
     doNotCopy: {
       priorJudgmentText: input.latestAnalysis.analysis?.judgmentDetail || input.latestAnalysis.judgment,
       priorQuestionText: input.latestAnalysis.nextQuestion,

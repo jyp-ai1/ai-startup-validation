@@ -25,9 +25,12 @@ import {
   assembleConsultingHistory,
   buildProductReanalysisRequest,
   AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS,
+  judgmentSeparatesPotential,
+  nextFactToAsk,
   questionAsksForPlan,
   questionRepeatsPrior,
   questionSameContactStage,
+  questionVerificationStage,
   unverifiedClaimStoredAsFact,
   callReviewWithQuotaSwitch,
   estimateReviewTokens,
@@ -5033,6 +5036,58 @@ describe('AI PM first review', () => {
     expect(questionAsksForPlan(drifted)).toBe(true);
     expect(questionRepeatsPrior(['양조장과의 파트너십을 위한 구체적인 실행 계획은 무엇인가?'], drifted)).toBe(true);
     expect(questionSameContactStage([stored], drifted)).toBe(false);
+  });
+
+  it('asks for a named brewery and a path instead of another partnership plan', () => {
+    const plan = '양조장과의 파트너십을 위한 구체적인 실행 계획은 무엇인가?';
+    const contact =
+      '현재까지 실제로 연락하거나 미팅한 양조장이 있나요? 있다면 상대 양조장의 반응과 협력 조건에 대해 어떤 답변을 받았나요?';
+    const wrapped =
+      '양조장과의 파트너십을 구축하기 위해 먼저 접촉할 양조장을 선택했는지와 그 양조장에 닿을 경로가 있는지 확인할 수 있는 방법은 무엇인가?';
+    const claim = '양조장과의 협력 가능성이 높다.';
+    const stage = nextFactToAsk({ supplement: claim, previousQuestions: [plan, contact, wrapped] });
+    const request = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [],
+      previousQuestions: [plan, contact, wrapped],
+      latestAnalysis: sections(),
+      founderChoice: null,
+      founderSupplement: claim,
+      founderFeedback: null,
+    });
+    const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      founderSupplement: string;
+      priorQuestionTexts: string[];
+      verificationStage: { factToAsk: string; nextPurpose: string };
+    };
+    expect(questionVerificationStage(contact)).toBe('past_contact');
+    expect(questionSameContactStage([contact], contact)).toBe(true);
+    expect(questionVerificationStage(stage.factToAsk)).not.toBe('past_contact');
+    expect(questionVerificationStage(plan)).toBe('plan');
+    expect(questionVerificationStage(wrapped)).toBe('plan');
+    expect(questionAsksForPlan(wrapped)).toBe(true);
+    expect(questionAsksForPlan(stage.factToAsk)).toBe(false);
+    expect(questionVerificationStage(stage.factToAsk)).toBe('named_target_and_path');
+    expect(questionVerificationStage(plan)).not.toBe(questionVerificationStage(stage.factToAsk));
+    expect(stage.factToAsk.includes(claim)).toBe(false);
+    expect(questionRepeatsPrior([plan, contact, wrapped], stage.factToAsk)).toBe(false);
+    const kept =
+      '이번 답은 Founder의 자체 판단이자 실행 가능성에 대한 긍정적 가설이다. 접촉과 상대 의사와 협력 조건의 구체적 증거는 확인되지 않았다. 그래서 현재 사업성 판단은 유지한다. 이유는 검증된 근거가 없기 때문이다.';
+    const mixed =
+      '이는 사업의 실행 가능성에 긍정적 영향을 미칠 것으로 보인다. 이유는 판단을 바꿀 근거가 없어 기존 판단을 유지한다.';
+    expect(judgmentSeparatesPotential(kept)).toBe(true);
+    expect(judgmentSeparatesPotential(mixed)).toBe(false);
+    expect(payload.founderSupplement).toBe(claim);
+    expect(payload.priorQuestionTexts).toEqual([plan, contact, wrapped]);
+    expect(payload.verificationStage.nextPurpose).toBe('named_target_and_path');
+    expect(payload.verificationStage.factToAsk).toBe(stage.factToAsk);
+    const met = nextFactToAsk({
+      supplement: '남한강 양조장 담당자를 만났고 협력하겠다고 했다.',
+      previousQuestions: [plan],
+    });
+    expect(met.nextPurpose).toBe('terms');
+    expect(met.factToAsk).not.toBe(stage.factToAsk);
   });
 
   it('cites a failed review answer without moving it onto the succeeded parent', async () => {

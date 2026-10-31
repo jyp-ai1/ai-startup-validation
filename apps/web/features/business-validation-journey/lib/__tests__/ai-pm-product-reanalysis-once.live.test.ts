@@ -6,9 +6,11 @@ import {
   buildProductReanalysisRequest,
   needsRevisionGate,
   openReviewChat,
+  judgmentSeparatesPotential,
   questionAsksForPlan,
   questionRepeatsPrior,
   questionSameContactStage,
+  questionVerificationStage,
   runFollowUpReview,
   unverifiedClaimStoredAsFact,
 } from '../ai-pm-review';
@@ -25,7 +27,7 @@ const ANSWER_ID = '7d2d04e5-93a1-4cd6-aebf-03582eeb003f';
 const SUPPLEMENT = '양조장과의 협력 가능성이 높다.';
 const BUCKET = 'ai-pm-quality-compare';
 const OBJECT = 'product-cumulative-brewery-2026-10-31.json';
-const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-i.json';
+const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-j.json';
 const QUALITY_PARENT_ID = '9e169fef-7428-4d21-a6f0-f3034bcc91d1';
 const SIBLING_ANALYSIS_ID = '8602a92e-0fbd-4d93-a005-9c9f18410ac6';
 
@@ -181,6 +183,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
         '970b8ce1-3e4b-4840-834f-2c6a87b2ec54',
         'd1a1ed43-b830-46e9-8da6-beaa9afcec74',
         'a67d3b7a-60d7-4c0f-bbcd-32f13660f6b4',
+        '3da7d534-2aca-407b-9d77-4cda0c4fa15d',
       ].map((reviewId) => backend.store.readReview(userId, reviewId)),
     );
     const records = await backend.store.listReviews(userId, PROJECT_ID);
@@ -243,8 +246,11 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
         const repeated = questionRepeatsPrior(previousQuestions, nextQuestion);
         const planQuestion = questionAsksForPlan(nextQuestion);
         const sameContactStage = questionSameContactStage(previousQuestions, nextQuestion);
-        const advanced =
-          /골랐|선정|경로|닿|접근/.test(nextQuestion) && !planQuestion && !repeated && !sameContactStage;
+        const stage = questionVerificationStage(nextQuestion);
+        const namedPath = stage === 'named_target_and_path';
+        const reasksClaim = nextQuestion.replace(/\s+/g, '').includes(SUPPLEMENT.replace(/\s+/g, ''));
+        const consistent = judgmentSeparatesPotential(judgment);
+        const advanced = namedPath && !planQuestion && !repeated && !sameContactStage && !reasksClaim;
         const explains = /유지/.test(judgment) && /이유/.test(judgment);
         const parentAssumptions = parent?.sections?.analysis?.assumptions ?? [];
         const assumptions = result.record.sections.analysis.assumptions;
@@ -253,7 +259,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
           assumptions.some((item) => /검증되지 않은 전제/.test(item));
         const evidenceText = [judgment, ...result.record.sections.analysis.inferences, ...assumptions].join('\n');
         const evidenceLevel = /기대|자체 판단|주장/.test(evidenceText) && /증거|근거/.test(evidenceText);
-        const separated = facts.length === 0 && /미확인|확인되지|확인된 사실은 없|아직/.test(evidenceText);
+        const separated = facts.length === 0 && /미확인|확인되지|증거가 없|아직/.test(evidenceText);
         const evidenceMoved = result.record.sections.analysis.evidenceToChange.some(
           (item) => item !== SUPPLEMENT && /실행|가설|영향|가능/.test(item),
         );
@@ -268,6 +274,9 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
           !repeated &&
           !planQuestion &&
           !sameContactStage &&
+          namedPath &&
+          consistent &&
+          !reasksClaim &&
           advanced &&
           explains &&
           reflects &&
@@ -306,6 +315,10 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
           repeated,
           planQuestion,
           sameContactStage,
+          stage,
+          namedPath,
+          consistent,
+          reasksClaim,
           advanced,
           explains,
           reflects,
