@@ -318,8 +318,20 @@ describe('consulting stage batch', () => {
     ]);
     const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
     expect(system).toContain('answerInterpretation');
+    expect(system).toContain('choiceLabel만 반복하면 해석이 아니다');
+    expect(system).toContain('선정 기준');
     expect(system).not.toContain('verificationStage');
     if (request.responseFormat?.type === 'json_schema') {
+      const meaning = request.responseFormat.schema.properties as {
+        answerInterpretation: { items: { properties: { meaning: { description: string } } } };
+        updatedJudgment: { description: string };
+        verifiedFacts: { description: string };
+        nextQuestions: { items: { properties: { text: { description: string } } } };
+      };
+      expect(meaning.answerInterpretation.items.properties.meaning.description).toContain('supplement');
+      expect(meaning.updatedJudgment.description).toContain('unverifiedClaims');
+      expect(meaning.verifiedFacts.description).toContain('주장');
+      expect(meaning.nextQuestions.items.properties.text.description).toContain('선정 기준');
       expect(request.responseFormat.schema.required).toEqual([
         'answerInterpretation',
         'impactOnPreviousJudgment',

@@ -6,9 +6,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 통합 상담 단계
 
-**상태:** 2026-10-31 20:18 KST CPO는 원인 분석을 승인하고 제품 품질 FAIL을 유지했다. 후속 재분석은 최초 분석 스키마를 쓰지 않는다. `stagePairs`와 `priorStagePairs`는 `offeredChoices`와 `choiceId`를 포함한다. 선택지는 `priorChoices`로 바뀌지 않는다. 단계 요청은 조상 체인의 실제 상담만 담고, 반복 실험 기록과 `verificationStage`를 넣지 않는다. 다음 주제는 `nextFactToAsk`가 정하지 않는다. 후속 응답 필드는 `answerInterpretation`, `impactOnPreviousJudgment`, `updatedJudgment`, `judgmentReason`, `verifiedFacts`, `unverifiedClaims`, `assumptions`, `resolvedIssues`, `unresolvedIssues`, `nextVerification`, `nextQuestions`, `nextQuestionChoices`다. 코드는 필수 필드, 선택 연결, 빈 선택지, 이미 답한 질문의 동일 문장만 검사한다. 단계당 통합 호출은 1회다. 형식 오류는 실패로 저장하고 원문을 남기며 같은 답으로 다시 호출하지 않는다. 2026-10-31 20:33–20:34 KST Preview에서 저장된 양조장 답 4개로 새 행만 만들었다. 1차 행 `2bf193fd-0805-4f22-919e-136fb0b0b0ae`의 부모는 `7c40b7e1-7eeb-4693-829a-d31ee23f32ab`다. 호출 1회, 토큰 2,874. 2차 행 `c9866427-f3a8-4d0f-a4ce-8f8ced40cc88`의 부모는 `11365a9e-777d-4748-bcc0-6abf18ca063b`다. 호출 1회, 토큰 3,409. 요청에 `choiceId`와 `offeredChoices`가 있고 실험 기록과 `verificationStage`는 없다. 기존 행의 `finished_at`은 바뀌지 않았다. 검토 46에서 50, 피드백 12에서 16이다. 2차 판단은 “협력 가능성이 여전히 높지만”이고, 다음 질문은 이미 답한 선정 기준을 다시 묻는다. 품질은 FAIL이다. 3차 통합 호출과 로그인 후 제출은 NOT RUN이다. 원문은 `docs/evidence/ALABOM/AI-PM/consulting-stage-contract-2026-10-31-b.json`. Production은 잠금.  
-**Branch:** `cursor/consulting-stage-contract-4b88`  
-**결정:** ADR-073, ADR-074, ADR-075, ADR-076.
+**상태:** 2026-10-31 20:40 KST CPO는 호출·데이터 계약을 PASS, 사업성 판단 품질을 FAIL로 두었다. 호출 구조는 유지했다. `11365a9e-777d-4748-bcc0-6abf18ca063b`는 분석 행이 아니다. 호출 0회인 단계 행이고 질문 `hist-3`, `hist-4`를 담는다. 부모는 1차 분석 `2bf193fd-0805-4f22-919e-136fb0b0b0ae`다. 2차 분석 `c9866427-f3a8-4d0f-a4ce-8f8ced40cc88`의 부모는 그 단계 행이다. 기존 연결은 바꾸지 않았다. 2026-10-31 20:45 KST Preview에서 같은 양조장 답 4개로 새 행만 만들었다. 1차 분석 `35f1dd3d-21aa-4d30-b3b3-d150ffeeadde`의 부모는 단계 행 `7aa7d983-138b-4e1b-b710-5bd61c4a36d2`다. 호출 1회, 토큰 4,936. 판단은 “협력 가능성이 높고”이고 영향 평가는 그 주장이 확인되었다고 적었다. 2차 분석 `defce4d1-acd3-4d21-87c8-026a2d4fd648`의 부모는 단계 행 `fb849732-8fda-4b8a-a60a-8ef0e1b6cbab`이고, 그 부모는 1차 분석이다. 호출 1회, 토큰 5,376. 해석은 “체험으로 만들고 마실 수 있는 양조장”과 “후보는 아직 정하지 못했다”를 함께 적었다. 판단은 “협력 가능성이 높지만, 구체적인 후보 선정이 이루어지지 않아”이다. 다음 질문은 선정 기준을 다시 묻는다. 품질은 FAIL이다. 검토 50에서 54, 피드백 16에서 20이다. 기존 `finished_at`은 바뀌지 않았다. 3차 통합 호출과 로그인 후 제출은 NOT RUN이다. 원문은 `docs/evidence/ALABOM/AI-PM/consulting-stage-reading-2026-10-31-c.json`. Production은 잠금.  
+**Branch:** `cursor/consulting-judgment-reading-4b88`  
+**결정:** ADR-073, ADR-074, ADR-075, ADR-076, ADR-077.
 
 ---
 

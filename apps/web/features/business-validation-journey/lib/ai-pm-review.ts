@@ -1718,6 +1718,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
     properties: {
       answerInterpretation: {
         type: 'array',
+        description: '답한 질문마다 하나. 질문, 보존된 선택지, 실제 선택, 보충 설명을 한 답으로 해석한다.',
         items: {
           type: 'object',
           additionalProperties: false,
@@ -1725,28 +1726,65 @@ function stageReanalysisSchema(): Record<string, unknown> {
           properties: {
             questionId: text,
             choiceId: text,
-            meaning: text,
+            meaning: {
+              type: 'string',
+              description:
+                'choiceLabel만 반복하면 실패다. supplement의 기준, 계획, 아직 없는 사실을 포함한다. 보존된 선택지가 고른 항목뿐이면 다른 선택지는 만들지 않는다.',
+            },
           },
         },
       },
-      impactOnPreviousJudgment: text,
-      updatedJudgment: text,
-      judgmentReason: text,
-      verifiedFacts: list,
-      unverifiedClaims: list,
-      assumptions: list,
-      resolvedIssues: list,
-      unresolvedIssues: list,
-      nextVerification: text,
+      impactOnPreviousJudgment: {
+        type: 'string',
+        description:
+          '이번 답이 기존 판단에 준 영향. unverifiedClaims를 확인된 사실이나 현재의 높은 가능성으로 쓰지 않는다. 주장을 확인되었다고 쓰지 않는다.',
+      },
+      updatedJudgment: {
+        type: 'string',
+        description:
+          '현재 사업성 판단. unverifiedClaims를 확인된 근거로 승격하지 않는다. 가능성이 높다는 문장을 현재 상태로 쓰려면 검증되지 않은 주장이라고 같은 문장에 적는다. supplement의 기준과 아직 없는 사실을 함께 반영한다. 확인되었다고 쓰지 않는다.',
+      },
+      judgmentReason: {
+        type: 'string',
+        description: '판단을 유지하거나 바꾼 이유. unverifiedClaims와 모순되지 않는다. 주장이 확인되었다고 쓰지 않는다.',
+      },
+      verifiedFacts: {
+        ...list,
+        description: '접촉, 계약, 입금, 예약처럼 별도 증거가 있는 사실만. 주장과 계획은 넣지 않는다. 없으면 빈 배열.',
+      },
+      unverifiedClaims: {
+        ...list,
+        description: 'Founder의 주장이나 기대. 가능성이 높다는 문장은 여기에 둔다. verifiedFacts와 같은 문장을 두지 않는다.',
+      },
+      assumptions: {
+        ...list,
+        description: '아직 검증되지 않은 가설. 가설의 긍정적 결과를 확인된 것처럼 쓰지 않는다.',
+      },
+      resolvedIssues: {
+        ...list,
+        description: '이번 답으로 더 이상 묻지 않아도 되는 내용. supplement가 이미 답한 기준을 포함한다.',
+      },
+      unresolvedIssues: {
+        ...list,
+        description: '아직 남은 불확실성. supplement에 이미 있는 기준을 다시 불확실성으로 되돌리지 않는다.',
+      },
+      nextVerification: {
+        type: 'string',
+        description: '남은 불확실성 중 다음에 확인할 대상. 이미 답한 기준을 다시 확인 대상으로 쓰지 않는다.',
+      },
       nextQuestions: {
         type: 'array',
         minItems: 2,
+        description: '남은 불확실성을 묻는 서로 다른 질문. 이미 답한 질문과 supplement의 내용을 다시 묻지 않는다.',
         items: {
           type: 'object',
           additionalProperties: false,
           required: ['text', 'choices'],
           properties: {
-            text: text,
+            text: {
+              type: 'string',
+              description: 'supplement가 선정 기준을 말하면 그 기준이 무엇인지 다시 묻지 않는다.',
+            },
             choices: { type: 'array', minItems: 2, items: { type: 'string' } },
           },
         },
@@ -1764,16 +1802,18 @@ function stageReanalysisSystemPrompt(): string {
     '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
     '이 호출은 후속 재분석이다. 최초 사업성 분석의 필드를 다시 채우는 호출이 아니다.',
     'stagePairs는 이번 단계의 질문과 답이다. priorStagePairs는 이전 실제 상담에서 순서대로 쌓인 질문과 답이다. questionId가 질문과 답을 잇는다.',
-    'offeredChoices는 그 질문에 제시된 선택지 전체다. 복사하지 말라는 이전 문장이 아니다.',
-    'choiceId와 choiceLabel은 Founder가 고른 항목이다. supplement는 보충 설명이다. status가 open이면 아직 답하지 않은 질문이다.',
-    'answerReading.kinds는 답의 성격이다. fact, claim, plan, choice다. 점수가 아니다. claim은 검증되지 않은 주장이다. 가능성이 높다는 문장은 claim이며 확인된 사실이 아니다. plan은 앞으로의 계획이다. fact는 확인된 현재 상태일 수 있으나 확인된 협력은 아니다.',
+    '한 답은 하나의 정보다. question, offeredChoices, choiceId, choiceLabel, supplement를 함께 읽는다. choiceLabel만 반복하면 해석이 아니다. supplement에 있는 기준, 계획, 아직 없는 사실을 meaning에 포함한다.',
+    'offeredChoices가 choiceLabel 하나뿐이면 보존된 선택만 있는 것이다. 저장되지 않은 다른 선택지를 있었던 것처럼 복원하지 않는다.',
+    'answerReading.kinds는 답의 성격이다. fact, claim, plan, choice다. 점수가 아니다. claim은 검증되지 않은 주장이다. 가능성이 높다는 문장은 claim이며 확인된 사실이 아니다. plan은 계획이다. fact는 확인된 현재 상태일 수 있으나 확인된 협력은 아니다.',
+    '네 가지를 구분한다. Founder가 주장한 내용, Founder가 계획하는 내용, 실제 확인된 사실, 아직 검증되지 않은 가설. 주장만으로 확인된 사실을 만들지 않는다.',
+    'unverifiedClaims에 넣은 문장을 verifiedFacts에 넣지 않는다. updatedJudgment, judgmentReason, impactOnPreviousJudgment에서 그 문장을 확인된 사실이나 현재의 높은 가능성으로 쓰지 않는다. 확인되었다고 쓰지 않는다. 그 문장이 필요하면 검증되지 않은 주장이라고 같은 문장에 적는다.',
+    '같은 답 안에 기준과 아직 없는 사실이 함께 있으면 둘 다 판단에 남긴다. 하나를 빠뜨리거나 둘을 같은 뜻으로 합치지 않는다.',
     'consultingPath는 실제 상담의 순서다. priorAnalyses는 그 상담 단계에서 저장된 판단만 담는다. 반복 실험의 형제 판단을 실제 대화로 만들지 않는다.',
-    '다음 검증 주제와 다음 질문은 당신이 정한다. 코드는 주제를 정하지 않는다.',
-    '각 객관식 선택이 그 갈림길에서 무엇을 의미하는지 해석한다. 그 답이 기존 판단에 준 영향을 적는다. 현재 사업성 판단과 유지하거나 바꾼 이유를 적는다. 확인된 사실, 검증되지 않은 주장, 가정을 구분한다. 해소된 문제와 남은 불확실성을 구분한다. 다음 구체화 질문과 그 질문의 선택지를 적는다.',
-    '이미 답한 질문 문장을 다시 묻지 않는다. 검증되지 않은 주장을 현재의 사실이나 높은 가능성으로 쓰지 않는다. 점수를 만들지 않는다.',
+    '당신이 판단한다. 새로 확인된 내용, 기존 판단에 준 영향, 현재 사업성 판단, 유지하거나 바꾼 이유, 아직 검증되지 않은 핵심 가설, 추가 검증 시 판단이 달라질 근거. updatedJudgment, judgmentReason, verifiedFacts, unverifiedClaims, assumptions, impactOnPreviousJudgment는 서로 모순되지 않는다. 점수를 만들지 않는다. 코드는 결론을 정하지 않는다.',
+    '다음 검증 주제와 다음 질문은 당신이 정한다. 이미 답한 질문 문장과 supplement에 이미 있는 내용을 다시 묻지 않는다. supplement가 선정 기준을 말하면 그 기준이 무엇인지 다시 묻지 않는다. 남은 불확실성 가운데 판단에 가장 중요한 것을 묻는다.',
     'JSON만 반환한다.',
     '키는 answerInterpretation, impactOnPreviousJudgment, updatedJudgment, judgmentReason, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, nextVerification, nextQuestions, nextQuestionChoices 이다.',
-    'answerInterpretation은 답한 questionId마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다. meaning은 그 선택의 의미다.',
+    'answerInterpretation은 답한 questionId마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
     'nextQuestions는 서로 다른 질문 2개 이상이다. 각 원소는 text와 choices다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
   ].join(' ');
