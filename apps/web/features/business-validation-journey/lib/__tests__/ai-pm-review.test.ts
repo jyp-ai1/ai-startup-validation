@@ -5089,7 +5089,7 @@ describe('AI PM first review', () => {
     expect(payload.founderSupplement).toBe(claim);
     expect(payload.priorQuestionTexts).toEqual([plan, contact, wrapped]);
     expect(payload.verificationStage.nextPurpose).toBe('named_target_and_path');
-    expect(payload.verificationStage.factToAsk).toBe(stage.factToAsk);
+    expect(payload.verificationStage).not.toHaveProperty('factToAsk');
     const met = nextFactToAsk({
       supplement: '남한강 양조장 담당자를 만났고 협력하겠다고 했다.',
       previousQuestions: [plan],
@@ -5159,13 +5159,12 @@ describe('AI PM first review', () => {
     const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
       founderSupplement: string;
       priorQuestionTexts: string[];
-      verificationStage: { factToAsk: string; verificationText: string; reasonText: string };
+      verificationStage: { nextPurpose: string };
     };
     expect(payload.founderSupplement).toBe(claim);
     expect(payload.priorQuestionTexts).toEqual([contact]);
-    expect(payload.verificationStage.factToAsk).toBe(question);
-    expect(payload.verificationStage.verificationText).toBe(verification);
-    expect(payload.verificationStage.reasonText).toBe(reason);
+    expect(payload.verificationStage.nextPurpose).toBe('named_target_and_path');
+    expect(JSON.stringify(payload.verificationStage)).not.toContain(question);
   });
 
   it('moves a cooperation choice past the question that already asked for a brewery name', () => {
@@ -5206,10 +5205,8 @@ describe('AI PM first review', () => {
     expect(payload.founderChoice.label).toBe(choice);
     expect(payload.founderSupplement).toBe(supplement);
     expect(payload.verificationStage.nextPurpose).toBe('candidate_name');
-    expect(payload.verificationStage.factToAsk).not.toBe(previous);
-    expect(payload.verificationStage).toMatchObject({
-      choiceTexts: ['떠오르는 양조장 이름이 있다', '아직 떠오르는 양조장이 없다'],
-    });
+    expect(payload.verificationStage).not.toHaveProperty('choiceTexts');
+    expect(JSON.stringify(payload.verificationStage)).not.toContain('떠오르는 양조장 이름이 있다');
   });
 
   it('moves a missing brewery name to a search criterion', () => {
@@ -5255,14 +5252,14 @@ describe('AI PM first review', () => {
       founderChoice: { label: string };
       verificationStage: { nextPurpose: string; factToAsk: string; choiceTexts: string[] };
     };
-    expect(system).toContain('factToAsk, verificationText, reasonText, choiceTexts는 이미 나온 단계');
+    expect(system).toContain('verificationStage.nextPurpose는 이미 다룬 단계다');
     expect(system).toContain('후보가 없다는 선택은 협력 불가능이 아니다');
     expect(system).toContain('judgment와 같은 문장을 두지 않는다');
     expect(system).not.toContain('choiceTexts와 같다');
     expect(payload.founderChoice.label).toBe(choice);
     expect(payload.verificationStage.nextPurpose).toBe('candidate_criteria');
-    expect(payload.verificationStage.factToAsk).not.toBe(nameQuestion);
-    expect(payload.verificationStage.choiceTexts).toEqual(stage.choiceTexts);
+    expect(payload.verificationStage).not.toHaveProperty('factToAsk');
+    expect(payload.verificationStage).not.toHaveProperty('choiceTexts');
   });
 
   it('cites a failed review answer without moving it onto the succeeded parent', async () => {

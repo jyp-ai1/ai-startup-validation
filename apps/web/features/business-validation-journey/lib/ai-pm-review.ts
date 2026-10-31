@@ -1049,9 +1049,9 @@ function productReanalysisSystemPrompt(): string {
     '확인되지 않은 협력 가능성, 추정, 기대, 계획은 founderFacts에 넣지 않는다. founderFacts는 접촉, 계약, 입금, 예약처럼 확인된 사실만 담는다. 근거가 없으면 빈 배열이다.',
     'assumptions는 이번 답의 근거 수준을 새 문장으로 적는다. 확인되지 않은 주장을 사업 실행의 긍정적 가설로 단정하지 않는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
     'evidenceToChange에는 다음에 확인되면 판단을 바꾸게 되는 항목을 적는다. 이번 답이 판단에 어떤 영향을 주는지는 judgment에 적는다. 답 문장만 다시 적으면 실패다. judgment와 같은 문장을 두지 않는다.',
-    'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 매 회차 최초 사업 아이디어와 이전 판단과 누적 답변을 다시 읽고 새 문장으로 사업성을 판단한다. priorJudgmentText와 같으면 실패다. 이전 문장을 복사하지 않는다. 이번 답이 판단에 어떤 영향을 주는지 이유를 적는다. 유지하거나 높이거나 낮출 수 있다. 근거가 부족하면 유지할 수 있으나 그 이유를 새 문장으로 적는다. 확인되지 않은 주장을 현재의 긍정적 영향으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다. 후보가 아직 없다는 답만으로 사업성이 없다고 쓰지 않는다. 그 답이 실행 경로의 빈칸이면 그 빈칸을 판단에 적는다.',
+    'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 매 회차 최초 사업 아이디어와 이전 판단과 누적 답변을 다시 읽고 새 문장으로 사업성을 판단한다. priorJudgmentText와 같으면 실패다. 이전 문장을 복사하지 않는다. 이번 답이 판단에 어떤 영향을 주는지 이유를 적는다. 유지하거나 높이거나 낮출 수 있다. 근거가 부족하면 유지할 수 있으나 그 이유를 새 문장으로 적는다. 확인되지 않은 주장을 현재의 긍정적 영향으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다. 가능성이 높다는 주장을 현재 결론으로 쓰지 않는다. 그 문장은 확인되지 않은 주장으로 적는다. 후보가 아직 없다는 답만으로 사업성이 없다고 쓰지 않는다. 그 답이 실행 경로의 빈칸이면 그 빈칸을 판단에 적는다.',
     'risks는 이번 답으로 새로 보인 불확실성이 있을 때 새 문장으로 적는다. 위험을 매번 늘리지 않는다. 이전 위험만 반복하면 실패다. 사업이 불가능하다고 단정하지 않는다.',
-    'nextQuestion은 이번 사업성 판단을 더 정확하게 만들기 위해 아직 없는 정보 하나를 묻는다. priorQuestionTexts와 같거나 표현만 바꾼 질문이면 실패다. verificationStage의 factToAsk, verificationText, reasonText, choiceTexts는 이미 나온 단계이므로 출력에 복사하지 않는다. 이미 founderChoice와 founderSupplement와 이전 답에 있는 내용을 다시 묻지 않는다. 연락하거나 미팅한 결과가 없으면 그 결과를 만들지 않는다. 협력 가능성이 높은지를 다시 묻지 않는다.',
+    'nextQuestion은 이번 사업성 판단을 더 정확하게 만들기 위해 아직 없는 정보 하나를 묻는다. priorQuestionTexts와 같거나 표현만 바꾼 질문이면 실패다. verificationStage.nextPurpose는 이미 다룬 단계다. 그 목적의 질문을 반복하지 않는다. 이미 founderChoice와 founderSupplement와 이전 답에 있는 내용을 다시 묻지 않는다. 연락하거나 미팅한 결과가 없으면 그 결과를 만들지 않는다. 협력 가능성이 높은지를 다시 묻지 않는다.',
     'nextVerification과 nextQuestionReason은 이번 질문이 다음 판단을 어떻게 돕는지 새 문장으로 적는다. priorVerificationText, priorReasonText와 같으면 실패다.',
     'founderChoice와 founderSupplement는 이번 답이다. 양조장을 정했거나 연락한 사실이 아니면 founderFacts에 넣지 않는다. 후보가 없다는 선택은 협력 불가능이 아니다. choices는 이번 질문에 대한 서로 다른 답 두 개 이상이다. priorChoices와 같은 문장을 앞에 두지 않는다.',
     'JSON만 반환한다.',
@@ -1096,6 +1096,21 @@ function renameEchoKeys(value: unknown): unknown {
  * Product reanalysis. The stored shape is the first-review business fields.
  * Reflection decision fields are not required. Oldest turns drop before the anchors.
  */
+/** The model sees which stage is already covered. It does not receive sentences to copy. */
+function coveredStage(stage: ReturnType<typeof nextFactToAsk>): {
+  nextPurpose: ReturnType<typeof nextFactToAsk>['nextPurpose'];
+  priorStages: QuestionVerificationStage[];
+  answerHasNamedTarget: boolean;
+  answerHasContactResult: boolean;
+} {
+  return {
+    nextPurpose: stage.nextPurpose,
+    priorStages: stage.priorStages,
+    answerHasNamedTarget: stage.answerHasNamedTarget,
+    answerHasContactResult: stage.answerHasContactResult,
+  };
+}
+
 export function buildProductReanalysisRequest(input: {
   originalInput: string;
   firstAnalysis: ReviewSections;
@@ -1119,11 +1134,13 @@ export function buildProductReanalysisRequest(input: {
     founderFeedback: input.founderFeedback,
     founderAnswerSource: input.founderAnswerSource ?? null,
     priorQuestionTexts: previousQuestions,
-    verificationStage: nextFactToAsk({
-      supplement: input.founderSupplement,
-      previousQuestions,
-      choiceLabel: input.founderChoice?.label ?? null,
-    }),
+    verificationStage: coveredStage(
+      nextFactToAsk({
+        supplement: input.founderSupplement,
+        previousQuestions,
+        choiceLabel: input.founderChoice?.label ?? null,
+      }),
+    ),
     doNotCopy: {
       priorJudgmentText: input.latestAnalysis.analysis?.judgmentDetail || input.latestAnalysis.judgment,
       priorQuestionText: input.latestAnalysis.nextQuestion,

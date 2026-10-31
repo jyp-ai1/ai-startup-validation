@@ -42,8 +42,9 @@ const ROUND3_PARENT_ID = 'cbaec036-603a-49ff-8a35-64e4b74859d2';
 const ROUND3_LABEL = '아직 떠오르는 양조장이 없다';
 const ROUND3_SUPPLEMENT = '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.';
 const ROUND3_OBJECT = 'product-choice-round-2026-10-31-c.json';
-const REREVIEW_OBJECT = 'product-judgment-rereview-2026-10-31.json';
+const REREVIEW_OBJECT = 'product-judgment-rereview-2026-10-31-b.json';
 const REREVIEW_PRIOR_ID = '82d949b0-d344-44df-a9be-5dddfce79c73';
+const REREVIEW_FIRST_REWRITE_ID = '5b16e3ed-c011-4f2a-8034-ab662fca0717';
 const COPIED_JUDGMENT =
   '현재 사업성 판단은 유지되며, 양조장과의 협력 가능성이 높지만, 실제 접촉 및 협력 조건에 대한 구체적인 증거가 부족하다.';
 const ROUND3_EXAMPLES = [
@@ -796,6 +797,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
       '1ac01e37-d90f-414b-aa51-883a118f6dd9',
       ROUND3_PARENT_ID,
       REREVIEW_PRIOR_ID,
+      REREVIEW_FIRST_REWRITE_ID,
     ];
     const preserved = await Promise.all(preservedIds.map((reviewId) => backend.store.readReview(userId, reviewId)));
     const startedAt = new Date().toISOString();
