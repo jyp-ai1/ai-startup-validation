@@ -6,9 +6,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 통합 상담 단계
 
-**상태:** 2026-10-31 20:40 KST CPO는 호출·데이터 계약을 PASS, 사업성 판단 품질을 FAIL로 두었다. 호출 구조는 유지했다. `11365a9e-777d-4748-bcc0-6abf18ca063b`는 분석 행이 아니다. 호출 0회인 단계 행이고 질문 `hist-3`, `hist-4`를 담는다. 부모는 1차 분석 `2bf193fd-0805-4f22-919e-136fb0b0b0ae`다. 2차 분석 `c9866427-f3a8-4d0f-a4ce-8f8ced40cc88`의 부모는 그 단계 행이다. 기존 연결은 바꾸지 않았다. 2026-10-31 20:45 KST Preview에서 같은 양조장 답 4개로 새 행만 만들었다. 1차 분석 `35f1dd3d-21aa-4d30-b3b3-d150ffeeadde`의 부모는 단계 행 `7aa7d983-138b-4e1b-b710-5bd61c4a36d2`다. 호출 1회, 토큰 4,936. 판단은 “협력 가능성이 높고”이고 영향 평가는 그 주장이 확인되었다고 적었다. 2차 분석 `defce4d1-acd3-4d21-87c8-026a2d4fd648`의 부모는 단계 행 `fb849732-8fda-4b8a-a60a-8ef0e1b6cbab`이고, 그 부모는 1차 분석이다. 호출 1회, 토큰 5,376. 해석은 “체험으로 만들고 마실 수 있는 양조장”과 “후보는 아직 정하지 못했다”를 함께 적었다. 판단은 “협력 가능성이 높지만, 구체적인 후보 선정이 이루어지지 않아”이다. 다음 질문은 선정 기준을 다시 묻는다. 품질은 FAIL이다. 검토 50에서 54, 피드백 16에서 20이다. 기존 `finished_at`은 바뀌지 않았다. 3차 통합 호출과 로그인 후 제출은 NOT RUN이다. 원문은 `docs/evidence/ALABOM/AI-PM/consulting-stage-reading-2026-10-31-c.json`. Production은 잠금.  
-**Branch:** `cursor/consulting-judgment-reading-4b88`  
-**결정:** ADR-073, ADR-074, ADR-075, ADR-076, ADR-077.
+**상태:** 2026-10-31 21:00 KST 판단 작성 순서를 바꿨다. 진전·미해결·사실·주장을 먼저 적고, 그 목록으로 잠재력과 현재 실행 가능성을 다시 평가한다. 선택지 전달, 부모 연결, 단계당 1회 호출은 유지한다. 같은 양조장 답 4개의 Preview 재기록은 `product-consulting-judgment-logic-2026-10-31-d.json`이다. 2026-10-31 20:40 KST CPO는 호출·데이터 계약을 PASS, 사업성 판단 품질을 FAIL로 두었다. 호출 구조는 유지했다. `11365a9e-777d-4748-bcc0-6abf18ca063b`는 분석 행이 아니다. 호출 0회인 단계 행이고 질문 `hist-3`, `hist-4`를 담는다. 부모는 1차 분석 `2bf193fd-0805-4f22-919e-136fb0b0b0ae`다. 2차 분석 `c9866427-f3a8-4d0f-a4ce-8f8ced40cc88`의 부모는 그 단계 행이다. 기존 연결은 바꾸지 않았다. 2026-10-31 20:45 KST Preview에서 같은 양조장 답 4개로 새 행만 만들었다. 1차 분석 `35f1dd3d-21aa-4d30-b3b3-d150ffeeadde`의 부모는 단계 행 `7aa7d983-138b-4e1b-b710-5bd61c4a36d2`다. 호출 1회, 토큰 4,936. 판단은 “협력 가능성이 높고”이고 영향 평가는 그 주장이 확인되었다고 적었다. 2차 분석 `defce4d1-acd3-4d21-87c8-026a2d4fd648`의 부모는 단계 행 `fb849732-8fda-4b8a-a60a-8ef0e1b6cbab`이고, 그 부모는 1차 분석이다. 호출 1회, 토큰 5,376. 해석은 “체험으로 만들고 마실 수 있는 양조장”과 “후보는 아직 정하지 못했다”를 함께 적었다. 판단은 “협력 가능성이 높지만, 구체적인 후보 선정이 이루어지지 않아”이다. 다음 질문은 선정 기준을 다시 묻는다. 품질은 FAIL이다. 검토 50에서 54, 피드백 16에서 20이다. 기존 `finished_at`은 바뀌지 않았다. 3차 통합 호출과 로그인 후 제출은 NOT RUN이다. 원문은 `docs/evidence/ALABOM/AI-PM/consulting-stage-reading-2026-10-31-c.json`. Production은 잠금.  
+**Branch:** `cursor/consulting-judgment-logic-4b88`  
+**결정:** ADR-073, ADR-074, ADR-075, ADR-076, ADR-077, ADR-078.
 
 ---
 

@@ -2613,6 +2613,49 @@ The stage-2 analysis parent is the stage row that holds the next questions. That
 
 ---
 
+## ADR-078: Follow-up judgment is derived from progress and still-open gaps
+
+**Status:** Accepted  
+**Date:** 2026-10-31  
+**Sprint:** AI PM consulting stage  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The stage request already delivers the question, the preserved choice, and the supplement. One model call is stored. The parent of a stage analysis is the stage row that holds that stage's questions. Those links stay.
+
+The stored judgment still used an unverified cooperation claim as the current likelihood, left `resolvedIssues` empty after the founder stated a selection criterion, and asked for that criterion again. Adding another banned sentence or another response field did not change that order of reasoning.
+
+### Decision
+
+1. The follow-up response is written in this order: interpretation, verified facts, unverified claims, assumptions, resolved issues, unresolved issues, then the impact and the judgment. The judgment's execution case comes from the lists already written. An empty verified-fact list means current execution is not confirmed. An unverified claim may remain a potential opportunity. Code does not score either side and does not call the model again.
+2. A concretized plan, including a stated selection criterion, is progress and belongs in `resolvedIssues`. A missing candidate and missing contact stay in `unresolvedIssues`. The next question is chosen by the model from what is still unresolved.
+3. `questionId`, `choiceId`, `offeredChoices`, the ancestor chain, one call per stage, raw preservation, and the existing parent links stay as they are.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Add another output field for trust level | The split would have a dedicated key | The existing lists already hold the split, and another key was not the missing analysis |
+| Reject a contradictory judgment and call the model again | The stored row would look consistent | A repair call would hide the first judgment |
+
+### Consequences
+
+**Positive:**
+
+- The model writes the progress and the open gap before the business judgment.
+- Potential and current execution are separate sentences in that judgment.
+
+**Negative:**
+
+- A schema-valid judgment can still treat a claim as confirmed. That text is kept for review.
+
+**Neutral:**
+
+- Production stays locked. Existing review rows are not updated.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

@@ -320,6 +320,8 @@ describe('consulting stage batch', () => {
     expect(system).toContain('answerInterpretation');
     expect(system).toContain('choiceLabel만 반복하면 해석이 아니다');
     expect(system).toContain('선정 기준');
+    expect(system).toContain('잠재력과 현재 확인된 실행 가능성은 별개다');
+    expect(system).toContain('진전과 미해결을 먼저 적는다');
     expect(system).not.toContain('verificationStage');
     if (request.responseFormat?.type === 'json_schema') {
       const meaning = request.responseFormat.schema.properties as {
@@ -334,14 +336,14 @@ describe('consulting stage batch', () => {
       expect(meaning.nextQuestions.items.properties.text.description).toContain('선정 기준');
       expect(request.responseFormat.schema.required).toEqual([
         'answerInterpretation',
-        'impactOnPreviousJudgment',
-        'updatedJudgment',
-        'judgmentReason',
         'verifiedFacts',
         'unverifiedClaims',
         'assumptions',
         'resolvedIssues',
         'unresolvedIssues',
+        'impactOnPreviousJudgment',
+        'updatedJudgment',
+        'judgmentReason',
         'nextVerification',
         'nextQuestions',
         'nextQuestionChoices',
