@@ -10,16 +10,181 @@
         "temperature": 0.2,
         "maxTokens": 2400,
         "responseFormat": {
-          "type": "json_object"
+          "type": "json_schema",
+          "schema": {
+            "title": "product_reanalysis",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "summary",
+              "customer",
+              "problem",
+              "value",
+              "operatingModel",
+              "alternatives",
+              "differentiation",
+              "payer",
+              "revenueModel",
+              "market",
+              "competition",
+              "operations",
+              "profitability",
+              "strengths",
+              "risks",
+              "assumptions",
+              "evidenceToChange",
+              "founderFacts",
+              "inferences",
+              "judgment",
+              "nextVerification",
+              "nextQuestion",
+              "nextQuestionReason",
+              "choices",
+              "questions"
+            ],
+            "properties": {
+              "summary": {
+                "type": "string",
+                "description": "judgment와 같은 결론. 협력 가능성이 높지만을 넣지 않는다. 협력 가능성이 높다를 쓰려면 검증되지 않은 가설이라고 같은 문장에 적는다."
+              },
+              "customer": {
+                "type": "string"
+              },
+              "problem": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "operatingModel": {
+                "type": "string"
+              },
+              "alternatives": {
+                "type": "string"
+              },
+              "differentiation": {
+                "type": "string"
+              },
+              "payer": {
+                "type": "string"
+              },
+              "revenueModel": {
+                "type": "string"
+              },
+              "market": {
+                "type": "string"
+              },
+              "competition": {
+                "type": "string"
+              },
+              "operations": {
+                "type": "string"
+              },
+              "profitability": {
+                "type": "string"
+              },
+              "strengths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "risks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이번 답의 빈칸을 새 문장으로 적는다. 접촉 여부 문장만 반복하면 실패다. 사업이 불가능하다고 단정하지 않는다."
+              },
+              "assumptions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "가설이 성립하는지도, 그 영향도 확인되지 않았다고 적는다. 긍정적 영향을 미칠 것이다라고 쓰지 않는다. 만약이라는 말로 긍정 효과를 단정하지 않는다."
+              },
+              "evidenceToChange": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이 판단을 바꾸게 될 확인 항목. judgment와 같은 문장이면 실패다."
+              },
+              "founderFacts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "확인된 접촉, 계약, 입금, 예약만. 없으면 빈 배열."
+              },
+              "inferences": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "협력 가능성이 높다를 현재 상태로 반복하지 않는다. 후보 부재와 접촉, 협력 의사, 협력 조건이 확인되지 않은 데서 추론한다. 주장을 적으면 검증되지 않은 가설이라고 적는다."
+              },
+              "judgment": {
+                "type": "string",
+                "description": "founderClaims의 협력 가능성 문장은 검증되지 않은 가설로 judgment 안에 적는다. founderSupplement에 체험 기준이 있으면 그 기준을 계획 또는 선택으로 judgment 안에 적는다. 고르겠다는 계획과 별도로, 후보가 아직 선정되지 않았다는 미해결을 같은 judgment에 적는다. 협력 가능성이 높지만을 현재 상태로 쓰지 않는다. unresolved의 후보 부재를 포함한다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 이유를 적는다."
+              },
+              "nextVerification": {
+                "type": "string",
+                "description": "priorGoals 문장을 복사하지 않는다. 이번 답이 이미 기준이면 기준 확인을 다시 적지 않는다. nextQuestion과 같은 대상만 적는다. 접근 경로, 협력 의사, 협력 조건 중 하나다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다. 그 효과는 확인되지 않았다."
+              },
+              "nextQuestion": {
+                "type": "string",
+                "description": "이미 후보가 없다고 답했다. 정했나요, 한 곳, 이름, 떠오르는, 이름이 있는가, 선정했는지를 묻지 않는다. 이번 답이 기준을 골랐으면 기준을 다시 묻지 않는다. 기준이 구체화되었다만 쓰면 실패다. 접근 경로, 협력 의사, 협력 조건 중 하나만 묻는다."
+              },
+              "nextQuestionReason": {
+                "type": "string",
+                "description": "그 답이 다음 사업성 판단에 왜 필요한지. priorReasonText와 같으면 실패다."
+              },
+              "choices": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이번 질문에 답하는 서로 다른 선택 두 개 이상. priorChoices와 같은 문장을 두지 않는다."
+              },
+              "questions": {
+                "type": "array",
+                "minItems": 2,
+                "description": "다음 상담 단계의 서로 다른 검증 질문 2개 이상. 첫 질문의 text는 nextQuestion과 같다. 이미 답한 질문 문장을 반복하지 않는다.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "text",
+                    "choices"
+                  ],
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "이 질문의 문장. 다른 질문과 같지 않다."
+                    },
+                    "choices": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "이 질문에만 해당하는 서로 다른 선택 2개 이상."
+                    }
+                  }
+                }
+              }
+            }
+          }
         },
         "messages": [
           {
             "role": "system",
-            "content": "프롬프트 버전 quality-2. 당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 말고 성립 조건과 가장 큰 불확실성을 분석한다. 창업자가 아직 고르지 않은 답을 사실로 만들지 않는다. 첫 질문은 정도(높다, 낮다)가 아니라 사업의 갈림길을 가른다. 사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다. 고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다. 가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다. 분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 2개 이상으로 questions에 둔다. nextQuestion은 그 중 첫 질문이다. 모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다. 선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다. JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다. 키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다. summary는 원문을 반영한 설명, judgment는 예비 판단과 근거, nextVerification은 적은 비용의 확인 행동이다. assumptions는 1개에서 3개다."
+            "content": "프롬프트 버전 quality-2. 당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 말고 성립 조건과 가장 큰 불확실성을 분석한다. 창업자가 아직 고르지 않은 답을 사실로 만들지 않는다. 첫 질문은 정도(높다, 낮다)가 아니라 사업의 갈림길을 가른다. 사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다. 고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다. 가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다. 분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 2개 이상으로 questions에 둔다. 각 질문은 text와 그 질문의 choices를 가진다. nextQuestion은 첫 text와 같다. 질문이 하나이거나 배열이 없으면 상담 단계가 아니다. 모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다. 선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다. JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다. 키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다. summary는 원문을 반영한 설명, judgment는 예비 판단과 근거, nextVerification은 적은 비용의 확인 행동이다. assumptions는 1개에서 3개다."
           },
           {
             "role": "user",
-            "content": "사업 입력:\n다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n검토 목적: 종합 사업성 검토\n현재 단계: 미확인\n가장 알고 싶은 것: 없음\n검토 계약: comprehensive-1\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 2개 이상이다. nextQuestion은 questions의 첫 질문이다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다."
+            "content": "사업 입력:\n다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n검토 목적: 종합 사업성 검토\n현재 단계: 미확인\n가장 알고 싶은 것: 없음\n검토 계약: comprehensive-1\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 2개 이상이다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 questions 첫 text와 같다. questions가 없거나 하나면 상담 단계가 아니다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다."
           }
         ]
       }
@@ -32,16 +197,181 @@
         "temperature": 0.2,
         "maxTokens": 2400,
         "responseFormat": {
-          "type": "json_object"
+          "type": "json_schema",
+          "schema": {
+            "title": "product_reanalysis",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "summary",
+              "customer",
+              "problem",
+              "value",
+              "operatingModel",
+              "alternatives",
+              "differentiation",
+              "payer",
+              "revenueModel",
+              "market",
+              "competition",
+              "operations",
+              "profitability",
+              "strengths",
+              "risks",
+              "assumptions",
+              "evidenceToChange",
+              "founderFacts",
+              "inferences",
+              "judgment",
+              "nextVerification",
+              "nextQuestion",
+              "nextQuestionReason",
+              "choices",
+              "questions"
+            ],
+            "properties": {
+              "summary": {
+                "type": "string",
+                "description": "judgment와 같은 결론. 협력 가능성이 높지만을 넣지 않는다. 협력 가능성이 높다를 쓰려면 검증되지 않은 가설이라고 같은 문장에 적는다."
+              },
+              "customer": {
+                "type": "string"
+              },
+              "problem": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "operatingModel": {
+                "type": "string"
+              },
+              "alternatives": {
+                "type": "string"
+              },
+              "differentiation": {
+                "type": "string"
+              },
+              "payer": {
+                "type": "string"
+              },
+              "revenueModel": {
+                "type": "string"
+              },
+              "market": {
+                "type": "string"
+              },
+              "competition": {
+                "type": "string"
+              },
+              "operations": {
+                "type": "string"
+              },
+              "profitability": {
+                "type": "string"
+              },
+              "strengths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "risks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이번 답의 빈칸을 새 문장으로 적는다. 접촉 여부 문장만 반복하면 실패다. 사업이 불가능하다고 단정하지 않는다."
+              },
+              "assumptions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "가설이 성립하는지도, 그 영향도 확인되지 않았다고 적는다. 긍정적 영향을 미칠 것이다라고 쓰지 않는다. 만약이라는 말로 긍정 효과를 단정하지 않는다."
+              },
+              "evidenceToChange": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이 판단을 바꾸게 될 확인 항목. judgment와 같은 문장이면 실패다."
+              },
+              "founderFacts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "확인된 접촉, 계약, 입금, 예약만. 없으면 빈 배열."
+              },
+              "inferences": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "협력 가능성이 높다를 현재 상태로 반복하지 않는다. 후보 부재와 접촉, 협력 의사, 협력 조건이 확인되지 않은 데서 추론한다. 주장을 적으면 검증되지 않은 가설이라고 적는다."
+              },
+              "judgment": {
+                "type": "string",
+                "description": "founderClaims의 협력 가능성 문장은 검증되지 않은 가설로 judgment 안에 적는다. founderSupplement에 체험 기준이 있으면 그 기준을 계획 또는 선택으로 judgment 안에 적는다. 고르겠다는 계획과 별도로, 후보가 아직 선정되지 않았다는 미해결을 같은 judgment에 적는다. 협력 가능성이 높지만을 현재 상태로 쓰지 않는다. unresolved의 후보 부재를 포함한다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 이유를 적는다."
+              },
+              "nextVerification": {
+                "type": "string",
+                "description": "priorGoals 문장을 복사하지 않는다. 이번 답이 이미 기준이면 기준 확인을 다시 적지 않는다. nextQuestion과 같은 대상만 적는다. 접근 경로, 협력 의사, 협력 조건 중 하나다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다. 그 효과는 확인되지 않았다."
+              },
+              "nextQuestion": {
+                "type": "string",
+                "description": "이미 후보가 없다고 답했다. 정했나요, 한 곳, 이름, 떠오르는, 이름이 있는가, 선정했는지를 묻지 않는다. 이번 답이 기준을 골랐으면 기준을 다시 묻지 않는다. 기준이 구체화되었다만 쓰면 실패다. 접근 경로, 협력 의사, 협력 조건 중 하나만 묻는다."
+              },
+              "nextQuestionReason": {
+                "type": "string",
+                "description": "그 답이 다음 사업성 판단에 왜 필요한지. priorReasonText와 같으면 실패다."
+              },
+              "choices": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이번 질문에 답하는 서로 다른 선택 두 개 이상. priorChoices와 같은 문장을 두지 않는다."
+              },
+              "questions": {
+                "type": "array",
+                "minItems": 2,
+                "description": "다음 상담 단계의 서로 다른 검증 질문 2개 이상. 첫 질문의 text는 nextQuestion과 같다. 이미 답한 질문 문장을 반복하지 않는다.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "text",
+                    "choices"
+                  ],
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "이 질문의 문장. 다른 질문과 같지 않다."
+                    },
+                    "choices": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "이 질문에만 해당하는 서로 다른 선택 2개 이상."
+                    }
+                  }
+                }
+              }
+            }
+          }
         },
         "messages": [
           {
             "role": "system",
-            "content": "프롬프트 버전 quality-2. 당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 말고 성립 조건과 가장 큰 불확실성을 분석한다. 창업자가 아직 고르지 않은 답을 사실로 만들지 않는다. 첫 질문은 정도(높다, 낮다)가 아니라 사업의 갈림길을 가른다. 사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다. 고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다. 가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다. 분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 2개 이상으로 questions에 둔다. nextQuestion은 그 중 첫 질문이다. 모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다. 선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다. JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다. 키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다. summary는 원문을 반영한 설명, judgment는 예비 판단과 근거, nextVerification은 적은 비용의 확인 행동이다. assumptions는 1개에서 3개다."
+            "content": "프롬프트 버전 quality-2. 당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 말고 성립 조건과 가장 큰 불확실성을 분석한다. 창업자가 아직 고르지 않은 답을 사실로 만들지 않는다. 첫 질문은 정도(높다, 낮다)가 아니라 사업의 갈림길을 가른다. 사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다. 고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다. 가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다. 분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 2개 이상으로 questions에 둔다. 각 질문은 text와 그 질문의 choices를 가진다. nextQuestion은 첫 text와 같다. 질문이 하나이거나 배열이 없으면 상담 단계가 아니다. 모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다. 선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다. JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다. 키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다. summary는 원문을 반영한 설명, judgment는 예비 판단과 근거, nextVerification은 적은 비용의 확인 행동이다. assumptions는 1개에서 3개다."
           },
           {
             "role": "user",
-            "content": "사업 입력:\n외국인 관광객에게 막걸리 만들기체험만 안내한다.\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 2개 이상이다. nextQuestion은 questions의 첫 질문이다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다."
+            "content": "사업 입력:\n외국인 관광객에게 막걸리 만들기체험만 안내한다.\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 2개 이상이다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 questions 첫 text와 같다. questions가 없거나 하나면 상담 단계가 아니다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다."
           }
         ]
       }
@@ -54,16 +384,181 @@
         "temperature": 0.2,
         "maxTokens": 2400,
         "responseFormat": {
-          "type": "json_object"
+          "type": "json_schema",
+          "schema": {
+            "title": "product_reanalysis",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "summary",
+              "customer",
+              "problem",
+              "value",
+              "operatingModel",
+              "alternatives",
+              "differentiation",
+              "payer",
+              "revenueModel",
+              "market",
+              "competition",
+              "operations",
+              "profitability",
+              "strengths",
+              "risks",
+              "assumptions",
+              "evidenceToChange",
+              "founderFacts",
+              "inferences",
+              "judgment",
+              "nextVerification",
+              "nextQuestion",
+              "nextQuestionReason",
+              "choices",
+              "questions"
+            ],
+            "properties": {
+              "summary": {
+                "type": "string",
+                "description": "judgment와 같은 결론. 협력 가능성이 높지만을 넣지 않는다. 협력 가능성이 높다를 쓰려면 검증되지 않은 가설이라고 같은 문장에 적는다."
+              },
+              "customer": {
+                "type": "string"
+              },
+              "problem": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "operatingModel": {
+                "type": "string"
+              },
+              "alternatives": {
+                "type": "string"
+              },
+              "differentiation": {
+                "type": "string"
+              },
+              "payer": {
+                "type": "string"
+              },
+              "revenueModel": {
+                "type": "string"
+              },
+              "market": {
+                "type": "string"
+              },
+              "competition": {
+                "type": "string"
+              },
+              "operations": {
+                "type": "string"
+              },
+              "profitability": {
+                "type": "string"
+              },
+              "strengths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "risks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이번 답의 빈칸을 새 문장으로 적는다. 접촉 여부 문장만 반복하면 실패다. 사업이 불가능하다고 단정하지 않는다."
+              },
+              "assumptions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "가설이 성립하는지도, 그 영향도 확인되지 않았다고 적는다. 긍정적 영향을 미칠 것이다라고 쓰지 않는다. 만약이라는 말로 긍정 효과를 단정하지 않는다."
+              },
+              "evidenceToChange": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이 판단을 바꾸게 될 확인 항목. judgment와 같은 문장이면 실패다."
+              },
+              "founderFacts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "확인된 접촉, 계약, 입금, 예약만. 없으면 빈 배열."
+              },
+              "inferences": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "협력 가능성이 높다를 현재 상태로 반복하지 않는다. 후보 부재와 접촉, 협력 의사, 협력 조건이 확인되지 않은 데서 추론한다. 주장을 적으면 검증되지 않은 가설이라고 적는다."
+              },
+              "judgment": {
+                "type": "string",
+                "description": "founderClaims의 협력 가능성 문장은 검증되지 않은 가설로 judgment 안에 적는다. founderSupplement에 체험 기준이 있으면 그 기준을 계획 또는 선택으로 judgment 안에 적는다. 고르겠다는 계획과 별도로, 후보가 아직 선정되지 않았다는 미해결을 같은 judgment에 적는다. 협력 가능성이 높지만을 현재 상태로 쓰지 않는다. unresolved의 후보 부재를 포함한다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 이유를 적는다."
+              },
+              "nextVerification": {
+                "type": "string",
+                "description": "priorGoals 문장을 복사하지 않는다. 이번 답이 이미 기준이면 기준 확인을 다시 적지 않는다. nextQuestion과 같은 대상만 적는다. 접근 경로, 협력 의사, 협력 조건 중 하나다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다. 그 효과는 확인되지 않았다."
+              },
+              "nextQuestion": {
+                "type": "string",
+                "description": "이미 후보가 없다고 답했다. 정했나요, 한 곳, 이름, 떠오르는, 이름이 있는가, 선정했는지를 묻지 않는다. 이번 답이 기준을 골랐으면 기준을 다시 묻지 않는다. 기준이 구체화되었다만 쓰면 실패다. 접근 경로, 협력 의사, 협력 조건 중 하나만 묻는다."
+              },
+              "nextQuestionReason": {
+                "type": "string",
+                "description": "그 답이 다음 사업성 판단에 왜 필요한지. priorReasonText와 같으면 실패다."
+              },
+              "choices": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이번 질문에 답하는 서로 다른 선택 두 개 이상. priorChoices와 같은 문장을 두지 않는다."
+              },
+              "questions": {
+                "type": "array",
+                "minItems": 2,
+                "description": "다음 상담 단계의 서로 다른 검증 질문 2개 이상. 첫 질문의 text는 nextQuestion과 같다. 이미 답한 질문 문장을 반복하지 않는다.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "text",
+                    "choices"
+                  ],
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "이 질문의 문장. 다른 질문과 같지 않다."
+                    },
+                    "choices": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "이 질문에만 해당하는 서로 다른 선택 2개 이상."
+                    }
+                  }
+                }
+              }
+            }
+          }
         },
         "messages": [
           {
             "role": "system",
-            "content": "프롬프트 버전 quality-2. 당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 말고 성립 조건과 가장 큰 불확실성을 분석한다. 창업자가 아직 고르지 않은 답을 사실로 만들지 않는다. 첫 질문은 정도(높다, 낮다)가 아니라 사업의 갈림길을 가른다. 사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다. 고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다. 가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다. 분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 2개 이상으로 questions에 둔다. nextQuestion은 그 중 첫 질문이다. 모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다. 선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다. JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다. 키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다. summary는 원문을 반영한 설명, judgment는 예비 판단과 근거, nextVerification은 적은 비용의 확인 행동이다. assumptions는 1개에서 3개다."
+            "content": "프롬프트 버전 quality-2. 당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 말고 성립 조건과 가장 큰 불확실성을 분석한다. 창업자가 아직 고르지 않은 답을 사실로 만들지 않는다. 첫 질문은 정도(높다, 낮다)가 아니라 사업의 갈림길을 가른다. 사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다. 고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다. 가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다. 분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 2개 이상으로 questions에 둔다. 각 질문은 text와 그 질문의 choices를 가진다. nextQuestion은 첫 text와 같다. 질문이 하나이거나 배열이 없으면 상담 단계가 아니다. 모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다. 선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다. JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다. 키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다. summary는 원문을 반영한 설명, judgment는 예비 판단과 근거, nextVerification은 적은 비용의 확인 행동이다. assumptions는 1개에서 3개다."
           },
           {
             "role": "user",
-            "content": "사업 입력:\n지역 공장에 온라인 마케팅 페이지 제작만 대행한다.\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 2개 이상이다. nextQuestion은 questions의 첫 질문이다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다."
+            "content": "사업 입력:\n지역 공장에 온라인 마케팅 페이지 제작만 대행한다.\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 2개 이상이다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 questions 첫 text와 같다. questions가 없거나 하나면 상담 단계가 아니다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다."
           }
         ]
       }

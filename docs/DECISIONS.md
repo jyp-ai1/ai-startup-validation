@@ -2441,6 +2441,49 @@ The stored consulting path sends one founder supplement to one product reanalysi
 
 ---
 
+## ADR-074: The follow-up route runs one stage reanalysis
+
+**Status:** Accepted  
+**Date:** 2026-10-31  
+**Sprint:** AI PM consulting stage  
+**Authors:** CTO (autonomous)
+
+### Context
+
+ADR-073 stored N questions and N answers as one stage and proved `runStageReanalysis` with injected model text. The screen still posted one supplement to `runFollowUpReview`. A first response could also omit `questions` and still be stored as a one-question stage.
+
+### Decision
+
+1. `POST /api/ai-pm-review/follow-up` saves the posted answers by `questionId`, then calls `runStageReanalysis`. It does not call `runFollowUpReview`.
+2. A first review that parses as a business analysis is stored as failed with `stage_questions_missing` unless `questions` has at least two distinct texts. The request schema requires that array. Each item has `text` and `choices`. Reading an older row may still treat a lone `nextQuestion` as `q1`; that reading is not a new successful stage.
+3. An empty or incomplete stage returns the parent and does not call the model. `allowPartial` stays an explicit request and is not sent by the screen. The same answered set reuses the stored child.
+4. The screen shows one answer control per question when the stored analysis has two or more questions. A review without that array keeps the previous single-question form and does not call the follow-up route.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Leave the route on one supplement | Existing live harness calls stay untouched | The shipped path would still analyze one answer at a time |
+| Rebuild the consulting store | A new table could name the stage | Stored rows and parent links would be replaced |
+
+### Consequences
+
+**Positive:**
+
+- Completing a stage is one product request that includes the original idea, the first analysis, prior pairs, and the current pairs.
+- Saving one answer, or leaving a question open, does not call the model.
+
+**Negative:**
+
+- A live model call of stages 1–3 was not run here. `GPT_API_KEY` is absent, so the route does not call the model.
+- `runFollowUpReview` remains for the existing injected and preview harness. It is not the product route.
+
+**Neutral:**
+
+- Production stays locked. Existing review rows are not updated.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

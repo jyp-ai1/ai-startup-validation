@@ -37,10 +37,14 @@ import type { BusinessAnalysis, ChoiceAnswer } from '../lib/ai-pm-review-store';
 type LoadResponse = {
   error?: string;
   reused?: boolean;
+  called?: boolean;
+  pending?: boolean;
   review?: AiPmReviewView | null;
   reviews?: AiPmReviewView[];
   storage?: { durable?: boolean };
 };
+
+type StageDraft = { choiceId: string; otherText: string; comment: string };
 
 type Step = 'result' | 'feedback' | 'revised' | 'question' | 'reflected';
 
@@ -73,7 +77,9 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
   const [choiceId, setChoiceId] = useState('');
   const [otherText, setOtherText] = useState('');
   const [savedChoice, setSavedChoice] = useState<ChoiceAnswer | null>(null);
+  const [drafts, setDrafts] = useState<Record<string, StageDraft>>({});
   const restoredKey = useRef('');
+  const draftReviewId = useRef('');
 
   const active = useMemo(() => matchReview(reviews, text, projectId), [reviews, text, projectId]);
   const analysis = active?.sections?.analysis ?? null;
@@ -103,10 +109,48 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
   const reconfirmReading = Boolean(claimRows?.some((row) => row.state === 'unconfirmed'));
   const focus = focusPreset === 'direct' ? focusText : focusPreset;
   const accountChoice = useMemo(() => latestChoice(active), [active]);
+  const stageQuestions = analysis?.questions ?? [];
+  const stageReady =
+    stageQuestions.length >= 2 &&
+    stageQuestions.every((question) => draftAnswered(drafts[question.questionId]));
+  const unmatchedStageFailure = useMemo(() => {
+    if (analysis) return null;
+    const needle = businessBodyForReviewMatch(text);
+    return (
+      reviews
+        .filter(
+          (review) =>
+            review.projectId === projectId &&
+            review.status === 'failed' &&
+            review.failure === 'stage_questions_missing' &&
+            (!needle || businessBodyForReviewMatch(review.inputText) === needle),
+        )
+        .at(-1) ?? null
+    );
+  }, [analysis, reviews, projectId, text]);
 
   useEffect(() => {
     setText((current) => (current.trim() ? current : initialText));
   }, [initialText]);
+
+  useEffect(() => {
+    const questions = active?.sections?.analysis?.questions ?? [];
+    if (!active || questions.length < 2) {
+      if (draftReviewId.current) {
+        draftReviewId.current = '';
+        setDrafts({});
+      }
+      return;
+    }
+    if (draftReviewId.current === active.reviewId) return;
+    draftReviewId.current = active.reviewId;
+    const next: Record<string, StageDraft> = {};
+    for (const question of questions) {
+      const saved = [...active.feedback].reverse().find((item) => item.questionId === question.questionId);
+      next[question.questionId] = draftFromSaved(saved);
+    }
+    setDrafts(next);
+  }, [active]);
 
   useEffect(() => {
     void loadReviews();
@@ -218,11 +262,12 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
       setChoiceId('');
       setOtherText('');
       setSavedChoice(latestChoice(payload.review));
+      const openedQuestions = payload.review.sections?.analysis?.questions ?? [];
       setMessage(
-        payload.review.sections?.analysis
+        payload.review.status === 'ready' && openedQuestions.length >= 2
           ? payload.reused
             ? '저장된 사업성 검토를 다시 열었습니다.'
-            : '사업성 검토를 저장했습니다. 아래에서 질문 하나를 골라 주세요.'
+            : '사업성 검토를 저장했습니다. 아래 질문마다 답을 저장하면 한 번 다시 분석합니다.'
           : statusLine(payload.review),
       );
       void recordFunnelEvent(
@@ -346,12 +391,29 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
 
   async function submitReanalysis() {
     if (!active?.sections || !analysis || pending || !projectId) return;
-    const selected = analysis.choices.find((choice) => choice.id === choiceId);
-    const note = answer.trim();
-    const choiceText = selected?.id === 'other' ? otherText.trim() : (selected?.label ?? '');
-    const supplement = note || choiceText;
-    if (!supplement) return;
-    if (selected?.id === 'other' && !otherText.trim()) return;
+    const questions = analysis.questions ?? [];
+    if (questions.length < 2) {
+      setMessage('이 검토는 질문 2개 이상의 상담 단계가 아니어서 다시 분석하지 않습니다. 이전 분석은 그대로 남아 있습니다.');
+      return;
+    }
+    const answers = questions.flatMap((question) => {
+      const draft = drafts[question.questionId] ?? { choiceId: '', otherText: '', comment: '' };
+      const selected = (question.choices ?? []).find((choice) => choice.id === draft.choiceId);
+      const comment = draft.comment.trim();
+      const otherTextForChoice = selected?.id === 'other' ? draft.otherText.trim() : '';
+      if (!comment && !selected) return [];
+      if (selected?.id === 'other' && !otherTextForChoice && !comment) return [];
+      return [
+        {
+          questionId: question.questionId,
+          choiceId: selected?.id,
+          choiceLabel: selected?.label,
+          otherText: otherTextForChoice,
+          comment,
+        },
+      ];
+    });
+    if (answers.length === 0) return;
     setPending(true);
     setMessage('');
     try {
@@ -359,40 +421,10 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
         setMessage('로그인 후 이 답을 이전 분석과 함께 다시 검토할 수 있습니다.');
         return;
       }
-      if (selected) {
-        const choice: ChoiceAnswer = {
-          choiceId: selected.id,
-          label: selected.label,
-          otherText: selected.id === 'other' ? otherText.trim() : '',
-        };
-        const saved = await fetch('/api/ai-pm-review/feedback', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            projectId,
-            reviewId: active.reviewId,
-            choiceId: choice.choiceId,
-            choiceLabel: choice.label,
-            otherText: choice.otherText,
-          }),
-        });
-        const savedBody = (await saved.json()) as LoadResponse;
-        if (saved.status === 401) {
-          setAuth('out');
-          setMessage('로그인 후 이 답을 이전 분석과 함께 다시 검토할 수 있습니다.');
-          return;
-        }
-        if (!saved.ok || !savedBody.review) {
-          setMessage('답을 저장하지 못했습니다. 선택 항목을 확인해 주세요.');
-          return;
-        }
-        remember(savedBody.review);
-        setSavedChoice(choice);
-      }
       const response = await fetch('/api/ai-pm-review/follow-up', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId, reviewId: active.reviewId, supplement }),
+        body: JSON.stringify({ projectId, reviewId: active.reviewId, answers }),
       });
       const payload = (await response.json()) as LoadResponse;
       if (response.status === 401) {
@@ -405,6 +437,11 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
           reviewModelUnavailableCopy(payload.error) ??
             '다시 검토하지 못했습니다. 이전 분석은 그대로 남아 있습니다.',
         );
+        return;
+      }
+      if (payload.pending) {
+        remember(payload.review);
+        setMessage('답을 저장했습니다. 남은 질문에 답하면 이 단계를 한 번 다시 분석합니다.');
         return;
       }
       if (payload.review.status !== 'ready' || !payload.review.sections?.analysis) {
@@ -420,8 +457,9 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
       setAnswer('');
       setChoiceId('');
       setOtherText('');
+      setDrafts({});
       setSavedChoice(null);
-      setMessage(payload.reused ? '같은 답의 저장된 재검토를 다시 열었습니다.' : '이번 답을 반영한 분석을 저장했습니다.');
+      setMessage(payload.reused ? '같은 단계의 저장된 재검토를 다시 열었습니다.' : '이 단계의 답을 함께 반영한 분석을 저장했습니다.');
       void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.aiPmReviewRequested, {
         screen: '/business-validation',
         status: payload.review.status,
@@ -492,7 +530,7 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
             ? savedChoice
               ? '저장한 답과 이전 분석을 이어서 다시 검토할 수 있습니다.'
               : '분석을 읽은 뒤, 질문에 답하면 이전 분석과 함께 다시 검토합니다.'
-            : '사업 본문과 검토 목적을 보내면 분석과 질문 하나를 받습니다. 단계와 알고 싶은 내용은 비워도 됩니다.'}
+            : '사업 본문과 검토 목적을 보내면 분석과 질문 여러 개를 받습니다. 단계와 알고 싶은 내용은 비워도 됩니다.'}
         </p>
       </header>
 
@@ -504,7 +542,11 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
 
       {pending ? (
         <p className="text-sm" data-testid="ai-pm-loading">
-          {analysis ? '이전 분석과 이번 답을 반영해 다시 검토하고 있습니다.' : '사업 원문으로 종합 사업성 검토를 읽고 있습니다.'}
+          {analysis
+            ? stageReady
+              ? '이전 분석과 이번 답을 반영해 다시 검토하고 있습니다.'
+              : '답을 저장하고 있습니다.'
+            : '사업 원문으로 종합 사업성 검토를 읽고 있습니다.'}
         </p>
       ) : null}
 
@@ -517,6 +559,10 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
       {active?.status === 'failed' && !analysis ? (
         <p className="text-sm" data-testid="ai-pm-review-error">
           {reviewFailureCopy(active.failure)}
+        </p>
+      ) : unmatchedStageFailure ? (
+        <p className="text-sm" data-testid="ai-pm-review-error">
+          {reviewFailureCopy(unmatchedStageFailure.failure)}
         </p>
       ) : null}
 
@@ -568,9 +614,17 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
                 otherText={otherText}
                 note={answer}
                 pending={pending}
+                drafts={drafts}
+                stageReady={stageReady}
                 onChoice={setChoiceId}
                 onOther={setOtherText}
                 onNote={setAnswer}
+                onDraft={(questionId, patch) => {
+                  setDrafts((current) => {
+                    const previous = current[questionId] ?? { choiceId: '', otherText: '', comment: '' };
+                    return { ...current, [questionId]: { ...previous, ...patch } };
+                  });
+                }}
                 onSave={() => void submitReanalysis()}
               />
             </>
@@ -830,6 +884,29 @@ function IntakeFields(props: {
   );
 }
 
+function draftAnswered(draft: StageDraft | undefined): boolean {
+  if (!draft) return false;
+  if (draft.comment.trim()) return true;
+  if (!draft.choiceId) return false;
+  if (draft.choiceId === 'other' && !draft.otherText.trim()) return false;
+  return true;
+}
+
+function draftFromSaved(saved: AiPmReviewView['feedback'][number] | undefined): StageDraft {
+  if (!saved) return { choiceId: '', otherText: '', comment: '' };
+  const choice = saved.choiceAnswer;
+  if (!choice) return { choiceId: '', otherText: '', comment: saved.comment };
+  if (choice.choiceId === 'other') {
+    return {
+      choiceId: 'other',
+      otherText: choice.otherText,
+      comment: saved.comment !== choice.otherText ? saved.comment : '',
+    };
+  }
+  const extra = choice.otherText && choice.otherText !== choice.label ? choice.otherText : '';
+  return { choiceId: choice.choiceId, otherText: '', comment: extra };
+}
+
 function AnalysisBlock(props: {
   analysis: BusinessAnalysis;
   sections: NonNullable<AiPmReviewView['sections']>;
@@ -839,9 +916,12 @@ function AnalysisBlock(props: {
   otherText: string;
   note: string;
   pending: boolean;
+  drafts: Record<string, StageDraft>;
+  stageReady: boolean;
   onChoice: (id: string) => void;
   onOther: (value: string) => void;
   onNote: (value: string) => void;
+  onDraft: (questionId: string, patch: Partial<StageDraft>) => void;
   onSave: () => void;
 }) {
   const { analysis, sections } = props;
@@ -858,6 +938,9 @@ function AnalysisBlock(props: {
   const selectionChanged =
     Boolean(selected) &&
     (!props.saved || props.saved.choiceId !== selected?.id || (selected?.id === 'other' && props.otherText.trim() !== props.saved.otherText));
+  const stageQuestions = analysis.questions ?? [];
+  const stageMode = stageQuestions.length >= 2;
+  const stageFilled = stageQuestions.filter((question) => draftAnswered(props.drafts[question.questionId])).length;
   return (
     <div className="space-y-4" data-testid="ai-pm-core">
       <div className="space-y-1">
@@ -896,72 +979,138 @@ function AnalysisBlock(props: {
         <StringList title="추론" items={analysis.inferences} />
         <p className="text-xs text-muted-foreground">원문에 없는 가격, 수수료, 시장 수치는 확정된 사실이 아닙니다.</p>
       </div>
-      <form
-        className="space-y-3"
-        data-testid="ai-pm-next-question"
-        data-question-source="model-review"
-        onSubmit={(event) => {
-          event.preventDefault();
-          props.onSave();
-        }}
-      >
-        <p className="text-sm font-medium">{props.round > 0 ? '다음 질문' : '이번 질문'}</p>
-        <p className="text-xs text-muted-foreground">
-          이 선택과 추가 설명은 확인된 사실이 아닙니다. 제출하면 지금까지의 분석과 함께 다시 검토합니다.
-        </p>
-        <p>{sections.nextQuestion}</p>
-        <p data-testid="ai-pm-next-question-reason">{sections.nextQuestionReason}</p>
-        <fieldset className="space-y-2">
-          <legend className="text-sm font-medium">하나를 고르거나 직접 적습니다</legend>
-          {analysis.choices.map((choice) => (
-            <label key={choice.id} className="block text-sm">
-              <input
-                type="radio"
-                name="ai-pm-choice"
-                value={choice.id}
-                checked={props.choiceId === choice.id}
-                onChange={() => props.onChoice(choice.id)}
-              />{' '}
-              {choice.label}
-            </label>
-          ))}
-        </fieldset>
-        {props.choiceId === 'other' ? (
-          <Textarea
-            data-testid="ai-pm-choice-other"
-            rows={3}
-            value={props.otherText}
-            onChange={(event) => props.onOther(event.target.value)}
-            placeholder="기타 / 직접 입력"
-          />
-        ) : null}
-        <label className="block space-y-1 text-sm">
-          <span className="font-medium">이번 답과 추가 설명</span>
-          <Textarea
-            data-testid="ai-pm-reanalysis-note"
-            rows={4}
-            value={props.note}
-            onChange={(event) => props.onNote(event.target.value)}
-            placeholder="질문에 대한 답, 확인한 사실, 아직 없는 증거를 적습니다."
-          />
-        </label>
-        {selectionChanged ? (
-          <p className="text-sm" data-testid="ai-pm-choice-preview">
-            저장할 답: {selectedText}
-          </p>
-        ) : null}
-        <Button
-          type="submit"
-          data-testid="ai-pm-choice-submit"
-          disabled={
-            props.pending ||
-            (!props.note.trim() && !props.choiceId) ||
-            (props.choiceId === 'other' && !props.otherText.trim())
-          }
+      {stageMode ? (
+        <form
+          className="space-y-4"
+          data-testid="ai-pm-next-question"
+          data-question-source="model-review"
+          onSubmit={(event) => {
+            event.preventDefault();
+            props.onSave();
+          }}
         >
-          이 답으로 다시 분석
-        </Button>
-      </form>
+          <p className="text-sm font-medium">{props.round > 0 ? '다음 단계 질문' : '이번 단계 질문'}</p>
+          <p className="text-xs text-muted-foreground">
+            질문마다 답을 저장합니다. 모든 질문에 답이 있으면 이 단계를 한 번 다시 분석합니다. 답은 확인된 사실이 아닙니다.
+          </p>
+          <p data-testid="ai-pm-next-question-reason">{sections.nextQuestionReason}</p>
+          {stageQuestions.map((question) => {
+            const draft = props.drafts[question.questionId] ?? { choiceId: '', otherText: '', comment: '' };
+            const choices = question.choices ?? [];
+            return (
+              <div key={question.questionId} className="space-y-2" data-question-id={question.questionId}>
+                <p className="text-sm font-medium">{question.text}</p>
+                {choices.length > 0 ? (
+                  <fieldset className="space-y-2">
+                    <legend className="text-sm">하나를 고르거나 직접 적습니다</legend>
+                    {choices.map((choice) => (
+                      <label key={choice.id} className="block text-sm">
+                        <input
+                          type="radio"
+                          name={`ai-pm-choice-${question.questionId}`}
+                          value={choice.id}
+                          checked={draft.choiceId === choice.id}
+                          onChange={() => props.onDraft(question.questionId, { choiceId: choice.id })}
+                        />{' '}
+                        {choice.label}
+                      </label>
+                    ))}
+                  </fieldset>
+                ) : null}
+                {draft.choiceId === 'other' ? (
+                  <Textarea
+                    data-testid={`ai-pm-choice-other-${question.questionId}`}
+                    rows={3}
+                    value={draft.otherText}
+                    onChange={(event) => props.onDraft(question.questionId, { otherText: event.target.value })}
+                    placeholder="기타 / 직접 입력"
+                  />
+                ) : null}
+                <label className="block space-y-1 text-sm">
+                  <span>추가 설명</span>
+                  <Textarea
+                    data-testid={`ai-pm-stage-note-${question.questionId}`}
+                    rows={3}
+                    value={draft.comment}
+                    onChange={(event) => props.onDraft(question.questionId, { comment: event.target.value })}
+                    placeholder="이 질문에 대한 답, 확인한 사실, 아직 없는 증거를 적습니다."
+                  />
+                </label>
+              </div>
+            );
+          })}
+          <Button type="submit" data-testid="ai-pm-choice-submit" disabled={props.pending || stageFilled === 0}>
+            {props.stageReady ? '이 단계로 다시 분석' : '답 저장'}
+          </Button>
+        </form>
+      ) : (
+        <form
+          className="space-y-3"
+          data-testid="ai-pm-next-question"
+          data-question-source="model-review"
+          onSubmit={(event) => {
+            event.preventDefault();
+            props.onSave();
+          }}
+        >
+          <p className="text-sm font-medium">{props.round > 0 ? '다음 질문' : '이번 질문'}</p>
+          <p className="text-xs text-muted-foreground">
+            이 선택과 추가 설명은 확인된 사실이 아닙니다. 질문 2개 이상이 있어야 다시 분석합니다.
+          </p>
+          <p>{sections.nextQuestion}</p>
+          <p data-testid="ai-pm-next-question-reason">{sections.nextQuestionReason}</p>
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium">하나를 고르거나 직접 적습니다</legend>
+            {analysis.choices.map((choice) => (
+              <label key={choice.id} className="block text-sm">
+                <input
+                  type="radio"
+                  name="ai-pm-choice"
+                  value={choice.id}
+                  checked={props.choiceId === choice.id}
+                  onChange={() => props.onChoice(choice.id)}
+                />{' '}
+                {choice.label}
+              </label>
+            ))}
+          </fieldset>
+          {props.choiceId === 'other' ? (
+            <Textarea
+              data-testid="ai-pm-choice-other"
+              rows={3}
+              value={props.otherText}
+              onChange={(event) => props.onOther(event.target.value)}
+              placeholder="기타 / 직접 입력"
+            />
+          ) : null}
+          <label className="block space-y-1 text-sm">
+            <span className="font-medium">이번 답과 추가 설명</span>
+            <Textarea
+              data-testid="ai-pm-reanalysis-note"
+              rows={4}
+              value={props.note}
+              onChange={(event) => props.onNote(event.target.value)}
+              placeholder="질문에 대한 답, 확인한 사실, 아직 없는 증거를 적습니다."
+            />
+          </label>
+          {selectionChanged ? (
+            <p className="text-sm" data-testid="ai-pm-choice-preview">
+              저장할 답: {selectedText}
+            </p>
+          ) : null}
+          <Button
+            type="submit"
+            data-testid="ai-pm-choice-submit"
+            disabled={
+              props.pending ||
+              (!props.note.trim() && !props.choiceId) ||
+              (props.choiceId === 'other' && !props.otherText.trim())
+            }
+          >
+            이 답으로 다시 분석
+          </Button>
+        </form>
+      )}
       {props.saved ? (
         <div className="space-y-2" data-testid="ai-pm-choice-saved">
           <p className="text-sm font-medium">저장한 답</p>

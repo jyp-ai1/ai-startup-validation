@@ -309,7 +309,8 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(candidate.model).toBe(product.model);
     expect(candidate.temperature).toBe(product.temperature);
     expect(candidate.maxTokens).toBe(product.maxTokens);
-    expect(candidate.responseFormat).toEqual(product.responseFormat);
+    expect(product.responseFormat?.type).toBe('json_schema');
+    expect(candidate.responseFormat).toEqual({ type: 'json_object' });
     const room = AI_PM_REVIEW_INPUT_TOKEN_BUDGET - estimateReviewTokens(system);
     expect(clampReviewText(user, room)).toBe(user);
     const missingKey = await executeSprintQualityPair({});
@@ -977,7 +978,8 @@ describe('quality-2 and quality-3 compare requests', () => {
     expect(panel).toContain('data-testid="ai-pm-history"');
     expect(panel).toContain('data-testid="ai-pm-reflected-answer"');
     expect(panel).not.toMatch(/gpt|gemini|openai|token/i);
-    expect(followRoute).toContain('runFollowUpReview');
+    expect(followRoute).toContain('submitConsultingStage');
+    expect(followRoute).not.toContain('runFollowUpReview');
     expect(followRoute).not.toContain('buildIncrementalStructureRequest');
     const script = readFileSync(new URL('../../../../scripts/preview-quality-compare-once.mjs', import.meta.url), 'utf8');
     expect(script).not.toContain('buildIncrementalStructureRequest');
