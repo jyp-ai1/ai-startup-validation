@@ -237,6 +237,8 @@ export type AiPmReviewView = {
     consultingTurn: ConsultingTurn | null;
     /** Stored error. A type mismatch is not shown as an analysis. */
     failure: string | null;
+    /** Stage interpretation. Absent on a first review. */
+    stageReading?: StageReading | null;
   };
 
 export function normalizeReviewText(text: string): string {
@@ -436,6 +438,7 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
       : null,
     consultingTurn: record.consultingTurn ?? null,
     failure: clientFailure(record.error),
+    ...(record.stageReading ? { stageReading: record.stageReading } : {}),
   };
 }
 
@@ -1735,14 +1738,31 @@ function stageReanalysisSchema(): Record<string, unknown> {
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['questionId', 'choiceId', 'meaning'],
+          required: ['questionId', 'choiceId', 'meaning', 'founderBasis', 'observedEvidence', 'judgmentEffect', 'openRisk'],
           properties: {
             questionId: text,
             choiceId: text,
             meaning: {
               type: 'string',
               description:
-                'choiceLabel만 반복하면 실패다. supplement의 기준, 계획, 아직 없는 사실을 포함한다. 보존된 선택지가 고른 항목뿐이면 다른 선택지를 만들지 않는다.',
+                '이 답이 사업에 의미하는 바. choiceLabel이나 supplement와 같은 문장이면 실패다. 선택지를 새로 만들지 않는다.',
+            },
+            founderBasis: {
+              type: 'string',
+              description: 'Founder가 이렇게 말한 이유. 라벨 반복은 이유가 아니다. 입력에 이유가 없으면 이유가 없다고 적는다.',
+            },
+            observedEvidence: {
+              type: 'string',
+              description:
+                '접촉, 합의, 입금, 예약처럼 실제로 확인된 것. 없으면 확인된 접촉이나 합의가 없다고 적는다. 주장을 확인된 사실로 올리지 않는다.',
+            },
+            judgmentEffect: {
+              type: 'string',
+              description: '이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유. 라벨 반복은 영향이 아니다.',
+            },
+            openRisk: {
+              type: 'string',
+              description: '이 답이 남긴 미검증 위험. 없으면 없다고 적는다. 빈 문자열은 실패다.',
             },
           },
         },
@@ -1765,7 +1785,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
       resolvedIssues: {
         ...list,
         description:
-          '계획이나 기준이 구체화된 진전. supplement가 말한 선정 기준 문장을 여기 적는다. choiceLabel만 반복하면 진전이 빠진다. 후보가 없다는 사실은 넣지 않는다. 이 목록은 다음 질문에서 닫힌다.',
+          '이번 답이 구체화한 계획. choiceLabel만 반복하면 진전이 아니다. 확인되지 않은 주장은 넣지 않는다. 이 목록은 다음 질문에서 다시 묻지 않는다.',
       },
       unresolvedIssues: {
         ...list,
@@ -1805,7 +1825,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
       nextVerification: {
         type: 'string',
         description:
-          'unresolvedIssues 중 다음에 확인할 하나. resolvedIssues의 선정 기준은 다시 확인 대상으로 쓰지 않는다. 후보 확보나 실제 접근이 남아 있으면 그중 하나를 고른다.',
+          'unresolvedIssues 중 다음에 확인할 하나. 이미 답한 질문, choiceLabel, supplement와 같은 문장을 다시 확인 대상으로 쓰지 않는다.',
       },
       nextQuestions: {
         type: 'array',
@@ -1820,7 +1840,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
             text: {
               type: 'string',
               description:
-                'unresolvedIssues의 한 문제만 묻는다. 선정 기준이 resolvedIssues에 있으면 그 기준이 무엇인지, 또는 그 기준을 더 자세히 설명해 달라고 다시 묻지 않는다. 후보 확보나 실제 접근이 남아 있으면 그중 가장 중요한 것을 묻는다.',
+                'unresolvedIssues 중 다음 판단을 가장 크게 바꾸는 하나만 묻는다. 이미 제출된 질문, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다.',
             },
             choices: {
               type: 'array',
@@ -1843,11 +1863,11 @@ function stageReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다.',
     '이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
-    '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. choiceLabel만 반복하면 해석이 아니다.',
+    '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 사업에 의미하는 바다. founderBasis는 Founder가 그렇게 말한 이유다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다.',
     '2. 확인된 사실, 주장, 가설을 가른다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다.',
     '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 입력과 답에 없으면 없다고 적는다. 빈 문자열로 두지 않는다. 부모 문장을 베끼지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다.',
-    '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 적는다. 판단을 유지했는지 바꿨는지와 그 이유를 이번 답과 연결한다. priorJudgmentText를 이어 쓰지 않는다. 코드는 결론을 정하지 않는다.',
-    '5. 다음 검증 질문은 당신이 고른다. 사업 판단에 가장 큰 빈칸을 묻는다. 이미 한 질문 문장과 이번 답에 있는 문장을 다시 묻지 않는다.',
+    '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 적는다. 판단을 유지했는지 바꿨는지와 그 이유를 이번 답의 judgmentEffect와 연결한다. priorJudgmentText를 이어 쓰지 않는다. 코드는 결론을 정하지 않는다.',
+    '5. 다음 검증 질문은 당신이 고른다. 사업 전체에서 다음 판단을 가장 크게 바꾸는 미해결을 묻는다. 이미 한 질문 문장, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'JSON만 반환한다.',
     '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
@@ -2701,6 +2721,12 @@ function compactQuestion(text: string): string {
   return text.replace(/\s+/g, '').trim();
 }
 
+function sameCompact(left: string, right: string): boolean {
+  const a = compactQuestion(left);
+  const b = compactQuestion(right);
+  return a.length > 0 && a === b;
+}
+
 function stringArrayField(value: unknown): string[] | null {
   if (!Array.isArray(value)) return null;
   if (!value.every((item) => typeof item === 'string')) return null;
@@ -2745,7 +2771,7 @@ function readStageBusinessProfile(parsed: Record<string, unknown>): StageBusines
 
 function judgeStageContract(
   content: string,
-  contract: { askedQuestions: string[]; pairs: StagePair[] },
+  contract: { askedQuestions: string[]; pairs: StagePair[]; closedSentences?: string[] },
 ): { sections: ReviewSections | null; issues: string[]; reading: StageReading | null } {
   let parsed: Record<string, unknown>;
   try {
@@ -2796,11 +2822,29 @@ function judgeStageContract(
       const record = item as Record<string, unknown>;
       const questionId = typeof record.questionId === 'string' ? record.questionId.trim() : '';
       const meaning = typeof record.meaning === 'string' ? record.meaning.trim() : '';
-      if (!questionId || typeof record.choiceId !== 'string' || !meaning) {
+      const founderBasis = typeof record.founderBasis === 'string' ? record.founderBasis.trim() : '';
+      const observedEvidence = typeof record.observedEvidence === 'string' ? record.observedEvidence.trim() : '';
+      const judgmentEffect = typeof record.judgmentEffect === 'string' ? record.judgmentEffect.trim() : '';
+      const openRisk = typeof record.openRisk === 'string' ? record.openRisk.trim() : '';
+      if (!questionId || typeof record.choiceId !== 'string' || !meaning || !founderBasis || !observedEvidence || !judgmentEffect || !openRisk) {
         issues.push('stage_fields_missing');
         break;
       }
-      answerInterpretation.push({ questionId, choiceId: record.choiceId.trim(), meaning });
+      const pair = contract.pairs.find((item) => item.questionId === questionId);
+      const spoken = [pair?.choiceLabel ?? '', pair?.supplement ?? ''];
+      const echoed = [meaning, founderBasis, observedEvidence, judgmentEffect, openRisk].some((field) =>
+        spoken.some((line) => sameCompact(field, line)),
+      );
+      if (echoed) issues.push('stage_answer_echo');
+      answerInterpretation.push({
+        questionId,
+        choiceId: record.choiceId.trim(),
+        meaning,
+        founderBasis,
+        observedEvidence,
+        judgmentEffect,
+        openRisk,
+      });
     }
   }
   const nextQuestions: StageReading['nextQuestions'] = [];
@@ -2878,7 +2922,12 @@ function judgeStageContract(
     menus.some((item, index) => !sameLabels(item.choices, matrix[index] ?? []));
   if (menusMissing) issues.push('stage_choices_missing');
   const asked = new Set(contract.askedQuestions.map(compactQuestion).filter((text) => text.length > 0));
-  if (reading && texts.some((text) => asked.has(compactQuestion(text)))) issues.push('stage_questions_repeated');
+  const closed = new Set(
+    [...contract.askedQuestions, ...(contract.closedSentences ?? []), ...contract.pairs.flatMap((pair) => [pair.question, pair.choiceLabel ?? '', pair.supplement])]
+      .map(compactQuestion)
+      .filter((text) => text.length > 0),
+  );
+  if (reading && texts.some((text) => asked.has(compactQuestion(text)) || closed.has(compactQuestion(text)))) issues.push('stage_questions_repeated');
   const uniqueIssues = [...new Set(issues)];
   if (uniqueIssues.length > 0 || !reading || !businessProfile) return { sections: null, issues: uniqueIssues.length > 0 ? uniqueIssues : ['stage_fields_missing'], reading };
   const firstChoices = choicesFromLabels(reading.nextQuestions[0]?.choices ?? []);
@@ -3055,6 +3104,7 @@ export async function runStageReanalysis(input: {
     stageContract: {
       askedQuestions: previousQuestions,
       pairs,
+      closedSentences: [...priorStagePairs, ...pairs].flatMap((pair) => [pair.question, pair.choiceLabel ?? '', pair.supplement]),
     },
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
@@ -4449,7 +4499,7 @@ async function finishCall(input: {
   stagePartial?: boolean;
   founderAnswerSource?: FounderAnswerCitation | null;
   /** One integrated call. A format error is stored as failed. It is not repaired. */
-  stageContract?: { askedQuestions: string[]; pairs: StagePair[] };
+  stageContract?: { askedQuestions: string[]; pairs: StagePair[]; closedSentences?: string[] };
   /** Structural reading checks. They do not choose the business judgment. */
   readingIssues?: (content: string) => string[];
   readingRepairContext?: { supplement?: string };

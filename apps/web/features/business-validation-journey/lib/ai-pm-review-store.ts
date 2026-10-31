@@ -165,8 +165,22 @@ export type StageBusinessProfile = {
 };
 
 /** Follow-up reanalysis written by the model. Absent on a first review and on a failed parse. */
+export type StageAnswerReading = {
+  questionId: string;
+  choiceId: string;
+  meaning: string;
+  /** Why the founder said this. Absent on readings stored before this field. */
+  founderBasis?: string;
+  /** What was actually confirmed. Absent on readings stored before this field. */
+  observedEvidence?: string;
+  /** What this answer keeps or changes in the prior judgment. */
+  judgmentEffect?: string;
+  /** Unverified risk this answer leaves open. */
+  openRisk?: string;
+};
+
 export type StageReading = {
-  answerInterpretation: { questionId: string; choiceId: string; meaning: string }[];
+  answerInterpretation: StageAnswerReading[];
   impactOnPreviousJudgment: string;
   updatedJudgment: string;
   judgmentReason: string;
