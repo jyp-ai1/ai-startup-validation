@@ -149,17 +149,20 @@ describe('consulting stage batch', () => {
     const user = request.messages.find((message) => message.role === 'user')?.content ?? '';
     const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
     expect(user).toContain('questions');
-    expect(user).toContain('questions가 없거나 하나면 상담 단계가 아니다');
+    expect(user).toContain('questions가 없거나 비어 있으면 상담 단계가 아니다');
+    expect(user).not.toContain('하나면 상담 단계가 아니다');
     expect(system).toContain('questions');
-    expect(system).toContain('질문이 하나이거나 배열이 없으면 상담 단계가 아니다');
+    expect(system).toContain('질문이 없거나 배열이 없으면 상담 단계가 아니다');
+    expect(system).not.toContain('질문이 하나이거나');
     expect(request.responseFormat?.type).toBe('json_schema');
     if (request.responseFormat?.type === 'json_schema') {
       const questions = request.responseFormat.schema.properties as {
-        questions: { type: string; minItems: number; items: { required: string[] } };
+        questions: { type: string; minItems: number; items: { required: string[]; properties: { choices: { minItems: number } } } };
       };
       expect(questions.questions.type).toBe('array');
-      expect(questions.questions.minItems).toBe(2);
+      expect(questions.questions.minItems).toBe(1);
       expect(questions.questions.items.required).toEqual(['text', 'choices']);
+      expect(questions.questions.items.properties.choices.minItems).toBe(2);
     }
     const parsed = parseSections(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS), IDEA);
     expect(consultingQuestions(parsed).map((item) => item.questionId)).toEqual(['q1', 'q2', 'q3']);
@@ -670,7 +673,7 @@ describe('consulting stage batch', () => {
     ]);
   });
 
-  it('does not treat a missing or single question as a consulting stage', async () => {
+  it('does not treat a missing question list as a consulting stage, and keeps one listed question', async () => {
     const store = openAiPmReviewStore(storePath());
     const calls: ChatRequest[] = [];
     const chat = async (request: ChatRequest) => {
@@ -709,9 +712,11 @@ describe('consulting stage batch', () => {
       chat,
       evidence: 'injected_http',
     });
-    expect(single.record.status).toBe('failed');
-    expect(single.record.error).toBe('stage_questions_missing');
+    expect(single.record.status).toBe('succeeded');
+    expect(single.record.error).toBeNull();
     expect(single.record.callCount).toBe(1);
+    expect(acceptedStageQuestions(single.record.sections)).toBe(true);
+    expect(consultingQuestions(single.record.sections)).toEqual([{ questionId: 'q1', text: '누구를 고객으로 하는가?' }]);
     expect(calls).toHaveLength(2);
     const follow = await submitConsultingStage({
       store,
@@ -727,6 +732,159 @@ describe('consulting stage batch', () => {
     if (follow.ok) return;
     expect(follow.error).toBe('review_missing');
     expect(calls).toHaveLength(2);
+  });
+
+  it('calls once for a one-question stage and keeps that answer on the next stage', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const calls: ChatRequest[] = [];
+    const one = ['누구를 고객으로 하는가?'];
+    const next = ['지불 의사를 누구에게 확인하는가?'];
+    const after = ['첫 모임을 언제 여는가?'];
+    const chat = async (request: ChatRequest) => {
+      calls.push(request);
+      const payload = requestPayload(request);
+      if (!payload || !Array.isArray(payload.stagePairs)) {
+        return reply(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', one));
+      }
+      const prior = Array.isArray(payload.priorStagePairs) ? payload.priorStagePairs.length : 0;
+      return reply(contractReply(request, '고객을 직장인으로 본다는 답을 반영했다. 이유는 지불 확인이 없기 때문이다.', prior === 0 ? next : after));
+    };
+    const base = {
+      store,
+      userId: 'user-one',
+      projectId: 'project-one',
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const first = await runFirstReview({ ...base, text: `${IDEA} 질문 하나 단계.`, origin: 'typed', fileName: null });
+    expect(first.record.status).toBe('succeeded');
+    expect(first.record.callCount).toBe(1);
+    expect(consultingQuestions(first.record.sections).map((item) => item.text)).toEqual(one);
+    const parentFinishedAt = first.record.finishedAt;
+    const open = await submitConsultingStage({ ...base, reviewId: first.record.reviewId, answers: [] });
+    expect(open.ok && open.pending && !open.called).toBe(true);
+    expect(calls).toHaveLength(1);
+    const integrated = await submitConsultingStage({
+      ...base,
+      reviewId: first.record.reviewId,
+      answers: [{ questionId: 'q1', choiceId: 'c1', choiceLabel: '직장인', otherText: '참가자는 직장인이다' }],
+    });
+    expect(integrated.ok).toBe(true);
+    if (!integrated.ok) return;
+    expect(integrated.pending).toBe(false);
+    expect(integrated.called).toBe(true);
+    expect(integrated.record.callCount).toBe(1);
+    expect(integrated.record.parentReviewId).toBe(first.record.reviewId);
+    expect(calls).toHaveLength(2);
+    const stageRequest = calls[1]!;
+    expect(stageRequest.responseFormat?.type).toBe('json_schema');
+    if (stageRequest.responseFormat?.type === 'json_schema') {
+      const schema = stageRequest.responseFormat.schema.properties as { nextQuestions: { minItems: number } };
+      expect(schema.nextQuestions.minItems).toBe(1);
+    }
+    const system = stageRequest.messages.find((message) => message.role === 'system')?.content ?? '';
+    expect(system).toContain('nextQuestions는 서로 다른 질문 1개 이상이다');
+    const payload = userPayload(stageRequest);
+    expect(payload.stagePairs).toEqual(integrated.record.stageAnswers);
+    expect(JSON.stringify(payload.stagePairs)).toContain('참가자는 직장인이다');
+    expect(consultingQuestions(integrated.record.sections).map((item) => item.text)).toEqual(next);
+    const duplicate = await submitConsultingStage({
+      ...base,
+      reviewId: first.record.reviewId,
+      answers: [{ questionId: 'q1', choiceId: 'c1', choiceLabel: '직장인', otherText: '참가자는 직장인이다' }],
+    });
+    expect(duplicate.ok && !duplicate.called && !duplicate.pending).toBe(true);
+    expect(calls).toHaveLength(2);
+    expect((await store.readReview('user-one', first.record.reviewId))?.finishedAt).toBe(parentFinishedAt);
+    const saved = await store.listFeedback('user-one', first.record.reviewId);
+    expect(saved.every((item) => item.modelCalls === 0)).toBe(true);
+    const second = await submitConsultingStage({
+      ...base,
+      reviewId: integrated.record.reviewId,
+      answers: [{ questionId: 'q1', comment: '참가자에게 먼저 확인한다' }],
+    });
+    expect(second.ok && second.called).toBe(true);
+    if (!second.ok) return;
+    expect(second.record.callCount).toBe(1);
+    expect(calls).toHaveLength(3);
+    const secondPayload = userPayload(calls[2]!);
+    expect(secondPayload.priorStagePairs).toEqual(integrated.record.stageAnswers);
+    expect(secondPayload.stagePairs).toHaveLength(1);
+    const inputText = composeReviewInput({ text: `${IDEA} 질문 하나 화면.`, purpose: 'overall' });
+    const raw = JSON.parse(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', ['지불 의사를 누구에게 확인하는가?'])) as {
+      questions: unknown;
+    };
+    raw.questions = [{ text: '지불 의사를 누구에게 확인하는가?', choices: ['참가자', '아직 정하지 못했다'] }];
+    const sections = parseSections(JSON.stringify(raw), inputText);
+    const view: AiPmReviewView = {
+      reviewId: 'one-question-review',
+      projectId: 'project-one-view',
+      version: 1,
+      parentReviewId: null,
+      status: 'ready',
+      inputOrigin: 'typed',
+      fileName: null,
+      inputText,
+      sections,
+      questionSource: 'model-review',
+      finishedAt: NOW,
+      feedback: [],
+      revision: null,
+      consultingTurn: null,
+      failure: null,
+    };
+    const html = renderToStaticMarkup(
+      createElement(AiPmReviewPanel, { initialText: inputText, projectId: 'project-one-view', initialReviews: [view] }),
+    );
+    expect(html).toContain('data-question-id="q1"');
+    expect(html).toContain('지불 의사를 누구에게 확인하는가?');
+    expect(html).toContain('답 저장');
+    expect(html).not.toContain('질문 2개 이상');
+  });
+
+  it('stores a stage response with no next question as failed after one call', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const calls: ChatRequest[] = [];
+    const chat = async (request: ChatRequest) => {
+      calls.push(request);
+      if (Array.isArray(requestPayload(request)?.stagePairs)) {
+        const parsed = JSON.parse(contractReply(request, '질문이 없는 응답이다. 이유는 형식 확인이다.', ['쓰지 않는 질문'])) as {
+          nextQuestions: unknown;
+          nextQuestionChoices: unknown;
+        };
+        parsed.nextQuestions = [];
+        parsed.nextQuestionChoices = [];
+        return reply(JSON.stringify(parsed));
+      }
+      return reply(contractReply(request, '가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS));
+    };
+    const base = {
+      store,
+      userId: 'user-zero',
+      projectId: 'project-zero',
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const first = await runFirstReview({ ...base, text: `${IDEA} 다음 질문 없음.`, origin: 'typed', fileName: null });
+    const failed = await submitConsultingStage({
+      ...base,
+      reviewId: first.record.reviewId,
+      answers: [
+        { questionId: 'q1', comment: '직장인을 고객으로 본다' },
+        { questionId: 'q2', comment: '가격은 정하지 않았다' },
+        { questionId: 'q3', comment: '온라인 게시로 알린다' },
+      ],
+    });
+    expect(failed.ok).toBe(true);
+    if (!failed.ok) return;
+    expect(calls).toHaveLength(2);
+    expect(failed.record.callCount).toBe(1);
+    expect(failed.record.status).toBe('failed');
+    expect(failed.record.sections).toBeNull();
+    expect(failed.record.rawContent).toContain('nextQuestions');
+    expect(failed.record.error).toContain('stage_questions_missing');
   });
 
   it('saves stage answers on the product path and calls once when the stage is complete', async () => {

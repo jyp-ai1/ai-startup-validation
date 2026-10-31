@@ -571,7 +571,7 @@ function readStageContract(
   if (reading && !linked) issues.push('choice_link_mismatch');
   const texts = reading?.nextQuestions.map((item) => item.text) ?? [];
   const compact = (value: string) => value.replace(/\s+/g, '').trim();
-  if (!reading || texts.length < 2 || new Set(texts.map(compact)).size !== texts.length) issues.push('stage_questions_missing');
+  if (!reading || texts.length < 1 || new Set(texts.map(compact)).size !== texts.length) issues.push('stage_questions_missing');
   const menus = reading?.nextQuestions ?? [];
   const matrix = reading?.nextQuestionChoices ?? [];
   const menusMissing =

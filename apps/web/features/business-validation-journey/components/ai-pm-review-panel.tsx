@@ -111,7 +111,7 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
   const accountChoice = useMemo(() => latestChoice(active), [active]);
   const stageQuestions = analysis?.questions ?? [];
   const stageReady =
-    stageQuestions.length >= 2 &&
+    stageQuestions.length >= 1 &&
     stageQuestions.every((question) => draftAnswered(drafts[question.questionId]));
   const unmatchedStageFailure = useMemo(() => {
     if (analysis) return null;
@@ -135,7 +135,7 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
 
   useEffect(() => {
     const questions = active?.sections?.analysis?.questions ?? [];
-    if (!active || questions.length < 2) {
+    if (!active || questions.length < 1) {
       if (draftReviewId.current) {
         draftReviewId.current = '';
         setDrafts({});
@@ -264,7 +264,7 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
       setSavedChoice(latestChoice(payload.review));
       const openedQuestions = payload.review.sections?.analysis?.questions ?? [];
       setMessage(
-        payload.review.status === 'ready' && openedQuestions.length >= 2
+        payload.review.status === 'ready' && openedQuestions.length >= 1
           ? payload.reused
             ? '저장된 사업성 검토를 다시 열었습니다.'
             : '사업성 검토를 저장했습니다. 아래 질문마다 답을 저장하면 한 번 다시 분석합니다.'
@@ -392,8 +392,8 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
   async function submitReanalysis() {
     if (!active?.sections || !analysis || pending || !projectId) return;
     const questions = analysis.questions ?? [];
-    if (questions.length < 2) {
-      setMessage('이 검토는 질문 2개 이상의 상담 단계가 아니어서 다시 분석하지 않습니다. 이전 분석은 그대로 남아 있습니다.');
+    if (questions.length < 1) {
+      setMessage('이 검토에는 질문 목록이 없어 다시 분석하지 않습니다. 이전 분석은 그대로 남아 있습니다.');
       return;
     }
     const answers = questions.flatMap((question) => {
@@ -939,7 +939,7 @@ function AnalysisBlock(props: {
     Boolean(selected) &&
     (!props.saved || props.saved.choiceId !== selected?.id || (selected?.id === 'other' && props.otherText.trim() !== props.saved.otherText));
   const stageQuestions = analysis.questions ?? [];
-  const stageMode = stageQuestions.length >= 2;
+  const stageMode = stageQuestions.length >= 1;
   const stageFilled = stageQuestions.filter((question) => draftAnswered(props.drafts[question.questionId])).length;
   return (
     <div className="space-y-4" data-testid="ai-pm-core">
@@ -1055,7 +1055,7 @@ function AnalysisBlock(props: {
         >
           <p className="text-sm font-medium">{props.round > 0 ? '다음 질문' : '이번 질문'}</p>
           <p className="text-xs text-muted-foreground">
-            이 선택과 추가 설명은 확인된 사실이 아닙니다. 질문 2개 이상이 있어야 다시 분석합니다.
+            이 선택과 추가 설명은 확인된 사실이 아닙니다. 질문 목록이 없는 검토는 이 화면에서 다시 분석하지 않습니다.
           </p>
           <p>{sections.nextQuestion}</p>
           <p data-testid="ai-pm-next-question-reason">{sections.nextQuestionReason}</p>
