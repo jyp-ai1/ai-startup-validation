@@ -51,3 +51,6 @@ docs/evidence/S14/media/prod-smoke/
 # Vercel
 .vercel
 .env*
+
+# Local Gemini round text. Not the production database.
+.data/

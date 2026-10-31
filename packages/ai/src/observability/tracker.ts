@@ -8,7 +8,8 @@ export type AIObservabilityEvent = {
   operation: 'chat' | 'stream' | 'complete' | 'embed' | 'generateObject' | 'generateJSON';
   latencyMs: number;
   usage: TokenUsage;
-  estimatedCostUsd: number;
+  /** Null when usage was not measured or cost was not calculated. Null is not 0. */
+  estimatedCostUsd: number | null;
   success: boolean;
   error?: string;
   retries: number;
@@ -52,13 +53,16 @@ export class ObservabilityTracker {
     successRate: number;
     totalTokens: number;
     totalCostUsd: number;
+    /** Events whose cost was not calculated. They are absent from totalCostUsd. */
+    unpricedRequests: number;
     avgLatencyMs: number;
     byProvider: Record<string, { count: number; tokens: number; cost: number }>;
   } {
     const total = this.events.length;
     const successes = this.events.filter((e) => e.success).length;
     const totalTokens = this.events.reduce((s, e) => s + e.usage.totalTokens, 0);
-    const totalCostUsd = this.events.reduce((s, e) => s + e.estimatedCostUsd, 0);
+    let unpricedRequests = 0;
+    let totalCostUsd = 0;
     const avgLatencyMs = total ? this.events.reduce((s, e) => s + e.latencyMs, 0) / total : 0;
 
     const byProvider: Record<string, { count: number; tokens: number; cost: number }> = {};
@@ -66,7 +70,12 @@ export class ObservabilityTracker {
       byProvider[e.provider] ??= { count: 0, tokens: 0, cost: 0 };
       byProvider[e.provider]!.count++;
       byProvider[e.provider]!.tokens += e.usage.totalTokens;
-      byProvider[e.provider]!.cost += e.estimatedCostUsd;
+      if (e.estimatedCostUsd == null) {
+        unpricedRequests += 1;
+      } else {
+        totalCostUsd += e.estimatedCostUsd;
+        byProvider[e.provider]!.cost += e.estimatedCostUsd;
+      }
     }
 
     return {
@@ -74,6 +83,7 @@ export class ObservabilityTracker {
       successRate: total ? successes / total : 0,
       totalTokens,
       totalCostUsd,
+      unpricedRequests,
       avgLatencyMs,
       byProvider,
     };

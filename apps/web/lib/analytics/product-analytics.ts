@@ -80,6 +80,15 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   validationJourneyStarted: 'validation_journey_started',
   validationJourneyAnswered: 'validation_journey_answered',
   validationJourneyHandoffKept: 'validation_journey_handoff_kept',
+  geminiRoundSubmitted: 'gemini_round_submitted',
+  geminiRoundResultViewed: 'gemini_round_result_viewed',
+  freeGeminiWebPasteKept: 'free_gemini_web_paste_kept',
+  aiPmReviewRequested: 'ai_pm_review_requested',
+  aiPmReviewReopened: 'ai_pm_review_reopened',
+  aiPmFeedbackStored: 'ai_pm_feedback_stored',
+  aiPmSingleFlowViewed: 'ai_pm_single_flow_viewed',
+  aiPmRevisionViewed: 'ai_pm_revision_viewed',
+  aiPmChoiceSaved: 'ai_pm_choice_saved',
 } as const;
 
 export type ProductAnalyticsEvent =

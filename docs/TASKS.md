@@ -4,6 +4,51 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## AI PM 1차 검토와 피드백
+
+**상태:** 1차 화면은 사업 본문과 검토 목적을 받고, 분석과 선택지 하나를 저장한다. 답변 저장은 모델 호출이 아니다. 후속 검토 라우트는 화면에서 호출하지 않는다. 저장 범위는 `user_id` + `project_id` + `input_sha`다. 1차 게이트는 단위 테스트로 통과시키지 않는다. 2026-10-29 12:10 KST에 S1–S8 평가 기준 `rubric-2`를 하니스에 고정했다. 2026-10-29 12:49 KST에 저장된 검토 11행을 읽었다. 측정 토큰 합 5,166은 사용량 화면 3,403 / 8 requests와 맞지 않는다. 2026-10-29 12:54 KST에 quality-2와 quality-3 전달 문장을 고정했으나 두 호출은 NOT RUN이다. 2026-10-29 12:59 KST에 같은 함수를 다시 실행했고 실호출 환경은 BLOCKED다. 사용자 화면의 이름은 AI PM이다. 1차 검토 엔진은 서버의 OpenAI 어댑터이고, 이 경로의 키 이름은 `GPT_API_KEY`다. `OPENAI_API_KEY`는 이 경로를 열지 않는다. 키가 없으면 `not_run`과 내부 사유 `gpt_api_key_missing`만 저장하고 검토 문장은 만들지 않는다. 실모델 원문·토큰·응답 시간은 NOT RUN이다.  
+**Branch:** `cursor/ai-pm-first-review-4b88`  
+**저장:** 서비스 롤이 있으면 검토 API는 `SupabaseAiPmReviewRepository`를 쓰고 성공 응답의 `storage.durable`은 true다. 없으면 sqlite이고 `durable`은 false다. 저장 실패는 `storage_unavailable`이며 성공으로 보고하지 않는다. 023은 미적용이다. 설정된 Supabase 호스트는 공개 DNS 레코드가 없다. `user_id`는 `auth.users` 삭제가 원문·검토·피드백을 함께 지우도록 `on delete cascade`다. 다른 사용자 행은 조회·피드백·추가 검증에서 막는다. `business_plans`는 이 저장소가 아니다.  
+**Production 잠금:** `0b465226` 유지. 병합하지 않음.  
+**Preview:** `1b83d861` 배포는 2026-10-27 20:09 KST에 완료됐다. 주소 `https://ai-startup-validation-2n84mh03x-jyp-ai1s-projects.vercel.app` 는 Vercel Authentication이 켜져 있다. 이 실행 환경에는 Vercel 토큰, 자동화 우회 비밀, 브라우저 세션이 없다. 보호 설정은 유지했고 두 API는 호출하지 않았다. Preview의 `GPT_API_KEY`는 미확인이고 실 GPT 응답은 없다.  
+**023 적용 전 검토 (2026-10-27 20:15 KST):** 새 테이블 두 개뿐이며 기존 표와 기존 행은 바꾸지 않는다. 롤백은 `ai_pm_feedback`, `ai_pm_reviews` 순서로 DROP 한다. 라우트는 아직 sqlite만 쓴다. 호스트 DNS가 없고 023이 미적용이므로 재배포 뒤 보존은 미확보다.  
+**Production:** 잠금 `0b465226` 유지. `deployTime` `2026-10-27T11:15:23.965Z` (20:15 KST). 이 커밋에는 AI PM 검토 경로가 없다.
+
+---
+
+## 짧은 사업 아이디어 — 사업별 유보
+
+**상태:** `founder_input`의 사업·고객·문제만으로 최근 손실, 구매 결정권자, 지불 여지, 반복 비용을 묻는다. 없는 가격과 손실액은 만들지 않는다. LMULM·RIDM 발췌 규칙은 유지한다. 실 Gemini 웹 원문은 NOT RUN.  
+**Branch:** `cursor/short-idea-review-4b88`
+
+---
+
+## 무료 Gemini 웹 — 사용자 붙여 넣기
+
+**상태:** 자동 회수 경로는 없다. ALABOM은 1차·2차 질의를 만들고, 사람이 붙여 넣은 원문과 URL을 세션에 저장해 다시 연다. 실 Gemini 웹 원문은 NOT RUN. 공식 API는 확장하지 않았다.  
+**Branch:** `cursor/free-gemini-web-4b88`  
+**PR #202·#203:** 병합하지 않음. Production 잠금 `0b465226`.
+
+---
+
+## Gemini E2E-01 — 질의 회수 경로
+
+**상태:** 공식 `generateContent` 회수·로컬 sqlite 저장·`/business-validation` 화면 연결까지 코드에 있다. 실 API 호출은 NOT RUN. 북마크와 확장은 Gemini 회신을 반환하지 않는다.  
+**Branch:** `cursor/gemini-e2e-01-4b88`  
+**저장:** `.data/gemini-rounds.sqlite`. 프로덕션 DB가 아니다. 롤백은 `DROP TABLE gemini_rounds` 후 파일 삭제.  
+**화면:** 로그인 없이는 원문 없이 `로그인 필요`를 표시한다. 승인·키·출력 한도가 없으면 `실호출 NOT RUN`을 저장한다.
+
+---
+
+## Gemini generateContent HTTP
+
+**상태:** `GoogleProviderAdapter.chat`은 스텁을 반환하지 않고 공식 `generateContent` HTTP를 호출한다. 실 API 호출은 NOT RUN. 화면 연결은 위 Gemini E2E-01 절이다.  
+**Branch:** `cursor/gemini-generate-content-4b88`  
+**검색:** 구현하지 않음. `groundingUsed`는 false, `sourceUrls`는 빈 배열.  
+**실호출 조건:** `GOOGLE_AI_API_KEY`와 양의 정수 `GOOGLE_AI_MAX_OUTPUT_TOKENS`가 있고, 유료 호출이 별도로 승인된 경우에만. 이번 변경은 그 호출을 실행하지 않는다.
+
+---
+
 ## 순수 규칙 엔진 — AC16·AC5와 S1–S6
 
 **CPO Gate:** 동결 · 규칙 엔진 추가 수정 중지 · 병합·Production 금지 · Production 잠금 `0b465226`  

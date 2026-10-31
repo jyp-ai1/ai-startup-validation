@@ -69,17 +69,20 @@ export class ChatService {
     success: boolean,
     retries: number,
     error?: string,
+    usageKnown?: boolean,
   ): void {
+    const costKnown = usageKnown !== false;
     this.observability.record({
       provider: providerId,
       model: modelId,
       operation,
       latencyMs,
       usage,
-      estimatedCostUsd: this.tokens.estimateCostUsd(modelId, usage),
+      estimatedCostUsd: costKnown ? this.tokens.estimateCostUsd(modelId, usage) : null,
       success,
       error,
       retries,
+      metadata: costKnown ? undefined : { usageKnown: false, costUsd: null },
     });
   }
 
@@ -106,6 +109,8 @@ export class ChatService {
       result.usage,
       true,
       retries,
+      undefined,
+      result.usageKnown,
     );
 
     if (this.enableCache) {
@@ -125,14 +130,26 @@ export class ChatService {
     const { provider } = this.resolveProvider(request.model);
     const start = Date.now();
     let usage = { inputTokens: 0, outputTokens: 0, totalTokens: 0 };
+    let usageKnown: boolean | undefined;
     let providerId = this.models.get(request.model).provider;
 
     try {
       for await (const chunk of provider.stream(request)) {
         if (chunk.usage) usage = chunk.usage;
+        if (typeof chunk.usageKnown === 'boolean') usageKnown = chunk.usageKnown;
         yield chunk;
       }
-      this.recordEvent('stream', request.model, providerId, Date.now() - start, usage, true, 0);
+      this.recordEvent(
+        'stream',
+        request.model,
+        providerId,
+        Date.now() - start,
+        usage,
+        true,
+        0,
+        undefined,
+        usageKnown,
+      );
     } catch (error) {
       this.recordEvent(
         'stream',
@@ -182,15 +199,17 @@ export class ChatService {
       });
     }
 
-    this.recordEvent(
-      'generateJSON',
-      request.model,
-      response.provider,
-      response.latencyMs,
-      response.usage,
-      true,
-      0,
-    );
+      this.recordEvent(
+        'generateJSON',
+        request.model,
+        response.provider,
+        response.latencyMs,
+        response.usage,
+        true,
+        0,
+        undefined,
+        response.usageKnown,
+      );
 
     return {
       json,
@@ -230,6 +249,8 @@ export class ChatService {
       response.usage,
       true,
       0,
+      undefined,
+      response.usageKnown,
     );
 
     return {

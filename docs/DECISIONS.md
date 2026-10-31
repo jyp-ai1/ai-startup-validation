@@ -1736,6 +1736,667 @@ External models were not adopted as the judgment engine. The remaining question 
 
 ---
 
+## ADR-058: Google chat uses Gemini generateContent HTTP
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** ALABOM Gemini call path  
+**Authors:** CTO (autonomous)
+
+### Context
+
+`GoogleProviderAdapter.chat` inherited the base stub. A configured key returned `[Google Gemini stub]` and estimated tokens. That response could be read as a successful model call. The business-review screen still prepares a paste handoff and does not select this adapter.
+
+### Decision
+
+1. `GoogleProviderAdapter.chat` calls `POST https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent` with header `x-goog-api-key`. The key is not placed in the query string.
+2. A missing `GOOGLE_AI_API_KEY` throws a configuration error. The base stub does not run for Google chat, stream, complete, or embed.
+3. A request is refused before fetch when `GOOGLE_AI_MAX_OUTPUT_TOKENS` is unset or `request.maxTokens` exceeds it. This adapter does not set `costUsd` to 0. Missing `usageMetadata` sets `usageKnown` false and does not estimate tokens.
+4. The request body does not include a search or grounding tool. `groundingUsed` is false and `sourceUrls` is empty.
+5. `runPreservedGeminiPasses` keeps round 1 and round 2 as separate objects. The journey screen and the database do not call it. Wiring them is a later change.
+6. This ADR does not approve a live paid call, a Production deploy, or a PR merge. Anthropic, Azure, and Ollama keep their existing stub behavior.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Leave the Google stub until a key exists | No network code | A present key still looks like success |
+| Send `google_search` in the same change | Citations could appear | Search has a separate quota and price and was not implemented |
+| Point `getResearchProvider('gemini')` at this client | One id would look connected | That id is the OpenRouter research provider, and the screen does not call `execute()` |
+
+### Consequences
+
+**Positive:**
+
+- Tests can prove the HTTP request, auth failure, server error, timeout, and the two-pass body with an injected fetch.
+- A stub string is rejected as an analysis round.
+
+**Negative:**
+
+- The business-review screen still has `liveModelCall: false` on the paste handoff.
+- Dollar cost stays unknown. The static price table is not a bill.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. Live Gemini remains NOT RUN until a key and a paid call are both approved.
+
+---
+
+## ADR-059: Gemini replies return through generateContent, not a bookmark
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** Gemini E2E-01  
+**Authors:** CTO (autonomous)
+
+### Context
+
+ALABOM needs a business question to leave, a reply to come back, and that reply to be readable again on the business-validation screen. The repository has URL bookmarks and an extension at `experiments/external-ai-roundtrip`. That extension refuses `gemini.google.com` and does not return a Gemini reply. No bookmarklet reads a Gemini response. Reading the Gemini page would be automated collection of a disallowed path.
+
+### Decision
+
+1. The execution path is the official `generateContent` client from ADR-058.
+2. `recoverGeminiRound` stores round 1 and round 2 in a local sqlite table `gemini_rounds`. The same execution id is not sent twice. A failed round 2 leaves round 1 in place. Empty text, auth failure, and timeout store `content: null`.
+3. A missing approval, key, or output ceiling stores `not_run` and does not call the network.
+4. The business-validation screen reads `/api/gemini-rounds` after login. Search sources stay absent.
+5. The sqlite file is not the production database. Rollback is `DROP TABLE gemini_rounds` and deletion of `GEMINI_ROUND_DB_PATH`.
+6. This ADR does not approve a paid call, a Production deploy, or a PR merge.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Reuse the extension message listener | A message path already exists | It calls pollinations and forbids Gemini hosts |
+| Bookmark the Gemini page | A person can open the page | Opening the page does not return the reply to ALABOM |
+| Store the reply on `ExternalNote` | The journey already lists notes | `liveModelCall` on that type is fixed to false and origin is `user_paste` |
+
+### Consequences
+
+**Positive:**
+
+- Injected HTTP tests store an original, reopen it, and build the second request from the first original plus feedback.
+- The screen has a place to show that original or an explicit empty failure.
+
+**Negative:**
+
+- No live Gemini original exists in this change. The screen cannot show one until a key, a ceiling, and a paid call are present.
+- The sqlite file does not follow a Vercel instance across machines.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #202 stays unmerged.
+
+---
+
+## ADR-060: Free Gemini web text returns only by user paste
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** Free Gemini web roundtrip  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The product path is a person using the free Gemini web page, then bringing the reply back into ALABOM. PR #202 and PR #203 call the official generateContent API. That is a different path. The extension in `experiments/external-ai-roundtrip` refuses `gemini.google.com`. No bookmarklet returns a Gemini reply. Reading the Gemini page is not allowed.
+
+### Decision
+
+1. Do not merge PR #202 or PR #203. Do not add another generateContent feature. Do not delete the existing API code in this change.
+2. `acceptFreeGeminiWebPaste` stores a person-supplied original and http(s) URLs in session storage `alabom.freeGeminiWeb.v1`. An empty original is not stored. Round 2 includes the round 1 original and the feedback. `webRoundtrip` stays `NOT_RUN`. `verifiedFact` stays false. `apiCalled` stays false.
+3. The business screen shows that prompt and the saved paste. It does not open or read the Gemini page.
+4. A pasted fixture is not evidence of a free Gemini web reply.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Extend `/api/gemini-rounds` | One store | That route is the paid API path |
+| Drive the Gemini page | Could capture a reply | Disallowed automated collection |
+| Reuse only the journey handoff | Already on the understanding view | It does not keep source URLs or a separate round 2 prompt from the business form |
+
+### Consequences
+
+**Positive:**
+
+- A person can copy a prompt, paste a reply, reload the page, and copy a second prompt that contains the first reply.
+- Missing text and missing URLs stay visible as missing.
+
+**Negative:**
+
+- No free Gemini web original is in the repository. The completion criterion is not met.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
+## ADR-061: Short ideas get a specific hold, not a generic one
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** Short idea business review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+LMULM and RIDM excerpts already separate a document claim from an unverified forecast. A short founder note, such as the banchan delivery sample, received only the generic hold. The plan box also rejected text that was not one of those two excerpts.
+
+### Decision
+
+1. Do not change the LMULM or RIDM fixtures, and do not treat them as verified revenue.
+2. `founder_input` with business, customer, and problem and no plan case opens `openingShortIdeaJudgment`. The first question asks for one recent loss. Later questions separate the user from the buyer, then willingness to pay, then which stated problem costs the most. Missing prices, counts, and loss amounts stay missing.
+3. A note with `사업`, `대상` or `고객`, and `문제` or `핵심` can start that review. Text that still cannot be split is not a format rejection. The three fields remain the start.
+4. A real Gemini web reply is not created here. `webRoundtrip` stays `NOT_RUN` until a person pastes one.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Add banchan as a third plan profile | Reuses the excerpt engine | Forces a short note into a business-plan schema |
+| Call Gemini for every short note | Could write a custom paragraph | Paid call, and no web original would be stored |
+
+### Consequences
+
+**Positive:**
+
+- A three-field note names what was said and what is still unknown.
+- An answer either changes the judgment or says why it stayed.
+
+**Negative:**
+
+- The questions are rules over the entered words. They are not a Gemini web reply.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
+## ADR-062: The user-facing reviewer is AI PM
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The first business review needs one model call, a structured result, and a multiple-choice correction from the founder. Naming that step after a model vendor makes a later engine change look like a different product. Token counts and model ids are operating data, not part of the founder's decision.
+
+### Decision
+
+1. Screens, buttons, status lines, and review history say AI PM. The first review covers customer and payer, problem and solution, market evidence, revenue, execution, and risks, plus unknowns and the hypothesis to test next.
+2. The server adapter for this loop is OpenAI chat, one call for a new plan. Gemini is not called here.
+3. Submitting feedback stores agreement, factual accuracy, revision areas, a free comment, and the next action on that review version. The comment is allowed when "other" is not selected. Feedback does not call a model.
+4. Opening the same plan reads the stored review. A requested follow-up sends the stored sections, the feedback, and any new facts. The original plan text remains on every version.
+5. Model id, token counts, latency, and errors are stored on the sqlite row and omitted from the screen payload. A missing key stores `not_run` and no review text.
+6. The sqlite file is not the production database. Rollback is `DROP TABLE ai_pm_reviews`, `DROP TABLE ai_pm_feedback`, and deletion of `AI_PM_REVIEW_DB_PATH`.
+7. This ADR does not approve a Production deploy, a PR merge, or a Gemini comparison.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Show the model name on the result | Operators see which engine answered | A model change looks like a new product |
+| Call the model again for every feedback item | The next paragraph could mention the correction | Spends a call when the choice itself is the record |
+
+### Consequences
+
+**Positive:**
+
+- The same plan text from a file or a text box shares one stored review.
+- A later engine can read the old plan, review, and feedback without renaming the screen.
+
+**Negative:**
+
+- The founder's screen cannot show token cost. That comparison stays in the stored row.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
+## ADR-063: AI PM reviews read GPT_API_KEY and local sqlite is not durable
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The first review route checked `OPENAI_API_KEY`. The key added for this path is named `GPT_API_KEY`. Treating those names as the same would hide a missing key. The review rows are in `.data/ai-pm-reviews.sqlite`. Vercel functions have a read-only filesystem except ephemeral `/tmp`, so that file does not survive a new instance or a redeploy.
+
+### Decision
+
+1. `readGptApiKey()` returns `GPT_API_KEY` only. A set `OPENAI_API_KEY` does not start `/api/ai-pm-review` or `/api/ai-pm-review/follow-up`.
+2. A missing `GPT_API_KEY` stores `not_run` with internal reason `gpt_api_key_missing` and no review text.
+3. API responses include `storage.durable: false`. The screen says the saved review can disappear when the server changes. This file is not the production database.
+4. No live model call is recorded until `GPT_API_KEY` is present in the process that runs the review. This ADR does not approve a merge or a Production deploy.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Fall back from `GPT_API_KEY` to `OPENAI_API_KEY` | A local key would run the call | The two names would stay confused |
+| Move the rows to `/tmp` on Vercel | Writes would be allowed | `/tmp` is still ephemeral and not shared across instances |
+
+### Consequences
+
+**Positive:**
+
+- A missing `GPT_API_KEY` stays visible as not run.
+- The screen no longer says the local file will still be there after a redeploy.
+
+**Negative:**
+
+- Founder reviews on Vercel are not retained until a production database is connected.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock.
+
+---
+
+## ADR-064: AI PM reviews belong in the existing Supabase project
+
+**Status:** Accepted  
+**Date:** 2026-10-27  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+`.data/ai-pm-reviews.sqlite` does not survive a Vercel redeploy. The product already has one Supabase project and migrations `001`–`022`. `public.business_plans` stores a project document with a fixed section list. It does not store a review version, the original plan text for that review, or multiple-choice feedback.
+
+On 2026-10-27 the configured `SUPABASE_URL` host had no public DNS record from this process or from 8.8.8.8 and 1.1.1.1. The migration could not be applied.
+
+### Decision
+
+1. Add `public.ai_pm_reviews` and `public.ai_pm_feedback` in `packages/db/src/migration/023_ai_pm_reviews.sql`. Service role writes. Row level security is on. There is no anon policy.
+2. `SupabaseAiPmReviewRepository` in `@repo/db` is the access path. Apps do not import the Supabase SDK.
+3. `openReviewBackend()` uses `SupabaseAiPmReviewRepository` when `isSupabaseAdminConfigured()` is true. The success response then has `storage.durable: true`. When the service role is absent, the API uses local sqlite and `storage.durable: false`. A storage error returns `storage_unavailable` and `durable: false`. It does not describe that failure as a saved durable review.
+4. `user_id` references `auth.users` with `on delete cascade`. Deleting the account deletes that user's plan text, reviews, and feedback. Deleting a review deletes its feedback. Reads and writes include the session user id. No anon policy is added.
+5. No second database is added. Migration 023 is still not applied, because the configured host has no public DNS record.
+
+### Pre-apply review (2026-10-27 20:15 KST)
+
+Schema: two new tables only. `001`–`022` are not altered. There is no seed insert. `user_id` is text and does not reference `auth.users`, so deleting a user does not delete the plan text. Feedback rows do not reference `ai_pm_reviews`. `record_json` stores the plan, the review sections, the feedback, and token counts. The stored review type has no API key field. Row level security is on and there is no anon policy, matching `analytics_events`.
+
+Existing data: no current table is changed and no current row is updated or deleted. `business_plans` stays a project document.
+
+Rollback: `DROP TABLE public.ai_pm_feedback;` then `DROP TABLE public.ai_pm_reviews;`. Indexes drop with the tables. The review route does not write these tables yet, so dropping them does not change the running API.
+
+Persistence: rows in Supabase Postgres survive a Vercel redeploy. The review API now calls `SupabaseAiPmReviewRepository` when the service role is configured. The configured host still has no public DNS record, so 023 is not applied and this process has not written a row. Until that write succeeds, durable storage is not secured. `.data/ai-pm-reviews.sqlite` remains `storage.durable: false`.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Reuse `business_plans` | Table already exists in the schema | A review version and feedback do not fit its section enum or project foreign key |
+| Add a new database host | Empty and available | The product already has Supabase, and the current host is the one to restore |
+
+### Consequences
+
+**Positive:**
+
+- The durable shape is in the repo and matches the sqlite columns.
+
+**Negative:**
+
+- Rows are not durable until the Supabase host resolves and 023 is applied.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #207 stays unmerged.
+
+---
+
+## ADR-065: The workspace review is one flow, and rule output is not the model result
+
+**Status:** Accepted  
+**Date:** 2026-10-28  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The Preview workspace showed the rule-engine hold, the same source text, and the unconfirmed items in several blocks. That screen can be read as a model review. A stored server call does not prove the visible screen made a new call.
+
+### Decision
+
+1. When a founder document is present and the screen is not the scripted sample playback, the workspace column is only the AI PM review flow: result, feedback, revised judgment, next check.
+2. A ready review whose input matches the document is labeled as the model review. Input with no matching review is labeled as the source text and does not invent a hypothesis or show the rule question.
+3. Feedback marks are `understanding_accurate`, `understanding_wrong`, `core_missing`, `unnecessary`, `evidence_unclear`, and `question_unfit`. Saving them does not call a model. A logged-in save is attached to that review. A logged-out save stays in the browser and says so.
+4. The revised screen applies those marks in product code. The model follow-up remains the existing one-call path and is not sent by the feedback save.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Add the new blocks under the rule judgment | Less removal | The screen still reads as a model review |
+| Call the model again to rewrite the judgment after each mark | The next text would be a new model result | The requested change is the product flow, not more calls |
+
+### Consequences
+
+**Positive:**
+
+- The founder sees one next action, and a rule judgment is not labeled as the model review.
+
+**Negative:**
+
+- Scripted sample playback still uses the earlier workspace. A document screen no longer shows the understanding cards beside the review.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #207 stays unmerged.
+
+---
+
+## ADR-066: A follow-up that ignores founder marks is not a ready review
+
+**Status:** Accepted  
+**Date:** 2026-10-28  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+A stored follow-up sent `understanding_wrong` and `core_missing` as extra sentences. The model kept the customer, the revenue hypothesis, and the previous question. Explaining the rule in the prompt did not change the stored judgment.
+
+### Decision
+
+1. The follow-up user message is one JSON object with separate `originalInput`, `previousReview`, `feedback`, `supplement`, and `revision` fields. Mark text is not folded into a single instruction paragraph.
+2. `understanding_wrong` requires the previous problem, customer, and revenue text to remain and to be labeled for reconfirmation. Deleting that text is not acceptance. Repeating it as a confirmed fact is not acceptance.
+3. `core_missing` requires `nextQuestion` to differ from the previous question and to ask what core is missing. The follow-up does not fill that gap with a new claim.
+4. The application compares those fields before it accepts the follow-up. A failed comparison is stored with the model text and the comparison, is not a ready review, and is not sent to the model again for the same feedback and supplement. An older succeeded follow-up with no comparison is judged on read and does not block one later call.
+5. Model id and token limits stay `gpt-4o-mini`, 3000 input, 800 output.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Add stronger prompt sentences only | No comparison code | The stored failure already had those sentences |
+| Delete every marked field | The old sentence is gone | The interpretation is discarded instead of reconfirmed |
+
+### Consequences
+
+**Positive:**
+
+- A founder can reopen the same comparison result that was stored.
+
+**Negative:**
+
+- A model reply that paraphrases the reconfirmation, instead of keeping the previous sentence with the required label, is not accepted.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #207, #208, and #209 stay unmerged.
+
+---
+
+## ADR-067: A follow-up claim is judged by the sentence that states it
+
+**Status:** Accepted  
+**Date:** 2026-10-28  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The comparison in ADR-066 rejected stored follow-up `62b5588c-0d11-42c8-8fac-d24d25dc4f20`. That rejection was correct, and the row stays failed. The acceptance rule still treated a label as enough. The model wrapped the problem and left the customer and revenue sentences as confirmed facts. The next question changed into a partnership plan. A marker in a different sentence, or the words `빠진 핵심` inside that plan, is not a revised judgment.
+
+### Decision
+
+1. `understanding_wrong` classifies the problem, customer, and revenue claims that depend on the marked interpretation as `requiredState` `unconfirmed`. A claim is unconfirmed only when every sentence that contains that claim marks it unsettled. An exact copy is confirmed. A later sentence that adds a marker does not change the earlier sentence. Deleting the claim is not acceptance. Solution and validation text are not deletion targets, and wiping them is not acceptance.
+2. `core_missing` requires `nextQuestion` to ask what core is missing. A partnership, alliance, or plan question is `missing_core_not_asked` even when it inserts a missing-core phrase. The same question as before is also `question_unchanged`.
+3. The application approves a stored follow-up only when those field states and that question meaning pass. This feedback and empty supplement already have a failed judgment, so the model is not called again. Model id and token limits stay `gpt-4o-mini`, 3000 input, 800 output.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Keep the required prefix and suffix | The previous regression already knew that shape | A label on one field left the other claims confirmed |
+| Call the model again with a longer prompt | Might produce a new reply | The stored reply already failed, and another call was not the missing rule |
+| Delete every hypothesis | The confirmed sentences disappear | Unrelated items and the interpretation itself are discarded |
+
+### Consequences
+
+**Positive:**
+
+- The stored failure shape, a marker in a later sentence, and a partnership question are rejected by the same comparison.
+
+**Negative:**
+
+- The product follow-up stays blocked. No stored model reply yet puts the three claims in an unconfirmed sentence and asks the missing core.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #207, #208, and #209 stay unmerged. The commit that records this decision is not a verified runtime until `/api/build-info` is read again.
+
+---
+
+## ADR-068: Follow-up claims carry an explicit confirmation state
+
+**Status:** Accepted  
+**Date:** 2026-10-28  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+ADR-067 compares the sentence that states a claim. That comparison still rejects the stored follow-up, and the product gate stays blocked. The model output itself had no field for whether the problem, the customer, and the revenue claim are confirmed. A sentence label could stand in for that state.
+
+### Decision
+
+1. When `understanding_wrong` is set, the follow-up request names `confirmation.problem`, `confirmation.target_customer`, and `confirmation.business_model` as `unconfirmed`. The reply is stored with those three states. A missing value is `confirmation_unset`. A `confirmed` value is `confirmed_reuse`.
+2. The sentence check from ADR-067 stays. `confirmation: unconfirmed` does not approve a sentence that states the claim as a fact. Deleting the claim, wiping solution or validation text, or asking a partnership question still fails.
+3. A ready review that carries the three `unconfirmed` states shows each claim with the label `확인 전`. A failed comparison still returns no sections. The same feedback and empty supplement are not sent again. No model call is made for the stored failure in this decision.
+4. Model id and token limits stay `gpt-4o-mini`, 3000 input, 800 output.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Keep sentence text as the only state | No new response field | The output structure still cannot say which claim is unconfirmed |
+| Treat a `confirmation` value as sufficient | The field is easy to fill | A copied sentence would be approved as a fact |
+| Call the model in this change | Might store a new reply | The stored failure is not yet shaped for that call |
+
+### Consequences
+
+**Positive:**
+
+- Each of the three claims has a stored confirmation state, and the screen reads that state.
+
+**Negative:**
+
+- No live stored reply meets the state, the sentence, and the question together. The follow-up gate stays blocked.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #207, #208, and #209 stay unmerged. The last build-info SHA remains `ccca30c3e82d546c114bfe200c192d81df605a5a` until `/api/build-info` is read again.
+
+---
+
+## ADR-069: A review belongs to one workspace
+
+**Status:** Accepted  
+**Date:** 2026-10-29  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+`ai_pm_reviews` was stored by `user_id` and `input_sha`. Two workspaces owned by the same user, with the same business text, opened one review. Account isolation did not cover that case. The app's project delete sets `deleted_at`. It does not remove the `startup_projects` row.
+
+### Decision
+
+1. Lookup, reuse, and insert for a workspace use `user_id`, `project_id`, and `input_sha`. `project_id` alone is not access. The server checks that the session user owns the project. Another user's project id is rejected for read and write.
+2. `project_id` is a nullable uuid with no default. An INSERT that lists only the columns from migration 023 still succeeds. Migration `024_ai_pm_review_project.sql` adds the column and `on delete cascade`.
+3. An existing row is attached only when exactly one owned project has that input hash. Zero or several matches stay null and are not shown on a workspace.
+4. Soft delete leaves the review on that project. It does not appear in another workspace. Hard delete of the project row deletes its reviews, and the review foreign key deletes their feedback. Null rows stay unattached.
+5. The follow-up route requires the same project as the parent review and does not run when the project does not match. This decision does not send a follow-up call.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Leave the body hash as the workspace key | No migration | The same text shares one review |
+| Set null reviews to a guessed project | Every old row would show somewhere | A wrong link hides or moves a stored review |
+| `ON DELETE SET NULL` | The text would remain after a hard delete | The review would be an unattached copy of a deleted workspace |
+
+### Consequences
+
+**Positive:**
+
+- Create, reuse, lookup, and restore stay on the current workspace.
+
+**Negative:**
+
+- A second workspace with the same text makes its own model call.
+- Rows that match no project, or more than one, stay hidden until a single owner is known.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #209 stays unmerged. The second follow-up review is not started.
+
+---
+
+## ADR-070: The first review states the business, then one choice
+
+**Status:** Accepted  
+**Date:** 2026-10-29  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The stored first review could be a short field map and one free-text question. The workspace showed that text, and an internal judgment could sit beside it. The same business body reused that row, so a better prompt never ran. A follow-up call was still available from the question step. Save, restore, and workspace scope already passed and stay as they are.
+
+### Decision
+
+1. A first review asks for a business summary, customer, problem, value, operating model, payer, revenue model, market, competition, operations, profitability, strengths, risks, unverified assumptions, evidence that would change the judgment, and one question with choices. The last choice is direct input. The fixed paid-conversion sentence is still rejected.
+2. The founder sends the business body and a review purpose. Stage and the thing they most want to know are optional. Those lines are part of the stored hash. Lookup remains `user_id`, `project_id`, and that hash. The body match ignores the purpose lines, and a review with `sections.analysis` is the one the screen restores.
+3. Saving a choice writes feedback and does not call a model. The screen states what was confirmed and the next direction from that choice. The panel does not call `POST /api/ai-pm-review/follow-up`.
+4. A count of 억, 만, %, 원, or 명 that is not in the source text is replaced before storage. Internal scores do not replace the analysis. When the workspace already has business text, the strategic-intelligence surface is not rendered with the review.
+5. This decision does not start a second model review, unlock production, or merge PR #209.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Keep the short field map and change only the screen labels | No prompt change | The stored text would still be the thin judgment |
+| Reuse the previous succeeded row for the same body | No new model call | The failed reading would stay on screen |
+| Run a follow-up after the choice | The next question could be generated | That call is not approved |
+
+### Consequences
+
+**Positive:**
+
+- The first response can show a business reading and a choice that depends on the purpose.
+- An older row remains stored. A new purpose line is a new hash, so the old row is not overwritten.
+
+**Negative:**
+
+- The same body with a purpose makes one new first-review call on that workspace.
+- A model can still miss the business. A unit test does not make that a pass.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #209 stays unmerged. The second follow-up review is not started.
+
+---
+
+## ADR-071: A business text alone starts the comprehensive first review
+
+**Status:** Accepted  
+**Date:** 2026-10-29  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+ADR-070 required a review purpose before the first call. The brewery reading on `a022a72f` still summarized the text, stated a fee and a participation charge that the source does not contain, and asked whether brewery cooperation was high, low, or undecided. The saved choice was written as a confirmed fact. That gate stays failed. Save, restore, and workspace scope stay as they are.
+
+### Decision
+
+1. The business body is enough. An omitted purpose is stored as 종합 사업성 검토, and an omitted stage as 미확인. The stored text also includes `검토 계약: comprehensive-1`. Lookup remains `user_id`, `project_id`, and the hash of that text. The screen restores only a ready analysis whose input contains that contract line. Older rows stay stored and are not overwritten.
+2. The first-review prompt asks for the customer, problem, alternatives, value, differentiation, payer versus user, revenue, market, operations, competition, risks, one to three assumptions, and one low-cost check. The one question must split a single unknown. Degree-only choices are not the requested shape. If the model omits an unknown option, the parser adds `아직 핵심을 정하지 못했다` before direct input.
+3. A fee, participation charge, usage fee, or subscription fee that is not in the source is stored with a hypothesis prefix. A saved choice is the founder's current hypothesis. Saving it still does not call a model, and the panel still does not call the follow-up route.
+4. This decision does not declare the first-review gate passed, start a second model review, unlock production, or merge PR #209. A live Preview response on this contract was not read in the run that recorded this ADR.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Keep requiring a purpose | The previous hash stays stable | The founder cannot start from the business text alone |
+| Show the previous brewery analysis until a new one exists | No empty intake | The failed reading would stay on screen |
+| Reject degree-only choices in the parser | A weak question would not be stored as success | The same hash would call the model again on the next click |
+
+### Consequences
+
+**Positive:**
+
+- A new purpose line and contract line make a new hash, so the thin brewery row is not reused.
+- An unstated fee is labeled as a hypothesis even if the model states it.
+
+**Negative:**
+
+- The same body on a workspace that already has the older review makes one new first-review call when the founder submits.
+- The prompt does not guarantee the question splits the business. That still has to be read from a live response.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #209 stays unmerged.
+
+---
+
+## ADR-072: Score the first review in an independent harness
+
+**Status:** Accepted  
+**Date:** 2026-10-29  
+**Sprint:** AI PM first review  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The stored brewery reading asked only whether partnership likelihood was high, low, or undecided, and it stated a brewery fee and an experience charge that the source does not contain. Those two failures have to stay failed in a repeatable check. A string match is not a judgment that the model understood the business. The product follow-up route must stay unused until the first review is accepted.
+
+### Decision
+
+1. Scenarios S1–S8, criteria version `rubric-2`, and the frozen `quality-1` system prompt live in `apps/web/features/business-validation-journey/lib/ai-pm-quality-scenarios.ts`. The product route keeps `quality-2` and does not call the frozen prompt.
+2. Semantic criteria stay `not_run` until a person reads a real model response. Mechanical rules may fail the two known strings. Any mechanical fail or model error fails the row. Other passes do not offset it. No model call is `not_called`, not a pass.
+3. S2–S8 run only inside `executeQualityMatrix`, which passes the prior analysis and the founder answer into a simulation request. That request is not `buildFollowUpRequest` and does not call `POST /api/ai-pm-review/follow-up`.
+4. This decision does not declare the first-review gate passed, change the panel, deploy production, or merge PR #209. A live `quality-1` versus `quality-2` response pair was not collected in the run that recorded this ADR.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Reject degree-only choices in the product parser | A weak question would not be stored | The same input hash would call the model again on the next click |
+| Mark semantic criteria pass when keywords appear | The suite could report an overall pass | A keyword pass would be reported as model quality |
+| Call the product follow-up route for S2–S8 | The test would use the shipped path | That path is still closed until the first review is accepted |
+
+### Consequences
+
+**Positive:**
+
+- The two stored failure strings fail in unit tests without a network call.
+- A later live run can compare `quality-1` and `quality-2` on the same brewery body.
+
+**Negative:**
+
+- The harness cannot say the live model is clear of failure A or B until `GPT_API_KEY` is present and the raw responses are stored.
+- Mechanical context and next-step checks remain shallow.
+
+**Neutral:**
+
+- Production SHA `0b465226` stays the lock. PR #209 stays unmerged.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

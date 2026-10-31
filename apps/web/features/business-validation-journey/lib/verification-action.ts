@@ -1,4 +1,5 @@
 import type { FounderAnswer, HypothesisJudgment, Intake, JourneyState, PlanCase } from './journey-types';
+import { shortIdeaVerification } from './short-idea-review';
 
 export type VerificationAction = {
   id: string;
@@ -46,6 +47,11 @@ export function verificationActionFor(
 
   const planAction = planVerification(state.planCase, state.answers);
   if (planAction) return planAction;
+
+  if (!state.planCase) {
+    const shortAction = shortIdeaVerification(state.intake, state.answers);
+    if (shortAction) return shortAction;
+  }
 
   if (payment) {
     return {

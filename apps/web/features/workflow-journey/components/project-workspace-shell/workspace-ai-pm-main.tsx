@@ -108,6 +108,7 @@ import {
 import { type ConversationFactKey } from '../../lib/business-understanding/conversation-memory';
 
 import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
+import { AiPmReviewPanel } from '@/features/business-validation-journey/components/ai-pm-review-panel';
 import { SiAiPmBindSurface } from '@/features/strategic-intelligence/components/si-ai-pm-bind-surface';
 import { SiReviewSurface } from '@/features/strategic-intelligence/components/si-review-surface';
 import { resolveSiJourneyIntegration } from '@/features/strategic-intelligence/lib/resolve-si-journey-integration';
@@ -818,6 +819,9 @@ export function WorkspaceAiPmMain({
             <p className="mt-1 text-sm text-muted-foreground">{t('insufficientDocumentHint')}</p>
           </section>
         ) : null}
+        <p className="text-sm text-muted-foreground" data-testid="ai-pm-document-next">
+          사업 내용을 저장하면 이 프로젝트에서 사업성 검토가 열립니다. 내용이 없으면 검토는 시작하지 않습니다.
+        </p>
         <WorkspaceDocumentIntake
           onSubmit={onDocumentIntake}
           onStartWithoutDocument={() => {
@@ -828,11 +832,20 @@ export function WorkspaceAiPmMain({
     );
   }
 
+  if (!demoSamplePlayback && siInputText.length >= 8) {
+    return (
+      <div className={cn('mx-auto max-w-[720px] space-y-4 py-2', className)}>
+        <AiPmReviewPanel initialText={siInputText} projectId={projectId} />
+      </div>
+    );
+  }
+
   const flowBody = (
     <div className="space-y-6">
-      {siJudgment && !isPostReview ? (
+      {siInputText.length >= 8 ? <AiPmReviewPanel initialText={siInputText} projectId={projectId} /> : null}
+      {siJudgment && !isPostReview && siInputText.length < 8 ? (
         <div data-testid="si-journey-block" data-si-source="business-input">
-          <SiReviewSurface judgment={siJudgment} projectId={projectId} />
+          <SiReviewSurface judgment={siJudgment} projectId={projectId} sourceText={siInputText} />
           {siBindView?.question ? (
             <SiAiPmBindSurface
               question={siBindView.question}

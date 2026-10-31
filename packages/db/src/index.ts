@@ -114,6 +114,11 @@ export {
   SupabaseAnalyticsEventRepository,
   analyticsEventRepository,
 } from './repositories/analytics-event.repository';
+export type { AiPmReviewRow, AiPmFeedbackRow } from './repositories/ai-pm-review.repository';
+export {
+  SupabaseAiPmReviewRepository,
+  aiPmReviewRepository,
+} from './repositories/ai-pm-review.repository';
 
 // Adapters (use via container — avoid direct imports in apps when possible)
 export { SupabaseAuthAdapter } from './adapters/supabase/auth/auth.adapter';

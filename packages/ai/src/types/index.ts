@@ -68,6 +68,19 @@ export type ChatResponse = {
   content: string;
   finishReason: 'stop' | 'length' | 'tool_calls' | 'content_filter' | 'error';
   usage: TokenUsage;
+  /**
+   * True only when the provider returned usage metadata.
+   * False means `usage` was not measured. Zero is not a measurement and is not a cost.
+   */
+  usageKnown?: boolean;
+  /** True only when this call used web search or grounding. */
+  groundingUsed?: boolean;
+  /** Citation URLs. Empty when search was not part of the call. */
+  sourceUrls?: string[];
+  /** Null when cost was not calculated. Null is not 0. */
+  costUsd?: number | null;
+  /** Present only on a Gemini generateContent HTTP response. */
+  transport?: 'gemini-generate-content';
   toolCalls?: ToolCallResult[];
   latencyMs: number;
 };
@@ -99,6 +112,7 @@ export type StreamChunk = {
   delta: string;
   done: boolean;
   usage?: TokenUsage;
+  usageKnown?: boolean;
   finishReason?: ChatResponse['finishReason'];
 };
 
@@ -153,4 +167,10 @@ export type ProviderConfig = {
   organization?: string;
   adapterFramework?: AdapterFramework;
   defaultModel?: string;
+  /** Positive output-token ceiling checked before a paid provider request. */
+  maxOutputTokensCeiling?: number;
+  /** Overrides AI_REQUEST_TIMEOUT_MS for this provider instance. */
+  requestTimeoutMs?: number;
+  /** Test seam. Production calls use the global fetch. */
+  fetchImpl?: (input: string | URL, init?: RequestInit) => Promise<Response>;
 };

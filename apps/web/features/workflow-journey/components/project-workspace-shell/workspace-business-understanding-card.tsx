@@ -161,7 +161,6 @@ export function WorkspaceBusinessUnderstandingCard({
           </p>
           <WorkspaceExpandableText
             text={resolvedText}
-            preview=""
             toggleLabel="전체 사업내용 보기"
             testId="source-document-text"
             className="mt-2 text-muted-foreground"
