@@ -1752,7 +1752,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
       resolvedIssues: {
         ...list,
         description:
-          '계획이나 기준이 구체화된 진전. supplement가 선정 기준을 말하면 그 기준을 여기 적는다. 후보가 없다는 사실은 넣지 않는다. 이 목록은 다음 질문에서 닫힌다.',
+          '계획이나 기준이 구체화된 진전. supplement가 말한 선정 기준 문장을 여기 적는다. choiceLabel만 반복하면 진전이 빠진다. 후보가 없다는 사실은 넣지 않는다. 이 목록은 다음 질문에서 닫힌다.',
       },
       unresolvedIssues: {
         ...list,
@@ -1762,12 +1762,12 @@ function stageReanalysisSchema(): Record<string, unknown> {
       impactOnPreviousJudgment: {
         type: 'string',
         description:
-          '앞의 목록이 이전 판단을 어떻게 바꾸는지. 잠재력, 현재 확보된 근거, 실행 가능성, 실행상 위험을 나눈다. unverifiedClaims는 아직 검증되지 않은 기회로만 인용한다. priorJudgmentText를 이어 쓰지 않는다.',
+          '앞의 목록이 이전 판단을 어떻게 바꾸는지. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 잠재력, 현재 확보된 근거, 실행 가능성, 실행상 위험을 나눈다. 증거가 없으면 아직 확인되지 않은 상태다. 낮다고 단정하지 않는다. unverifiedClaims는 아직 검증되지 않은 기회로만 인용한다. priorJudgmentText를 이어 쓰지 않는다.',
       },
       updatedJudgment: {
         type: 'string',
         description:
-          '앞의 목록으로 다시 쓴 현재 판단. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 실행 가능성은 아직 확인되지 않은 상태다. unverifiedClaims는 잠재적 기회로만 남긴다. 계획의 구체화는 진전으로 적고 가설의 확인으로 쓰지 않는다.',
+          '앞의 목록으로 다시 쓴 현재 판단. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 실행 가능성은 아직 확인되지 않은 상태다. 낮다고 단정하지 않는다. unverifiedClaims는 잠재적 기회로만 남긴다. 계획의 구체화는 진전으로 적고 가설의 확인으로 쓰지 않는다.',
       },
       judgmentReason: {
         type: 'string',
@@ -1792,7 +1792,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
             text: {
               type: 'string',
               description:
-                'unresolvedIssues의 한 문제만 묻는다. 선정 기준이 resolvedIssues에 있으면 그 기준이 무엇인지 다시 묻지 않는다. 후보 확보나 실제 접근이 남아 있으면 그중 가장 중요한 것을 묻는다.',
+                'unresolvedIssues의 한 문제만 묻는다. 선정 기준이 resolvedIssues에 있으면 그 기준이 무엇인지, 또는 그 기준을 더 자세히 설명해 달라고 다시 묻지 않는다. 후보 확보나 실제 접근이 남아 있으면 그중 가장 중요한 것을 묻는다.',
             },
             choices: {
               type: 'array',
@@ -1817,10 +1817,10 @@ function stageReanalysisSystemPrompt(): string {
     '이 호출은 후속 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
     '1. 각 답을 읽는다. stagePairs와 priorStagePairs에서 question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. questionId가 질문과 답을 잇는다. choiceLabel만 반복하면 해석이 아니다. supplement의 기준, 계획, 아직 없는 사실을 meaning에 포함한다. offeredChoices가 고른 항목 하나뿐이면 다른 선택지는 보존되지 않은 정보다.',
     'answerReading.kinds는 답의 성격이다. fact, claim, plan, choice다. 점수가 아니다. claim은 검증되지 않은 주장이다. 가능성이 높다는 문장은 claim이다. plan은 계획이다. fact는 현재 상태일 수 있으나 확인된 협력은 아니다.',
-    '2. 진전과 미해결을 먼저 적는다. 계획이 구체화된 것은 진전이다. supplement가 선정 기준을 말하면 그 기준을 resolvedIssues에 적고 닫힌 항목으로 둔다. 후보가 없거나 접촉과 협력 의사가 없으면 unresolvedIssues에 남긴다. 기준이 생겼다고 미해결을 지우지 않는다. 기준이 생겼다고 협력이 확인된 것도 아니다.',
+    '2. 진전과 미해결을 먼저 적는다. 계획이 구체화된 것은 진전이다. supplement가 선정 기준을 말하면 그 기준 문장을 resolvedIssues에 적고 닫힌 항목으로 둔다. choiceLabel의 기준을 구체화한다만 적으면 진전 내용이 빠진 것이다. 후보가 없거나 접촉과 협력 의사가 없으면 unresolvedIssues에 남긴다. 기준이 생겼다고 미해결을 지우지 않는다. 기준이 생겼다고 협력이 확인된 것도 아니다.',
     '3. 신뢰 수준을 적는다. 주장과 기대는 unverifiedClaims다. 그 가설에는 잠재력이 있을 수 있다. 잠재력과 현재 확인된 실행 가능성은 별개다. verifiedFacts에는 접촉, 계약, 입금, 예약처럼 별도 증거가 있는 것만 넣고 없으면 빈 배열이다. 주장은 verifiedFacts에 넣지 않는다. assumptions에는 아직 검증되지 않은 가설과 판단이 바뀔 추가 증거를 적는다.',
-    '4. 그 목록으로 사업성을 다시 평가한다. priorJudgmentText를 이어 쓰지 않는다. impactOnPreviousJudgment는 이번 답이 이전 판단을 어떻게 바꾸는지다. 잠재력, 실행 가능성, 현재 확보된 근거, 실행상 위험을 나눈다. updatedJudgment의 실행 가능성은 verifiedFacts와 unresolvedIssues에서만 온다. verifiedFacts가 비어 있으면 현재 실행 가능성은 확인되지 않은 상태다. unverifiedClaims는 잠재적 기회로만 인용한다. 가설을 긍정적인 실행 근거로 쓰지 않고, 부정으로 단정하지도 않는다. judgmentReason은 그 구분과 같은 방향이다. 점수를 만들지 않는다. 코드는 결론을 정하지 않는다.',
-    '5. 다음 질문은 unresolvedIssues만 묻는다. resolvedIssues와 supplement에 이미 있는 문장을 질문이나 선택지로 다시 넣지 않는다. 선정 기준이 resolvedIssues에 있으면 그 기준이 무엇인지 다시 묻지 않는다. 남은 문제 가운데 가장 중요한 것을 당신이 고른다. 후보 확보나 실제 접근이 남아 있으면 그중 하나를 묻는다.',
+    '4. 그 목록으로 사업성을 다시 평가한다. priorJudgmentText를 이어 쓰지 않는다. impactOnPreviousJudgment와 updatedJudgment는 방금 적은 resolvedIssues 한 항목과 unresolvedIssues 한 항목을 각각 문장 안에 남긴다. 목록과 다른 이전 문장만 반복하지 않는다. 잠재력, 실행 가능성, 현재 확보된 근거, 실행상 위험을 나눈다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 현재 실행 가능성은 아직 확인되지 않은 상태다. 증거가 없다고 실행 가능성이 낮다고 단정하지 않는다. unverifiedClaims는 잠재적 기회로만 인용한다. 가설을 긍정적인 실행 근거로 쓰지 않고, 부정으로 단정하지도 않는다. judgmentReason은 그 구분과 같은 방향이다. 점수를 만들지 않는다. 코드는 결론을 정하지 않는다.',
+    '5. 다음 질문은 unresolvedIssues만 묻는다. resolvedIssues와 supplement에 이미 있는 문장을 질문이나 선택지로 다시 넣지 않는다. 선정 기준이 resolvedIssues에 있으면 그 기준이 무엇인지, 또는 그 기준을 더 자세히 설명해 달라고 다시 묻지 않는다. 남은 문제 가운데 가장 중요한 것을 당신이 고른다. 후보 확보나 실제 접근이 남아 있으면 그중 하나를 묻는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'JSON만 반환한다.',
     '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',

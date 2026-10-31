@@ -10,7 +10,6 @@ import {
   consultingQuestions,
   founderAnswerKinds,
   founderClaimTreatedAsFact,
-  judgmentAccountsForUnresolved,
   openReviewChat,
   submitConsultingStage,
   type ReviewChat,
@@ -29,7 +28,7 @@ const enabled = process.env.AI_PM_CONSULTING_STAGE_JUDGMENT === '1';
 const PROJECT_ID = '3a5fc4a0-2e90-45e6-8370-350beda67342';
 const SOURCE_ANALYSIS_ID = '9e169fef-7428-4d21-a6f0-f3034bcc91d1';
 const BUCKET = 'ai-pm-quality-compare';
-const OBJECT = 'product-consulting-judgment-logic-2026-10-31-d.json';
+const OBJECT = 'product-consulting-judgment-logic-2026-10-31-e.json';
 
 const PAIRS = {
   claim: {
@@ -538,7 +537,7 @@ function gradeStage(input: {
   const criterionAnswer = stored.find((pair) => pair.supplement.includes('체험'));
   const criterionMeaning = interpretations.find((item) => item.questionId === criterionAnswer?.questionId)?.meaning ?? '';
   const asksCriterionAgain = nextQuestions.some((question) =>
-    /기준은\s*무엇|기준을\s*무엇|어떤\s*기준|기준을\s*(알려|구체화|정하|세워)|선정하기 위한 기준/.test(question),
+    /기준은\s*무엇|기준을\s*무엇|어떤\s*기준|기준을\s*(알려|구체화|정하|세워)|선정하기 위한 기준|기준.{0,24}(구체적|자세히|설명)/.test(question),
   );
   const choiceRepeatsSubmittedPlan = nextChoices.some(
     (choice) => /체험으로 만들고 마실 수 있는/.test(choice) && !/찾|연락|접근|확보|접촉/.test(choice),
@@ -554,8 +553,7 @@ function gradeStage(input: {
   const claimInFacts = verifiedFacts.some(
     (fact) => /가능성이 높/.test(fact) || (/협력/.test(fact) && !/없|않|못|미확인|검증되지|확인되지/.test(fact)),
   );
-  const planRecognized =
-    resolvedText.length > 0 && /체험|기준/.test(resolvedText) && /체험/.test(`${criterionMeaning}\n${resolvedText}\n${judgment}\n${reason}`);
+  const planRecognized = /체험/.test(resolvedText) && /체험/.test(`${criterionMeaning}\n${judgment}\n${reason}`);
   const gapStaysOpen = /후보/.test(unresolvedText) && /없|못|선정하지|정해지지|비어/.test(unresolvedText);
   const impactExplains =
     summary.trim().length > 0 &&
@@ -584,7 +582,12 @@ function gradeStage(input: {
         : 'FAIL'
       : 'NOT RUN',
     assumptionsAvoidPositiveEffect: assumptionRestatesUnverifiedHope(reading?.assumptions ?? analysis?.assumptions ?? []) ? 'FAIL' : 'PASS',
-    unresolvedInJudgment: input.expectUnresolved ? (judgmentAccountsForUnresolved(judgment, ['후보를 선정하지 못했다']) ? 'PASS' : 'FAIL') : 'NOT RUN',
+    unresolvedInJudgment: input.expectUnresolved
+      ? /후보/.test(judgment) && /없|못|비어|선정되지|선정하지|확인되지/.test(judgment)
+        ? 'PASS'
+        : 'FAIL'
+      : 'NOT RUN',
+    executionNotForcedLow: /실행 가능성[^.。]{0,12}낮/.test(grounds) ? 'FAIL' : 'PASS',
   };
   return {
     structural,
