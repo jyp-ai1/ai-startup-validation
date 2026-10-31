@@ -847,6 +847,44 @@ export function judgmentIsConsistent(input: {
   return input.judgment.trim().length > 0 && explained && !currentEffect;
 }
 
+/** An unverified likelihood claim is stated as the current conclusion. */
+export function founderClaimTreatedAsFact(text: string): boolean {
+  return /협력 가능성이 높/.test(text) && !/주장|가설|확인되지|미확인|검증되지/.test(text);
+}
+
+/** Inferences call the claim unverified, while the judgment still uses it as a premise. */
+export function judgmentContradictsUnverifiedClaim(judgment: string, inferences: string[]): boolean {
+  const inferenceText = inferences.join('\n');
+  const inferenceUnverified = /주장/.test(inferenceText) && /검증되지|확인되지|미확인/.test(inferenceText);
+  return inferenceUnverified && founderClaimTreatedAsFact(judgment);
+}
+
+/** The assumption repeats the founder's hope as an effect that will happen. */
+export function assumptionRestatesUnverifiedHope(assumptions: string[]): boolean {
+  return assumptions.some((item) => /긍정적 영향을 미칠|사업성이 높아질 것이다/.test(item) && !/경우|만약|확인되면|성립하면/.test(item));
+}
+
+/** The stored answer says no brewery candidate is selected yet. */
+export function answerSaysNoCandidate(text: string): boolean {
+  return /아직 떠오르는 양조장|떠오르는 양조장이 없다|선정하지 못|후보가 없|구체적인 후보가 없/.test(text);
+}
+
+/** The question asks again whether a brewery candidate has already been chosen. */
+export function questionRepeatsAnsweredSelection(question: string): boolean {
+  return /정했|골랐|선정했|한 곳|떠오르는|이름이 있/.test(question) && /양조장|후보|이름/.test(question);
+}
+
+/** One open gap. Selection is the gap the founder already closed. */
+export function questionVerificationTargets(question: string): Array<'criteria' | 'access' | 'willingness' | 'terms' | 'selection'> {
+  const targets: Array<'criteria' | 'access' | 'willingness' | 'terms' | 'selection'> = [];
+  if (/기준/.test(question)) targets.push('criteria');
+  if (/경로|접근|닿/.test(question)) targets.push('access');
+  if (/의사|의향/.test(question)) targets.push('willingness');
+  if (/조건|비용|배분/.test(question)) targets.push('terms');
+  if (questionRepeatsAnsweredSelection(question)) targets.push('selection');
+  return targets;
+}
+
 /** A kept judgment may call the answer a hypothesis. It may not call it a current positive effect. */
 export function judgmentSeparatesPotential(judgment: string): boolean {
   const keeps = /유지/.test(judgment);
@@ -988,7 +1026,10 @@ function productReanalysisSchema(): Record<string, unknown> {
       'choices',
     ],
     properties: {
-      summary: text,
+      summary: {
+        type: 'string',
+        description: 'judgment와 같은 결론. 협력 가능성이 높지만으로 시작하지 않는다. 미확인 주장을 현재 가능성으로 쓰지 않는다.',
+      },
       customer: text,
       problem: text,
       value: text,
@@ -1016,12 +1057,12 @@ function productReanalysisSchema(): Record<string, unknown> {
       inferences: {
         ...list,
         description:
-          '이번 답만 해석한다. 주장 또는 기대 또는 자체 판단인지, 증거가 있는지, 미확인인지를 적는다. 시장 관심을 확인된 사실로 쓰지 않는다.',
+          '협력 가능성이 높다는 문장은 검증되지 않은 주장이라고 적는다. 구체적인 후보가 없다는 답은 확인된 상태로 적는다. judgment는 이 구분과 같은 결론이어야 한다.',
       },
       judgment: {
         type: 'string',
         description:
-          '새 사업성 판단. priorJudgmentText와 같으면 실패다. 협력 가능성이 높다는 문장을 현재 결론으로 쓰지 않는다. 그 문장은 확인되지 않은 Founder 주장이다. 후보가 없다는 답을 반영한다. 협력이 불가능하다고 쓰지 않는다.',
+          'inferences와 같은 결론. 협력 가능성이 높지만으로 시작하지 않는다. 후보가 없다는 답이 고객, 운영, 협력, 수익 중 어디에 영향을 주는지를 적고 유지, 상향, 하향, 유보 중 하나를 고른다. 협력이 불가능하다고 쓰지 않는다.',
       },
       nextVerification: {
         type: 'string',
@@ -1030,7 +1071,7 @@ function productReanalysisSchema(): Record<string, unknown> {
       nextQuestion: {
         type: 'string',
         description:
-          '아직 없는 정보 하나만 묻는다. 떠오르는을 쓰지 않는다. 기준, 접근 경로, 협력 의사, 협력 조건 중 하나만 묻는다. 둘을 한 질문에 잇지 않는다.',
+          '이미 후보가 없다고 답했다. 정했나요, 한 곳, 이름, 떠오르는을 묻지 않는다. 기준, 접근 경로, 협력 의사, 협력 조건 중 하나만 묻는다.',
       },
       nextQuestionReason: {
         type: 'string',
@@ -1044,6 +1085,11 @@ function productReanalysisSchema(): Record<string, unknown> {
 function productReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
+    '응답 전에 한 순서로만 분석한다. summary, inferences, assumptions, risks, evidenceToChange, judgment, nextQuestion은 그 하나의 결론을 나눈 것이다. 필드마다 다른 논리를 쓰지 않는다.',
+    '순서는 누적 이력, 증거 구분, 사업성 재평가, 최종 판단, 다음 질문이다.',
+    '증거 구분에서 구체적인 양조장 후보가 아직 없다는 Founder의 답은 확인된 상태다. 양조장 협력 가능성이 높다는 문장은 Founder의 주장 또는 기대다. 접촉, 협력 의사, 협력 조건, 실제 협력 가능성은 미확인이다. 주장을 했다는 사실과 가능성이 실제로 높다는 결론을 섞지 않는다.',
+    '사업성 재평가는 고객과 문제, 가치의 실현, 운영, 파트너십 확보, 수익 구조, 확인된 근거와 불확실성, 이번 답이 기존 판단에 주는 영향을 본다. 유지하거나 높이거나 낮추거나 유보할 수 있다. 점수를 만들지 않는다.',
+    'inferences가 주장을 검증되지 않았다고 적으면 judgment와 summary는 그 주장을 현재 가능성으로 쓰지 않는다.',
     '사용자 JSON의 priorJudgmentText, priorQuestionText, priorVerificationText, priorReasonText, priorChoices, priorInferences, priorAssumptions, priorEvidenceNotes, priorRisks는 이전 문장이다. 출력의 judgment, nextQuestion, nextVerification, nextQuestionReason, choices, inferences, assumptions, evidenceToChange, risks에 그 문장을 복사하지 않는다.',
     '이번 답을 여섯 가지로 새 문장에 적는다. 새로 알게 된 내용, 근거 수준, 기존 판단에서 영향을 받는 부분, 유지하거나 높이거나 낮춘 판단, 그 이유, 추가 검증이다.',
     '근거 수준은 검증된 사실, Founder의 경험, Founder의 주장 또는 기대, 실행 계획, 추정 및 가정, 근거가 부족한 정보 중 하나다. 확인된 사실, 경험, 추정, 계획을 섞지 않는다.',
@@ -1053,7 +1099,7 @@ function productReanalysisSystemPrompt(): string {
     'evidenceToChange에는 다음에 확인되면 판단을 바꾸게 되는 항목을 적는다. 이번 답이 판단에 어떤 영향을 주는지는 judgment에 적는다. 답 문장만 다시 적으면 실패다. judgment와 같은 문장을 두지 않는다.',
     'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 매 회차 최초 사업 아이디어와 이전 판단과 누적 답변을 다시 읽고 새 문장으로 사업성을 판단한다. priorJudgmentText와 같으면 실패다. 이전 문장을 복사하지 않는다. 이번 답이 판단에 어떤 영향을 주는지 이유를 적는다. 유지하거나 높이거나 낮출 수 있다. 근거가 부족하면 유지할 수 있으나 그 이유를 새 문장으로 적는다. 확인되지 않은 주장을 현재의 긍정적 영향으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다. 가능성이 높다는 주장을 현재 결론으로 쓰지 않는다. 협력 가능성이 높지만으로 시작하지 않는다. priorJudgmentText 안의 그 문장도 다시 쓰지 않는다. 그 문장은 확인되지 않은 주장으로 적는다. 후보가 아직 없다는 답만으로 사업성이 없다고 쓰지 않는다. 그 답이 실행 경로의 빈칸이면 그 빈칸을 판단에 적는다.',
     'risks는 이번 답의 빈칸을 새 문장으로 적는다. 위험을 매번 늘리지 않는다. 접촉 여부 문장만 반복하면 실패다. 사업이 불가능하다고 단정하지 않는다.',
-    'nextQuestion은 이번 사업성 판단을 더 정확하게 만들기 위해 아직 없는 정보 하나를 묻는다. priorQuestionTexts와 같거나 표현만 바꾼 질문이면 실패다. 떠오르는을 쓰지 않는다. 후보 이름이 있는지는 이미 답했다. 기준, 접근 경로, 협력 의사, 협력 조건 가운데 지금 판단에 가장 중요한 하나만 묻는다. 둘을 한 질문에 잇지 않는다. verificationStage.nextPurpose는 이미 다룬 단계다. 그 목적의 질문을 반복하지 않는다. 이미 founderChoice와 founderSupplement와 이전 답에 있는 내용을 다시 묻지 않는다. 연락하거나 미팅한 결과가 없으면 그 결과를 만들지 않는다. 협력 가능성이 높은지를 다시 묻지 않는다.',
+    'nextQuestion은 이번 사업성 판단을 더 정확하게 만들기 위해 아직 없는 정보 하나를 묻는다. priorQuestionTexts와 같거나 표현만 바꾼 질문이면 실패다. 질문의 검증 대상이 이전 질문과 같아도 실패다. 떠오르는을 쓰지 않는다. verificationStage.alreadyAnswered에 no_named_brewery_candidate가 있으면 후보를 정했는지, 한 곳인지, 이름인지, 떠오르는 곳인지를 다시 묻지 않는다. 기준, 접근 경로, 협력 의사, 협력 조건 가운데 지금 판단에 가장 중요한 하나만 묻는다. 둘을 한 질문에 잇지 않는다. verificationStage.nextPurpose는 이미 다룬 단계다. 그 목적의 질문을 반복하지 않는다. 이미 founderChoice와 founderSupplement와 이전 답에 있는 내용을 다시 묻지 않는다. 연락하거나 미팅한 결과가 없으면 그 결과를 만들지 않는다. 협력 가능성이 높은지를 다시 묻지 않는다.',
     'nextVerification과 nextQuestionReason은 이번 질문이 다음 판단을 어떻게 돕는지 새 문장으로 적는다. priorVerificationText, priorReasonText와 같으면 실패다.',
     'founderChoice와 founderSupplement는 이번 답이다. 양조장을 정했거나 연락한 사실이 아니면 founderFacts에 넣지 않는다. 후보가 없다는 선택은 협력 불가능이 아니다. choices는 이번 질문에 대한 서로 다른 답 두 개 이상이다. priorChoices와 같은 문장을 앞에 두지 않는다.',
     'JSON만 반환한다.',
@@ -1099,17 +1145,19 @@ function renameEchoKeys(value: unknown): unknown {
  * Reflection decision fields are not required. Oldest turns drop before the anchors.
  */
 /** The model sees which stage is already covered. It does not receive sentences to copy. */
-function coveredStage(stage: ReturnType<typeof nextFactToAsk>): {
+function coveredStage(stage: ReturnType<typeof nextFactToAsk>, answeredText: string): {
   nextPurpose: ReturnType<typeof nextFactToAsk>['nextPurpose'];
   priorStages: QuestionVerificationStage[];
   answerHasNamedTarget: boolean;
   answerHasContactResult: boolean;
+  alreadyAnswered: string[];
 } {
   return {
     nextPurpose: stage.nextPurpose,
     priorStages: stage.priorStages,
     answerHasNamedTarget: stage.answerHasNamedTarget,
     answerHasContactResult: stage.answerHasContactResult,
+    alreadyAnswered: answerSaysNoCandidate(answeredText) ? ['no_named_brewery_candidate'] : [],
   };
 }
 
@@ -1142,6 +1190,7 @@ export function buildProductReanalysisRequest(input: {
         previousQuestions,
         choiceLabel: input.founderChoice?.label ?? null,
       }),
+      `${input.founderChoice?.label ?? ''} ${input.founderSupplement}`,
     ),
     doNotCopy: {
       priorJudgmentText: input.latestAnalysis.analysis?.judgmentDetail || input.latestAnalysis.judgment,

@@ -27,6 +27,12 @@ import {
   AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS,
   judgmentIsConsistent,
   judgmentSeparatesPotential,
+  founderClaimTreatedAsFact,
+  judgmentContradictsUnverifiedClaim,
+  assumptionRestatesUnverifiedHope,
+  answerSaysNoCandidate,
+  questionRepeatsAnsweredSelection,
+  questionVerificationTargets,
   nextFactToAsk,
   purposeStage,
   verificationPurposeAligns,
@@ -4902,6 +4908,8 @@ describe('AI PM first review', () => {
     expect(system).toContain('협력 가능성이 높지만으로 시작하지 않는다');
     expect(system).toContain('긍정적 영향을 미칠 것이다라고 쓰지 않는다');
     expect(system).toContain('떠오르는을 쓰지 않는다');
+    expect(system).toContain('한 순서로만 분석한다');
+    expect(system).toContain('no_named_brewery_candidate');
     expect(system).not.toContain('문장은 셋만 쓴다');
     expect(request.maxTokens).toBe(AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS);
     expect(request.responseFormat?.type).toBe('json_schema');
@@ -5263,6 +5271,100 @@ describe('AI PM first review', () => {
     expect(payload.verificationStage.nextPurpose).toBe('candidate_criteria');
     expect(payload.verificationStage).not.toHaveProperty('factToAsk');
     expect(payload.verificationStage).not.toHaveProperty('choiceTexts');
+  });
+
+  it('does not treat an unverified cooperation claim as a confirmed fact', () => {
+    const claim = '양조장과의 협력 가능성이 높다.';
+    const judgment = '현재 사업성 판단은 낮아지며, 양조장과의 협력 가능성이 높지만 구체적인 후보가 없다는 점이 부정적인 영향을 미친다.';
+    expect(founderClaimTreatedAsFact(claim)).toBe(true);
+    expect(founderClaimTreatedAsFact(judgment)).toBe(true);
+    expect(founderClaimTreatedAsFact('협력 가능성이 높다는 주장은 검증되지 않았다.')).toBe(false);
+    expect(unverifiedClaimStoredAsFact(claim, [])).toBe(false);
+    expect(unverifiedClaimStoredAsFact(claim, [claim])).toBe(true);
+  });
+
+  it('flags a judgment that contradicts an unverified inference', () => {
+    const judgment = '양조장과의 협력 가능성이 높지만 구체적인 후보가 없다.';
+    const inferences = ['양조장과의 협력 가능성이 높다는 주장은 검증되지 않은 상태이다.'];
+    expect(judgmentContradictsUnverifiedClaim(judgment, inferences)).toBe(true);
+    const aligned = '협력 가능성이 높다는 주장은 확인되지 않았고, 구체적인 후보도 없다.';
+    expect(judgmentContradictsUnverifiedClaim(aligned, inferences)).toBe(false);
+  });
+
+  it('flags an assumption that repeats an unverified hope as a positive effect', () => {
+    expect(assumptionRestatesUnverifiedHope(['양조장과의 협력 가능성이 높다는 가설이 사업 실행에 긍정적 영향을 미칠 것이다.'])).toBe(true);
+    expect(assumptionRestatesUnverifiedHope(['체험을 운영할 양조장에 닿는 경로는 아직 확인되지 않았다.'])).toBe(false);
+  });
+
+  it('reads the missing-candidate answer as a stated gap', () => {
+    expect(answerSaysNoCandidate('아직 떠오르는 양조장이 없다. 현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.')).toBe(true);
+    expect(answerSaysNoCandidate('남한강 양조장 담당자를 만났다.')).toBe(false);
+  });
+
+  it('treats a rewritten judgment as a new review when it is not the prior sentence', () => {
+    const prior = '현재 사업성 판단은 유지되며, 양조장과의 협력 가능성이 높지만, 실제 접촉 및 협력 조건에 대한 구체적인 증거가 부족하다.';
+    const next = '협력 가능성이 높다는 주장은 확인되지 않았고, 구체적인 후보가 없어 첫 운영 경로가 비어 있다.';
+    expect(next).not.toBe(prior);
+    expect(next.includes('후보')).toBe(true);
+    expect(/없|비어|확인되지/.test(next)).toBe(true);
+  });
+
+  it('asks the judgment to name why it changed or stayed', () => {
+    const changed = '구체적인 후보가 없어 지금은 협력 구조를 실행 가능한 것으로 두지 않는다.';
+    expect(/없|이유|때문|확인/.test(changed)).toBe(true);
+    expect(judgmentIsConsistent({ judgment: changed, assumptions: ['닿는 경로는 확인되지 않았다.'], evidenceToChange: ['접근 경로'] })).toBe(true);
+  });
+
+  it('requires evidence that could change the judgment', () => {
+    const judgment = '구체적인 후보가 없어 운영 경로는 아직 비어 있다.';
+    const evidence = ['체험을 받을 수 있는 양조장에 닿는 경로'];
+    expect(evidence.some((item) => item === judgment)).toBe(false);
+    expect(/경로|기준|접촉|조건/.test(evidence.join('\n'))).toBe(true);
+  });
+
+  it('does not ask again whether a brewery candidate was chosen', () => {
+    const repeated = '양조장과의 파트너십을 구축하기 위해 먼저 접촉할 양조장을 한 곳 정했나요? 정했다면 양조장 이름과 실제 연락할 수 있는 담당자 또는 연락 경로를 알려주세요.';
+    const prior = '협력 가능성을 확인하기 위해 우선 접촉할 양조장을 한 곳 정했나요? 정했다면 양조장 이름과 실제 연락할 수 있는 담당자 또는 연락 경로를 알려주세요.';
+    expect(questionRepeatsAnsweredSelection(repeated)).toBe(true);
+    expect(questionRepeatsAnsweredSelection(prior)).toBe(true);
+    expect(questionRepeatsPrior([prior], repeated)).toBe(false);
+    expect(questionVerificationTargets(repeated)).toContain('selection');
+  });
+
+  it('accepts one new verification target after the candidate gap is known', () => {
+    const criteria = '체험을 운영할 수 있는 양조장을 고를 기준이 있나요?';
+    const bundled = '후보를 고를 기준과 연락 경로를 함께 알려 주세요.';
+    expect(questionRepeatsAnsweredSelection(criteria)).toBe(false);
+    expect(questionVerificationTargets(criteria)).toEqual(['criteria']);
+    expect(questionVerificationTargets(bundled).length).toBeGreaterThan(1);
+  });
+
+  it('keeps the no-candidate answer available for the next call', () => {
+    const named = '협력 가능성을 확인하기 위해 우선 접촉할 양조장을 한 곳 정했나요?';
+    const nameQuestion = '후보 선정을 시작하면서 가장 먼저 떠오르는 양조장 이름이 있나요?';
+    const request = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [],
+      previousQuestions: [named, nameQuestion],
+      latestAnalysis: { ...sections(), nextQuestion: nameQuestion },
+      founderChoice: { label: '아직 떠오르는 양조장이 없다', otherText: '' },
+      founderSupplement: '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.',
+      founderFeedback: { comment: '아직 떠오르는 양조장이 없다' },
+    });
+    const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      founderChoice: { label: string };
+      verificationStage: { alreadyAnswered: string[] };
+    };
+    expect(payload.founderChoice.label).toBe('아직 떠오르는 양조장이 없다');
+    expect(payload.verificationStage.alreadyAnswered).toEqual(['no_named_brewery_candidate']);
+  });
+
+  it('does not drop the stored parent when a later review is created beside it', () => {
+    const parentJudgment = '현재 사업성 판단은 유지되며, 양조장과의 협력 가능성이 높지만, 실제 접촉 및 협력 조건에 대한 구체적인 증거가 부족하다.';
+    const later = '협력 가능성이 높다는 주장은 확인되지 않았고, 구체적인 후보가 없다.';
+    expect(later).not.toBe(parentJudgment);
+    expect(parentJudgment.includes('유지')).toBe(true);
   });
 
   it('cites a failed review answer without moving it onto the succeeded parent', async () => {
