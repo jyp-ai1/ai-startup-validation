@@ -1209,7 +1209,7 @@ export function productReadingIssues(input: {
   if (criterionAnswer(input.founderSupplement ?? '')) {
     const reviewed = `${input.judgment}\n${input.inferences.join('\n')}`;
     if (!/체험/.test(reviewed)) issues.push('new_answer_missing');
-    if (!/계획|선택/.test(input.judgment)) issues.push('answer_not_classified');
+    if (!/계획|선택|고르겠|정하겠/.test(input.judgment)) issues.push('answer_not_classified');
     if (/구체화되었|구체화했/.test(`${input.judgment}\n${input.summary}`) && !/체험/.test(reviewed)) {
       issues.push('answer_collapsed_to_choice');
     }
@@ -1220,7 +1220,9 @@ export function productReadingIssues(input: {
       questionVerificationTargets(input.nextQuestion).includes('criteria');
     if (repeatsAnswered) issues.push('answered_question_repeated');
     if (unverifiedClaimStoredAsFact(input.founderSupplement ?? '', input.founderFacts ?? [])) issues.push('answer_promoted_to_fact');
-    if (!/유지|바꾸|낮|높이|유보|이유|때문|영향|근거/.test(input.judgment)) issues.push('judgment_reason_missing');
+    if (!/유지|바꾸|낮|높이|유보|이유|때문|영향|근거/.test(`${input.judgment}\n${input.summary}`)) {
+      issues.push('judgment_reason_missing');
+    }
     if (
       input.answeredVerification &&
       verificationRepeatsPriorGoal(input.nextVerification, [input.answeredVerification])
@@ -1332,12 +1334,12 @@ export function followThroughQuality(input: {
       !founderClaimTreatedAsFact(input.summary) &&
       !claimLeftUnlabeled(input.judgment, input.founderClaims),
     classifiesChoice:
-      (criterionAnswer(input.supplement) ? /계획|선택/.test(input.judgment) : /계획|선택|기준/.test(reviewed)) &&
+      (criterionAnswer(input.supplement) ? /계획|선택|고르겠|정하겠/.test(input.judgment) : /계획|선택|기준/.test(reviewed)) &&
       !unverifiedClaimStoredAsFact(input.supplement, input.founderFacts) &&
       !assumptionRestatesUnverifiedHope(input.assumptions),
     keepsUnresolved: judgmentAccountsForUnresolved(input.judgment, input.unresolved),
     reReviews: input.judgment.replace(/\s+/g, '') !== input.priorJudgment.replace(/\s+/g, ''),
-    explainsDirection: /유지|바꾸|낮|높이|유보|이유|때문|영향|근거/.test(input.judgment),
+    explainsDirection: /유지|바꾸|낮|높이|유보|이유|때문|영향|근거/.test(`${input.judgment}\n${input.summary}`),
     doesNotRepeatQuestion:
       !questionRepeatsPrior([input.answeredQuestion], input.nextQuestion) &&
       questionVerificationStage(input.nextQuestion) !== 'candidate_criteria' &&

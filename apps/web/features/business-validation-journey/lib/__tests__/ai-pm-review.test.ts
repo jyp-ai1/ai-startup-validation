@@ -5729,6 +5729,49 @@ describe('AI PM first review', () => {
       nextVerification: collapsedVerification,
       nextQuestion: collapsedQuestion,
     });
+    const quotedPlan = {
+      judgment:
+        '양조장과의 협력 가능성이 높다는 주장은 검증되지 않은 가설이다. 현재 구체적인 후보가 선정되지 않았다는 점이 미해결로 남아 있다. 체험으로 만들고 마실 수 있는 양조장인지를 기준으로 후보를 고르겠다. 그 기준에 맞는 양조장은 아직 정하지 못했다.',
+      summary: '현재 사업성 판단은 유지되며, 양조장 후보 선정 기준이 구체화되었으나, 아직 구체적인 양조장 후보가 선정되지 않았다.',
+      nextQuestion: '접촉할 양조장 후보와의 협력 의사는 어떤가요?',
+      nextVerification: '접촉할 양조장 후보와의 협력 의사는 어떤가요?',
+      inferences: ['양조장 후보 선정 기준이 구체화되었으나, 아직 구체적인 후보가 선정되지 않았다.'],
+    };
+    const quoted = followThroughQuality({
+      ...shared,
+      judgment: quotedPlan.judgment,
+      summary: quotedPlan.summary,
+      inferences: quotedPlan.inferences,
+      nextVerification: quotedPlan.nextVerification,
+      nextQuestion: quotedPlan.nextQuestion,
+    });
+    expect(quoted).toEqual({
+      understandsAnswer: true,
+      separatesClaim: true,
+      classifiesChoice: true,
+      keepsUnresolved: true,
+      reReviews: true,
+      explainsDirection: true,
+      doesNotRepeatQuestion: true,
+      newStep: true,
+    });
+    expect(
+      productReadingIssues({
+        judgment: quotedPlan.judgment,
+        summary: quotedPlan.summary,
+        assumptions: shared.assumptions,
+        inferences: quotedPlan.inferences,
+        nextVerification: quotedPlan.nextVerification,
+        nextQuestion: quotedPlan.nextQuestion,
+        unresolved,
+        priorGoals,
+        founderClaims,
+        founderFacts: [],
+        founderSupplement: supplement,
+        answeredQuestion: asked,
+        answeredVerification,
+      }),
+    ).toEqual([]);
     expect(collapsed.understandsAnswer).toBe(false);
     expect(collapsed.classifiesChoice).toBe(false);
     expect(collapsed.keepsUnresolved).toBe(true);
