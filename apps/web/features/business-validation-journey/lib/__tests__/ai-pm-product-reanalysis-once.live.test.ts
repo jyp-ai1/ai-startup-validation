@@ -6,6 +6,7 @@ import {
   buildProductReanalysisRequest,
   needsRevisionGate,
   openReviewChat,
+  questionAsksForPlan,
   questionRepeatsPrior,
   runFollowUpReview,
   unverifiedClaimStoredAsFact,
@@ -23,7 +24,7 @@ const ANSWER_ID = '7d2d04e5-93a1-4cd6-aebf-03582eeb003f';
 const SUPPLEMENT = '양조장과의 협력 가능성이 높다.';
 const BUCKET = 'ai-pm-quality-compare';
 const OBJECT = 'product-cumulative-brewery-2026-10-31.json';
-const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-c.json';
+const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-d.json';
 const QUALITY_PARENT_ID = '9e169fef-7428-4d21-a6f0-f3034bcc91d1';
 const SIBLING_ANALYSIS_ID = '8602a92e-0fbd-4d93-a005-9c9f18410ac6';
 
@@ -173,6 +174,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
         '3be5715e-7294-44bd-b163-f3af1dec4259',
         '02dbf55a-eaf4-49fd-ba4c-ab043f16d39c',
         'dac12cd4-9958-405c-900b-deb2a5418c41',
+        '17c3d2ea-dfb2-480d-b2cf-47f7fecf7c06',
       ].map((reviewId) => backend.store.readReview(userId, reviewId)),
     );
     const records = await backend.store.listReviews(userId, PROJECT_ID);
@@ -233,11 +235,34 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
         const previousQuestions = history.previousQuestions;
         const claimIsFact = unverifiedClaimStoredAsFact(SUPPLEMENT, facts);
         const repeated = questionRepeatsPrior(previousQuestions, nextQuestion);
+        const planQuestion = questionAsksForPlan(nextQuestion);
+        const contactFact = /연락|미팅|접촉/.test(nextQuestion) && !planQuestion;
         const explains = /유지/.test(judgment) && /이유/.test(judgment);
-        const touched = [judgment, ...result.record.sections.risks, ...result.record.sections.analysis.assumptions, ...result.record.sections.analysis.inferences, ...result.record.sections.analysis.evidenceToChange].join('\n');
+        const parentAssumptions = parent?.sections?.analysis?.assumptions ?? [];
+        const assumptions = result.record.sections.analysis.assumptions;
+        const assumptionsMoved = JSON.stringify(assumptions) !== JSON.stringify(parentAssumptions);
+        const evidenceText = [judgment, ...result.record.sections.analysis.inferences, ...assumptions].join('\n');
+        const evidenceLevel = /기대|자체 판단|추정|주장/.test(evidenceText);
+        const touched = [judgment, ...result.record.sections.risks, ...assumptions, ...result.record.sections.analysis.inferences, ...result.record.sections.analysis.evidenceToChange].join('\n');
         const reflects = /협력/.test(touched);
         const risksMoved = result.record.sections.risks.some((item) => item !== '가격, 인원, 매출은 입력에 없으면 적지 않는다.');
-        const qualityPass = !claimIsFact && !repeated && explains && reflects && risksMoved;
+        const oneCall = result.record.callCount === 1;
+        const withinTokens = result.record.usageKnown === true && (result.record.totalTokens ?? 4001) <= 4000;
+        const parentJudgment = parent?.sections?.analysis?.judgmentDetail || parent?.sections?.judgment || '';
+        const copiedJudgment = judgment.replace(/\s+/g, '') === parentJudgment.replace(/\s+/g, '');
+        const qualityPass =
+          !claimIsFact &&
+          !repeated &&
+          !planQuestion &&
+          contactFact &&
+          explains &&
+          reflects &&
+          risksMoved &&
+          assumptionsMoved &&
+          evidenceLevel &&
+          oneCall &&
+          withinTokens &&
+          !copiedJudgment;
         marker = {
           status: qualityPass ? 'RECORDED' : 'quality_failed',
           startedAt,
@@ -259,14 +284,22 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
           nextQuestionReason: result.record.sections.nextQuestionReason,
           founderFacts: facts,
           risks: result.record.sections.risks,
-          assumptions: result.record.sections.analysis.assumptions,
+          assumptions,
           inferences: result.record.sections.analysis.inferences,
           evidenceToChange: result.record.sections.analysis.evidenceToChange,
+          rawContent: result.record.rawContent,
           claimIsFact,
           repeated,
+          planQuestion,
+          contactFact,
           explains,
           reflects,
           risksMoved,
+          assumptionsMoved,
+          evidenceLevel,
+          oneCall,
+          withinTokens,
+          copiedJudgment,
         };
       }
     } finally {

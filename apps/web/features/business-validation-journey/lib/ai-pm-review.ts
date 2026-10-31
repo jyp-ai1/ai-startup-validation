@@ -30,6 +30,9 @@ export const AI_PM_REVIEW_FIRST_MAX_TOKENS = 2400;
 export const AI_PM_REVIEW_INPUT_TOKEN_BUDGET = 3_000;
 /** Follow-up JSON includes the stored analysis. The first-review budget would cut that object. */
 export const AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET = 8_000;
+/** One product reanalysis. A second call is not the way back under this cap. */
+export const AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS = 1_200;
+export const AI_PM_PRODUCT_REANALYSIS_INPUT_TOKEN_BUDGET = 6_000;
 
 /**
  * Follow-up sends the parser's stored sections, not a byte copy of the first model JSON.
@@ -651,6 +654,11 @@ export function questionRepeatsPrior(previous: string[], next: string): boolean 
   return partnershipPlan(next) && previous.some(partnershipPlan);
 }
 
+/** A plan question does not check whether the event already happened. */
+export function questionAsksForPlan(question: string): boolean {
+  return /계획|어떻게|어떤 방식|구축/.test(question);
+}
+
 /**
  * Prior succeeded analyses of the same input, excluding the root and the current parent.
  * A failed review stays out. A turn that only repeats the current answer is not sent twice.
@@ -737,22 +745,42 @@ function compactConsultingAnalysis(sections: ReviewSections): {
   };
 }
 
-function productReanalysisSystemPrompt(previousQuestions: string[]): string {
+function productReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
-    '사용자 JSON의 최초 사업 원문, 최초 분석, 이전 분석, 직전 분석, 이전 질문, 이번 답을 함께 읽고 사업을 다시 검토한다.',
-    '이번 답은 네 단계로 다룬다. 첫째, 파운더가 무엇을 주장하거나 답했는지 해석한다. 둘째, 그 답의 근거 수준을 확인된 사실, 경험, 추정, 계획 중 하나로 판단한다. 셋째, 기존 판단에서 유지되는 부분과 답 때문에 달라지는 부분을 나누고 이유를 적는다. 넷째, 이전 질문과 다른 불확실성 하나만 다음 질문으로 고른다.',
+    '사용자 JSON의 priorJudgmentText와 priorQuestionText는 이전 문장이다. 출력의 judgment와 nextQuestion에 그 문장을 복사하지 않는다.',
+    '이번 답을 여섯 가지로 새 문장에 적는다. 새로 알게 된 내용, 근거 수준, 기존 판단에서 영향을 받는 부분, 바뀐 판단 또는 유지한 판단, 바꾸지 않은 이유, 추가 검증이다.',
+    '근거 수준은 검증된 사실, Founder의 경험, Founder의 주장 또는 기대, 실행 계획, 추정 및 가정, 근거가 부족한 정보 중 하나다. 확인된 사실, 경험, 추정, 계획을 섞지 않는다.',
+    '가능성이 높다처럼 확인 절차가 없는 답은 Founder의 기대 또는 자체 판단이다. 확정된 협력이 아니다. inferences에 그 수준을 적고, 무시하지 않는다.',
     '확인되지 않은 협력 가능성, 추정, 기대, 계획은 founderFacts에 넣지 않는다. founderFacts는 접촉, 계약, 입금, 예약처럼 확인된 사실만 담는다. 근거가 없으면 빈 배열이다.',
-    '추정과 기대는 inferences에 두고, 아직 확인되지 않은 가정은 assumptions에 둔다. 답을 지우지 않는다. evidenceToChange에는 그 답이 판단에 어떤 영향을 주는지를 적는다.',
-    'judgment에는 유지와 이유라는 말을 넣고, 유지되는 판단과 여전히 불확실한 점을 새 문장으로 적는다. 근거가 부족하면 기존 판단을 유지한다. copyBan.judgment와 같은 문장을 그대로 쓰지 않는다.',
-    'risks에는 이번 답이 드러낸 미확인 위험을 새 문장으로 더한다. 이전 위험 목록과 항목이 모두 같으면 실패다.',
-    'nextQuestion은 하나다. previousQuestions 또는 copyBan.nextQuestion과 같은 문장이면 실패다. 파트너십을 어떻게 구축할지 묻는 질문을 표현만 바꾸어 반복하지 않는다. 접촉 여부, 협력 조건, 운영 주체, 예약 경로, 누가 비용을 내는 것 가운데 지금 가장 큰 불확실성 하나만 묻는다.',
-    `nextQuestionReason에는 그 질문이 이전 질문과 다른 이유를 적는다. 이미 한 질문: ${previousQuestions.filter((question) => question.trim()).map((question) => `「${question}」`).join(' ')}`,
+    'assumptions는 이번 답으로 아직 검증되지 않은 전제를 새 문장으로 적는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
+    'evidenceToChange에는 이 답이 판단에 어떤 영향을 주는지, 사업 실행 가능성에 주는 영향과 아직 검증되지 않은 전제라는 점을 적는다. 답 문장만 다시 적으면 실패다.',
+    'judgment에는 유지와 이유를 넣는다. 긍정적 변화, 반영하지 못한 부분, 유지 이유, 다음에 필요한 증거를 같은 판단 안에 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. priorJudgmentText와 같은 문장이면 실패다.',
+    'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉과 상대의 의사가 없으면 그 위험을 적는다. 이전 위험만 반복하면 실패다.',
+    'nextQuestion은 하나다. 계획, 어떻게, 어떤 방식, 구축을 묻으면 실패다. priorQuestionText를 표현만 바꾸면 실패다. 이미 일어났는지와 상대가 뭐라고 답했는지를 가른다. 접촉이 확인되지 않았으면 실제로 연락하거나 미팅한 양조장이 있는지, 있다면 상대의 반응과 협력 조건을 묻는다.',
+    'nextQuestionReason에는 그 질문이 이전 계획 질문과 다른 이유를 적는다.',
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
     '이번 답이 판단, 가정, 위험, 다음 검증, 다음 질문에 반영되어야 한다.',
   ].join(' ');
+}
+
+/** Output-shaped keys make the model echo the previous judgment and question. */
+function renameEchoKeys(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(renameEchoKeys);
+  if (!value || typeof value !== 'object') return value;
+  const renamed: Record<string, unknown> = {};
+  for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+    const name =
+      key === 'judgment' || key === 'judgmentDetail'
+        ? 'priorJudgmentText'
+        : key === 'nextQuestion' || key === 'priorQuestion'
+          ? 'priorQuestionText'
+          : key;
+    renamed[name] = renameEchoKeys(child);
+  }
+  return renamed;
 }
 
 /**
@@ -772,7 +800,7 @@ export function buildProductReanalysisRequest(input: {
   founderFeedback: { comment: string } | null;
 }): ChatRequest {
   const previousQuestions = input.previousQuestions ?? [input.latestAnalysis.nextQuestion];
-  const system = productReanalysisSystemPrompt(previousQuestions);
+  const system = productReanalysisSystemPrompt();
   const anchors = {
     originalInput: input.originalInput,
     firstAnalysis: compactConsultingAnalysis(input.firstAnalysis),
@@ -781,44 +809,34 @@ export function buildProductReanalysisRequest(input: {
     founderSupplement: input.founderSupplement,
     founderFeedback: input.founderFeedback,
     founderAnswerSource: input.founderAnswerSource ?? null,
-    previousQuestions,
-    priorQuestion: input.latestAnalysis.nextQuestion,
-    copyBan: {
-      judgment: input.latestAnalysis.analysis?.judgmentDetail || input.latestAnalysis.judgment,
-      nextQuestion: input.latestAnalysis.nextQuestion,
+    priorQuestionTexts: previousQuestions,
+    doNotCopy: {
+      priorJudgmentText: input.latestAnalysis.analysis?.judgmentDetail || input.latestAnalysis.judgment,
+      priorQuestionText: input.latestAnalysis.nextQuestion,
     },
   };
   let analyses = [...(input.priorAnalyses ?? [])];
   let turns = [...input.priorTurns];
-  const payload = () => ({ ...anchors, priorAnalyses: analyses, priorTurns: turns });
+  const payload = () =>
+    renameEchoKeys({ ...anchors, priorAnalyses: analyses, priorTurns: turns }) as Record<string, unknown>;
   const systemTokens = estimateReviewTokens(system);
   while (
-    (analyses.length > 0 || turns.length > 0) &&
-    systemTokens + estimateReviewTokens(JSON.stringify(payload())) > AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET
+    (analyses.length > 1 || turns.length > 0) &&
+    systemTokens + estimateReviewTokens(JSON.stringify(payload())) > AI_PM_PRODUCT_REANALYSIS_INPUT_TOKEN_BUDGET
   ) {
-    if (analyses.length > 0) analyses = analyses.slice(1);
+    if (analyses.length > 1) analyses = analyses.slice(0, -1);
     else turns = turns.slice(1);
   }
   const user = JSON.stringify(payload());
-  const messages = [
-    { role: 'system' as const, content: system },
-    { role: 'user' as const, content: user },
-  ];
-  if (systemTokens + estimateReviewTokens(user) <= AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET) {
-    return {
-      model: AI_PM_REVIEW_MODEL,
-      temperature: 0.2,
-      maxTokens: AI_PM_FOLLOW_UP_MAX_TOKENS,
-      responseFormat: { type: 'json_object' },
-      messages: fitFollowUpMessages(messages),
-    };
-  }
   return {
     model: AI_PM_REVIEW_MODEL,
     temperature: 0.2,
-    maxTokens: AI_PM_FOLLOW_UP_MAX_TOKENS,
+    maxTokens: AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS,
     responseFormat: { type: 'json_object' },
-    messages,
+    messages: [
+      { role: 'system' as const, content: system },
+      { role: 'user' as const, content: user },
+    ],
   };
 }
 
@@ -1244,13 +1262,6 @@ export async function runFollowUpReview(input: {
           question: parent.sections.nextQuestion,
           choiceLabel: choice?.label ?? null,
           supplement,
-        },
-    productGuard: needsRevisionGate(marks)
-      ? null
-      : {
-          previousQuestions: history.previousQuestions,
-          bannedJudgment: parent.sections.analysis?.judgmentDetail || parent.sections.judgment,
-          founderSupplement: supplement,
         },
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
@@ -2520,77 +2531,6 @@ function firstReviewSystemPrompt(): string {
   ].join(' ');
 }
 
-function productDraftCopies(
-  sections: ReviewSections,
-  guard: { previousQuestions: string[]; bannedJudgment: string },
-): boolean {
-  const compactText = (value: string) => value.replace(/\s+/g, '').replace(/[.?？!]/g, '');
-  const judgment = sections.analysis?.judgmentDetail || sections.judgment;
-  if (compactText(judgment) === compactText(guard.bannedJudgment)) return true;
-  return questionRepeatsPrior(guard.previousQuestions, sections.nextQuestion);
-}
-
-/** Output-shaped keys make the model echo the previous judgment and question. */
-function renameEchoKeys(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(renameEchoKeys);
-  if (!value || typeof value !== 'object') return value;
-  const renamed: Record<string, unknown> = {};
-  for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
-    const name =
-      key === 'judgment' || key === 'judgmentDetail'
-        ? 'priorJudgmentText'
-        : key === 'nextQuestion' || key === 'priorQuestion'
-          ? 'priorQuestionText'
-          : key;
-    renamed[name] = renameEchoKeys(child);
-  }
-  return renamed;
-}
-
-function productCopyRepairRequest(
-  request: ChatRequest,
-  guard: { previousQuestions: string[]; bannedJudgment: string; founderSupplement: string },
-): ChatRequest {
-  const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
-  const user = request.messages.find((message) => message.role === 'user')?.content ?? '{}';
-  let context: unknown = {};
-  try {
-    context = JSON.parse(user) as unknown;
-  } catch {
-    context = { unparsed: true };
-  }
-  return {
-    ...request,
-    messages: [
-      {
-        role: 'system',
-        content: [
-          system,
-          '직전 초안은 실패다. 출력 JSON의 judgment와 nextQuestion에 priorJudgmentText나 priorQuestionText를 복사하지 않는다.',
-          'judgment는 새 문장이다. 유지와 이유를 모두 넣는다. 근거가 부족하면 기존 판단을 유지하고 그 이유를 적는다.',
-          '파운더의 협력 가능성 판단은 추정이다. 확정된 협력이나 사실로 쓰지 않고, founderFacts에 넣지 않는다. inferences와 assumptions에 추정으로 남긴다.',
-          'risks에는 실제 접촉과 협력 의사가 확인되지 않았다는 새 문장을 더한다. 이전 위험 문장만 반복하면 실패다.',
-          'nextQuestion은 하나다. 파트너십 구축, 실행 계획, 어떤 방식, 구체적인 계획이라는 질문을 하지 않는다.',
-          '지금 가장 큰 불확실성 하나만 묻는다. 실제 접촉과 협력 의사, 협력 조건과 수익 배분, 체험 운영 주체, 예약 경로, 누가 비용을 내는가 가운데 하나다.',
-        ].join(' '),
-      },
-      {
-        role: 'user',
-        content: JSON.stringify({
-          draftRejected: true,
-          founderClaim: guard.founderSupplement,
-          claimLevel: 'estimate',
-          doNotRepeat: {
-            priorJudgmentText: guard.bannedJudgment,
-            priorQuestionTexts: guard.previousQuestions,
-          },
-          context: renameEchoKeys(context),
-        }),
-      },
-    ],
-  };
-}
-
 async function finishCall(input: {
   store: AiPmReviewStore;
   input: {
@@ -2613,7 +2553,6 @@ async function finishCall(input: {
   outputContract?: FollowUpOutputContext | null;
   previousSections?: ReviewSections | null;
   consultingAnswer?: { question: string; choiceLabel: string | null; supplement: string } | null;
-  productGuard?: { previousQuestions: string[]; bannedJudgment: string; founderSupplement: string } | null;
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const started = Date.now();
   try {
@@ -2662,31 +2601,6 @@ async function finishCall(input: {
           sections: null,
           errors: [...failedChecks, `repair_failed:${repairMessage.slice(0, 180)}`],
         };
-      }
-    }
-    if (input.productGuard && !input.outputContract) {
-      const draft = parseSections(response.content, input.input.text);
-      if (draft && productDraftCopies(draft, input.productGuard)) {
-        firstRawContent = first.content;
-        try {
-          const repair = await input.chat(productCopyRepairRequest(input.request, input.productGuard));
-          callCount = 2;
-          if (usageKnown && repair.usageKnown === true) {
-            promptTokens = (promptTokens ?? 0) + repair.usage.inputTokens;
-            completionTokens = (completionTokens ?? 0) + repair.usage.outputTokens;
-            totalTokens = (totalTokens ?? 0) + repair.usage.totalTokens;
-          } else {
-            usageKnown = false;
-            promptTokens = null;
-            completionTokens = null;
-            totalTokens = null;
-          }
-          if (parseSections(repair.content, input.input.text)) response = repair;
-        } catch (repairError) {
-          callCount = 2;
-          const repairMessage = repairError instanceof Error ? repairError.message : 'review_failed';
-          if (isProviderLimitError(repairMessage)) throw repairError;
-        }
       }
     }
     const sections = normalized ? normalized.sections : parseSections(response.content, input.input.text);

@@ -24,6 +24,8 @@ import {
   buildFollowUpRequest,
   assembleConsultingHistory,
   buildProductReanalysisRequest,
+  AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS,
+  questionAsksForPlan,
   questionRepeatsPrior,
   unverifiedClaimStoredAsFact,
   callReviewWithQuotaSwitch,
@@ -1984,12 +1986,12 @@ describe('AI PM first review', () => {
     if (!follow.ok) return;
     const payload = JSON.parse(seen[1]?.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
       originalInput: string;
-      latestAnalysis: { judgment: string };
+      latestAnalysis: { priorJudgmentText: string };
       founderChoice: { label: string; otherText: string } | null;
       founderSupplement: string;
     };
     expect(payload.originalInput).toBe(PLAN);
-    expect(payload.latestAnalysis.judgment).toBe(sections().judgment);
+    expect(payload.latestAnalysis.priorJudgmentText).toBe(sections().judgment);
     expect(payload.founderChoice?.label).toBe('체험 프로그램을 먼저 검증할 것');
     expect(payload.founderSupplement).toContain('확정된 양조장');
     expect(seen[1]?.messages.map((message) => message.content).join('\n')).not.toContain(FOLLOW_UP_OUTPUT_CONTRACT);
@@ -2476,14 +2478,14 @@ describe('AI PM first review', () => {
       originalInput: string;
       firstAnalysis: { summary: string };
       priorTurns: Array<{ supplement: string }>;
-      latestAnalysis: { analysis: { judgmentDetail: string } | null };
+      latestAnalysis: { analysis: { priorJudgmentText: string } | null };
       founderSupplement: string;
     };
     expect(third.originalInput).toBe(PLAN);
     expect(third.firstAnalysis.summary).toBe(sections().judgment);
     expect(third.priorTurns.map((turn) => turn.supplement)).toEqual(['첫번째답변마커', '두번째답변마커']);
     expect(third.founderSupplement).toBe('세번째답변마커');
-    expect(third.latestAnalysis.analysis?.judgmentDetail).toContain('라운드 2');
+    expect(third.latestAnalysis.analysis?.priorJudgmentText).toContain('라운드 2');
     expect(JSON.stringify(await store.readReview('user-a', first.record.reviewId))).toBe(parentBefore);
     const duplicate = await runFollowUpReview({
       projectId: 'project-test',
@@ -4330,13 +4332,13 @@ describe('AI PM first review', () => {
     const followUser = seen[1]?.messages.find((message) => message.role === 'user')?.content ?? '';
     const followPayload = JSON.parse(followUser) as {
       originalInput: string;
-      latestAnalysis: { nextQuestion: string };
+      latestAnalysis: { priorQuestionText: string };
       founderFeedback: { comment: string } | null;
       founderSupplement: string;
       priorTurns: unknown[];
     };
     expect(followPayload.originalInput).toBe(PLAN);
-    expect(followPayload.latestAnalysis.nextQuestion).toContain('양조장 대표');
+    expect(followPayload.latestAnalysis.priorQuestionText).toContain('양조장 대표');
     expect(followPayload.founderFeedback?.comment).toContain('양조장 수');
     expect(followPayload.founderSupplement).toContain('인터뷰');
     expect(followPayload.priorTurns).toEqual([]);
@@ -4890,12 +4892,14 @@ describe('AI PM first review', () => {
     expect(system).toContain('근거가 부족하면 기존 판단을 유지');
     expect(system).toContain('이유를 적는다');
     expect(system).toContain('유지와 이유');
+    expect(request.maxTokens).toBe(AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS);
   });
 
-  it('asks once more when the draft copies the prior judgment and question', async () => {
+  it('does not call again when the draft copies the prior judgment', async () => {
     const store = openAiPmReviewStore(storePath());
     let productCalls = 0;
-    let repairUser = '';
+    let userText = '';
+    let system = '';
     const copied = productAnalysisRaw({ judgment: sections().judgment, nextQuestion: sections().nextQuestion });
     const follow = await runFirstReview({
       projectId: 'project-test',
@@ -4917,29 +4921,20 @@ describe('AI PM first review', () => {
         now: NOW,
         chat: async (request) => {
           productCalls += 1;
-          if (productCalls === 1) return reply(copied);
-          repairUser = request.messages.find((message) => message.role === 'user')?.content ?? '';
-          return reply(
-            productAnalysisRaw({
-              judgment: '근거가 부족해 기존 판단을 유지하는 이유는 접촉 기록이 없기 때문이다.',
-              nextQuestion: '양조장 한 곳에 협력 의사를 확인한 적이 있습니까?',
-            }),
-          );
+          userText = request.messages.find((message) => message.role === 'user')?.content ?? '';
+          system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+          return reply(copied);
         },
         evidence: 'injected_http',
       }),
     );
     expect(follow.ok).toBe(true);
     if (!follow.ok) return;
-    expect(productCalls).toBe(2);
-    expect(follow.record.callCount).toBe(2);
-    expect(follow.record.sections?.analysis?.judgmentDetail).toContain('유지');
-    expect(follow.record.sections?.analysis?.judgmentDetail).toContain('이유');
-    expect(follow.record.sections?.nextQuestion).toBe('양조장 한 곳에 협력 의사를 확인한 적이 있습니까?');
-    expect(follow.record.firstRawContent).toBe(copied);
-    const payload = JSON.parse(repairUser) as { draftRejected?: boolean; founderClaim?: string; context?: unknown };
-    expect(payload.draftRejected).toBe(true);
-    expect(payload.founderClaim).toBe('양조장과의 협력 가능성이 높다.');
+    expect(productCalls).toBe(1);
+    expect(follow.record.callCount).toBe(1);
+    expect(follow.record.firstRawContent ?? null).toBeNull();
+    expect(AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS).toBe(1200);
+    const payload = JSON.parse(userText) as unknown;
     const names: string[] = [];
     const walk = (value: unknown) => {
       if (Array.isArray(value)) {
@@ -4956,6 +4951,9 @@ describe('AI PM first review', () => {
     expect(names).not.toContain('judgment');
     expect(names).not.toContain('nextQuestion');
     expect(names).toContain('priorJudgmentText');
+    expect(system).toContain('Founder의 주장 또는 기대');
+    expect(system).toContain('연락하거나 미팅');
+    expect(system).not.toContain('draftRejected');
     const parent = await store.readReview('user-a', follow.record.parentReviewId ?? '');
     expect(parent?.sections?.judgment).toBe(sections().judgment);
     store.close();
@@ -4966,6 +4964,12 @@ describe('AI PM first review', () => {
     const second = '양조장과의 파트너십을 위한 구체적인 실행 계획은 무엇인가?';
     expect(questionRepeatsPrior([first], second)).toBe(true);
     expect(questionRepeatsPrior([first, second], '양조장 한 곳에 협력 조건을 제안해 본 적이 있습니까?')).toBe(false);
+    expect(questionAsksForPlan('양조장과의 실제 접촉 여부는 어떻게 확인할 계획인가?')).toBe(true);
+    expect(
+      questionAsksForPlan(
+        '현재까지 실제로 연락하거나 미팅한 양조장이 있나요? 있다면 상대 양조장의 반응과 협력 조건에 대해 어떤 답변을 받았나요?',
+      ),
+    ).toBe(false);
   });
 
   it('cites a failed review answer without moving it onto the succeeded parent', async () => {
