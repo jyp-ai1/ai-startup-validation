@@ -4899,6 +4899,9 @@ describe('AI PM first review', () => {
     expect(system).toContain('유지하거나 높이거나 낮출 수 있다');
     expect(system).toContain('이유를 적는다');
     expect(system).toContain('priorJudgmentText와 같으면 실패다');
+    expect(system).toContain('협력 가능성이 높지만으로 시작하지 않는다');
+    expect(system).toContain('긍정적 영향을 미칠 것이다라고 쓰지 않는다');
+    expect(system).toContain('떠오르는을 쓰지 않는다');
     expect(system).not.toContain('문장은 셋만 쓴다');
     expect(request.maxTokens).toBe(AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS);
     expect(request.responseFormat?.type).toBe('json_schema');
