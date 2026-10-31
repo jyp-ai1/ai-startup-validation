@@ -3601,12 +3601,16 @@ async function finishCall(input: {
     const noteCall = (content: string, result: ChatResponse) => {
       if (!input.readingIssues) return;
       const known = result.usageKnown === true;
+      let readingIssues = input.readingIssues(content);
+      if (readingIssues.length === 0 && !parseSections(content, input.input.text)) {
+        readingIssues = ['product_reading_unparsed'];
+      }
       callLedger.push({
         index: callLedger.length + 1,
         promptTokens: known ? result.usage.inputTokens : null,
         completionTokens: known ? result.usage.outputTokens : null,
         totalTokens: known ? result.usage.totalTokens : null,
-        readingIssues: input.readingIssues(content),
+        readingIssues,
         ...readingCallExcerpt(content),
       });
     };
@@ -3692,6 +3696,9 @@ async function finishCall(input: {
             issues = repairIssues;
             bestCount = repairIssues.length;
             draft = repair.content;
+          } else if (!parsed && attempt < 2) {
+            draft = response.content;
+            issues = input.readingIssues(response.content);
           } else if (attempt < 2 && parsed) {
             if (attempt === 0) {
               issues = [...new Set([...issues, ...repairIssues])];
