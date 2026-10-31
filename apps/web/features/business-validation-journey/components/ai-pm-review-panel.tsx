@@ -608,6 +608,7 @@ export function AiPmReviewPanel({ initialText = '', projectId = '', initialRevie
               <AnalysisBlock
                 analysis={analysis}
                 sections={active.sections}
+                reading={active.stageReading ?? null}
                 round={reanalysisRound}
                 saved={savedChoice}
                 choiceId={choiceId}
@@ -910,6 +911,7 @@ function draftFromSaved(saved: AiPmReviewView['feedback'][number] | undefined): 
 function AnalysisBlock(props: {
   analysis: BusinessAnalysis;
   sections: NonNullable<AiPmReviewView['sections']>;
+  reading: AiPmReviewView['stageReading'];
   round: number;
   saved: ChoiceAnswer | null;
   choiceId: string;
@@ -951,6 +953,20 @@ function AnalysisBlock(props: {
         <p className="text-xs font-medium text-muted-foreground">예비 사업성 판단</p>
         <p data-testid="ai-pm-judgment">{analysis.judgmentDetail}</p>
       </div>
+      {props.reading && props.reading.answerInterpretation.length > 0 ? (
+        <div className="space-y-2 text-sm" data-testid="ai-pm-answer-reading">
+          <p className="font-medium">이번 답의 해석</p>
+          {props.reading.answerInterpretation.map((item) => (
+            <div key={item.questionId} data-testid={`ai-pm-answer-reading-${item.questionId}`}>
+              <Fact label="답의 의미" value={item.meaning} />
+              <Fact label="말한 이유" value={item.founderBasis ?? ''} />
+              <Fact label="확인된 것" value={item.observedEvidence ?? ''} />
+              <Fact label="판단의 변화" value={item.judgmentEffect ?? ''} />
+              <Fact label="남은 위험" value={item.openRisk ?? ''} />
+            </div>
+          ))}
+        </div>
+      ) : null}
       <StringList title="핵심 가정과 미확인 사항" items={analysis.assumptions} />
       {analysis.nextVerification ? (
         <div className="space-y-1">
@@ -964,8 +980,11 @@ function AnalysisBlock(props: {
         <Fact label="해결하려는 문제" value={sections.problem} />
         <Fact label="기존 대안" value={analysis.alternatives ?? ''} />
         <Fact label="제공 가치" value={analysis.value} />
+        <Fact label="제품" value={analysis.product ?? ''} />
         <Fact label="차별화" value={analysis.differentiation ?? ''} />
         <Fact label="운영 방식" value={analysis.operatingModel} />
+        <Fact label="공급" value={analysis.supply ?? ''} />
+        <Fact label="마케팅" value={analysis.marketing ?? ''} />
         <Fact label="이용자와 지불자" value={analysis.payer} />
         <Fact label="수익 구조" value={sections.revenueModel} />
         <Fact label="시장성" value={sections.market} />

@@ -148,9 +148,39 @@ export type StagePair = {
   status: 'answered' | 'open';
 };
 
+/** The model's rewrite of the whole business. Code does not fill a blank from the parent. */
+export type StageBusinessProfile = {
+  customer: string;
+  problem: string;
+  value: string;
+  product: string;
+  market: string;
+  revenueModel: string;
+  operations: string;
+  supply: string;
+  marketing: string;
+  competition: string;
+  executionNote: string;
+  risks: string[];
+};
+
 /** Follow-up reanalysis written by the model. Absent on a first review and on a failed parse. */
+export type StageAnswerReading = {
+  questionId: string;
+  choiceId: string;
+  meaning: string;
+  /** Why the founder said this. Absent on readings stored before this field. */
+  founderBasis?: string;
+  /** What was actually confirmed. Absent on readings stored before this field. */
+  observedEvidence?: string;
+  /** What this answer keeps or changes in the prior judgment. */
+  judgmentEffect?: string;
+  /** Unverified risk this answer leaves open. */
+  openRisk?: string;
+};
+
 export type StageReading = {
-  answerInterpretation: { questionId: string; choiceId: string; meaning: string }[];
+  answerInterpretation: StageAnswerReading[];
   impactOnPreviousJudgment: string;
   updatedJudgment: string;
   judgmentReason: string;
@@ -162,6 +192,8 @@ export type StageReading = {
   nextVerification: string;
   nextQuestions: { text: string; choices: string[] }[];
   nextQuestionChoices: string[][];
+  /** Present when the stage response included a whole-business rewrite. */
+  businessProfile?: StageBusinessProfile;
 };
 
 export type ReviewCallNote = {
@@ -257,6 +289,10 @@ export type BusinessAnalysis = {
   nextVerification?: string;
   /** Follow-up questions for the next stage. Absent when the model returned only nextQuestion. */
   questions?: ConsultingQuestion[];
+  /** Present when the model wrote these parts of the business. */
+  product?: string;
+  supply?: string;
+  marketing?: string;
 };
 
 export type ChoiceAnswer = {
