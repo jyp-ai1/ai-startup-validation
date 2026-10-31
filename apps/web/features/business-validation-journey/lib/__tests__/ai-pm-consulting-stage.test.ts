@@ -71,6 +71,7 @@ function contractReply(request: ChatRequest, judgment: string, questions: string
   const nextQuestions = questions.map((text) => ({
     text,
     choices: [`${text} 쪽을 먼저 본다`, `${text} 쪽은 아직 정하지 못했다`],
+    verificationPurpose: `${text}와 다른 불확실성. 아직 확인하지 않은 다음 검증이다`,
   }));
   return JSON.stringify({
     answerInterpretation: answered.map((pair) => ({
@@ -355,7 +356,7 @@ describe('consulting stage batch', () => {
         answerInterpretation: { items: { required: string[]; properties: { meaning: { description: string } } } };
         updatedJudgment: { description: string };
         verifiedFacts: { description: string };
-        nextQuestions: { items: { properties: { text: { description: string } } } };
+        nextQuestions: { items: { required: string[]; properties: { text: { description: string }; verificationPurpose: { description: string } } } };
       };
       expect(meaning.answerInterpretation.items.properties.meaning.description).toContain('choiceLabel');
       expect(meaning.answerInterpretation.items.required).toEqual([
@@ -370,6 +371,8 @@ describe('consulting stage batch', () => {
       expect(meaning.updatedJudgment.description).toContain('unverifiedClaims');
       expect(meaning.verifiedFacts.description).toContain('주장');
       expect(meaning.nextQuestions.items.properties.text.description).toContain('이미 제출된 질문');
+      expect(meaning.nextQuestions.items.properties.verificationPurpose.description).toContain('불확실성');
+      expect(meaning.nextQuestions.items.required).toEqual(['text', 'choices', 'verificationPurpose']);
       expect(request.responseFormat.schema.required).toEqual([
         'answerInterpretation',
         'verifiedFacts',
@@ -1274,6 +1277,8 @@ describe('consulting stage batch', () => {
       sections.analysis.product = '독서 모임';
       sections.analysis.supply = '장소 공급은 입력에 없다';
       sections.analysis.marketing = '알림 방법은 아직 확인되지 않았다';
+      const first = sections.analysis.questions?.[0];
+      if (first) first.verificationPurpose = '지불 의사가 있는지이며 고객이 누구인지는 다시 묻지 않는다';
     }
     const view: AiPmReviewView = {
       reviewId: 'stage-review',
@@ -1326,6 +1331,8 @@ describe('consulting stage batch', () => {
     expect(html).toContain('가격은 얼마인가?');
     expect(html).toContain('어떤 채널로 알리는가?');
     expect(html).toContain('답 저장');
+    expect(html).toContain('확인하려는 불확실성');
+    expect(html).toContain('지불 의사가 있는지이며 고객이 누구인지는 다시 묻지 않는다');
     expect(html).toContain('이번 답의 해석');
     expect(html).toContain('직장인 답은 고객 가설이지 확인된 수요가 아니다');
     expect(html).toContain('입력에 직장인이라고 적혀 있다');
@@ -1550,5 +1557,61 @@ describe('consulting stage batch', () => {
     const parent = await store.readReview('user-repeat-answer', repeatFirst.record.reviewId);
     expect(parent?.finishedAt).toBe(repeatFirst.record.finishedAt);
     expect(parent?.sections?.customer).toBe('직장인');
+  });
+
+  it('rejects a new question whose purpose copies an earlier question', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const calls: ChatRequest[] = [];
+    const chat = async (request: ChatRequest) => {
+      calls.push(request);
+      const payload = requestPayload(request);
+      if (!payload || !Array.isArray(payload.stagePairs)) {
+        return reply(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS));
+      }
+      const parsed = JSON.parse(
+        contractReply(request, '목적은 이전 질문과 같다. 이유는 검증이 달라지지 않기 때문이다.', SECOND_QUESTIONS),
+      ) as { nextQuestions: Array<{ verificationPurpose: string }> };
+      const firstPurpose = parsed.nextQuestions[0];
+      if (firstPurpose) firstPurpose.verificationPurpose = FIRST_QUESTIONS[0]!;
+      return reply(JSON.stringify(parsed));
+    };
+    const base = {
+      store,
+      userId: 'user-purpose',
+      projectId: 'project-purpose',
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const first = await runFirstReview({ ...base, text: `${IDEA} 목적.`, origin: 'typed', fileName: null });
+    const failed = await submitConsultingStage({
+      ...base,
+      reviewId: first.record.reviewId,
+      answers: [
+        { questionId: 'q1', comment: '직장인을 고객으로 본다' },
+        { questionId: 'q2', comment: '가격은 정하지 않았다' },
+        { questionId: 'q3', comment: '온라인 게시로 알린다' },
+      ],
+    });
+    expect(failed.ok).toBe(true);
+    if (!failed.ok) return;
+    expect(failed.called).toBe(true);
+    expect(failed.record.callCount).toBe(1);
+    expect(failed.record.status).toBe('failed');
+    expect(failed.record.sections).toBeNull();
+    expect(failed.record.error).toContain('stage_questions_repeated');
+    expect(failed.record.rawContent).toContain(FIRST_QUESTIONS[0]);
+    expect(calls).toHaveLength(2);
+    const again = await submitConsultingStage({
+      ...base,
+      reviewId: first.record.reviewId,
+      answers: [
+        { questionId: 'q1', comment: '직장인을 고객으로 본다' },
+        { questionId: 'q2', comment: '가격은 정하지 않았다' },
+        { questionId: 'q3', comment: '온라인 게시로 알린다' },
+      ],
+    });
+    expect(again.ok && !again.called).toBe(true);
+    expect(calls).toHaveLength(2);
   });
 });

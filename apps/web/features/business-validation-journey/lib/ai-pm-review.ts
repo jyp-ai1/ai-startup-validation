@@ -1835,12 +1835,17 @@ function stageReanalysisSchema(): Record<string, unknown> {
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['text', 'choices'],
+          required: ['text', 'choices', 'verificationPurpose'],
           properties: {
             text: {
               type: 'string',
               description:
-                'unresolvedIssues 중 다음 판단을 가장 크게 바꾸는 하나만 묻는다. 이미 제출된 질문, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다.',
+                'unresolvedIssues 중 다음 판단을 가장 크게 바꾸는 하나만 묻는다. 이미 제출된 질문, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다. 표현만 바꾼 같은 검증도 다시 묻지 않는다.',
+            },
+            verificationPurpose: {
+              type: 'string',
+              description:
+                '이 질문이 확인하려는 불확실성. 질문 문장, 이전 질문, 선택, 보충, 이미 해결된 문제와 같으면 실패다. 같은 검증을 다른 말로 적은 목적은 실패다.',
             },
             choices: {
               type: 'array',
@@ -1863,16 +1868,16 @@ function stageReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다.',
     '이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
-    '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 사업에 의미하는 바다. founderBasis는 Founder가 그렇게 말한 이유다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다.',
+    '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 사업에 의미하는 바다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다.',
     '2. 확인된 사실, 주장, 가설을 가른다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다.',
     '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 입력과 답에 없으면 없다고 적는다. 빈 문자열로 두지 않는다. 부모 문장을 베끼지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다.',
     '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 적는다. 판단을 유지했는지 바꿨는지와 그 이유를 이번 답의 judgmentEffect와 연결한다. priorJudgmentText를 이어 쓰지 않는다. 코드는 결론을 정하지 않는다.',
-    '5. 다음 검증 질문은 당신이 고른다. 사업 전체에서 다음 판단을 가장 크게 바꾸는 미해결을 묻는다. 이미 한 질문 문장, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다.',
+    '5. 다음 검증 질문은 당신이 고른다. priorStagePairs, 이번 답, resolvedIssues, unresolvedIssues를 보고 지금 사업에서 가장 큰 불확실성을 고른다. verificationPurpose에 그 불확실성을 적는다. 이미 한 질문, 선택, 보충, 해결된 문제를 다른 말로 다시 묻지 않는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'JSON만 반환한다.',
     '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
     'answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
-    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text와 choices다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
+    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. verificationPurpose는 질문 문장과 다른 불확실성이다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
   ].join(' ');
 }
@@ -2856,11 +2861,12 @@ function judgeStageContract(
       }
       const text = textField((item as { text?: unknown }).text);
       const choices = stringArrayField((item as { choices?: unknown }).choices);
-      if (!text || !choices) {
+      const verificationPurpose = textField((item as { verificationPurpose?: unknown }).verificationPurpose);
+      if (!text || !choices || !verificationPurpose) {
         issues.push('stage_fields_missing');
         break;
       }
-      nextQuestions.push({ text, choices });
+      nextQuestions.push({ text, choices, verificationPurpose });
     }
   }
   const nextQuestionChoices: string[][] = [];
@@ -2927,7 +2933,15 @@ function judgeStageContract(
       .map(compactQuestion)
       .filter((text) => text.length > 0),
   );
-  if (reading && texts.some((text) => asked.has(compactQuestion(text)) || closed.has(compactQuestion(text)))) issues.push('stage_questions_repeated');
+  const purposes = reading?.nextQuestions.map((item) => compactQuestion(item.verificationPurpose ?? '')) ?? [];
+  const purposeRepeats =
+    Boolean(reading) &&
+    (purposes.some((purpose) => purpose.length === 0 || closed.has(purpose)) ||
+      new Set(purposes).size !== purposes.length ||
+      reading?.nextQuestions.some((item) => compactQuestion(item.verificationPurpose ?? '') === compactQuestion(item.text)));
+  if (reading && (texts.some((text) => asked.has(compactQuestion(text)) || closed.has(compactQuestion(text))) || purposeRepeats)) {
+    issues.push('stage_questions_repeated');
+  }
   const uniqueIssues = [...new Set(issues)];
   if (uniqueIssues.length > 0 || !reading || !businessProfile) return { sections: null, issues: uniqueIssues.length > 0 ? uniqueIssues : ['stage_fields_missing'], reading };
   const firstChoices = choicesFromLabels(reading.nextQuestions[0]?.choices ?? []);
@@ -2935,6 +2949,7 @@ function judgeStageContract(
     questionId: `q${index + 1}`,
     text: item.text,
     choices: choicesFromLabels(item.choices),
+    ...(item.verificationPurpose ? { verificationPurpose: item.verificationPurpose } : {}),
   }));
   const sections: ReviewSections = {
     customer: businessProfile.customer,

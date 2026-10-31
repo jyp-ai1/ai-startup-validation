@@ -1019,6 +1019,11 @@ function AnalysisBlock(props: {
             return (
               <div key={question.questionId} className="space-y-2" data-question-id={question.questionId}>
                 <p className="text-sm font-medium">{question.text}</p>
+                {question.verificationPurpose ? (
+                  <p className="text-xs text-muted-foreground" data-testid={`ai-pm-verification-purpose-${question.questionId}`}>
+                    확인하려는 불확실성: {question.verificationPurpose}
+                  </p>
+                ) : null}
                 {choices.length > 0 ? (
                   <fieldset className="space-y-2">
                     <legend className="text-sm">하나를 고르거나 직접 적습니다</legend>

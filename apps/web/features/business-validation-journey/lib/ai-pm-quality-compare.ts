@@ -792,6 +792,75 @@ export function buildQuality14InputRequests(): Array<{ inputId: string; promptVe
 }
 
 /**
+ * Separate from quality-2. The product route does not call this.
+ * Same business input as buildQuality2CompareRequest so the two requests can be compared.
+ */
+export const QUALITY15_PROMPT_VERSION = 'quality-15-whole-business';
+
+export const QUALITY15_ABSENT = '이 입력에서는 확인되지 않음';
+
+export const QUALITY15_OUTPUT_KEYS = `${QUALITY5_OUTPUT_KEYS}, product, supply, marketing`;
+
+export const QUALITY15_SYSTEM_PROMPT = [
+  '프롬프트 버전 quality-15-whole-business.',
+  '당신은 초기 창업자의 사업 전체 구조를 검토하는 전략 파트너다. 이 문장은 제품의 quality-2 요청이 아니다.',
+  'JSON 객체만 반환한다.',
+  `키는 ${QUALITY15_OUTPUT_KEYS} 이다.`,
+  'customer, problem, value, product, supply, marketing, market, revenueModel, operations, competition은 비어 있지 않은 문자열이다.',
+  `입력에 없는 영역은 ${QUALITY15_ABSENT}이라고 적는다. 빈 문자열은 실패다.`,
+  'product는 고객이 사고 경험하는 것이다. supply는 그것을 제공하는 주체와 파트너 구조다. marketing은 누구에게 어떻게 알리고 판매하는가다.',
+  '입력이 이용자의 경험과 공급자 지원을 함께 말하면, product, supply, marketing, operatingModel, revenueModel에 그 연결을 입력에 있는 만큼 적는다. 누가 경험을 사고, 누가 제공하고, 누가 알리고, 예약과 운영과 수익 배분이 입력에 없으면 그 칸은 확인되지 않음이다.',
+  '입력에 없는 가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정을 만들지 않는다. 가능한 수익은 가설이라고 적고 새 숫자를 붙이지 않는다.',
+  'questions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 이미 입력에 있는 문장을 다시 묻지 않는다.',
+  '모델이나 공급사 이름은 쓰지 않는다.',
+].join('\n');
+
+export function buildQuality15CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
+  return {
+    model: AI_PM_REVIEW_MODEL,
+    temperature: 0.2,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: QUALITY15_SYSTEM_PROMPT },
+      {
+        role: 'user',
+        content: `사업 입력:\n${text}\n\n프롬프트 버전 ${QUALITY15_PROMPT_VERSION}.\n키: ${QUALITY15_OUTPUT_KEYS}.\n입력에 없는 칸은 ${QUALITY15_ABSENT}. 가격과 시장 숫자는 입력에 있는 것만 적는다.`,
+      },
+    ],
+  };
+}
+
+const WHOLE_BUSINESS_FIELDS = ['customer', 'problem', 'value', 'product', 'supply', 'marketing', 'market', 'revenueModel', 'operations', 'competition'] as const;
+
+/** Structure gate for the quality-15 draft. It does not score strategy quality and it does not parse a product review. */
+export function gradeWholeBusinessDraft(content: string, sourceText: string): { status: 'pass' | 'fail'; issues: string[] } {
+  let parsed: Record<string, unknown>;
+  try {
+    const value = JSON.parse(content) as unknown;
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return { status: 'fail', issues: ['invalid_json'] };
+    parsed = value as Record<string, unknown>;
+  } catch {
+    return { status: 'fail', issues: ['invalid_json'] };
+  }
+  const issues: string[] = [];
+  for (const field of WHOLE_BUSINESS_FIELDS) {
+    const text = typeof parsed[field] === 'string' ? parsed[field].trim() : '';
+    if (!text) issues.push(`${field}_missing`);
+    else if (fieldHasInventedFigure(text, sourceText)) issues.push(`${field}_invented_figure`);
+  }
+  return { status: issues.length > 0 ? 'fail' : 'pass', issues };
+}
+
+function fieldHasInventedFigure(field: string, sourceText: string): boolean {
+  const matches = field.match(/\d[\d,.]*(?:\s*(?:만원|원|%))?/g) ?? [];
+  return matches.some((token) => {
+    const digits = token.replace(/[^\d]/g, '');
+    return digits.length > 0 && !sourceText.includes(digits);
+  });
+}
+
+/**
  * Structure gate only. Not the product follow-up route and not a quality verdict.
  * The founder choice and supplement are synthetic test data.
  */
@@ -1578,6 +1647,42 @@ export async function executeQualityCompare(env: Record<string, string | undefin
     calls: [
       await oneCall(chat, AI_PM_FIRST_PROMPT_VERSION, quality2),
       await oneCall(chat, QUALITY3_PROMPT_VERSION, quality3),
+    ],
+  };
+}
+
+/** quality-2 and quality-15 on the same input. Does not call the product follow-up. A missing key stores no response. */
+export async function executeWholeBusinessCompare(
+  env: Record<string, string | undefined> = process.env,
+): Promise<CompareReport> {
+  const quality2 = buildQuality2CompareRequest();
+  const quality15 = buildQuality15CompareRequest();
+  const base = {
+    model: AI_PM_REVIEW_MODEL as typeof AI_PM_REVIEW_MODEL,
+    temperature: 0.2 as const,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS as typeof AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: 'json_object' as const,
+    businessInput: COMPARE_BUSINESS_INPUT,
+    confounders: compareConfounders(),
+    productFollowUpInvoked: false as const,
+  };
+  const apiKey = readGptApiKey(env);
+  if (!apiKey) {
+    return {
+      ...base,
+      status: 'NOT RUN',
+      reason: 'GPT_API_KEY missing',
+      calls: [notRunCall(AI_PM_FIRST_PROMPT_VERSION, quality2), notRunCall(QUALITY15_PROMPT_VERSION, quality15)],
+    };
+  }
+  const chat = (request: ChatRequest) => new OpenAIProviderAdapter({ apiKey }).chat(request);
+  return {
+    ...base,
+    status: 'RECORDED',
+    reason: null,
+    calls: [
+      await oneCall(chat, AI_PM_FIRST_PROMPT_VERSION, quality2),
+      await oneCall(chat, QUALITY15_PROMPT_VERSION, quality15),
     ],
   };
 }

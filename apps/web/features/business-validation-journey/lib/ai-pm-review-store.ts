@@ -125,6 +125,8 @@ export type ConsultingQuestion = {
   text: string;
   /** Choices for this question. Absent when the model returned only the question text. */
   choices?: ReviewChoice[];
+  /** Uncertainty this question verifies. Absent on questions stored before this field. */
+  verificationPurpose?: string;
 };
 
 /** One option the founder was shown for a question. This is not a sentence to copy. */
@@ -190,7 +192,7 @@ export type StageReading = {
   resolvedIssues: string[];
   unresolvedIssues: string[];
   nextVerification: string;
-  nextQuestions: { text: string; choices: string[] }[];
+  nextQuestions: { text: string; choices: string[]; verificationPurpose?: string }[];
   nextQuestionChoices: string[][];
   /** Present when the stage response included a whole-business rewrite. */
   businessProfile?: StageBusinessProfile;
