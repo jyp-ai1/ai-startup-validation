@@ -493,7 +493,7 @@ export function buildFirstReviewRequest(text: string): ChatRequest {
       { role: 'system', content: firstReviewSystemPrompt() },
       {
         role: 'user',
-        content: `사업 입력:\n${text}\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 2개 이상이다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 questions 첫 text와 같다. questions가 없거나 하나면 상담 단계가 아니다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다.`,
+        content: `사업 입력:\n${text}\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 1개 이상이다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 questions 첫 text와 같다. questions가 없거나 비어 있으면 상담 단계가 아니다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다.`,
       },
     ]),
   };
@@ -1313,7 +1313,7 @@ export function productReadingRepairMessage(issues: string[], context?: { supple
     lines.push('방금 답한 기준 질문을 다시 묻지 않는다. 다음 질문에는 기준을 넣지 않는다. 접근 경로, 협력 의사, 협력 조건 중 하나만 묻는다.');
   }
   if (issues.includes('stage_questions_missing') || issues.includes('stage_questions_repeated')) {
-    lines.push('questions는 다음 단계의 서로 다른 검증 질문 2개 이상이다. 이미 답한 질문 문장을 반복하지 않는다. nextQuestion은 questions의 첫 질문과 같다.');
+    lines.push('questions는 다음 단계의 서로 다른 검증 질문 1개 이상이다. 이미 답한 질문 문장을 반복하지 않는다. nextQuestion은 questions의 첫 질문과 같다.');
   }
   lines.push('JSON만 반환한다.');
   return lines.join(' ');
@@ -1636,9 +1636,9 @@ function productReanalysisSchema(): Record<string, unknown> {
       choices: { ...list, description: '이번 질문에 답하는 서로 다른 선택 두 개 이상. priorChoices와 같은 문장을 두지 않는다.' },
       questions: {
         type: 'array',
-        minItems: 2,
+        minItems: 1,
         description:
-          '다음 상담 단계의 서로 다른 검증 질문 2개 이상. 첫 질문의 text는 nextQuestion과 같다. 이미 답한 질문 문장을 반복하지 않는다.',
+          '다음 상담 단계의 서로 다른 검증 질문 1개 이상. 개수는 모델이 정한다. 첫 질문의 text는 nextQuestion과 같다. 이미 답한 질문 문장을 반복하지 않는다.',
         items: {
           type: 'object',
           additionalProperties: false,
@@ -1688,7 +1688,7 @@ function productReanalysisSystemPrompt(): string {
     'answerReading.kinds는 그 답의 성격이다. fact는 후보가 아직 없다는 현재 상태이고 확인된 협력이 아니다. claim은 Founder의 주장이고 확인된 사실이 아니다. 가능성이 높다는 문장은 claim이며 fact가 아니다. plan은 앞으로의 계획이다. choice는 고른 항목이다. 이 구분은 사업성 점수가 아니다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
-    'questions는 다음 단계의 서로 다른 검증 질문 2개 이상이다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 첫 text와 같다. 배열이 없거나 질문 하나면 실패다.',
+    'questions는 다음 단계의 서로 다른 검증 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 첫 text와 같다. 배열이 없거나 비어 있으면 실패다.',
     '새 답이 없어도 evidenceLedger.unresolved는 판단, 가정, 위험, 다음 검증, 다음 질문에 남는다.',
   ].join(' ');
 }
@@ -1781,9 +1781,9 @@ function stageReanalysisSchema(): Record<string, unknown> {
       },
       nextQuestions: {
         type: 'array',
-        minItems: 2,
+        minItems: 1,
         description:
-          'unresolvedIssues만 묻는 서로 다른 질문. resolvedIssues와 supplement에 이미 있는 문장을 다시 묻지 않는다.',
+          'unresolvedIssues만 묻는 서로 다른 질문 1개 이상. 개수는 모델이 정한다. resolvedIssues와 supplement에 이미 있는 문장을 다시 묻지 않는다.',
         items: {
           type: 'object',
           additionalProperties: false,
@@ -1825,7 +1825,7 @@ function stageReanalysisSystemPrompt(): string {
     'JSON만 반환한다.',
     '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
     'answerInterpretation은 이번 stagePairs의 questionId만 담는다. priorStagePairs의 questionId는 넣지 않는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
-    'nextQuestions는 서로 다른 질문 2개 이상이다. 각 원소는 text와 choices다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
+    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text와 choices다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
   ].join(' ');
 }
@@ -2550,7 +2550,7 @@ export function consultingQuestions(sections: ReviewSections | null | undefined)
 
 /**
  * Links each question to the latest feedback with that questionId.
- * A feedback row without questionId answers q1 only when the stage has one question.
+ * A feedback row without questionId stays unused. It is not an answer to q1.
  */
 function offeredFrom(question: ConsultingQuestion): StagePair['offeredChoices'] {
   return (question.choices ?? [])
@@ -2560,12 +2560,7 @@ function offeredFrom(question: ConsultingQuestion): StagePair['offeredChoices'] 
 
 export function pairConsultingStage(questions: ConsultingQuestion[], feedback: StoredFeedback[]): StagePair[] {
   return questions.map((question) => {
-    const matched = [...feedback].reverse().find((item) => item.questionId === question.questionId);
-    const legacy =
-      !matched && questions.length === 1
-        ? [...feedback].reverse().find((item) => !item.questionId && (item.choiceAnswer || item.comment.trim()))
-        : undefined;
-    const item = matched ?? legacy;
+    const item = [...feedback].reverse().find((item) => item.questionId === question.questionId);
     const offeredChoices = offeredFrom(question);
     if (!item) {
       return {
@@ -2612,10 +2607,10 @@ export function founderAnswerKinds(pair: { choiceLabel: string | null; supplemen
   return kinds;
 }
 
-/** A new stage needs the model's question array. A lone nextQuestion is not a successful stage. */
+/** A stage is the model's question array. One question is enough. A lone nextQuestion is not a stage. */
 export function acceptedStageQuestions(sections: ReviewSections | null | undefined): boolean {
   const questions = sections?.analysis?.questions ?? [];
-  if (questions.length < 2) return false;
+  if (questions.length < 1) return false;
   const ids = new Set(questions.map((item) => item.questionId.trim()));
   const texts = new Set(questions.map((item) => item.text.trim()));
   return ids.size === questions.length && texts.size === questions.length && [...texts].every((text) => text.length > 0);
@@ -2817,7 +2812,7 @@ function judgeStageContract(
     reading.answerInterpretation.every((item) => answered.some((pair) => pair.questionId === item.questionId));
   if (reading && !linked) issues.push('choice_link_mismatch');
   const texts = reading?.nextQuestions.map((item) => item.text) ?? [];
-  if (!reading || texts.length < 2 || new Set(texts.map(compactQuestion)).size !== texts.length) issues.push('stage_questions_missing');
+  if (!reading || texts.length < 1 || new Set(texts.map(compactQuestion)).size !== texts.length) issues.push('stage_questions_missing');
   const menus = reading?.nextQuestions ?? [];
   const matrix = reading?.nextQuestionChoices ?? [];
   const menusMissing =
@@ -2908,8 +2903,6 @@ export async function runStageReanalysis(input: {
   const supplementSha = sha256(supplementKey);
   const sourceFeedbackId =
     [...feedback].reverse().find((item) => item.questionId && answered.some((pair) => pair.questionId === item.questionId))?.feedbackId ??
-    (questions.length === 1 ? ([...feedback].reverse().find((item) => !item.questionId)?.feedbackId ?? null) : null) ??
-    feedback.at(-1)?.feedbackId ??
     null;
   const stagePartial = !stageComplete(pairs);
   const records = await input.store.listReviews(input.userId, input.projectId);
@@ -4345,7 +4338,7 @@ function firstReviewSystemPrompt(): string {
     '사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다.',
     '고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다.',
     '가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다.',
-    '분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 2개 이상으로 questions에 둔다. 각 질문은 text와 그 질문의 choices를 가진다. nextQuestion은 첫 text와 같다. 질문이 하나이거나 배열이 없으면 상담 단계가 아니다.',
+    '분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 1개 이상으로 questions에 둔다. 개수는 모델이 정한다. 각 질문은 text와 그 질문의 choices를 가진다. nextQuestion은 첫 text와 같다. 질문이 없거나 배열이 없으면 상담 단계가 아니다.',
     '모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다.',
     '선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다.',
     'JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다.',
