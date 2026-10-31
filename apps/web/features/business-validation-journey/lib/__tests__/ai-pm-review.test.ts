@@ -5203,6 +5203,9 @@ describe('AI PM first review', () => {
     expect(payload.founderSupplement).toBe(supplement);
     expect(payload.verificationStage.nextPurpose).toBe('candidate_name');
     expect(payload.verificationStage.factToAsk).not.toBe(previous);
+    expect(payload.verificationStage).toMatchObject({
+      choiceTexts: ['떠오르는 양조장 이름이 있다', '아직 떠오르는 양조장이 없다'],
+    });
   });
 
   it('cites a failed review answer without moving it onto the succeeded parent', async () => {

@@ -710,6 +710,7 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
   factToAsk: string;
   verificationText: string;
   reasonText: string;
+  choiceTexts: string[];
 } {
   const supplement = input.supplement.trim();
   const answerHasContactResult = /연락했|미팅했|만났|회신|반응을 받/.test(supplement);
@@ -724,6 +725,7 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
       factToAsk: '상대와 역할, 비용, 수익 배분, 운영 책임 중 정해진 항목을 알려주세요.',
       verificationText: '역할, 비용, 수익 배분, 운영 책임 중 정해진 항목 확인',
       reasonText: '상대의 긍정 반응 다음으로 역할, 비용, 수익 배분, 운영 책임 중 정해진 항목을 확인하기 위한 것이다.',
+      choiceTexts: ['역할과 비용이 정해졌다', '아직 역할과 비용이 없다'],
     };
   }
   if (answerHasContactResult) {
@@ -735,6 +737,7 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
       factToAsk: '접촉한 양조장의 반응과 후속 협의 일정을 알려주세요.',
       verificationText: '접촉한 양조장의 반응과 후속 협의 일정 확인',
       reasonText: '이미 접촉한 양조장의 반응과 후속 협의 일정을 확인하기 위한 것이다.',
+      choiceTexts: ['상대의 반응을 들었다', '아직 반응이 없다'],
     };
   }
   if (answerHasNamedTarget) {
@@ -746,6 +749,7 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
       factToAsk: '그 양조장에 실제로 연락하거나 미팅했나요? 했다면 상대의 반응을 알려주세요.',
       verificationText: '선정한 양조장에 실제 연락하거나 미팅했는지와 상대 반응 확인',
       reasonText: '이미 정한 양조장에 연락하거나 미팅했는지와 상대의 반응을 확인하기 위한 것이다.',
+      choiceTexts: ['그 양조장에 연락했다', '아직 연락하지 않았다'],
     };
   }
   const askedNamedTarget = input.previousQuestions.some((question) => questionVerificationStage(question) === 'named_target_and_path');
@@ -760,6 +764,7 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
       factToAsk: CANDIDATE_NAME_QUESTION,
       verificationText: CANDIDATE_NAME_VERIFICATION,
       reasonText: CANDIDATE_NAME_REASON,
+      choiceTexts: ['떠오르는 양조장 이름이 있다', '아직 떠오르는 양조장이 없다'],
     };
   }
   return {
@@ -770,6 +775,7 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
     factToAsk: NAMED_TARGET_QUESTION,
     verificationText: NAMED_TARGET_VERIFICATION,
     reasonText: NAMED_TARGET_REASON,
+    choiceTexts: ['이름과 연락 경로를 적을 수 있다', '아직 정한 양조장이 없다'],
   };
 }
 
@@ -1020,7 +1026,7 @@ function productReanalysisSystemPrompt(): string {
     'nextQuestion은 verificationStage.factToAsk와 같은 한 질문이다. 다른 문장을 붙이지 않는다. 이번 답에 연락하거나 미팅한 결과와 양조장 이름이 없으면 한 곳을 정했는지, 그 이름, 담당자 또는 연락 경로를 사실로 묻는다. 방법, 구축, 계획, 어떻게, 어떤 방식, 방안, 구체화, 다음 단계를 붙이면 실패다. 협력 가능성이 높은지를 다시 묻지 않는다. priorQuestionTexts와 같거나 표현만 바꾼 계획 질문이면 실패다.',
     'nextVerification은 verificationStage.verificationText와 같은 한 문장이다. 구축 계획으로 바꾸지 않는다.',
     'nextQuestionReason은 verificationStage.reasonText와 같은 한 문장이다. 실제 접촉 여부를 확인한다고 바꾸지 않는다.',
-    'founderChoice는 다음에 검증할 우선순위다. 양조장을 정했거나 연락했다는 사실이 아니다. founderFacts에 넣지 않는다. priorChoices와 같은 문장을 choices에 두지 않는다.',
+    'founderChoice는 다음에 검증할 우선순위다. 양조장을 정했거나 연락했다는 사실이 아니다. founderFacts에 넣지 않는다. choices의 앞 두 문장은 verificationStage.choiceTexts와 같다. priorChoices와 같은 문장을 앞에 두지 않는다.',
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',

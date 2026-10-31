@@ -37,7 +37,7 @@ const SIBLING_ANALYSIS_ID = '8602a92e-0fbd-4d93-a005-9c9f18410ac6';
 const CHOICE_PARENT_ID = '524878d3-43e0-41d3-b72b-c17795440473';
 const CHOICE_LABEL = '양조장과의 협력 방안 구체화';
 const CHOICE_SUPPLEMENT = '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.';
-const CHOICE_OBJECT = 'product-choice-round-2026-10-31.json';
+const CHOICE_OBJECT = 'product-choice-round-2026-10-31-b.json';
 
 describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
   it('reuses the stored answer for one product follow-up', async () => {
@@ -357,7 +357,14 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
     const selected = parent?.sections?.analysis?.choices.find((choice) => choice.label === CHOICE_LABEL);
     expect(selected?.id).toBeTruthy();
     const preserved = await Promise.all(
-      [PARENT_ID, QUALITY_PARENT_ID, CHOICE_PARENT_ID, 'cd47a15a-27dd-4ad1-adff-316bc2dfae02', 'aaf5759f-8d9a-46cd-ba2b-c7693a31589d'].map(
+      [
+        PARENT_ID,
+        QUALITY_PARENT_ID,
+        CHOICE_PARENT_ID,
+        'cd47a15a-27dd-4ad1-adff-316bc2dfae02',
+        'aaf5759f-8d9a-46cd-ba2b-c7693a31589d',
+        '1ac01e37-d90f-414b-aa51-883a118f6dd9',
+      ].map(
         (reviewId) => backend.store.readReview(userId, reviewId),
       ),
     );
