@@ -655,7 +655,7 @@ A에서 B로 피벗한 뒤 A로 돌아오면 B의 멤버, 검토, 피드백, 프
 | 단계 체인 | 분기 내부의 `parent_review_id` | 피벗 1차의 부모는 null |
 | 답 저장 0회, 완료 1회, 중복 재사용 | `submitConsultingStage` | 인정 개수를 1개 이상으로 |
 | 실패 원문 보존 | 단계 `finishCall` | 피벗 1차도 같은 방식. 수리 없음 |
-| 계보 인용 | `founderAnswerSource`의 의미 | `consulting_lineage_links`. 옛 행은 미수정 |
+| 계보 인용 | `founderAnswerSource`의 의미 | 13.1의 증명 필드. 불일치 질문에 답을 붙이지 않음 |
 | 사업 필드 | 라벨이 같은 칸의 의미 | 분기별 프로필 버전. 다른 분기 덮어쓰기 없음. 13.2절 |
 | 최초 호출 형태 | 모델과 토큰 한도 | `buildPivotFirstReviewRequest`. `runFirstReview` 재사용 안 함 |
 | 화면 | 기존 상담 패널 | 초안, 확정, 분기 전환 |
