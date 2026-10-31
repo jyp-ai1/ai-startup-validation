@@ -8,6 +8,7 @@ import {
   openReviewChat,
   questionAsksForPlan,
   questionRepeatsPrior,
+  questionSameContactStage,
   runFollowUpReview,
   unverifiedClaimStoredAsFact,
 } from '../ai-pm-review';
@@ -24,7 +25,7 @@ const ANSWER_ID = '7d2d04e5-93a1-4cd6-aebf-03582eeb003f';
 const SUPPLEMENT = '양조장과의 협력 가능성이 높다.';
 const BUCKET = 'ai-pm-quality-compare';
 const OBJECT = 'product-cumulative-brewery-2026-10-31.json';
-const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-g.json';
+const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-h.json';
 const QUALITY_PARENT_ID = '9e169fef-7428-4d21-a6f0-f3034bcc91d1';
 const SIBLING_ANALYSIS_ID = '8602a92e-0fbd-4d93-a005-9c9f18410ac6';
 
@@ -178,6 +179,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
         'eb645c94-c0eb-4a27-afee-32dca258ee6b',
         '287badc3-444e-4a09-8cd8-3d012671afa9',
         '970b8ce1-3e4b-4840-834f-2c6a87b2ec54',
+        'd1a1ed43-b830-46e9-8da6-beaa9afcec74',
       ].map((reviewId) => backend.store.readReview(userId, reviewId)),
     );
     const records = await backend.store.listReviews(userId, PROJECT_ID);
@@ -239,7 +241,9 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
         const claimIsFact = unverifiedClaimStoredAsFact(SUPPLEMENT, facts);
         const repeated = questionRepeatsPrior(previousQuestions, nextQuestion);
         const planQuestion = questionAsksForPlan(nextQuestion);
-        const contactFact = /연락|미팅|접촉/.test(nextQuestion) && !planQuestion;
+        const sameContactStage = questionSameContactStage(previousQuestions, nextQuestion);
+        const advanced =
+          /골랐|선정|경로|닿|접근/.test(nextQuestion) && !planQuestion && !repeated && !sameContactStage;
         const explains = /유지/.test(judgment) && /이유/.test(judgment);
         const parentAssumptions = parent?.sections?.analysis?.assumptions ?? [];
         const assumptions = result.record.sections.analysis.assumptions;
@@ -247,13 +251,14 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
           JSON.stringify(assumptions) !== JSON.stringify(parentAssumptions) &&
           assumptions.some((item) => /검증되지 않은 전제/.test(item));
         const evidenceText = [judgment, ...result.record.sections.analysis.inferences, ...assumptions].join('\n');
-        const evidenceLevel = /기대|자체 판단/.test(evidenceText);
+        const evidenceLevel = /기대|자체 판단|주장/.test(evidenceText) && /증거|근거/.test(evidenceText);
+        const separated = facts.length === 0 && /미확인|확인되지|확인된 사실은 없|아직/.test(evidenceText);
         const evidenceMoved = result.record.sections.analysis.evidenceToChange.some(
-          (item) => item !== SUPPLEMENT && /전제|영향|이유/.test(item),
+          (item) => item !== SUPPLEMENT && /실행|가설|영향|가능/.test(item),
         );
         const touched = [judgment, ...result.record.sections.risks, ...assumptions, ...result.record.sections.analysis.inferences, ...result.record.sections.analysis.evidenceToChange].join('\n');
         const reflects = /협력/.test(touched);
-        const risksMoved = result.record.sections.risks.some((item) => /접촉|협력 의사/.test(item));
+        const risksMoved = result.record.sections.risks.some((item) => /접촉|협력 의사|조건/.test(item));
         const oneCall = result.record.callCount === 1;
         const parentJudgment = parent?.sections?.analysis?.judgmentDetail || parent?.sections?.judgment || '';
         const copiedJudgment = judgment.replace(/\s+/g, '') === parentJudgment.replace(/\s+/g, '');
@@ -261,12 +266,14 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
           !claimIsFact &&
           !repeated &&
           !planQuestion &&
-          contactFact &&
+          !sameContactStage &&
+          advanced &&
           explains &&
           reflects &&
           risksMoved &&
           assumptionsMoved &&
           evidenceLevel &&
+          separated &&
           evidenceMoved &&
           !copiedJudgment;
         marker = {
@@ -297,7 +304,8 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
           claimIsFact,
           repeated,
           planQuestion,
-          contactFact,
+          sameContactStage,
+          advanced,
           explains,
           reflects,
           risksMoved,

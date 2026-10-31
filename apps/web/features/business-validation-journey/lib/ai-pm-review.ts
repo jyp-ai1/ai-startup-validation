@@ -660,6 +660,18 @@ export function questionAsksForPlan(question: string): boolean {
 }
 
 /**
+ * A past-contact question and a reword of that stage are the same verification step.
+ * Choosing whom to contact, or whether they can be reached, is the next step.
+ */
+export function questionSameContactStage(previous: string[], next: string): boolean {
+  const pastContact = (value: string) =>
+    /연락|미팅|만나|접촉/.test(value) &&
+    /한 적|했나|있나요|받았|반응|답변/.test(value) &&
+    !/골랐|선정|경로|닿|접근/.test(value);
+  return pastContact(next) && previous.some(pastContact);
+}
+
+/**
  * Prior succeeded analyses of the same input, excluding the root and the current parent.
  * A failed review stays out. A turn that only repeats the current answer is not sent twice.
  * The citation points at the stored feedback row and does not copy it onto this parent.
@@ -794,21 +806,28 @@ function productReanalysisSchema(): Record<string, unknown> {
       profitability: text,
       strengths: list,
       risks: { ...list, description: '이번 답이 드러낸 미확인을 새 문장으로 포함한다.' },
-      assumptions: { ...list, description: '첫 문장은 이번 답을 검증되지 않은 전제라고 적는다. 이전 가정만 반복하면 실패다.' },
+      assumptions: {
+        ...list,
+        description: '첫 문장은 이번 답을 검증되지 않은 전제라고 적는다. 사업 실행의 긍정적 가설도 적는다. 이전 가정만 반복하면 실패다.',
+      },
       evidenceToChange: {
         ...list,
-        description: '검증되지 않은 전제라 판단을 바꾸지 못한다고 적는다. 답 문장만 두지 않는다.',
+        description: '답이 판단과 실행 가능성에 주는 영향을 적는다. 답 문장만 두지 않는다. 유지해도 잠재적 의미를 적는다.',
       },
       founderFacts: { ...list, description: '확인된 접촉, 계약, 입금, 예약만. 없으면 빈 배열.' },
-      inferences: { ...list, description: '근거 수준은 Founder의 기대 또는 자체 판단이라고 적는다.' },
+      inferences: {
+        ...list,
+        description: '답 유형, 구체적 근거의 유무, 확인된 사실, 미확인 사항을 구분한다. 이전 문장을 복사하지 않는다.',
+      },
       judgment: {
         type: 'string',
-        description: '문자열이다. 유지와 이유, 근거 수준, 반영하지 못한 부분을 한 문자열에 적는다. 객체가 아니다.',
+        description: '문자열이다. 유지 또는 변경, 이유, 답이 판단에 주는 영향을 한 문자열에 적는다. 객체가 아니다.',
       },
       nextVerification: text,
       nextQuestion: {
         type: 'string',
-        description: '이미 일어났는지 묻는 질문 하나. 계획, 어떻게, 구축을 넣지 않는다.',
+        description:
+          '이전 질문이 연락이나 미팅 결과를 물었으면 그 단계를 반복하지 않는다. 접촉 결과가 없으면 양조장 선정과 닿을 경로를 묻는 질문 하나. 계획, 어떻게, 구축을 넣지 않는다.',
       },
       nextQuestionReason: text,
       choices: list,
@@ -819,18 +838,17 @@ function productReanalysisSchema(): Record<string, unknown> {
 function productReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
-    '사용자 JSON의 priorJudgmentText와 priorQuestionText는 이전 문장이다. 출력의 judgment와 nextQuestion에 그 문장을 복사하지 않는다.',
+    '사용자 JSON의 priorJudgmentText, priorQuestionText, priorInferences, priorAssumptions, priorEvidenceNotes, priorRisks는 이전 문장이다. 출력의 judgment, nextQuestion, inferences, assumptions, evidenceToChange, risks에 그 문장을 복사하지 않는다.',
     '이번 답을 여섯 가지로 새 문장에 적는다. 새로 알게 된 내용, 근거 수준, 기존 판단에서 영향을 받는 부분, 바뀐 판단 또는 유지한 판단, 바꾸지 않은 이유, 추가 검증이다.',
     '근거 수준은 검증된 사실, Founder의 경험, Founder의 주장 또는 기대, 실행 계획, 추정 및 가정, 근거가 부족한 정보 중 하나다. 확인된 사실, 경험, 추정, 계획을 섞지 않는다.',
-    '가능성이 높다처럼 확인 절차가 없는 답은 Founder의 기대 또는 자체 판단이다. 확정된 협력이 아니다. inferences의 첫 문장은 근거 수준은 Founder의 기대 또는 자체 판단이라고 적고, 그 답을 무시하지 않는다.',
+    '가능성이 높다처럼 확인 절차가 없는 답은 Founder의 주장 또는 기대이자 자체 판단이다. 구체적 증거가 없으면 검증된 사실이 아니다. inferences에는 답 유형, 근거가 제시됐는지, 확인된 사실, 미확인 사항을 실제 답과 누적 맥락으로 구분해서 적는다. 경험이나 실행 결과를 만들지 않는다.',
     '확인되지 않은 협력 가능성, 추정, 기대, 계획은 founderFacts에 넣지 않는다. founderFacts는 접촉, 계약, 입금, 예약처럼 확인된 사실만 담는다. 근거가 없으면 빈 배열이다.',
-    'assumptions의 첫 문장은 이번 답을 검증되지 않은 전제라고 적는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
-    'evidenceToChange에는 이 답이 판단에 어떤 영향을 주는지, 사업 실행 가능성을 높일 잠재는 있으나 검증되지 않은 전제라 판단을 바꾸지 못한다는 이유를 적는다. 답 문장만 다시 적으면 실패다.',
-    'judgment는 문자열이다. 객체로 나누면 실패다. 그 문자열에 유지와 이유를 넣는다. 긍정적 변화는 Founder가 그 가능성을 높게 본다는 점이다. 반영하지 못한 부분은 상대의 협력 의사와 협의 결과가 없다는 점이다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. 다음에 필요한 증거는 실제 연락이나 미팅과 상대의 반응이다. priorJudgmentText와 같은 문장이면 실패다.',
-    'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉과 상대의 협력 의사가 확인되지 않았다는 문장을 적는다. 이전 위험만 반복하면 실패다.',
-    'judgment 문자열은 두 문장을 포함한다. 근거 수준은 Founder의 기대 또는 자체 판단이다. 유지 이유는 상대의 협력 의사와 협의 결과가 없어 사업성 판단을 바꿀 검증 근거가 없기 때문이다.',
-    'nextQuestion은 하나다. 계획, 어떻게, 어떤 방식, 구축을 묻으면 실패다. priorQuestionTexts와 같은 문장이면 실패다. 아직 연락하거나 미팅한 결과가 없다면, 그 양조장이 협력에 동의했는지 아니면 아직 답이 없는지를 묻는다.',
-    'nextQuestionReason에는 그 질문이 이전 질문과 다른 이유를 적는다.',
+    'assumptions의 첫 문장은 이번 답을 검증되지 않은 전제라고 적는다. 그 전제가 사업 실행에 주는 긍정적 가설도 적는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
+    'evidenceToChange에는 이 답이 판단에 어떤 영향을 주는지, 파트너십 실행 가능성에 대한 긍정적 가설인지, 판단을 바꾸기에는 무엇이 부족한지를 적는다. 답 문장만 다시 적으면 실패다. 판단을 유지해도 사업성 평가의 잠재적 의미를 적는다.',
+    'judgment는 문자열이다. 객체로 나누면 실패다. 그 문자열에 유지와 이유를 넣는다. 기존 판단, 이번 답에서 새로 확인된 내용, 판단 변경 또는 유지, 그 이유를 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. priorJudgmentText와 같은 문장이면 실패다.',
+    'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉, 상대의 의사, 협력 조건처럼 아직 없는 항목을 적는다. 이전 위험만 반복하면 실패다.',
+    'nextQuestion은 하나다. 계획, 어떻게, 어떤 방식, 구축을 묻으면 실패다. priorQuestionTexts와 같은 문장이면 실패다. priorQuestionTexts가 이미 연락하거나 미팅과 상대의 반응을 물었다면 그 질문을 반복하거나 표현만 바꾸지 않는다. 이번 답에 실제 접촉이 없으면 접촉할 양조장을 골랐는지와 닿을 경로가 있는지를 묻는다. 접촉은 했으나 반응이 없으면 상대 반응과 후속 협의를 묻는다. 긍정 반응이 있으면 협력 조건과 실행 가능성을 묻는다. 협의가 있으면 역할, 비용, 수익 배분, 운영 책임을 묻는다.',
+    'nextQuestionReason에는 그 질문이 이전 질문과 다른 검증 단계인 이유를 적는다.',
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
@@ -849,7 +867,15 @@ function renameEchoKeys(value: unknown): unknown {
         ? 'priorJudgmentText'
         : key === 'nextQuestion' || key === 'priorQuestion'
           ? 'priorQuestionText'
-          : key;
+          : key === 'inferences'
+            ? 'priorInferences'
+            : key === 'assumptions'
+              ? 'priorAssumptions'
+              : key === 'evidenceToChange'
+                ? 'priorEvidenceNotes'
+                : key === 'risks'
+                  ? 'priorRisks'
+                  : key;
     renamed[name] = renameEchoKeys(child);
   }
   return renamed;

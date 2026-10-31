@@ -27,6 +27,7 @@ import {
   AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS,
   questionAsksForPlan,
   questionRepeatsPrior,
+  questionSameContactStage,
   unverifiedClaimStoredAsFact,
   callReviewWithQuotaSwitch,
   estimateReviewTokens,
@@ -4955,7 +4956,9 @@ describe('AI PM first review', () => {
     walk(payload);
     expect(names).not.toContain('judgment');
     expect(names).not.toContain('nextQuestion');
+    expect(names).not.toContain('risks');
     expect(names).toContain('priorJudgmentText');
+    expect(names).toContain('priorRisks');
     expect(system).toContain('Founder의 주장 또는 기대');
     expect(system).toContain('연락하거나 미팅');
     expect(system).not.toContain('draftRejected');
@@ -4998,12 +5001,34 @@ describe('AI PM first review', () => {
       priorAnalyses: Array<{ reviewId: string }>;
     };
     expect(keptPayload.priorAnalyses.map((item) => item.reviewId)).toEqual(['oldest', 'later']);
+    const renamed = JSON.parse(kept.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      priorAnalyses: Array<{ priorAssumptions?: string[]; priorRisks?: string[]; assumptions?: string[]; risks?: string[] }>;
+      latestAnalysis: { priorRisks?: string[]; risks?: string[] };
+    };
+    expect(renamed.priorAnalyses[0]?.priorAssumptions).toEqual(['이전 가정']);
+    expect(renamed.priorAnalyses[0]?.priorRisks).toEqual(['이전 위험']);
+    expect(renamed.priorAnalyses[0]).not.toHaveProperty('assumptions');
+    expect(renamed.priorAnalyses[0]).not.toHaveProperty('risks');
+    expect(renamed.latestAnalysis.priorRisks).toEqual(['지불 의향이 확인되지 않았다.']);
+    expect(renamed.latestAnalysis).not.toHaveProperty('risks');
     expect(questionAsksForPlan('양조장과의 실제 접촉 여부는 어떻게 확인할 계획인가?')).toBe(true);
     expect(
       questionAsksForPlan(
         '현재까지 실제로 연락하거나 미팅한 양조장이 있나요? 있다면 상대 양조장의 반응과 협력 조건에 대해 어떤 답변을 받았나요?',
       ),
     ).toBe(false);
+  });
+
+  it('treats a reworded contact question as the same verification stage', () => {
+    const stored =
+      '현재까지 실제로 연락하거나 미팅한 양조장이 있나요? 있다면 상대 양조장의 반응과 협력 조건에 대해 어떤 답변을 받았나요?';
+    const reword = '양조장에 연락해 본 적이 있나요? 상대의 반응은 어땠습니까?';
+    const nextStage = '먼저 접촉할 양조장 한 곳을 골랐습니까? 그 양조장에 닿을 경로가 있습니까?';
+    expect(questionSameContactStage([stored], stored)).toBe(true);
+    expect(questionSameContactStage([stored], reword)).toBe(true);
+    expect(questionRepeatsPrior([stored], reword)).toBe(false);
+    expect(questionSameContactStage([stored], nextStage)).toBe(false);
+    expect(questionAsksForPlan(nextStage)).toBe(false);
   });
 
   it('cites a failed review answer without moving it onto the succeeded parent', async () => {
