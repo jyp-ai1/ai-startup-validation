@@ -213,6 +213,7 @@ export type AiPmFeedbackView = {
   nextAction: NextAction;
   marks: ReviewMark[];
   choiceAnswer: ChoiceAnswer | null;
+  questionId?: string | null;
   submittedAt: string;
 };
 
@@ -425,6 +426,7 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
         nextAction: item.nextAction,
         marks: normalizeMarks(item.marks),
         choiceAnswer: item.choiceAnswer ?? null,
+        questionId: item.questionId ?? null,
         submittedAt: item.submittedAt,
       })),
     revision: record.revisionGate
@@ -435,7 +437,7 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
   };
 }
 
-const CLIENT_FAILURES = ['revenue_model_type', 'invalid_json', 'unstructured_response', 'call_limited'] as const;
+const CLIENT_FAILURES = ['revenue_model_type', 'invalid_json', 'unstructured_response', 'call_limited', 'stage_questions_missing'] as const;
 
 function clientFailure(error: string | null): (typeof CLIENT_FAILURES)[number] | null {
   if (!error) return null;
@@ -485,12 +487,12 @@ export function buildFirstReviewRequest(text: string): ChatRequest {
     model: AI_PM_REVIEW_MODEL,
     temperature: 0.2,
     maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
-    responseFormat: { type: 'json_object' },
+    responseFormat: { type: 'json_schema', schema: productReanalysisSchema() },
     messages: fitReviewMessages([
       { role: 'system', content: firstReviewSystemPrompt() },
       {
         role: 'user',
-        content: `사업 입력:\n${text}\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 2개 이상이다. nextQuestion은 questions의 첫 질문이다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다.`,
+        content: `사업 입력:\n${text}\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 2개 이상이다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 questions 첫 text와 같다. questions가 없거나 하나면 상담 단계가 아니다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다.`,
       },
     ]),
   };
@@ -1632,9 +1634,24 @@ function productReanalysisSchema(): Record<string, unknown> {
       },
       choices: { ...list, description: '이번 질문에 답하는 서로 다른 선택 두 개 이상. priorChoices와 같은 문장을 두지 않는다.' },
       questions: {
-        ...list,
+        type: 'array',
+        minItems: 2,
         description:
-          '다음 상담 단계의 서로 다른 검증 질문 2개 이상. 첫 원소는 nextQuestion과 같다. 이미 답한 질문 문장을 반복하지 않는다.',
+          '다음 상담 단계의 서로 다른 검증 질문 2개 이상. 첫 질문의 text는 nextQuestion과 같다. 이미 답한 질문 문장을 반복하지 않는다.',
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['text', 'choices'],
+          properties: {
+            text: { type: 'string', description: '이 질문의 문장. 다른 질문과 같지 않다.' },
+            choices: {
+              type: 'array',
+              minItems: 2,
+              items: { type: 'string' },
+              description: '이 질문에만 해당하는 서로 다른 선택 2개 이상.',
+            },
+          },
+        },
       },
     },
   };
@@ -1669,7 +1686,7 @@ function productReanalysisSystemPrompt(): string {
     'stagePairs가 있으면 이번 상담 단계다. questionId가 질문과 답을 잇는다. 질문과 답을 따로 뭉치지 말고 쌍으로 함께 읽는다. status가 open인 질문은 답하지 않은 것이다. 답한 질문만으로 단계를 끝낸 것처럼 판단하지 않는다. questions는 다음 단계의 서로 다른 검증 질문 N개다. nextQuestion은 questions의 첫 질문과 같다. 이미 답한 질문을 반복하지 않는다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
-    'questions는 다음 단계의 서로 다른 검증 질문 2개 이상의 문자열 배열이다.',
+    'questions는 다음 단계의 서로 다른 검증 질문 2개 이상이다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 첫 text와 같다. 배열이 없거나 질문 하나면 실패다.',
     '새 답이 없어도 evidenceLedger.unresolved는 판단, 가정, 위험, 다음 검증, 다음 질문에 남는다.',
   ].join(' ');
 }
@@ -2361,7 +2378,11 @@ function reuseFollowUp(record: StoredReview, marks: ReviewMark[]): boolean {
 export function consultingQuestions(sections: ReviewSections | null | undefined): ConsultingQuestion[] {
   const listed = sections?.analysis?.questions?.filter((item) => item.questionId.trim() && item.text.trim()) ?? [];
   if (listed.length > 0) {
-    return listed.map((item) => ({ questionId: item.questionId.trim(), text: item.text.trim() }));
+    return listed.map((item) => ({
+      questionId: item.questionId.trim(),
+      text: item.text.trim(),
+      ...(item.choices && item.choices.length > 0 ? { choices: item.choices } : {}),
+    }));
   }
   const text = sections?.nextQuestion.trim() ?? '';
   return text ? [{ questionId: 'q1', text }] : [];
@@ -2405,6 +2426,15 @@ export function stageComplete(pairs: StagePair[]): boolean {
   return pairs.length > 0 && pairs.every((pair) => pair.status === 'answered');
 }
 
+/** A new stage needs the model's question array. A lone nextQuestion is not a successful stage. */
+export function acceptedStageQuestions(sections: ReviewSections | null | undefined): boolean {
+  const questions = sections?.analysis?.questions ?? [];
+  if (questions.length < 2) return false;
+  const ids = new Set(questions.map((item) => item.questionId.trim()));
+  const texts = new Set(questions.map((item) => item.text.trim()));
+  return ids.size === questions.length && texts.size === questions.length && [...texts].every((text) => text.length > 0);
+}
+
 function stageSupplementKey(pairs: StagePair[]): string {
   return pairs
     .filter((pair) => pair.status === 'answered')
@@ -2426,7 +2456,7 @@ function stageQuestionIssues(content: string, asked: Set<string>, sourceText: st
  * One integrated reanalysis after a stage's answers are collected.
  * Saving answers does not call this. An open stage returns stage_incomplete and does not call the model.
  * allowPartial is the explicit mid-stage analysis. It is not a completed stage.
- * The follow-up HTTP route still sends one supplement per call. This function is the stage contract.
+ * The follow-up route reaches this through submitConsultingStage after the answers are stored.
  */
 export async function runStageReanalysis(input: {
   store: AiPmReviewStore;
@@ -2441,12 +2471,13 @@ export async function runStageReanalysis(input: {
   forceNew?: boolean;
 }): Promise<
   | { ok: true; called: boolean; record: StoredReview; view: AiPmReviewView }
-  | { ok: false; error: 'review_missing' | 'feedback_required' | 'stage_incomplete' | 'engine_unconfigured' | 'gpt_api_key_missing' }
+  | { ok: false; error: 'review_missing' | 'feedback_required' | 'stage_incomplete' | 'stage_questions_missing' | 'engine_unconfigured' | 'gpt_api_key_missing' }
 > {
   const parent = await input.store.readReview(input.userId, input.reviewId);
   if (!parent || parent.projectId !== input.projectId || parent.status !== 'succeeded' || !parent.sections) {
     return { ok: false, error: 'review_missing' };
   }
+  if (!acceptedStageQuestions(parent.sections)) return { ok: false, error: 'stage_questions_missing' };
   const feedback = await input.store.listFeedback(input.userId, parent.reviewId);
   const questions = consultingQuestions(parent.sections);
   const pairs = pairConsultingStage(questions, feedback);
@@ -2460,12 +2491,14 @@ export async function runStageReanalysis(input: {
     (questions.length === 1 ? ([...feedback].reverse().find((item) => !item.questionId)?.feedbackId ?? null) : null) ??
     feedback.at(-1)?.feedbackId ??
     null;
+  const stagePartial = !stageComplete(pairs);
   const prior = (await input.store.listReviews(input.userId, input.projectId))
     .filter(
       (record) =>
         record.parentReviewId === parent.reviewId &&
-        record.sourceFeedbackId === sourceFeedbackId &&
-        record.supplementSha === supplementSha,
+        record.supplementSha === supplementSha &&
+        record.status === 'succeeded' &&
+        Boolean(record.stagePartial) === stagePartial,
     )
     .at(-1);
   if (prior && prior.status === 'succeeded' && !input.forceNew) {
@@ -2485,7 +2518,6 @@ export async function runStageReanalysis(input: {
   const history = assembleConsultingHistory({ records, parent, supplement: supplementKey, feedback: projectFeedback });
   const root = history.root;
   const priorStagePairs = reviewChain(records, parent).flatMap((record) => record.stageAnswers ?? []);
-  const stagePartial = !stageComplete(pairs);
   const supplementText = answered.map((pair) => pair.supplement).join('\n');
   const ledger = buildEvidenceLedger({
     consultingPath: history.consultingPath,
@@ -2563,6 +2595,97 @@ export async function runStageReanalysis(input: {
     readingRepairContext: { supplement: supplementText },
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
+}
+
+export type StageAnswerInput = {
+  questionId: string;
+  choiceId?: string;
+  choiceLabel?: string;
+  otherText?: string;
+  comment?: string;
+};
+
+/**
+ * Product follow-up. Saves the stage's answers, then calls the model once when every question is answered.
+ * An open stage returns the parent view and does not call the model.
+ */
+export async function submitConsultingStage(input: {
+  store: AiPmReviewStore;
+  userId: string;
+  projectId: string;
+  reviewId: string;
+  answers?: StageAnswerInput[];
+  allowPartial?: boolean;
+  now: string;
+  chat?: ReviewChat;
+  evidence: StoredReview['evidence'];
+  notRunReason?: string;
+}): Promise<
+  | { ok: true; called: boolean; pending: boolean; record: StoredReview; view: AiPmReviewView }
+  | {
+      ok: false;
+      error: 'review_missing' | 'feedback_required' | 'stage_incomplete' | 'stage_questions_missing' | 'feedback_incomplete' | 'engine_unconfigured' | 'gpt_api_key_missing';
+      view?: AiPmReviewView;
+    }
+> {
+  const parent = await input.store.readReview(input.userId, input.reviewId);
+  if (!parent || parent.projectId !== input.projectId || parent.status !== 'succeeded' || !parent.sections) {
+    return { ok: false, error: 'review_missing' };
+  }
+  if (!acceptedStageQuestions(parent.sections)) return { ok: false, error: 'stage_questions_missing' };
+  const questions = consultingQuestions(parent.sections);
+  const known = new Set(questions.map((question) => question.questionId));
+  let existing = await input.store.listFeedback(input.userId, parent.reviewId);
+  for (const answer of input.answers ?? []) {
+    const questionId = answer.questionId.trim();
+    if (!known.has(questionId)) continue;
+    const comment = (answer.comment ?? '').trim();
+    const choiceLabel = (answer.choiceLabel ?? '').trim();
+    const otherText = (answer.otherText ?? '').trim();
+    if (!comment && !choiceLabel && !otherText) continue;
+    const supplement = [otherText, comment].filter((part, index, list) => part.length > 0 && list.indexOf(part) === index).join('\n');
+    const latest = [...existing].reverse().find((item) => item.questionId === questionId);
+    const sameChoice = (latest?.choiceAnswer?.label ?? '') === choiceLabel && (latest?.choiceAnswer?.otherText ?? '') === (choiceLabel ? supplement : '');
+    const sameComment = (latest?.comment ?? '') === (supplement || choiceLabel);
+    if (latest && sameChoice && sameComment) continue;
+    const saved = await saveReviewFeedback({
+      store: input.store,
+      userId: input.userId,
+      projectId: input.projectId,
+      now: input.now,
+      body: {
+        reviewId: parent.reviewId,
+        questionId,
+        comment: supplement || choiceLabel,
+        ...(choiceLabel
+          ? { choiceId: (answer.choiceId ?? '').trim() || 'c1', choiceLabel, otherText: supplement }
+          : {}),
+      },
+    });
+    if (!saved.ok) return saved;
+    existing = await input.store.listFeedback(input.userId, parent.reviewId);
+  }
+  const result = await runStageReanalysis({
+    store: input.store,
+    userId: input.userId,
+    projectId: input.projectId,
+    reviewId: parent.reviewId,
+    now: input.now,
+    chat: input.chat,
+    evidence: input.evidence,
+    notRunReason: input.notRunReason,
+    allowPartial: input.allowPartial === true,
+  });
+  if (!result.ok && result.error === 'stage_incomplete') {
+    const view = toAiPmReviewView(parent, await input.store.listFeedback(input.userId, parent.reviewId));
+    return { ok: true, called: false, pending: true, record: parent, view };
+  }
+  if (!result.ok && result.error === 'feedback_required') {
+    const view = toAiPmReviewView(parent, existing);
+    return { ok: true, called: false, pending: true, record: parent, view };
+  }
+  if (!result.ok) return result;
+  return { ok: true, called: result.called, pending: false, record: result.record, view: result.view };
 }
 
 function revisionPayload(sections: ReviewSections, marks: ReviewMark[]) {
@@ -3811,7 +3934,7 @@ function firstReviewSystemPrompt(): string {
     '사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다.',
     '고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다.',
     '가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다.',
-    '분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 2개 이상으로 questions에 둔다. nextQuestion은 그 중 첫 질문이다.',
+    '분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 2개 이상으로 questions에 둔다. 각 질문은 text와 그 질문의 choices를 가진다. nextQuestion은 첫 text와 같다. 질문이 하나이거나 배열이 없으면 상담 단계가 아니다.',
     '모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다.',
     '선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다.',
     'JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다.',
@@ -4005,7 +4128,8 @@ async function finishCall(input: {
       sections && input.gate && needsRevisionGate(input.gate.marks)
         ? assessFollowUpRevision({ previous: input.gate.previous, next: sections, marks: input.gate.marks })
         : null;
-    const accepted = Boolean(sections) && !outputError && revisionGate?.pass !== false;
+    const missingStage = input.parentReviewId === null && Boolean(sections?.analysis) && !acceptedStageQuestions(sections);
+    const accepted = Boolean(sections) && !outputError && revisionGate?.pass !== false && !missingStage;
     const consultingTurn =
       accepted && sections && input.consultingAnswer
         ? {
@@ -4027,7 +4151,15 @@ async function finishCall(input: {
       status: accepted ? 'succeeded' : 'failed',
       evidence: input.input.evidence,
       callCount,
-      error: outputError ?? (sections ? (revisionGate && !revisionGate.pass ? 'revision_gate' : null) : reviewContractError(response.content)),
+      error:
+        outputError ??
+        (missingStage
+          ? 'stage_questions_missing'
+          : sections
+            ? revisionGate && !revisionGate.pass
+              ? 'revision_gate'
+              : null
+            : reviewContractError(response.content)),
       provider: response.provider === 'google' ? 'google' : response.provider === 'openai' ? 'openai' : null,
       model: response.model,
       sections,
@@ -4282,14 +4414,21 @@ function readChoiceAnswer(source: Record<string, unknown>): ChoiceAnswer | null 
 
 /** Keeps the model's question list when it sent one. An empty list leaves nextQuestion as the only question. */
 function readConsultingQuestions(value: unknown): { questions: ConsultingQuestion[] } | Record<string, never> {
-  const texts = stringList(value);
-  if (!texts || texts.length === 0) return {};
+  const items = Array.isArray(value) ? value : [];
+  if (items.length === 0) return {};
   const seen = new Set<string>();
   const questions: ConsultingQuestion[] = [];
-  for (const text of texts) {
-    if (seen.has(text)) continue;
+  for (const item of items) {
+    const text = typeof item === 'string' ? item.trim() : item && typeof item === 'object' ? textField((item as { text?: unknown }).text) : null;
+    if (!text || seen.has(text)) continue;
     seen.add(text);
-    questions.push({ questionId: `q${questions.length + 1}`, text });
+    const rawChoices = item && typeof item === 'object' && !Array.isArray(item) ? (item as { choices?: unknown }).choices : undefined;
+    const choices = rawChoices === undefined ? null : readChoices(rawChoices);
+    questions.push({
+      questionId: `q${questions.length + 1}`,
+      text,
+      ...(choices && choices.length > 0 ? { choices } : {}),
+    });
   }
   return questions.length > 0 ? { questions } : {};
 }

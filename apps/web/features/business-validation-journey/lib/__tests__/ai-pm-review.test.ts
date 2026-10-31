@@ -734,7 +734,8 @@ describe('AI PM first review', () => {
     const panel = readFileSync(new URL('../../components/ai-pm-review-panel.tsx', import.meta.url), 'utf8');
     const followRoute = readFileSync(new URL('../../../../app/api/ai-pm-review/follow-up/route.ts', import.meta.url), 'utf8');
     expect(panel).toContain('/api/ai-pm-review/follow-up');
-    expect(followRoute).toContain('runFollowUpReview');
+    expect(followRoute).toContain('submitConsultingStage');
+    expect(followRoute).not.toContain('runFollowUpReview');
     expect(followRoute).not.toContain('answerOrigin');
     const evidenceUrl = new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-q1-product-follow-up-request.json', import.meta.url);
     const frozen = {
@@ -6747,6 +6748,10 @@ function breweryAnalysis(question: string, choices: string[]) {
     nextQuestion: question,
     nextQuestionReason: '이 답이 다음 질문의 대상을 바꿉니다.',
     choices,
+    questions: [
+      { text: question, choices },
+      { text: '그 답을 확인하려면 누구에게 먼저 물어야 합니까?', choices: ['이용자에게 묻는다', '공급자에게 묻는다'] },
+    ],
   };
 }
 

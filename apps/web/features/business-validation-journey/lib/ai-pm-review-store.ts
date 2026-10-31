@@ -123,6 +123,8 @@ export type ConsultingTurn = {
 export type ConsultingQuestion = {
   questionId: string;
   text: string;
+  /** Choices for this question. Absent when the model returned only the question text. */
+  choices?: ReviewChoice[];
 };
 
 /**
