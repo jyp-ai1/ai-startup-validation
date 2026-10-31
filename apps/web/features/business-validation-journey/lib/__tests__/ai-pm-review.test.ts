@@ -4938,7 +4938,7 @@ describe('AI PM first review', () => {
     expect(productCalls).toBe(1);
     expect(follow.record.callCount).toBe(1);
     expect(follow.record.firstRawContent ?? null).toBeNull();
-    expect(AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS).toBe(1200);
+    expect(AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS).toBe(2400);
     const payload = JSON.parse(userText) as unknown;
     const names: string[] = [];
     const walk = (value: unknown) => {
@@ -4969,6 +4969,35 @@ describe('AI PM first review', () => {
     const second = '양조장과의 파트너십을 위한 구체적인 실행 계획은 무엇인가?';
     expect(questionRepeatsPrior([first], second)).toBe(true);
     expect(questionRepeatsPrior([first, second], '양조장 한 곳에 협력 조건을 제안해 본 적이 있습니까?')).toBe(false);
+    const kept = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [],
+      priorAnalyses: [
+        {
+          reviewId: 'oldest',
+          judgment: '오래된 판단',
+          nextQuestion: '어떤 방식으로 양조장과의 파트너십을 구축할 계획인가?',
+          assumptions: ['이전 가정'],
+          risks: ['이전 위험'],
+        },
+        {
+          reviewId: 'later',
+          judgment: '나중 판단',
+          nextQuestion: '양조장과의 실제 접촉 여부는 어떻게 확인할 계획인가?',
+          assumptions: ['나중 가정'],
+          risks: ['나중 위험'],
+        },
+      ],
+      latestAnalysis: sections(),
+      founderChoice: null,
+      founderSupplement: '양조장과의 협력 가능성이 높다.',
+      founderFeedback: null,
+    });
+    const keptPayload = JSON.parse(kept.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      priorAnalyses: Array<{ reviewId: string }>;
+    };
+    expect(keptPayload.priorAnalyses.map((item) => item.reviewId)).toEqual(['oldest', 'later']);
     expect(questionAsksForPlan('양조장과의 실제 접촉 여부는 어떻게 확인할 계획인가?')).toBe(true);
     expect(
       questionAsksForPlan(
@@ -5045,6 +5074,11 @@ describe('AI PM first review', () => {
     });
     expect((await store.listFeedback('user-a', failed.record.reviewId))[0]?.feedbackId).toBe('fb-failed-answer');
     expect(await store.listFeedback('user-a', ready.record.reviewId)).toHaveLength(0);
+    expect(follow.record.founderAnswerSource).toEqual({
+      feedbackId: 'fb-failed-answer',
+      reviewId: failed.record.reviewId,
+      onThisReview: false,
+    });
     store.close();
   });
 

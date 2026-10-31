@@ -30,9 +30,9 @@ export const AI_PM_REVIEW_FIRST_MAX_TOKENS = 2400;
 export const AI_PM_REVIEW_INPUT_TOKEN_BUDGET = 3_000;
 /** Follow-up JSON includes the stored analysis. The first-review budget would cut that object. */
 export const AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET = 8_000;
-/** One product reanalysis. A second call is not the way back under this cap. */
-export const AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS = 1_200;
-export const AI_PM_PRODUCT_REANALYSIS_INPUT_TOKEN_BUDGET = 6_000;
+/** Full consulting text. History is not cut to chase a smaller bill. */
+export const AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS = 2_400;
+export const AI_PM_PRODUCT_REANALYSIS_INPUT_TOKEN_BUDGET = AI_PM_FOLLOW_UP_INPUT_TOKEN_BUDGET;
 
 /**
  * Follow-up sends the parser's stored sections, not a byte copy of the first model JSON.
@@ -794,11 +794,14 @@ function productReanalysisSchema(): Record<string, unknown> {
       profitability: text,
       strengths: list,
       risks: { ...list, description: '이번 답이 드러낸 미확인을 새 문장으로 포함한다.' },
-      assumptions: { ...list, description: '이번 답으로 아직 검증되지 않은 전제를 새 문장으로 적는다.' },
-      evidenceToChange: { ...list, description: '답이 판단에 어떤 영향을 주는지 적는다. 답 문장만 반복하지 않는다.' },
+      assumptions: { ...list, description: '첫 문장은 이번 답을 검증되지 않은 전제라고 적는다. 이전 가정만 반복하면 실패다.' },
+      evidenceToChange: { ...list, description: '판단에 어떤 영향인지 적는다. 검증되지 않은 전제라 판단을 바꾸지 못하면 그 이유를 적는다.' },
       founderFacts: { ...list, description: '확인된 접촉, 계약, 입금, 예약만. 없으면 빈 배열.' },
-      inferences: { ...list, description: '근거 수준. 가능성 판단은 Founder의 기대 또는 자체 판단이다.' },
-      judgment: { type: 'string', description: '문자열이다. 객체가 아니다. 유지와 이유, 반영하지 못한 부분을 한 문장에 적는다.' },
+      inferences: { ...list, description: '근거 수준은 Founder의 기대 또는 자체 판단이라고 적는다.' },
+      judgment: {
+        type: 'string',
+        description: '문자열이다. 유지와 이유, 근거 수준, 반영하지 못한 부분을 한 문자열에 적는다. 객체가 아니다.',
+      },
       nextVerification: text,
       nextQuestion: {
         type: 'string',
@@ -816,19 +819,18 @@ function productReanalysisSystemPrompt(): string {
     '사용자 JSON의 priorJudgmentText와 priorQuestionText는 이전 문장이다. 출력의 judgment와 nextQuestion에 그 문장을 복사하지 않는다.',
     '이번 답을 여섯 가지로 새 문장에 적는다. 새로 알게 된 내용, 근거 수준, 기존 판단에서 영향을 받는 부분, 바뀐 판단 또는 유지한 판단, 바꾸지 않은 이유, 추가 검증이다.',
     '근거 수준은 검증된 사실, Founder의 경험, Founder의 주장 또는 기대, 실행 계획, 추정 및 가정, 근거가 부족한 정보 중 하나다. 확인된 사실, 경험, 추정, 계획을 섞지 않는다.',
-    '가능성이 높다처럼 확인 절차가 없는 답은 Founder의 기대 또는 자체 판단이다. 확정된 협력이 아니다. inferences에 그 수준을 적고, 무시하지 않는다.',
+    '가능성이 높다처럼 확인 절차가 없는 답은 Founder의 기대 또는 자체 판단이다. 확정된 협력이 아니다. inferences의 첫 문장은 근거 수준은 Founder의 기대 또는 자체 판단이라고 적고, 그 답을 무시하지 않는다.',
     '확인되지 않은 협력 가능성, 추정, 기대, 계획은 founderFacts에 넣지 않는다. founderFacts는 접촉, 계약, 입금, 예약처럼 확인된 사실만 담는다. 근거가 없으면 빈 배열이다.',
-    'assumptions는 이번 답으로 아직 검증되지 않은 전제를 새 문장으로 적는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
-    'evidenceToChange에는 이 답이 판단에 어떤 영향을 주는지, 사업 실행 가능성에 주는 영향과 아직 검증되지 않은 전제라는 점을 적는다. 답 문장만 다시 적으면 실패다.',
-    'judgment는 문자열이다. 객체로 나누면 실패다. 유지와 이유를 그 문자열에 넣는다. 긍정적 변화, 반영하지 못한 부분, 유지 이유, 다음에 필요한 증거를 이어서 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. priorJudgmentText와 같은 문장이면 실패다.',
-    'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉과 상대의 의사가 없으면 그 위험을 적는다. 이전 위험만 반복하면 실패다.',
-    'nextQuestion은 하나다. 계획, 어떻게, 어떤 방식, 구축을 묻으면 실패다. priorQuestionText를 표현만 바꾸면 실패다. 이미 일어났는지와 상대가 뭐라고 답했는지를 가른다. 접촉이 확인되지 않았으면 실제로 연락하거나 미팅한 양조장이 있는지, 있다면 상대의 반응과 협력 조건을 묻는다.',
+    'assumptions의 첫 문장은 이번 답을 검증되지 않은 전제라고 적는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
+    'evidenceToChange에는 이 답이 판단에 어떤 영향을 주는지, 사업 실행 가능성을 높일 잠재는 있으나 검증되지 않은 전제라 판단을 바꾸지 못한다는 이유를 적는다. 답 문장만 다시 적으면 실패다.',
+    'judgment는 문자열이다. 객체로 나누면 실패다. 그 문자열에 유지와 이유를 넣는다. 긍정적 변화는 Founder가 그 가능성을 높게 본다는 점이다. 반영하지 못한 부분은 상대의 협력 의사와 협의 결과가 없다는 점이다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. 다음에 필요한 증거는 실제 연락이나 미팅과 상대의 반응이다. priorJudgmentText와 같은 문장이면 실패다.',
+    'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉과 상대의 협력 의사가 확인되지 않았다는 문장을 적는다. 이전 위험만 반복하면 실패다.',
+    'nextQuestion은 하나다. 계획, 어떻게, 어떤 방식, 구축을 묻으면 실패다. priorQuestionTexts에 있는 문장을 다시 쓰지 않는다. 접촉이 확인되지 않았으면 실제로 연락하거나 미팅했는지, 했다면 상대가 협력에 동의했는지를 묻는다.',
     'nextQuestionReason에는 그 질문이 이전 계획 질문과 다른 이유를 적는다.',
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
     '이번 답이 판단, 가정, 위험, 다음 검증, 다음 질문에 반영되어야 한다.',
-    '양조장 협력에 접촉 근거가 없으면 nextQuestion은 이 문장이다. 현재까지 실제로 연락하거나 미팅한 양조장이 있나요? 있다면 상대 양조장의 반응과 협력 조건에 대해 어떤 답변을 받았나요?',
   ].join(' ');
 }
 
@@ -881,11 +883,7 @@ export function buildProductReanalysisRequest(input: {
       priorQuestionText: input.latestAnalysis.nextQuestion,
     },
   };
-  const received = [...(input.priorAnalyses ?? [])];
-  let analyses =
-    received.length > 1
-      ? [received[0], ...received.slice(1).filter((item) => !questionAsksForPlan(item.nextQuestion))]
-      : received;
+  let analyses = [...(input.priorAnalyses ?? [])];
   let turns = [...input.priorTurns];
   const payload = () =>
     renameEchoKeys({ ...anchors, priorAnalyses: analyses, priorTurns: turns }) as Record<string, unknown>;
@@ -1333,6 +1331,7 @@ export async function runFollowUpReview(input: {
           choiceLabel: choice?.label ?? null,
           supplement,
         },
+    founderAnswerSource: needsRevisionGate(marks) ? null : history.founderAnswerSource,
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
 }
@@ -2623,6 +2622,7 @@ async function finishCall(input: {
   outputContract?: FollowUpOutputContext | null;
   previousSections?: ReviewSections | null;
   consultingAnswer?: { question: string; choiceLabel: string | null; supplement: string } | null;
+  founderAnswerSource?: FounderAnswerCitation | null;
 }): Promise<{ called: boolean; record: StoredReview; view: AiPmReviewView }> {
   const started = Date.now();
   try {
@@ -2710,6 +2710,7 @@ async function finishCall(input: {
       rawContent: response.content,
       firstRawContent,
       consultingTurn,
+      founderAnswerSource: input.founderAnswerSource ?? null,
       promptTokens,
       completionTokens,
       totalTokens,
@@ -2762,6 +2763,7 @@ function baseRecord(input: {
   rawContent?: string | null;
   firstRawContent?: string | null;
   consultingTurn?: ConsultingTurn | null;
+  founderAnswerSource?: FounderAnswerCitation | null;
   promptTokens?: number | null;
   completionTokens?: number | null;
   totalTokens?: number | null;
@@ -2789,6 +2791,7 @@ function baseRecord(input: {
     rawContent: input.rawContent ?? null,
     ...(input.firstRawContent ? { firstRawContent: input.firstRawContent } : {}),
     ...(input.consultingTurn ? { consultingTurn: input.consultingTurn } : {}),
+    ...(input.founderAnswerSource ? { founderAnswerSource: input.founderAnswerSource } : {}),
     promptTokens: input.promptTokens ?? null,
     completionTokens: input.completionTokens ?? null,
     totalTokens: input.totalTokens ?? null,

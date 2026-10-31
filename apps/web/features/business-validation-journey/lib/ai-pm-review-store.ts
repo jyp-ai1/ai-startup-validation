@@ -143,6 +143,12 @@ export type StoredReview = {
   revisionGate?: RevisionGate | null;
   /** Founder answer that produced this child. Absent on a first review and on older rows. */
   consultingTurn?: ConsultingTurn | null;
+  /** Where that answer already lives. Citing it does not move the feedback row. */
+  founderAnswerSource?: {
+    feedbackId: string;
+    reviewId: string;
+    onThisReview: boolean;
+  } | null;
   promptTokens: number | null;
   completionTokens: number | null;
   totalTokens: number | null;
