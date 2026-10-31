@@ -23,6 +23,7 @@ import {
   buildFirstReviewRequest,
   buildFollowUpRequest,
   assembleConsultingHistory,
+  normalizeConsultingRecords,
   buildProductReanalysisRequest,
   AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS,
   judgmentIsConsistent,
@@ -2641,6 +2642,47 @@ describe('AI PM first review', () => {
       '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.',
       '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.',
     ]);
+  });
+
+  it('keeps one consulting step per founder answer and separates repeat calls', () => {
+    const turn = (choice: string | null, supplement: string, question: string) => ({
+      question,
+      choiceLabel: choice,
+      supplement,
+      judgment: '',
+      nextVerification: '',
+      nextQuestion: question,
+    });
+    const normalized = normalizeConsultingRecords({
+      records: [
+        { reviewId: 'root', parentReviewId: null, status: 'succeeded', inputSha: 'sha', finishedAt: '2026-10-31T00:00:00.000Z', version: 1, consultingTurn: null, judgment: '최초', nextQuestion: '처음?', assumptions: [], risks: [] },
+        { reviewId: 'claim-a', parentReviewId: 'root', status: 'succeeded', inputSha: 'sha', finishedAt: '2026-10-31T01:00:00.000Z', version: 2, consultingTurn: turn(null, '양조장과의 협력 가능성이 높다.', '계획?'), judgment: '첫 실험 판단', nextQuestion: '계획?', assumptions: [], risks: [] },
+        { reviewId: 'claim-b', parentReviewId: 'claim-a', status: 'succeeded', inputSha: 'sha', finishedAt: '2026-10-31T02:00:00.000Z', version: 3, consultingTurn: turn(null, '양조장과의 협력 가능성이 높다.', '계획?'), judgment: '이어진 판단', nextQuestion: '이름?', assumptions: ['가정'], risks: ['위험'] },
+        { reviewId: 'plan', parentReviewId: 'claim-b', status: 'succeeded', inputSha: 'sha', finishedAt: '2026-10-31T03:00:00.000Z', version: 4, consultingTurn: turn('양조장과의 협력 방안 구체화', '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.', '이름?'), judgment: '방안 판단', nextQuestion: '후보?', assumptions: [], risks: [] },
+        { reviewId: 'retry-1', parentReviewId: 'plan', status: 'succeeded', inputSha: 'sha', finishedAt: '2026-10-31T04:00:00.000Z', version: 5, consultingTurn: turn('아직 떠오르는 양조장이 없다', '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.', '후보?'), judgment: '재호출 판단', nextQuestion: '다시?', assumptions: [], risks: [] },
+        { reviewId: 'retry-2', parentReviewId: 'plan', status: 'succeeded', inputSha: 'sha', finishedAt: '2026-10-31T05:00:00.000Z', version: 6, consultingTurn: turn('아직 떠오르는 양조장이 없다', '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.', '후보?'), judgment: '나중 재호출 판단', nextQuestion: '또?', assumptions: [], risks: [] },
+        { reviewId: 'side', parentReviewId: 'root', status: 'succeeded', inputSha: 'sha', finishedAt: '2026-10-31T01:30:00.000Z', version: 7, consultingTurn: turn(null, '다른 답변', '다른?'), judgment: '곁가지', nextQuestion: '다른?', assumptions: [], risks: [] },
+        { reviewId: 'failed', parentReviewId: 'plan', status: 'failed', inputSha: 'sha', finishedAt: '2026-10-31T04:30:00.000Z', version: 8, consultingTurn: null, judgment: '', nextQuestion: '', assumptions: [], risks: [] },
+      ],
+      rootId: 'root',
+      parentId: 'plan',
+      parentInputSha: 'sha',
+      chainIds: ['root', 'claim-a', 'claim-b', 'plan'],
+      currentChoice: '아직 떠오르는 양조장이 없다',
+      currentSupplement: '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.',
+    });
+    expect(normalized.consultingPath.map((step) => step.reviewId)).toEqual(['claim-b', 'plan', 'retry-1']);
+    expect(normalized.consultingPath.map((step) => step.judgmentStatus)).toEqual(['adopted', 'adopted', 'unresolved']);
+    expect(normalized.consultingPath[2]?.judgment).toBe('');
+    expect(normalized.experimentRecords.map((item) => item.reviewId)).toEqual(['claim-a', 'retry-2']);
+    expect(normalized.failedCalls.map((item) => item.reviewId)).toEqual(['failed']);
+    expect(normalized.priorTurns.map((turn) => turn.supplement)).toEqual([
+      '양조장과의 협력 가능성이 높다.',
+      '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.',
+    ]);
+    expect(normalized.priorAnalyses.map((item) => item.reviewId)).toEqual(['side', 'claim-b']);
+    expect(normalized.newFounderInformation).toBe(false);
+    expect(JSON.stringify(normalized.experimentRecords)).not.toContain('나중 재호출 판단');
   });
 
   it('renders both founder answers and keeps a failed review off the current analysis', () => {

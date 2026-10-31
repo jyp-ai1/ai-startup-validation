@@ -632,6 +632,170 @@ export type PriorAnalysisBrief = {
   risks: string[];
 };
 
+export type ConsultingPathStep = {
+  order: number;
+  reviewId: string;
+  choice: string | null;
+  supplement: string;
+  answeredQuestion: string;
+  judgment: string;
+  nextQuestion: string;
+  assumptions: string[];
+  risks: string[];
+  judgmentStatus: 'adopted' | 'unresolved';
+};
+
+export type ExperimentRecord = {
+  reviewId: string;
+  supplement: string;
+  role: 'repeat_experiment';
+};
+
+export type FailedCallRecord = {
+  reviewId: string;
+  role: 'failed_call';
+};
+
+type NormalizableReview = {
+  reviewId: string;
+  parentReviewId: string | null;
+  status: StoredReview['status'];
+  inputSha: string;
+  finishedAt: string;
+  version: number;
+  consultingTurn?: ConsultingTurn | null;
+  judgment: string;
+  nextQuestion: string;
+  assumptions: string[];
+  risks: string[];
+};
+
+function consultingAnswerKey(choice: string | null, supplement: string): string {
+  return `${(choice ?? '').trim()}\n${supplement.trim()}`;
+}
+
+/**
+ * One real founder answer is one consulting step.
+ * Later calls that reuse that answer are experiments, not the next turn.
+ */
+export function normalizeConsultingRecords(input: {
+  records: NormalizableReview[];
+  rootId: string;
+  parentId: string;
+  parentInputSha: string;
+  chainIds: string[];
+  currentChoice: string | null;
+  currentSupplement: string;
+}): {
+  consultingPath: ConsultingPathStep[];
+  experimentRecords: ExperimentRecord[];
+  failedCalls: FailedCallRecord[];
+  priorTurns: ConsultingTurn[];
+  priorAnalyses: PriorAnalysisBrief[];
+  newFounderInformation: boolean;
+} {
+  const sameInput = input.records.filter((record) => record.inputSha === input.parentInputSha);
+  const byTime = (left: NormalizableReview, right: NormalizableReview) =>
+    left.finishedAt.localeCompare(right.finishedAt) || left.version - right.version;
+  const answered = sameInput
+    .filter((record) => record.status === 'succeeded' && record.consultingTurn && record.reviewId !== input.rootId)
+    .sort(byTime);
+  const groups = new Map<string, NormalizableReview[]>();
+  for (const record of answered) {
+    const turn = record.consultingTurn;
+    if (!turn) continue;
+    const key = consultingAnswerKey(turn.choiceLabel, turn.supplement);
+    const group = groups.get(key) ?? [];
+    group.push(record);
+    groups.set(key, group);
+  }
+  const continuedFrom = (record: NormalizableReview) => {
+    const own = record.consultingTurn;
+    if (!own) return false;
+    const ownKey = consultingAnswerKey(own.choiceLabel, own.supplement);
+    return sameInput.some((child) => {
+      if (child.parentReviewId !== record.reviewId || !child.consultingTurn) return false;
+      return consultingAnswerKey(child.consultingTurn.choiceLabel, child.consultingTurn.supplement) !== ownKey;
+    });
+  };
+  const canonical: NormalizableReview[] = [];
+  const experiments: ExperimentRecord[] = [];
+  for (const group of groups.values()) {
+    const kept = group.filter(continuedFrom).sort(byTime).at(-1) ?? group[0];
+    if (!kept?.consultingTurn) continue;
+    canonical.push(kept);
+    for (const record of group) {
+      if (record.reviewId === kept.reviewId) continue;
+      experiments.push({
+        reviewId: record.reviewId,
+        supplement: record.consultingTurn?.supplement ?? '',
+        role: 'repeat_experiment',
+      });
+    }
+  }
+  canonical.sort(byTime);
+  const currentKey = consultingAnswerKey(input.currentChoice, input.currentSupplement);
+  const chainIds = new Set(input.chainIds);
+  const currentCanonical = canonical.find((record) => {
+    const turn = record.consultingTurn;
+    return Boolean(turn) && consultingAnswerKey(turn?.choiceLabel ?? null, turn?.supplement ?? '') === currentKey;
+  });
+  const pathRecords = canonical.filter((record) => chainIds.has(record.reviewId));
+  if (currentCanonical && !pathRecords.some((record) => record.reviewId === currentCanonical.reviewId)) pathRecords.push(currentCanonical);
+  pathRecords.sort(byTime);
+  const adopted = (record: NormalizableReview) => continuedFrom(record) || chainIds.has(record.reviewId);
+  const consultingPath = pathRecords.map((record, index) => {
+    const keepJudgment = adopted(record);
+    return {
+      order: index + 1,
+      reviewId: record.reviewId,
+      choice: record.consultingTurn?.choiceLabel ?? null,
+      supplement: record.consultingTurn?.supplement ?? '',
+      answeredQuestion: record.consultingTurn?.question ?? '',
+      judgment: keepJudgment ? record.judgment : '',
+      nextQuestion: keepJudgment ? record.nextQuestion : '',
+      assumptions: keepJudgment ? record.assumptions : [],
+      risks: keepJudgment ? record.risks : [],
+      judgmentStatus: keepJudgment ? ('adopted' as const) : ('unresolved' as const),
+    };
+  });
+  const priorTurns = consultingPath
+    .filter((step) => consultingAnswerKey(step.choice, step.supplement) !== currentKey)
+    .map((step) => ({
+      question: step.answeredQuestion,
+      choiceLabel: step.choice,
+      supplement: step.supplement,
+      judgment: step.judgment,
+      nextVerification: '',
+      nextQuestion: step.nextQuestion,
+    }));
+  const priorAnalyses = canonical
+    .filter((record) => {
+      const turn = record.consultingTurn;
+      const key = turn ? consultingAnswerKey(turn.choiceLabel, turn.supplement) : '';
+      const unresolvedCurrent = key === currentKey && !adopted(record);
+      return record.reviewId !== input.rootId && record.reviewId !== input.parentId && !unresolvedCurrent;
+    })
+    .map((record) => ({
+      reviewId: record.reviewId,
+      judgment: record.judgment,
+      nextQuestion: record.nextQuestion,
+      assumptions: record.assumptions,
+      risks: record.risks,
+    }));
+  return {
+    consultingPath,
+    experimentRecords: experiments,
+    failedCalls: sameInput
+      .filter((record) => record.status === 'failed')
+      .sort(byTime)
+      .map((record) => ({ reviewId: record.reviewId, role: 'failed_call' as const })),
+    priorTurns,
+    priorAnalyses,
+    newFounderInformation: !consultingPath.some((step) => consultingAnswerKey(step.choice, step.supplement) === currentKey),
+  };
+}
+
 /** Where the founder sentence already lives. Citing it does not move the row. */
 export type FounderAnswerCitation = {
   feedbackId: string;
@@ -909,7 +1073,7 @@ export function questionSameContactStage(previous: string[], next: string): bool
 
 /**
  * Prior succeeded analyses of the same input, excluding the root and the current parent.
- * A failed review stays out. A turn that only repeats the current answer is not sent twice.
+ * Same-answer retries are experiments. They are not extra consulting turns.
  * The citation points at the stored feedback row and does not copy it onto this parent.
  */
 export function assembleConsultingHistory(input: {
@@ -921,44 +1085,41 @@ export function assembleConsultingHistory(input: {
   root: StoredReview;
   priorTurns: ConsultingTurn[];
   priorAnalyses: PriorAnalysisBrief[];
+  consultingPath: ConsultingPathStep[];
+  experimentRecords: ExperimentRecord[];
+  failedCalls: FailedCallRecord[];
+  newFounderInformation: boolean;
   previousQuestions: string[];
   founderAnswerSource: FounderAnswerCitation | null;
 } {
   const chain = reviewChain(input.records, input.parent);
   const root = chain[0] ?? input.parent;
   const supplement = input.supplement.trim();
-  const priorTurns = chain
-    .slice(1)
-    .flatMap((item) => (item.consultingTurn ? [item.consultingTurn] : []))
-    .filter((turn) => turn.supplement.trim() !== supplement);
-  const parentJudgment = input.parent.sections?.analysis?.judgmentDetail || input.parent.sections?.judgment || '';
-  const sameInput = input.records
-    .filter(
-      (record) =>
-        record.status === 'succeeded' &&
-        record.sections &&
-        record.inputSha === input.parent.inputSha &&
-        record.reviewId !== root.reviewId &&
-        record.reviewId !== input.parent.reviewId,
-    )
-    .sort((left, right) => left.finishedAt.localeCompare(right.finishedAt) || left.version - right.version);
-  const newestId = sameInput.at(-1)?.reviewId ?? null;
-  const priorAnalyses = sameInput
-    .filter((record) => {
-      const judgment = record.sections?.analysis?.judgmentDetail || record.sections?.judgment || '';
-      return record.reviewId === newestId || judgment !== parentJudgment;
-    })
-    .map((record) => ({
+  const choice = input.feedback.filter((item) => item.reviewId === input.parent.reviewId).at(-1)?.choiceAnswer?.label ?? null;
+  const normalized = normalizeConsultingRecords({
+    records: input.records.map((record) => ({
       reviewId: record.reviewId,
+      parentReviewId: record.parentReviewId,
+      status: record.status,
+      inputSha: record.inputSha,
+      finishedAt: record.finishedAt,
+      version: record.version,
+      consultingTurn: record.consultingTurn,
       judgment: record.sections?.analysis?.judgmentDetail || record.sections?.judgment || '',
-      nextQuestion: record.sections?.nextQuestion ?? '',
+      nextQuestion: record.sections?.nextQuestion ?? record.consultingTurn?.nextQuestion ?? '',
       assumptions: record.sections?.analysis?.assumptions ?? record.sections?.hypotheses ?? [],
       risks: record.sections?.risks ?? [],
-    }));
+    })),
+    rootId: root.reviewId,
+    parentId: input.parent.reviewId,
+    parentInputSha: input.parent.inputSha,
+    chainIds: chain.map((record) => record.reviewId),
+    currentChoice: choice,
+    currentSupplement: supplement,
+  });
   const previousQuestions = [
     root.sections?.nextQuestion ?? '',
-    ...priorAnalyses.map((item) => item.nextQuestion),
-    ...priorTurns.map((turn) => turn.nextQuestion),
+    ...normalized.consultingPath.map((step) => step.nextQuestion),
     input.parent.sections?.nextQuestion ?? '',
   ].filter((question, index, all) => question.trim().length > 0 && all.indexOf(question) === index);
   const reviewIds = new Set(input.records.map((record) => record.reviewId));
@@ -970,8 +1131,12 @@ export function assembleConsultingHistory(input: {
   });
   return {
     root,
-    priorTurns,
-    priorAnalyses,
+    priorTurns: normalized.priorTurns,
+    priorAnalyses: normalized.priorAnalyses,
+    consultingPath: normalized.consultingPath,
+    experimentRecords: normalized.experimentRecords,
+    failedCalls: normalized.failedCalls,
+    newFounderInformation: normalized.newFounderInformation,
     previousQuestions,
     founderAnswerSource: cited
       ? { feedbackId: cited.feedbackId, reviewId: cited.reviewId, onThisReview: cited.reviewId === input.parent.reviewId }
@@ -1090,6 +1255,8 @@ function productReanalysisSystemPrompt(): string {
     '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
     '응답 전에 한 순서로만 분석한다. summary, inferences, assumptions, risks, evidenceToChange, judgment, nextQuestion은 그 하나의 결론을 나눈 것이다. 필드마다 다른 논리를 쓰지 않는다.',
     '순서는 누적 이력, 증거 구분, 사업성 재평가, 최종 판단, 다음 질문이다.',
+    'consultingPath는 Founder 답변의 시간 순서다. experimentRecords는 같은 답변을 다시 호출한 기록이다. 재호출을 다음 상담 턴으로 세지 않고, 그 판단을 복사하지 않는다. failedCalls는 실패한 호출이다.',
+    '응답 전에 새 Founder 정보가 있는지 본다. newFounderInformation이 false면 이번 호출에 새 답변이 없다. 판단을 억지로 바꾸지 않는다. 유지하면 바꾸지 않은 이유와 다음 검증을 새 문장으로 적는다. 이전 판단 문장과 같으면 실패다.',
     '증거 구분에서 구체적인 양조장 후보가 아직 없다는 Founder의 답은 확인된 상태다. 양조장 협력 가능성이 높다는 문장은 Founder의 주장 또는 기대다. 접촉, 협력 의사, 협력 조건, 실제 협력 가능성은 미확인이다. 주장을 했다는 사실과 가능성이 실제로 높다는 결론을 섞지 않는다.',
     '사업성 재평가는 고객과 문제, 가치의 실현, 운영, 파트너십 확보, 수익 구조, 확인된 근거와 불확실성, 이번 답이 기존 판단에 주는 영향을 본다. 유지하거나 높이거나 낮추거나 유보할 수 있다. 점수를 만들지 않는다.',
     'inferences가 주장을 검증되지 않았다고 적으면 judgment와 summary는 그 주장을 현재 가능성으로 쓰지 않는다.',
@@ -1108,7 +1275,7 @@ function productReanalysisSystemPrompt(): string {
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
-    '이번 답이 판단, 가정, 위험, 다음 검증, 다음 질문에 반영되어야 한다.',
+    '새 Founder 정보가 있으면 그 답이 판단, 가정, 위험, 다음 검증, 다음 질문에 반영되어야 한다. 새 정보가 없으면 유지 이유와 다음 검증을 적는다.',
   ].join(' ');
 }
 
@@ -1175,6 +1342,10 @@ export function buildProductReanalysisRequest(input: {
   founderChoice: { label: string; otherText: string } | null;
   founderSupplement: string;
   founderFeedback: { comment: string } | null;
+  consultingPath?: ConsultingPathStep[];
+  experimentRecords?: ExperimentRecord[];
+  failedCalls?: FailedCallRecord[];
+  newFounderInformation?: boolean;
 }): ChatRequest {
   const previousQuestions = input.previousQuestions ?? [input.latestAnalysis.nextQuestion];
   const system = productReanalysisSystemPrompt();
@@ -1199,6 +1370,10 @@ export function buildProductReanalysisRequest(input: {
       priorJudgmentText: input.latestAnalysis.analysis?.judgmentDetail || input.latestAnalysis.judgment,
       priorQuestionText: input.latestAnalysis.nextQuestion,
     },
+    consultingPath: input.consultingPath ?? [],
+    experimentRecords: input.experimentRecords ?? [],
+    failedCalls: input.failedCalls ?? [],
+    newFounderInformation: input.newFounderInformation ?? true,
   };
   let analyses = [...(input.priorAnalyses ?? [])];
   let turns = [...input.priorTurns];
@@ -1206,8 +1381,17 @@ export function buildProductReanalysisRequest(input: {
     renameEchoKeys({
       ...anchors,
       founderAnswers: [
-        ...turns.map((turn) => ({ choice: turn.choiceLabel, supplement: turn.supplement, answeredQuestion: turn.question })),
-        { choice: input.founderChoice?.label ?? null, supplement: input.founderSupplement, answeredQuestion: input.latestAnalysis.nextQuestion },
+        ...(input.consultingPath ?? []).map((step) => ({
+          choice: step.choice,
+          supplement: step.supplement,
+          answeredQuestion: step.answeredQuestion,
+        })),
+        ...((input.consultingPath ?? []).length === 0
+          ? turns.map((turn) => ({ choice: turn.choiceLabel, supplement: turn.supplement, answeredQuestion: turn.question }))
+          : []),
+        ...(input.newFounderInformation === false
+          ? []
+          : [{ choice: input.founderChoice?.label ?? null, supplement: input.founderSupplement, answeredQuestion: input.latestAnalysis.nextQuestion }]),
       ],
       priorAnalyses: analyses,
       priorTurns: turns,
@@ -1620,6 +1804,10 @@ export async function runFollowUpReview(input: {
     previousQuestions: history.previousQuestions,
     founderAnswerSource: history.founderAnswerSource,
     latestAnalysis: parent.sections,
+    consultingPath: history.consultingPath,
+    experimentRecords: history.experimentRecords,
+    failedCalls: history.failedCalls,
+    newFounderInformation: history.newFounderInformation,
     founderChoice: choice ? { label: choice.label, otherText: choice.otherText } : null,
     founderSupplement: supplement,
     founderFeedback: feedback ? { comment: feedback.comment } : null,

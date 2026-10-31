@@ -55,6 +55,10 @@ const SEPARATION_OBJECT = 'product-judgment-separation-2026-10-31.json';
 const CONSISTENCY_OBJECT = 'product-judgment-consistency-2026-10-31.json';
 const CONTEXT_OBJECT = 'product-context-ledger-2026-10-31.json';
 const CONTEXT_PRIOR_ID = '7b4bafd6-ac74-42f3-9aa4-4b1f32f40ac2';
+const PATH_OBJECT = 'product-consulting-path-2026-10-31.json';
+const PATH_PRIOR_ID = 'd6ae77b6-3de5-4a8b-aee2-d35fdc84e0ec';
+const COPIED_EXPERIMENT_JUDGMENT =
+  '현재 사업성 판단은 낮아지며, 양조장과의 협력 가능성이 높지만 구체적인 후보가 없다는 점이 부정적인 영향을 미친다.';
 const SEPARATION_REVIEW_ID = 'ad73c33f-7bdc-47ff-b539-0ac9afdcdb82';
 const COPIED_JUDGMENT =
   '현재 사업성 판단은 유지되며, 양조장과의 협력 가능성이 높지만, 실제 접촉 및 협력 조건에 대한 구체적인 증거가 부족하다.';
@@ -1358,6 +1362,152 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
     } finally {
       await writeMarker(config, marker, CONTEXT_OBJECT);
       console.log(`preview-context-ledger stored status=${marker.status}`);
+    }
+    expect(marker.status).toBe('RECORDED');
+  }, 240_000);
+
+  it('sends the consulting path separately from repeat experiments', async () => {
+    const config = supabaseConfig();
+    expect(config).not.toBeNull();
+    if (!config) return;
+    const preview = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_GIT_COMMIT_REF !== 'main';
+    const apiKey = process.env.GPT_API_KEY?.trim() ?? '';
+    if (!preview || !apiKey) {
+      console.log(`preview-consulting-path hold preview=${preview} gpt_key=${apiKey ? 'present' : 'absent'}`);
+      return;
+    }
+    const existing = await readMarker(config, PATH_OBJECT);
+    if (existing && ['RECORDED', 'failed', 'limited', 'quality_failed'].includes(String(existing.status))) {
+      console.log(`preview-consulting-path skip status=${existing.status}`);
+      return;
+    }
+    const parentRow = await restGet(config, `ai_pm_reviews?select=user_id&review_id=eq.${ROUND3_PARENT_ID}`);
+    const userId = (parentRow[0] as { user_id?: string } | undefined)?.user_id ?? '';
+    const backend = openReviewBackend();
+    const parent = await backend.store.readReview(userId, ROUND3_PARENT_ID);
+    expect(parent?.status).toBe('succeeded');
+    const saved = (await backend.store.listFeedback(userId, ROUND3_PARENT_ID)).find((item) => item.choiceAnswer?.label === ROUND3_LABEL);
+    expect(saved?.modelCalls).toBe(0);
+    const preservedIds = [PARENT_ID, QUALITY_PARENT_ID, CHOICE_PARENT_ID, ROUND3_PARENT_ID, REREVIEW_RECORDED_ID, SEPARATION_REVIEW_ID, CONTEXT_PRIOR_ID, PATH_PRIOR_ID];
+    const preserved = await Promise.all(preservedIds.map((reviewId) => backend.store.readReview(userId, reviewId)));
+    const startedAt = new Date().toISOString();
+    await writeMarker(config, { status: 'started', startedAt, parentReviewId: ROUND3_PARENT_ID }, PATH_OBJECT);
+    let marker: Record<string, unknown> = { status: 'failed', startedAt, parentReviewId: ROUND3_PARENT_ID };
+    let requestAudit: Record<string, unknown> | null = null;
+    try {
+      const result = await runFollowUpReview({
+        store: backend.store,
+        userId,
+        projectId: PROJECT_ID,
+        reviewId: ROUND3_PARENT_ID,
+        supplement: ROUND3_SUPPLEMENT,
+        now: startedAt,
+        chat: async (request) => {
+          const user = request.messages.find((message) => message.role === 'user')?.content ?? '';
+          const payload = JSON.parse(user) as {
+            consultingPath?: Array<{ reviewId?: string; supplement?: string; judgmentStatus?: string }>;
+            experimentRecords?: Array<{ reviewId?: string; role?: string }>;
+            newFounderInformation?: boolean;
+          };
+          requestAudit = {
+            path: (payload.consultingPath ?? []).map((step) => ({
+              reviewId: step.reviewId,
+              supplement: step.supplement,
+              judgmentStatus: step.judgmentStatus,
+            })),
+            experimentIds: (payload.experimentRecords ?? []).map((item) => item.reviewId),
+            newFounderInformation: payload.newFounderInformation ?? null,
+            experimentJudgmentOmitted: !user.includes(COPIED_EXPERIMENT_JUDGMENT),
+            hasLikelihoodClaim: user.includes(SUPPLEMENT),
+            hasPlanChoice: user.includes(CHOICE_LABEL),
+            hasNoCandidate: user.includes(ROUND3_SUPPLEMENT),
+          };
+          return openReviewChat()(request);
+        },
+        evidence: 'live_network',
+        forceNew: true,
+      });
+      for (const before of preserved) {
+        if (!before) continue;
+        const after = await backend.store.readReview(userId, before.reviewId);
+        expect(after?.finishedAt).toBe(before.finishedAt);
+        expect(after?.status).toBe(before.status);
+        expect(after?.totalTokens).toBe(before.totalTokens);
+      }
+      if (!result.ok || result.record.status !== 'succeeded' || !result.record.sections?.analysis) {
+        marker = {
+          ...marker,
+          status: 'failed',
+          error: result.ok ? result.record.error : result.error,
+          reviewId: result.ok ? result.record.reviewId : null,
+          called: result.ok ? result.called : false,
+          requestAudit,
+        };
+      } else {
+        const sections = result.record.sections;
+        const analysis = sections.analysis!;
+        const judgment = analysis.judgmentDetail;
+        const summary = analysis.summary;
+        const priorJudgments = preserved.flatMap((row) => {
+          const text = row?.sections?.analysis?.judgmentDetail || row?.sections?.judgment || '';
+          return text ? [text] : [];
+        });
+        const copied = priorJudgments.some((text) => text.replace(/\s+/g, '') === judgment.replace(/\s+/g, ''));
+        const targets = questionVerificationTargets(sections.nextQuestion);
+        const openTargets = targets.filter((target) => target !== 'selection');
+        const verificationRepeats = /떠오르는|정했|한 곳|이름이 있/.test(analysis.nextVerification);
+        const checks = {
+          pathSeparated: Boolean(
+            requestAudit &&
+              requestAudit.newFounderInformation === false &&
+              requestAudit.experimentJudgmentOmitted &&
+              requestAudit.hasNoCandidate &&
+              requestAudit.hasPlanChoice &&
+              requestAudit.hasLikelihoodClaim,
+          ),
+          claimNotFact: !founderClaimTreatedAsFact(judgment) && !founderClaimTreatedAsFact(summary),
+          notCopied: !copied,
+          answerRecognized: /후보/.test(`${judgment}\n${summary}`) && /없|못|선정/.test(`${judgment}\n${summary}`),
+          reasonClear: /없|못|부족|확인|근거|영향|비어|유보|유지|새/.test(judgment),
+          assumptionNotHope: !assumptionRestatesUnverifiedHope(analysis.assumptions),
+          doesNotReselect: !questionRepeatsAnsweredSelection(sections.nextQuestion) && !verificationRepeats,
+          newPurpose: openTargets.length === 1 && !/떠오르는/.test(sections.nextQuestion),
+          preserved: result.record.parentReviewId === ROUND3_PARENT_ID && result.record.sourceFeedbackId === saved?.feedbackId,
+        };
+        marker = {
+          status: Object.values(checks).every(Boolean) ? 'RECORDED' : 'quality_failed',
+          startedAt,
+          finishedAt: new Date().toISOString(),
+          called: result.called,
+          reviewId: result.record.reviewId,
+          parentOfChild: result.record.parentReviewId,
+          sourceFeedbackId: result.record.sourceFeedbackId,
+          feedbackId: saved?.feedbackId ?? null,
+          model: result.record.model,
+          promptTokens: result.record.promptTokens,
+          completionTokens: result.record.completionTokens,
+          totalTokens: result.record.totalTokens,
+          callCount: result.record.callCount,
+          requestAudit,
+          judgment,
+          summary,
+          assumptions: analysis.assumptions,
+          inferences: analysis.inferences,
+          risks: sections.risks,
+          evidenceToChange: analysis.evidenceToChange,
+          founderFacts: analysis.founderFacts,
+          nextQuestion: sections.nextQuestion,
+          nextQuestionReason: sections.nextQuestionReason,
+          nextVerification: analysis.nextVerification,
+          choices: analysis.choices.map((choice) => choice.label),
+          targets,
+          checks,
+          rawContent: result.record.rawContent,
+        };
+      }
+    } finally {
+      await writeMarker(config, marker, PATH_OBJECT);
+      console.log(`preview-consulting-path stored status=${marker.status}`);
     }
     expect(marker.status).toBe('RECORDED');
   }, 240_000);
