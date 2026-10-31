@@ -4889,6 +4889,7 @@ describe('AI PM first review', () => {
     const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
     expect(system).toContain('근거가 부족하면 기존 판단을 유지');
     expect(system).toContain('이유를 적는다');
+    expect(system).toContain('유지와 이유');
   });
 
   it('treats a reworded partnership question as the same question', () => {

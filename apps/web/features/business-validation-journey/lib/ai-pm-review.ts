@@ -684,6 +684,11 @@ export function assembleConsultingHistory(input: {
         record.reviewId !== root.reviewId &&
         record.reviewId !== input.parent.reviewId,
     )
+    .filter((record) => {
+      const judgment = record.sections?.analysis?.judgmentDetail || record.sections?.judgment || '';
+      const parentJudgment = input.parent.sections?.analysis?.judgmentDetail || input.parent.sections?.judgment || '';
+      return judgment !== parentJudgment;
+    })
     .sort((left, right) => left.finishedAt.localeCompare(right.finishedAt) || left.version - right.version)
     .map((record) => ({
       reviewId: record.reviewId,
@@ -732,17 +737,17 @@ function compactConsultingAnalysis(sections: ReviewSections): {
   };
 }
 
-function productReanalysisSystemPrompt(): string {
+function productReanalysisSystemPrompt(previousQuestions: string[]): string {
   return [
     '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
     '사용자 JSON의 최초 사업 원문, 최초 분석, 이전 분석, 직전 분석, 이전 질문, 이번 답을 함께 읽고 사업을 다시 검토한다.',
     '이번 답은 네 단계로 다룬다. 첫째, 파운더가 무엇을 주장하거나 답했는지 해석한다. 둘째, 그 답의 근거 수준을 확인된 사실, 경험, 추정, 계획 중 하나로 판단한다. 셋째, 기존 판단에서 유지되는 부분과 답 때문에 달라지는 부분을 나누고 이유를 적는다. 넷째, 이전 질문과 다른 불확실성 하나만 다음 질문으로 고른다.',
     '확인되지 않은 협력 가능성, 추정, 기대, 계획은 founderFacts에 넣지 않는다. founderFacts는 접촉, 계약, 입금, 예약처럼 확인된 사실만 담는다. 근거가 없으면 빈 배열이다.',
     '추정과 기대는 inferences에 두고, 아직 확인되지 않은 가정은 assumptions에 둔다. 답을 지우지 않는다. evidenceToChange에는 그 답이 판단에 어떤 영향을 주는지를 적는다.',
-    'judgment에는 유지되는 판단, 답을 유지하거나 반영하는 이유, 여전히 불확실한 점을 함께 적는다. 근거가 부족하면 기존 판단을 유지한다. 최초 분석 문장을 그대로 반복하지 않는다.',
-    'risks에는 답으로 드러난 미확인 위험을 포함한다. 이전 위험 문장만 복사하지 않는다.',
-    'nextQuestion은 하나다. previousQuestions와 같은 문장이나, 파트너십을 어떻게 구축할지 묻는 질문을 표현만 바꾸어 반복하지 않는다. 접촉 여부, 협력 조건, 운영 주체, 예약 경로, 누가 비용을 내는 것 가운데 지금 가장 큰 불확실성 하나만 묻는다.',
-    'nextQuestionReason에는 그 질문이 이전 질문과 다른 이유를 적는다.',
+    'judgment에는 유지와 이유라는 말을 넣고, 유지되는 판단과 여전히 불확실한 점을 새 문장으로 적는다. 근거가 부족하면 기존 판단을 유지한다. copyBan.judgment와 같은 문장을 그대로 쓰지 않는다.',
+    'risks에는 이번 답이 드러낸 미확인 위험을 새 문장으로 더한다. 이전 위험 목록과 항목이 모두 같으면 실패다.',
+    'nextQuestion은 하나다. previousQuestions 또는 copyBan.nextQuestion과 같은 문장이면 실패다. 파트너십을 어떻게 구축할지 묻는 질문을 표현만 바꾸어 반복하지 않는다. 접촉 여부, 협력 조건, 운영 주체, 예약 경로, 누가 비용을 내는 것 가운데 지금 가장 큰 불확실성 하나만 묻는다.',
+    `nextQuestionReason에는 그 질문이 이전 질문과 다른 이유를 적는다. 이미 한 질문: ${previousQuestions.filter((question) => question.trim()).map((question) => `「${question}」`).join(' ')}`,
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
@@ -766,7 +771,8 @@ export function buildProductReanalysisRequest(input: {
   founderSupplement: string;
   founderFeedback: { comment: string } | null;
 }): ChatRequest {
-  const system = productReanalysisSystemPrompt();
+  const previousQuestions = input.previousQuestions ?? [input.latestAnalysis.nextQuestion];
+  const system = productReanalysisSystemPrompt(previousQuestions);
   const anchors = {
     originalInput: input.originalInput,
     firstAnalysis: compactConsultingAnalysis(input.firstAnalysis),
@@ -775,8 +781,12 @@ export function buildProductReanalysisRequest(input: {
     founderSupplement: input.founderSupplement,
     founderFeedback: input.founderFeedback,
     founderAnswerSource: input.founderAnswerSource ?? null,
-    previousQuestions: input.previousQuestions ?? [input.latestAnalysis.nextQuestion],
+    previousQuestions,
     priorQuestion: input.latestAnalysis.nextQuestion,
+    copyBan: {
+      judgment: input.latestAnalysis.analysis?.judgmentDetail || input.latestAnalysis.judgment,
+      nextQuestion: input.latestAnalysis.nextQuestion,
+    },
   };
   let analyses = [...(input.priorAnalyses ?? [])];
   let turns = [...input.priorTurns];
@@ -1148,6 +1158,8 @@ export async function runFollowUpReview(input: {
   chat?: ReviewChat;
   evidence: StoredReview['evidence'];
   notRunReason?: string;
+  /** A saved child stays in place. Set only for a new verification call. */
+  forceNew?: boolean;
 }): Promise<
   | { ok: true; called: boolean; record: StoredReview; view: AiPmReviewView }
   | { ok: false; error: 'review_missing' | 'feedback_required' | 'engine_unconfigured' | 'gpt_api_key_missing' }
@@ -1170,7 +1182,7 @@ export async function runFollowUpReview(input: {
         record.supplementSha === supplementSha,
     )
     .at(-1);
-  if (prior && reuseFollowUp(prior, marks)) {
+  if (prior && reuseFollowUp(prior, marks) && !input.forceNew) {
     return {
       ok: true,
       called: false,

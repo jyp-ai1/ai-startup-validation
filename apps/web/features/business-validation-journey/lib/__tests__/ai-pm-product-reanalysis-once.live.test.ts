@@ -23,7 +23,7 @@ const ANSWER_ID = '7d2d04e5-93a1-4cd6-aebf-03582eeb003f';
 const SUPPLEMENT = '양조장과의 협력 가능성이 높다.';
 const BUCKET = 'ai-pm-quality-compare';
 const OBJECT = 'product-cumulative-brewery-2026-10-31.json';
-const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31.json';
+const QUALITY_OBJECT = 'product-consulting-quality-2026-10-31-b.json';
 const QUALITY_PARENT_ID = '9e169fef-7428-4d21-a6f0-f3034bcc91d1';
 const SIBLING_ANALYSIS_ID = '8602a92e-0fbd-4d93-a005-9c9f18410ac6';
 
@@ -197,6 +197,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
         now: startedAt,
         chat: openReviewChat(),
         evidence: 'live_network',
+        forceNew: true,
       });
       for (const before of preserved) {
         if (!before) continue;
@@ -228,7 +229,7 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
         const previousQuestions = history.previousQuestions;
         const claimIsFact = unverifiedClaimStoredAsFact(SUPPLEMENT, facts);
         const repeated = questionRepeatsPrior(previousQuestions, nextQuestion);
-        const explains = /유지|이유|확인되지|추정|가설/.test(judgment);
+        const explains = /유지/.test(judgment) && /이유/.test(judgment);
         const touched = [judgment, ...result.record.sections.risks, ...result.record.sections.analysis.assumptions, ...result.record.sections.analysis.inferences, ...result.record.sections.analysis.evidenceToChange].join('\n');
         const reflects = /협력/.test(touched);
         const risksMoved = result.record.sections.risks.some((item) => item !== '가격, 인원, 매출은 입력에 없으면 적지 않는다.');
