@@ -964,8 +964,11 @@ function AnalysisBlock(props: {
         <Fact label="해결하려는 문제" value={sections.problem} />
         <Fact label="기존 대안" value={analysis.alternatives ?? ''} />
         <Fact label="제공 가치" value={analysis.value} />
+        <Fact label="제품" value={analysis.product ?? ''} />
         <Fact label="차별화" value={analysis.differentiation ?? ''} />
         <Fact label="운영 방식" value={analysis.operatingModel} />
+        <Fact label="공급" value={analysis.supply ?? ''} />
+        <Fact label="마케팅" value={analysis.marketing ?? ''} />
         <Fact label="이용자와 지불자" value={analysis.payer} />
         <Fact label="수익 구조" value={sections.revenueModel} />
         <Fact label="시장성" value={sections.market} />

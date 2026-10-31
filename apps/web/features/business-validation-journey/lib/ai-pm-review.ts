@@ -13,6 +13,7 @@ import type {
   ConsultingTurn,
   StagePair,
   StageReading,
+  StageBusinessProfile,
   NextAction,
   ReviewMark,
   ReviewSections,
@@ -1708,6 +1709,18 @@ function stageReanalysisSchema(): Record<string, unknown> {
       'assumptions',
       'resolvedIssues',
       'unresolvedIssues',
+      'customer',
+      'problem',
+      'value',
+      'product',
+      'market',
+      'revenueModel',
+      'operations',
+      'supply',
+      'marketing',
+      'competition',
+      'executionNote',
+      'risks',
       'impactOnPreviousJudgment',
       'updatedJudgment',
       'judgmentReason',
@@ -1757,8 +1770,23 @@ function stageReanalysisSchema(): Record<string, unknown> {
       unresolvedIssues: {
         ...list,
         description:
-          '아직 남은 실행 문제. 후보가 없거나 접촉과 협력 의사가 없으면 여기에 남긴다. 기준이 생겼다고 이 목록에서 지우지 않는다.',
+          '아직 남은 실행 문제. 기준이 생겼다고 이 목록에서 지우지 않는다. 주장이 확인된 것은 아니다.',
       },
+      customer: { ...text, description: '핵심 고객. 입력과 답에 없으면 없다고 적는다. 빈 문자열은 실패다.' },
+      problem: { ...text, description: '해결하려는 문제. 입력과 답에 없으면 없다고 적는다.' },
+      value: { ...text, description: '제공하는 가치. 입력과 답에 없으면 없다고 적는다.' },
+      product: { ...text, description: '상품 또는 경험. 입력과 답에 없으면 없다고 적는다.' },
+      market: { ...text, description: '시장. 입력에 없는 규모 숫자는 만들지 않는다.' },
+      revenueModel: { ...text, description: '수익 구조. 입력에 없으면 가설이라고 적고 확정 수익으로 쓰지 않는다.' },
+      operations: { ...text, description: '운영 방식. 점수가 아니다.' },
+      supply: { ...text, description: '공급. 입력과 답에 없으면 없다고 적는다.' },
+      marketing: { ...text, description: '알리는 방법. 입력과 답에 없으면 없다고 적는다.' },
+      competition: { ...text, description: '경쟁. 입력과 답에 없으면 없다고 적는다.' },
+      executionNote: {
+        ...text,
+        description: '실행이 확인됐는지를 문장으로 적는다. 점수, 높다, 낮다로 단정하지 않는다. 증거가 없으면 아직 확인되지 않았다고 적는다.',
+      },
+      risks: { ...list, description: '사업 위험. 없으면 빈 배열. 만들어 내지 않는다.' },
       impactOnPreviousJudgment: {
         type: 'string',
         description:
@@ -1813,18 +1841,17 @@ function stageReanalysisSchema(): Record<string, unknown> {
 
 function stageReanalysisSystemPrompt(): string {
   return [
-    '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
-    '이 호출은 후속 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
-    '1. 각 답을 읽는다. stagePairs와 priorStagePairs에서 question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. questionId가 질문과 답을 잇는다. choiceLabel만 반복하면 해석이 아니다. 이번 stagePairs의 supplement에 있는 기준, 계획, 아직 없는 사실을 그 questionId의 meaning에 포함한다. priorStagePairs는 판단의 맥락이고 answerInterpretation에 넣지 않는다. offeredChoices가 고른 항목 하나뿐이면 다른 선택지는 보존되지 않은 정보다.',
-    'answerReading.kinds는 답의 성격이다. fact, claim, plan, choice다. 점수가 아니다. claim은 검증되지 않은 주장이다. 가능성이 높다는 문장은 claim이다. plan은 계획이다. fact는 현재 상태일 수 있으나 확인된 협력은 아니다.',
-    '2. 진전과 미해결을 먼저 적는다. 계획이 구체화된 것은 진전이다. supplement가 선정 기준을 말하면 그 기준 문장을 resolvedIssues에 적고 닫힌 항목으로 둔다. choiceLabel의 기준을 구체화한다만 적으면 진전 내용이 빠진 것이다. 후보가 없거나 접촉과 협력 의사가 없으면 unresolvedIssues에 남긴다. 기준이 생겼다고 미해결을 지우지 않는다. 기준이 생겼다고 협력이 확인된 것도 아니다.',
-    '3. 신뢰 수준을 적는다. 주장과 기대는 unverifiedClaims다. 그 가설에는 잠재력이 있을 수 있다. 잠재력과 현재 확인된 실행 가능성은 별개다. verifiedFacts에는 접촉, 계약, 입금, 예약처럼 별도 증거가 있는 것만 넣고 없으면 빈 배열이다. 주장은 verifiedFacts에 넣지 않는다. assumptions에는 아직 검증되지 않은 가설과 판단이 바뀔 추가 증거를 적는다.',
-    '4. 그 목록으로 사업성을 다시 평가한다. priorJudgmentText를 이어 쓰지 않는다. impactOnPreviousJudgment와 updatedJudgment는 방금 적은 resolvedIssues 한 항목과 unresolvedIssues 한 항목을 각각 문장 안에 남긴다. 목록과 다른 이전 문장만 반복하지 않는다. 잠재력, 실행 가능성, 현재 확보된 근거, 실행상 위험을 나눈다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 현재 실행 가능성은 아직 확인되지 않은 상태다. 증거가 없다고 실행 가능성이 낮다고 단정하지 않는다. unverifiedClaims는 잠재적 기회로만 인용한다. 가설을 긍정적인 실행 근거로 쓰지 않고, 부정으로 단정하지도 않는다. judgmentReason은 그 구분과 같은 방향이다. 점수를 만들지 않는다. 코드는 결론을 정하지 않는다.',
-    '5. 다음 질문은 unresolvedIssues만 묻는다. resolvedIssues와 supplement에 이미 있는 문장을 질문이나 선택지로 다시 넣지 않는다. 선정 기준이 resolvedIssues에 있으면 그 기준이 무엇인지, 또는 그 기준을 더 자세히 설명해 달라고 다시 묻지 않는다. 남은 문제 가운데 가장 중요한 것을 당신이 고른다. 후보 확보나 실제 접근이 남아 있으면 그중 하나를 묻는다.',
+    '당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다.',
+    '이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
+    '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. choiceLabel만 반복하면 해석이 아니다.',
+    '2. 확인된 사실, 주장, 가설을 가른다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다.',
+    '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 입력과 답에 없으면 없다고 적는다. 빈 문자열로 두지 않는다. 부모 문장을 베끼지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다.',
+    '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 적는다. 판단을 유지했는지 바꿨는지와 그 이유를 이번 답과 연결한다. priorJudgmentText를 이어 쓰지 않는다. 코드는 결론을 정하지 않는다.',
+    '5. 다음 검증 질문은 당신이 고른다. 사업 판단에 가장 큰 빈칸을 묻는다. 이미 한 질문 문장과 이번 답에 있는 문장을 다시 묻지 않는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'JSON만 반환한다.',
-    '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
-    'answerInterpretation은 이번 stagePairs의 questionId만 담는다. priorStagePairs의 questionId는 넣지 않는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
+    '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
+    'answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
     'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text와 choices다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
   ].join(' ');
@@ -2691,6 +2718,31 @@ function choicesFromLabels(labels: string[]): BusinessAnalysis['choices'] {
   }));
 }
 
+function readStageBusinessProfile(parsed: Record<string, unknown>): StageBusinessProfile | null {
+  const keys = [
+    'customer',
+    'problem',
+    'value',
+    'product',
+    'market',
+    'revenueModel',
+    'operations',
+    'supply',
+    'marketing',
+    'competition',
+    'executionNote',
+  ] as const;
+  const profile = {} as Record<(typeof keys)[number], string>;
+  for (const key of keys) {
+    const value = textField(parsed[key]);
+    if (!value) return null;
+    profile[key] = value;
+  }
+  const risks = stringArrayField(parsed.risks);
+  if (!risks) return null;
+  return { ...profile, risks };
+}
+
 function judgeStageContract(
   content: string,
   contract: { askedQuestions: string[]; pairs: StagePair[] },
@@ -2716,6 +2768,7 @@ function judgeStageContract(
   const interpretations = Array.isArray(parsed.answerInterpretation) ? parsed.answerInterpretation : null;
   const nextQuestionItems = Array.isArray(parsed.nextQuestions) ? parsed.nextQuestions : null;
   const choiceMatrix = Array.isArray(parsed.nextQuestionChoices) ? parsed.nextQuestionChoices : null;
+  const businessProfile = readStageBusinessProfile(parsed);
   if (
     !impactOnPreviousJudgment ||
     !updatedJudgment ||
@@ -2728,7 +2781,8 @@ function judgeStageContract(
     !unresolvedIssues ||
     !interpretations ||
     !nextQuestionItems ||
-    !choiceMatrix
+    !choiceMatrix ||
+    !businessProfile
   ) {
     issues.push('stage_fields_missing');
   }
@@ -2786,6 +2840,7 @@ function judgeStageContract(
     assumptions &&
     resolvedIssues &&
     unresolvedIssues &&
+    businessProfile &&
     !issues.includes('stage_fields_missing')
       ? {
           answerInterpretation,
@@ -2800,6 +2855,7 @@ function judgeStageContract(
           nextVerification,
           nextQuestions,
           nextQuestionChoices,
+          businessProfile,
         }
       : null;
   const answered = contract.pairs.filter((pair) => pair.status === 'answered');
@@ -2824,7 +2880,7 @@ function judgeStageContract(
   const asked = new Set(contract.askedQuestions.map(compactQuestion).filter((text) => text.length > 0));
   if (reading && texts.some((text) => asked.has(compactQuestion(text)))) issues.push('stage_questions_repeated');
   const uniqueIssues = [...new Set(issues)];
-  if (uniqueIssues.length > 0 || !reading) return { sections: null, issues: uniqueIssues.length > 0 ? uniqueIssues : ['stage_fields_missing'], reading };
+  if (uniqueIssues.length > 0 || !reading || !businessProfile) return { sections: null, issues: uniqueIssues.length > 0 ? uniqueIssues : ['stage_fields_missing'], reading };
   const firstChoices = choicesFromLabels(reading.nextQuestions[0]?.choices ?? []);
   const questions: ConsultingQuestion[] = reading.nextQuestions.map((item, index) => ({
     questionId: `q${index + 1}`,
@@ -2832,12 +2888,12 @@ function judgeStageContract(
     choices: choicesFromLabels(item.choices),
   }));
   const sections: ReviewSections = {
-    customer: '',
-    problem: '',
-    market: '',
-    revenueModel: '',
+    customer: businessProfile.customer,
+    problem: businessProfile.problem,
+    market: businessProfile.market,
+    revenueModel: businessProfile.revenueModel,
     execution: '',
-    risks: reading.unresolvedIssues,
+    risks: businessProfile.risks,
     uncertain: reading.unresolvedIssues,
     hypotheses: reading.assumptions,
     judgment: reading.updatedJudgment,
@@ -2847,13 +2903,16 @@ function judgeStageContract(
     claimConfirmation: null,
     analysis: {
       summary: reading.impactOnPreviousJudgment,
-      value: '',
-      operatingModel: '',
+      value: businessProfile.value,
+      operatingModel: businessProfile.operations,
       payer: '',
-      competition: '',
-      operations: '',
+      competition: businessProfile.competition,
+      operations: businessProfile.executionNote,
       profitability: '',
       strengths: [],
+      product: businessProfile.product,
+      supply: businessProfile.supply,
+      marketing: businessProfile.marketing,
       assumptions: reading.assumptions,
       evidenceToChange: [],
       founderFacts: reading.verifiedFacts,

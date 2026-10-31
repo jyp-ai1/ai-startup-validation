@@ -87,6 +87,18 @@ function contractReply(request: ChatRequest, judgment: string, questions: string
     resolvedIssues: [],
     unresolvedIssues: ['지불 의사는 확인되지 않았다'],
     nextVerification: '지불 의사를 확인한다.',
+    customer: '직장인',
+    problem: '모임 수요가 확인되지 않았다',
+    value: '함께 읽는 자리',
+    product: '독서 모임',
+    market: '수요는 입력에 없다',
+    revenueModel: '가격은 가설이며 원문에 없다',
+    operations: '운영은 아직 구상이다',
+    supply: '장소 공급은 입력에 없다',
+    marketing: '알림 방법은 아직 확인되지 않았다',
+    competition: '경쟁은 확인되지 않았다',
+    executionNote: '실행은 아직 확인되지 않았다',
+    risks: ['수요가 확인되지 않았다'],
     nextQuestions,
     nextQuestionChoices: nextQuestions.map((item) => item.choices),
   });
@@ -325,9 +337,10 @@ describe('consulting stage batch', () => {
     const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
     expect(system).toContain('answerInterpretation');
     expect(system).toContain('choiceLabel만 반복하면 해석이 아니다');
-    expect(system).toContain('선정 기준');
-    expect(system).toContain('잠재력과 현재 확인된 실행 가능성은 별개다');
-    expect(system).toContain('진전과 미해결을 먼저 적는다');
+    expect(system).toContain('확인된 사실, 주장, 가설을 가른다');
+    expect(system).toContain('코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다');
+    expect(system).toContain('사업 전체를 다시 적는다');
+    expect(system).toContain('nextQuestions는 서로 다른 질문 1개 이상이다');
     expect(system).not.toContain('verificationStage');
     if (request.responseFormat?.type === 'json_schema') {
       const meaning = request.responseFormat.schema.properties as {
@@ -347,6 +360,18 @@ describe('consulting stage batch', () => {
         'assumptions',
         'resolvedIssues',
         'unresolvedIssues',
+        'customer',
+        'problem',
+        'value',
+        'product',
+        'market',
+        'revenueModel',
+        'operations',
+        'supply',
+        'marketing',
+        'competition',
+        'executionNote',
+        'risks',
         'impactOnPreviousJudgment',
         'updatedJudgment',
         'judgmentReason',
@@ -1228,6 +1253,11 @@ describe('consulting stage batch', () => {
     ];
     const sections = parseSections(JSON.stringify(raw), inputText);
     expect(sections?.analysis?.questions).toHaveLength(3);
+    if (sections?.analysis) {
+      sections.analysis.product = '독서 모임';
+      sections.analysis.supply = '장소 공급은 입력에 없다';
+      sections.analysis.marketing = '알림 방법은 아직 확인되지 않았다';
+    }
     const view: AiPmReviewView = {
       reviewId: 'stage-review',
       projectId: 'project-stage',
@@ -1255,6 +1285,12 @@ describe('consulting stage batch', () => {
     expect(html).toContain('가격은 얼마인가?');
     expect(html).toContain('어떤 채널로 알리는가?');
     expect(html).toContain('답 저장');
+    expect(html).toContain('제품');
+    expect(html).toContain('독서 모임');
+    expect(html).toContain('공급');
+    expect(html).toContain('장소 공급은 입력에 없다');
+    expect(html).toContain('마케팅');
+    expect(html).toContain('알림 방법은 아직 확인되지 않았다');
     expect(html).toContain('data-testid="ai-pm-choice-submit"');
     expect(html).not.toContain('이 답으로 다시 분석');
     const firstQuestion = html.slice(html.indexOf('data-question-id="q1"'), html.indexOf('data-question-id="q2"'));
@@ -1276,5 +1312,104 @@ describe('consulting stage batch', () => {
     expect(panel).toContain('answers');
     expect(panel).toContain('data-question-id');
     expect(panel).not.toMatch(/gpt|gemini|openai|token/i);
+  });
+
+  it('stores the model business rewrite and rejects a blank profile without a second call', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const calls: ChatRequest[] = [];
+    const chat = async (request: ChatRequest) => {
+      calls.push(request);
+      const payload = requestPayload(request);
+      if (!payload || !Array.isArray(payload.stagePairs)) {
+        return reply(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS));
+      }
+      const parsed = JSON.parse(
+        contractReply(request, '직장인 답을 반영해 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', SECOND_QUESTIONS),
+      ) as Record<string, unknown>;
+      const supplement = JSON.stringify(payload.stagePairs);
+      if (supplement.includes('고객 칸을 비운 답')) {
+        delete parsed.customer;
+        return reply(JSON.stringify(parsed));
+      }
+      parsed.customer = '답을 반영한 고객은 직장인이다';
+      return reply(JSON.stringify(parsed));
+    };
+    const base = {
+      store,
+      userId: 'user-profile',
+      projectId: 'project-profile',
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const first = await runFirstReview({ ...base, text: `${IDEA} 사업 구조.`, origin: 'typed', fileName: null });
+    expect(first.record.sections?.customer).toBe('직장인');
+    const parentFinishedAt = first.record.finishedAt;
+    const answers = [
+      { questionId: 'q1', comment: '직장인을 고객으로 본다' },
+      { questionId: 'q2', comment: '가격은 정하지 않았다' },
+      { questionId: 'q3', comment: '온라인 게시로 알린다' },
+    ];
+    const integrated = await submitConsultingStage({ ...base, reviewId: first.record.reviewId, answers });
+    expect(integrated.ok && integrated.called).toBe(true);
+    if (!integrated.ok) return;
+    expect(integrated.record.callCount).toBe(1);
+    expect(integrated.record.sections?.customer).toBe('답을 반영한 고객은 직장인이다');
+    expect(integrated.record.sections?.problem).toBe('모임 수요가 확인되지 않았다');
+    expect(integrated.record.sections?.market).toBe('수요는 입력에 없다');
+    expect(integrated.record.sections?.revenueModel).toBe('가격은 가설이며 원문에 없다');
+    expect(integrated.record.sections?.analysis?.value).toBe('함께 읽는 자리');
+    expect(integrated.record.sections?.analysis?.product).toBe('독서 모임');
+    expect(integrated.record.sections?.analysis?.operatingModel).toBe('운영은 아직 구상이다');
+    expect(integrated.record.sections?.analysis?.supply).toBe('장소 공급은 입력에 없다');
+    expect(integrated.record.sections?.analysis?.marketing).toBe('알림 방법은 아직 확인되지 않았다');
+    expect(integrated.record.sections?.analysis?.competition).toBe('경쟁은 확인되지 않았다');
+    expect(integrated.record.sections?.analysis?.operations).toBe('실행은 아직 확인되지 않았다');
+    expect(integrated.record.sections?.risks).toEqual(['수요가 확인되지 않았다']);
+    expect(integrated.record.stageReading?.businessProfile?.customer).toBe('답을 반영한 고객은 직장인이다');
+    expect((await store.readReview('user-profile', first.record.reviewId))?.sections?.customer).toBe('직장인');
+    expect((await store.readReview('user-profile', first.record.reviewId))?.finishedAt).toBe(parentFinishedAt);
+    const stageRequest = calls[1]!;
+    expect(JSON.stringify(userPayload(stageRequest).stagePairs)).toContain('직장인을 고객으로 본다');
+    if (stageRequest.responseFormat?.type === 'json_schema') {
+      const required = stageRequest.responseFormat.schema.required as string[];
+      expect(required).toEqual(expect.arrayContaining(['customer', 'product', 'supply', 'marketing', 'executionNote']));
+    }
+    const blankFirst = await runFirstReview({
+      ...base,
+      userId: 'user-blank',
+      projectId: 'project-blank',
+      text: `${IDEA} 빈 고객.`,
+    });
+    const before = calls.length;
+    const blankAnswers = [
+      { questionId: 'q1', comment: '고객 칸을 비운 답' },
+      { questionId: 'q2', comment: '가격은 정하지 않았다' },
+      { questionId: 'q3', comment: '온라인 게시로 알린다' },
+    ];
+    const failed = await submitConsultingStage({
+      ...base,
+      userId: 'user-blank',
+      projectId: 'project-blank',
+      reviewId: blankFirst.record.reviewId,
+      answers: blankAnswers,
+    });
+    expect(failed.ok).toBe(true);
+    if (!failed.ok) return;
+    expect(failed.called).toBe(true);
+    expect(failed.record.status).toBe('failed');
+    expect(failed.record.callCount).toBe(1);
+    expect(failed.record.sections).toBeNull();
+    expect(failed.record.rawContent).not.toContain('"customer"');
+    expect(calls).toHaveLength(before + 1);
+    const again = await submitConsultingStage({
+      ...base,
+      userId: 'user-blank',
+      projectId: 'project-blank',
+      reviewId: blankFirst.record.reviewId,
+      answers: blankAnswers,
+    });
+    expect(again.ok && !again.called).toBe(true);
+    expect(calls).toHaveLength(before + 1);
   });
 });
