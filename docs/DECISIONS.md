@@ -2653,6 +2653,7 @@ The stored judgment still used an unverified cooperation claim as the current li
 **Neutral:**
 
 - Production stays locked. Existing review rows are not updated.
+- The fourth consulting call reuses the stored first analysis, the stored founder answer, and the stored third analysis. The fourth answer is labeled a simulation. The prompt is unchanged and one new row is inserted.
 
 ---
 

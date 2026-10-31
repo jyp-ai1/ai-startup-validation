@@ -4,6 +4,7 @@ node scripts/preview-quality-compare-once.mjs || echo "preview-quality-compare-e
 if [ "$VERCEL_ENV" = "preview" ]; then
   if [ -n "$VERCEL_GIT_COMMIT_REF" ]; then
     if [ "$VERCEL_GIT_COMMIT_REF" != "main" ]; then
+      AI_PM_CONSULTING_ROUND4=1 pnpm exec vitest run features/business-validation-journey/lib/__tests__/ai-pm-consulting-round4.live.test.ts || echo "preview-consulting-round4-exit=$?"
       AI_PM_CONSULTING_STAGE_JUDGMENT=1 pnpm exec vitest run features/business-validation-journey/lib/__tests__/ai-pm-consulting-stage-judgment.live.test.ts || echo "preview-consulting-stage-judgment-exit=$?"
       AI_PM_CONSULTING_STAGE_READING=1 pnpm exec vitest run features/business-validation-journey/lib/__tests__/ai-pm-consulting-stage-reading.live.test.ts || echo "preview-consulting-stage-reading-exit=$?"
       AI_PM_CONSULTING_STAGE_CONTRACT=1 pnpm exec vitest run features/business-validation-journey/lib/__tests__/ai-pm-consulting-stage-contract.live.test.ts || echo "preview-consulting-stage-contract-exit=$?"
