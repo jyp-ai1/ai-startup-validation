@@ -12,6 +12,7 @@ import type {
   ConsultingQuestion,
   ConsultingTurn,
   StagePair,
+  StageReading,
   NextAction,
   ReviewMark,
   ReviewSections,
@@ -1692,6 +1693,92 @@ function productReanalysisSystemPrompt(): string {
   ].join(' ');
 }
 
+/** Follow-up reanalysis. The first-review business profile is a different contract. */
+function stageReanalysisSchema(): Record<string, unknown> {
+  const text = { type: 'string' };
+  const list = { type: 'array', items: { type: 'string' } };
+  return {
+    title: 'stage_reanalysis',
+    type: 'object',
+    additionalProperties: false,
+    required: [
+      'answerInterpretation',
+      'impactOnPreviousJudgment',
+      'updatedJudgment',
+      'judgmentReason',
+      'verifiedFacts',
+      'unverifiedClaims',
+      'assumptions',
+      'resolvedIssues',
+      'unresolvedIssues',
+      'nextVerification',
+      'nextQuestions',
+      'nextQuestionChoices',
+    ],
+    properties: {
+      answerInterpretation: {
+        type: 'array',
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['questionId', 'choiceId', 'meaning'],
+          properties: {
+            questionId: text,
+            choiceId: text,
+            meaning: text,
+          },
+        },
+      },
+      impactOnPreviousJudgment: text,
+      updatedJudgment: text,
+      judgmentReason: text,
+      verifiedFacts: list,
+      unverifiedClaims: list,
+      assumptions: list,
+      resolvedIssues: list,
+      unresolvedIssues: list,
+      nextVerification: text,
+      nextQuestions: {
+        type: 'array',
+        minItems: 2,
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['text', 'choices'],
+          properties: {
+            text: text,
+            choices: { type: 'array', minItems: 2, items: { type: 'string' } },
+          },
+        },
+      },
+      nextQuestionChoices: {
+        type: 'array',
+        items: { type: 'array', items: { type: 'string' } },
+      },
+    },
+  };
+}
+
+function stageReanalysisSystemPrompt(): string {
+  return [
+    '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
+    '이 호출은 후속 재분석이다. 최초 사업성 분석의 필드를 다시 채우는 호출이 아니다.',
+    'stagePairs는 이번 단계의 질문과 답이다. priorStagePairs는 이전 실제 상담에서 순서대로 쌓인 질문과 답이다. questionId가 질문과 답을 잇는다.',
+    'offeredChoices는 그 질문에 제시된 선택지 전체다. 복사하지 말라는 이전 문장이 아니다.',
+    'choiceId와 choiceLabel은 Founder가 고른 항목이다. supplement는 보충 설명이다. status가 open이면 아직 답하지 않은 질문이다.',
+    'answerReading.kinds는 답의 성격이다. fact, claim, plan, choice다. 점수가 아니다. claim은 검증되지 않은 주장이다. 가능성이 높다는 문장은 claim이며 확인된 사실이 아니다. plan은 앞으로의 계획이다. fact는 확인된 현재 상태일 수 있으나 확인된 협력은 아니다.',
+    'consultingPath는 실제 상담의 순서다. priorAnalyses는 그 상담 단계에서 저장된 판단만 담는다. 반복 실험의 형제 판단을 실제 대화로 만들지 않는다.',
+    '다음 검증 주제와 다음 질문은 당신이 정한다. 코드는 주제를 정하지 않는다.',
+    '각 객관식 선택이 그 갈림길에서 무엇을 의미하는지 해석한다. 그 답이 기존 판단에 준 영향을 적는다. 현재 사업성 판단과 유지하거나 바꾼 이유를 적는다. 확인된 사실, 검증되지 않은 주장, 가정을 구분한다. 해소된 문제와 남은 불확실성을 구분한다. 다음 구체화 질문과 그 질문의 선택지를 적는다.',
+    '이미 답한 질문 문장을 다시 묻지 않는다. 검증되지 않은 주장을 현재의 사실이나 높은 가능성으로 쓰지 않는다. 점수를 만들지 않는다.',
+    'JSON만 반환한다.',
+    '키는 answerInterpretation, impactOnPreviousJudgment, updatedJudgment, judgmentReason, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, nextVerification, nextQuestions, nextQuestionChoices 이다.',
+    'answerInterpretation은 답한 questionId마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다. meaning은 그 선택의 의미다.',
+    'nextQuestions는 서로 다른 질문 2개 이상이다. 각 원소는 text와 choices다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
+    'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
+  ].join(' ');
+}
+
 /** Output-shaped keys make the model echo the previous judgment and question. */
 function renameEchoKeys(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(renameEchoKeys);
@@ -1767,67 +1854,64 @@ export function buildProductReanalysisRequest(input: {
   stagePartial?: boolean;
 }): ChatRequest {
   const previousQuestions = input.previousQuestions ?? [input.latestAnalysis.nextQuestion];
-  const system = productReanalysisSystemPrompt();
-  const anchors = {
-    originalInput: input.originalInput,
-    firstAnalysis: compactConsultingAnalysis(input.firstAnalysis),
-    latestAnalysis: followUpPreviousAnalysis(input.latestAnalysis),
-    founderChoice: input.founderChoice,
-    founderSupplement: input.founderSupplement,
-    founderFeedback: input.founderFeedback,
-    founderAnswerSource: input.founderAnswerSource ?? null,
-    priorQuestionTexts: previousQuestions,
-    verificationStage: coveredStage(
-      nextFactToAsk({
-        supplement: input.founderSupplement,
-        previousQuestions,
-        choiceLabel: input.founderChoice?.label ?? null,
-      }),
-      `${input.founderChoice?.label ?? ''} ${input.founderSupplement}`,
-    ),
-    doNotCopy: {
-      priorJudgmentText: input.latestAnalysis.analysis?.judgmentDetail || input.latestAnalysis.judgment,
-      priorQuestionText: input.latestAnalysis.nextQuestion,
-    },
-    consultingPath: input.consultingPath ?? [],
-    experimentRecords: input.experimentRecords ?? [],
-    failedCalls: input.failedCalls ?? [],
-    newFounderInformation: input.newFounderInformation ?? true,
-  };
-  let analyses = [...(input.priorAnalyses ?? [])];
-  let turns = [...input.priorTurns];
-  const evidenceLedger = buildEvidenceLedger({
-    consultingPath: input.consultingPath,
-    newFounderInformation: input.newFounderInformation,
-    founderChoice: input.founderChoice?.label ?? null,
-    founderSupplement: input.founderSupplement,
-  });
   const stagePairs = input.stagePairs ?? [];
   const stageBatch = stagePairs.length > 0;
-  if (stageBatch) {
-    const claimLines = [...(input.priorStagePairs ?? []), ...stagePairs]
-      .map((pair) => pair.supplement.trim())
-      .filter((line) => /가능성이 높/.test(line));
-    evidenceLedger.founderClaims = uniqueTexts([...evidenceLedger.founderClaims, ...claimLines]);
-  }
+  const system = stageBatch ? stageReanalysisSystemPrompt() : productReanalysisSystemPrompt();
+  const latestForRequest = stageBatch ? analysisForStageContext(input.latestAnalysis) : input.latestAnalysis;
+  const anchors = stageBatch
+    ? {
+        originalInput: input.originalInput,
+        firstAnalysis: compactConsultingAnalysis(input.firstAnalysis),
+        latestAnalysis: followUpPreviousAnalysis(latestForRequest),
+        priorQuestionTexts: previousQuestions,
+        doNotCopy: {
+          priorJudgmentText: latestForRequest.analysis?.judgmentDetail || latestForRequest.judgment,
+          priorQuestionText: latestForRequest.nextQuestion,
+        },
+        consultingPath: input.consultingPath ?? [],
+      }
+    : {
+        originalInput: input.originalInput,
+        firstAnalysis: compactConsultingAnalysis(input.firstAnalysis),
+        latestAnalysis: followUpPreviousAnalysis(input.latestAnalysis),
+        founderChoice: input.founderChoice,
+        founderSupplement: input.founderSupplement,
+        founderFeedback: input.founderFeedback,
+        founderAnswerSource: input.founderAnswerSource ?? null,
+        priorQuestionTexts: previousQuestions,
+        verificationStage: coveredStage(
+          nextFactToAsk({
+            supplement: input.founderSupplement,
+            previousQuestions,
+            choiceLabel: input.founderChoice?.label ?? null,
+          }),
+          `${input.founderChoice?.label ?? ''} ${input.founderSupplement}`,
+        ),
+        doNotCopy: {
+          priorJudgmentText: input.latestAnalysis.analysis?.judgmentDetail || input.latestAnalysis.judgment,
+          priorQuestionText: input.latestAnalysis.nextQuestion,
+        },
+        consultingPath: input.consultingPath ?? [],
+        experimentRecords: input.experimentRecords ?? [],
+        failedCalls: input.failedCalls ?? [],
+        newFounderInformation: input.newFounderInformation ?? true,
+      };
+  let analyses = [...(input.priorAnalyses ?? [])];
+  let turns = stageBatch ? [] : [...input.priorTurns];
+  const evidenceLedger = stageBatch
+    ? stageDeliveryLedger([...(input.priorStagePairs ?? []), ...stagePairs])
+    : buildEvidenceLedger({
+        consultingPath: input.consultingPath,
+        newFounderInformation: input.newFounderInformation,
+        founderChoice: input.founderChoice?.label ?? null,
+        founderSupplement: input.founderSupplement,
+      });
   const payload = () =>
     renameEchoKeys({
       ...(stageBatch
         ? {
-            stagePairs: stagePairs.map((pair) => ({
-              questionId: pair.questionId,
-              question: pair.question,
-              choiceLabel: pair.choiceLabel,
-              supplement: pair.supplement,
-              status: pair.status,
-            })),
-            priorStagePairs: (input.priorStagePairs ?? []).map((pair) => ({
-              questionId: pair.questionId,
-              question: pair.question,
-              choiceLabel: pair.choiceLabel,
-              supplement: pair.supplement,
-              status: pair.status,
-            })),
+            stagePairs: stagePairs.map(stagePairPayload),
+            priorStagePairs: (input.priorStagePairs ?? []).map(stagePairPayload),
             stagePartial: input.stagePartial === true,
             answerReading: [...(input.priorStagePairs ?? []), ...stagePairs].map((pair) => ({
               questionId: pair.questionId,
@@ -1843,30 +1927,44 @@ export function buildProductReanalysisRequest(input: {
             },
           }),
       evidenceLedger,
-      readingContract: {
-        claim: 'founderClaims는 검증되지 않은 가설이다. 현재 사업성의 긍정 근거로 쓰지 않는다.',
-        effect: '가설의 성립과 그 영향은 확인되지 않았다. 긍정적 영향을 미칠 것이다라고 단정하지 않는다.',
-        nextStep:
-          'priorGoals는 이미 고른 상위 목표다. nextVerification은 그 문장을 반복하지 않고 한 단계 아래를 적는다. nextQuestion과 같은 대상만 적는다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다.',
-        thisAnswer:
-          'supplement가 이번 답이다. 선택 라벨의 구체화로 바꾸지 않는다. 체험이 있으면 judgment에 체험을 계획으로 남긴다. 이름이나 선정 여부를 다시 묻지 않는다.',
-      },
+      ...(stageBatch
+        ? {}
+        : {
+            readingContract: {
+              claim: 'founderClaims는 검증되지 않은 가설이다. 현재 사업성의 긍정 근거로 쓰지 않는다.',
+              effect: '가설의 성립과 그 영향은 확인되지 않았다. 긍정적 영향을 미칠 것이다라고 단정하지 않는다.',
+              nextStep:
+                'priorGoals는 이미 고른 상위 목표다. nextVerification은 그 문장을 반복하지 않고 한 단계 아래를 적는다. nextQuestion과 같은 대상만 적는다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다.',
+              thisAnswer:
+                'supplement가 이번 답이다. 선택 라벨의 구체화로 바꾸지 않는다. 체험이 있으면 judgment에 체험을 계획으로 남긴다. 이름이나 선정 여부를 다시 묻지 않는다.',
+            },
+          }),
       ...anchors,
-      founderAnswers: [
-        ...(input.consultingPath ?? []).map((step) => ({
-          choice: step.choice,
-          supplement: step.supplement,
-          answeredQuestion: step.answeredQuestion,
-        })),
-        ...((input.consultingPath ?? []).length === 0
-          ? turns.map((turn) => ({ choice: turn.choiceLabel, supplement: turn.supplement, answeredQuestion: turn.question }))
-          : []),
-        ...(stageBatch || input.newFounderInformation === false
-          ? []
-          : [{ choice: input.founderChoice?.label ?? null, supplement: input.founderSupplement, answeredQuestion: input.latestAnalysis.nextQuestion }]),
-      ],
+      ...(stageBatch
+        ? {}
+        : {
+            founderAnswers: [
+              ...(input.consultingPath ?? []).map((step) => ({
+                choice: step.choice,
+                supplement: step.supplement,
+                answeredQuestion: step.answeredQuestion,
+              })),
+              ...((input.consultingPath ?? []).length === 0
+                ? turns.map((turn) => ({ choice: turn.choiceLabel, supplement: turn.supplement, answeredQuestion: turn.question }))
+                : []),
+              ...(input.newFounderInformation === false
+                ? []
+                : [
+                    {
+                      choice: input.founderChoice?.label ?? null,
+                      supplement: input.founderSupplement,
+                      answeredQuestion: input.latestAnalysis.nextQuestion,
+                    },
+                  ]),
+            ],
+          }),
       priorAnalyses: analyses,
-      priorTurns: turns,
+      ...(stageBatch ? {} : { priorTurns: turns }),
     }) as Record<string, unknown>;
   const systemTokens = estimateReviewTokens(system);
   const overBudget = () =>
@@ -1883,7 +1981,7 @@ export function buildProductReanalysisRequest(input: {
     model: AI_PM_REVIEW_MODEL,
     temperature: 0.2,
     maxTokens: AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS,
-    responseFormat: { type: 'json_schema', schema: productReanalysisSchema() },
+    responseFormat: { type: 'json_schema', schema: stageBatch ? stageReanalysisSchema() : productReanalysisSchema() },
     messages: [
       { role: 'system' as const, content: system },
       { role: 'user' as const, content: user },
@@ -2403,6 +2501,12 @@ export function consultingQuestions(sections: ReviewSections | null | undefined)
  * Links each question to the latest feedback with that questionId.
  * A feedback row without questionId answers q1 only when the stage has one question.
  */
+function offeredFrom(question: ConsultingQuestion): StagePair['offeredChoices'] {
+  return (question.choices ?? [])
+    .filter((choice) => choice.id.trim().length > 0 && choice.label.trim().length > 0)
+    .map((choice) => ({ choiceId: choice.id.trim(), label: choice.label.trim() }));
+}
+
 export function pairConsultingStage(questions: ConsultingQuestion[], feedback: StoredFeedback[]): StagePair[] {
   return questions.map((question) => {
     const matched = [...feedback].reverse().find((item) => item.questionId === question.questionId);
@@ -2411,21 +2515,27 @@ export function pairConsultingStage(questions: ConsultingQuestion[], feedback: S
         ? [...feedback].reverse().find((item) => !item.questionId && (item.choiceAnswer || item.comment.trim()))
         : undefined;
     const item = matched ?? legacy;
+    const offeredChoices = offeredFrom(question);
     if (!item) {
       return {
         questionId: question.questionId,
         question: question.text,
+        offeredChoices,
+        choiceId: null,
         choiceLabel: null,
         supplement: '',
         status: 'open' as const,
       };
     }
     const choiceLabel = item.choiceAnswer?.label?.trim() || null;
+    const choiceId = item.choiceAnswer?.choiceId?.trim() || null;
     const supplement = (item.choiceAnswer?.otherText || item.comment || '').trim();
     const answered = supplement.length > 0 || Boolean(choiceLabel);
     return {
       questionId: question.questionId,
       question: question.text,
+      offeredChoices,
+      choiceId,
       choiceLabel,
       supplement,
       status: answered ? ('answered' as const) : ('open' as const),
@@ -2463,18 +2573,252 @@ export function acceptedStageQuestions(sections: ReviewSections | null | undefin
 function stageSupplementKey(pairs: StagePair[]): string {
   return pairs
     .filter((pair) => pair.status === 'answered')
-    .map((pair) => `${pair.questionId}\n${pair.question}\n${pair.choiceLabel ?? ''}\n${pair.supplement}`)
+    .map((pair) => `${pair.questionId}\n${pair.question}\n${pair.choiceId ?? ''}\n${pair.choiceLabel ?? ''}\n${pair.supplement}`)
     .join('\n---\n');
 }
 
-function stageQuestionIssues(content: string, asked: Set<string>, sourceText: string): string[] {
-  const parsed = parseSections(content, sourceText);
-  if (!parsed?.analysis) return [];
-  const texts = consultingQuestions(parsed).map((item) => item.text.trim());
+function stagePairPayload(pair: StagePair): {
+  questionId: string;
+  question: string;
+  offeredChoices: StagePair['offeredChoices'];
+  choiceId: string | null;
+  choiceLabel: string | null;
+  supplement: string;
+  status: StagePair['status'];
+} {
+  return {
+    questionId: pair.questionId,
+    question: pair.question,
+    offeredChoices: pair.offeredChoices,
+    choiceId: pair.choiceId,
+    choiceLabel: pair.choiceLabel,
+    supplement: pair.supplement,
+    status: pair.status,
+  };
+}
+
+/** The question menu is not an echo key. Drop it before renameEchoKeys runs. */
+function analysisForStageContext(sections: ReviewSections): ReviewSections {
+  if (!sections.analysis?.questions) return sections;
+  const analysis = { ...sections.analysis };
+  delete analysis.questions;
+  return { ...sections, analysis };
+}
+
+/** Delivers stated claims and stated gaps. It does not choose the next topic. */
+function stageDeliveryLedger(pairs: StagePair[]): EvidenceLedger {
+  const answered = pairs.filter((pair) => pair.status === 'answered');
+  const unresolved = uniqueTexts(
+    answered
+      .filter((pair) => answerSaysNoCandidate(`${pair.choiceLabel ?? ''} ${pair.supplement}`))
+      .map((pair) => pair.supplement.trim()),
+  );
+  return {
+    newFounderInformation: true,
+    unresolvedStillApplies: unresolved.length > 0,
+    verifiedFacts: [],
+    founderClaims: uniqueTexts(answered.map((pair) => pair.supplement.trim()).filter((line) => /가능성이 높/.test(line))),
+    unresolved,
+    priorGoals: [],
+    stillUnknown: [],
+  };
+}
+
+function compactQuestion(text: string): string {
+  return text.replace(/\s+/g, '').trim();
+}
+
+function stringArrayField(value: unknown): string[] | null {
+  if (!Array.isArray(value)) return null;
+  if (!value.every((item) => typeof item === 'string')) return null;
+  return value.map((item) => item.trim()).filter((item) => item.length > 0);
+}
+
+function sameLabels(left: string[], right: string[]): boolean {
+  return left.length === right.length && left.every((label, index) => label === right[index]);
+}
+
+function choicesFromLabels(labels: string[]): BusinessAnalysis['choices'] {
+  return labels.map((label, index) => ({
+    id: /기타|직접 입력/.test(label) ? 'other' : `c${index + 1}`,
+    label,
+  }));
+}
+
+function judgeStageContract(
+  content: string,
+  contract: { askedQuestions: string[]; pairs: StagePair[] },
+): { sections: ReviewSections | null; issues: string[]; reading: StageReading | null } {
+  let parsed: Record<string, unknown>;
+  try {
+    const value = JSON.parse(content.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim()) as unknown;
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return { sections: null, issues: ['invalid_json'], reading: null };
+    parsed = value as Record<string, unknown>;
+  } catch {
+    return { sections: null, issues: ['invalid_json'], reading: null };
+  }
   const issues: string[] = [];
-  if (texts.length < 2 || new Set(texts).size < texts.length) issues.push('stage_questions_missing');
-  if (texts.some((text) => asked.has(text))) issues.push('stage_questions_repeated');
-  return issues;
+  const impactOnPreviousJudgment = textField(parsed.impactOnPreviousJudgment);
+  const updatedJudgment = textField(parsed.updatedJudgment);
+  const judgmentReason = textField(parsed.judgmentReason);
+  const nextVerification = textField(parsed.nextVerification);
+  const verifiedFacts = stringArrayField(parsed.verifiedFacts);
+  const unverifiedClaims = stringArrayField(parsed.unverifiedClaims);
+  const assumptions = stringArrayField(parsed.assumptions);
+  const resolvedIssues = stringArrayField(parsed.resolvedIssues);
+  const unresolvedIssues = stringArrayField(parsed.unresolvedIssues);
+  const interpretations = Array.isArray(parsed.answerInterpretation) ? parsed.answerInterpretation : null;
+  const nextQuestionItems = Array.isArray(parsed.nextQuestions) ? parsed.nextQuestions : null;
+  const choiceMatrix = Array.isArray(parsed.nextQuestionChoices) ? parsed.nextQuestionChoices : null;
+  if (
+    !impactOnPreviousJudgment ||
+    !updatedJudgment ||
+    !judgmentReason ||
+    !nextVerification ||
+    !verifiedFacts ||
+    !unverifiedClaims ||
+    !assumptions ||
+    !resolvedIssues ||
+    !unresolvedIssues ||
+    !interpretations ||
+    !nextQuestionItems ||
+    !choiceMatrix
+  ) {
+    issues.push('stage_fields_missing');
+  }
+  const answerInterpretation: StageReading['answerInterpretation'] = [];
+  if (interpretations) {
+    for (const item of interpretations) {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) {
+        issues.push('stage_fields_missing');
+        break;
+      }
+      const record = item as Record<string, unknown>;
+      const questionId = typeof record.questionId === 'string' ? record.questionId.trim() : '';
+      const meaning = typeof record.meaning === 'string' ? record.meaning.trim() : '';
+      if (!questionId || typeof record.choiceId !== 'string' || !meaning) {
+        issues.push('stage_fields_missing');
+        break;
+      }
+      answerInterpretation.push({ questionId, choiceId: record.choiceId.trim(), meaning });
+    }
+  }
+  const nextQuestions: StageReading['nextQuestions'] = [];
+  if (nextQuestionItems) {
+    for (const item of nextQuestionItems) {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) {
+        issues.push('stage_fields_missing');
+        break;
+      }
+      const text = textField((item as { text?: unknown }).text);
+      const choices = stringArrayField((item as { choices?: unknown }).choices);
+      if (!text || !choices) {
+        issues.push('stage_fields_missing');
+        break;
+      }
+      nextQuestions.push({ text, choices });
+    }
+  }
+  const nextQuestionChoices: string[][] = [];
+  if (choiceMatrix) {
+    for (const row of choiceMatrix) {
+      const labels = stringArrayField(row);
+      if (!labels) {
+        issues.push('stage_fields_missing');
+        break;
+      }
+      nextQuestionChoices.push(labels);
+    }
+  }
+  const reading: StageReading | null =
+    impactOnPreviousJudgment &&
+    updatedJudgment &&
+    judgmentReason &&
+    nextVerification &&
+    verifiedFacts &&
+    unverifiedClaims &&
+    assumptions &&
+    resolvedIssues &&
+    unresolvedIssues &&
+    !issues.includes('stage_fields_missing')
+      ? {
+          answerInterpretation,
+          impactOnPreviousJudgment,
+          updatedJudgment,
+          judgmentReason,
+          verifiedFacts,
+          unverifiedClaims,
+          assumptions,
+          resolvedIssues,
+          unresolvedIssues,
+          nextVerification,
+          nextQuestions,
+          nextQuestionChoices,
+        }
+      : null;
+  const answered = contract.pairs.filter((pair) => pair.status === 'answered');
+  const linked =
+    reading !== null &&
+    answered.every((pair) => {
+      const matches = reading.answerInterpretation.filter((item) => item.questionId === pair.questionId);
+      return matches.length === 1 && matches[0]?.choiceId === (pair.choiceId ?? '');
+    }) &&
+    reading.answerInterpretation.every((item) => answered.some((pair) => pair.questionId === item.questionId));
+  if (reading && !linked) issues.push('choice_link_mismatch');
+  const texts = reading?.nextQuestions.map((item) => item.text) ?? [];
+  if (!reading || texts.length < 2 || new Set(texts.map(compactQuestion)).size !== texts.length) issues.push('stage_questions_missing');
+  const menus = reading?.nextQuestions ?? [];
+  const matrix = reading?.nextQuestionChoices ?? [];
+  const menusMissing =
+    !reading ||
+    menus.some((item) => item.choices.length < 2) ||
+    matrix.length !== menus.length ||
+    menus.some((item, index) => !sameLabels(item.choices, matrix[index] ?? []));
+  if (menusMissing) issues.push('stage_choices_missing');
+  const asked = new Set(contract.askedQuestions.map(compactQuestion).filter((text) => text.length > 0));
+  if (reading && texts.some((text) => asked.has(compactQuestion(text)))) issues.push('stage_questions_repeated');
+  const uniqueIssues = [...new Set(issues)];
+  if (uniqueIssues.length > 0 || !reading) return { sections: null, issues: uniqueIssues.length > 0 ? uniqueIssues : ['stage_fields_missing'], reading };
+  const firstChoices = choicesFromLabels(reading.nextQuestions[0]?.choices ?? []);
+  const questions: ConsultingQuestion[] = reading.nextQuestions.map((item, index) => ({
+    questionId: `q${index + 1}`,
+    text: item.text,
+    choices: choicesFromLabels(item.choices),
+  }));
+  const sections: ReviewSections = {
+    customer: '',
+    problem: '',
+    market: '',
+    revenueModel: '',
+    execution: '',
+    risks: reading.unresolvedIssues,
+    uncertain: reading.unresolvedIssues,
+    hypotheses: reading.assumptions,
+    judgment: reading.updatedJudgment,
+    nextQuestion: reading.nextQuestions[0]?.text ?? '',
+    nextQuestionReason: reading.judgmentReason,
+    answerHint: '선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.',
+    claimConfirmation: null,
+    analysis: {
+      summary: reading.impactOnPreviousJudgment,
+      value: '',
+      operatingModel: '',
+      payer: '',
+      competition: '',
+      operations: '',
+      profitability: '',
+      strengths: [],
+      assumptions: reading.assumptions,
+      evidenceToChange: [],
+      founderFacts: reading.verifiedFacts,
+      inferences: reading.unverifiedClaims,
+      judgmentDetail: reading.updatedJudgment,
+      choices: firstChoices,
+      nextVerification: reading.nextVerification,
+      questions,
+    },
+  };
+  return { sections, issues: [], reading };
 }
 
 /**
@@ -2517,16 +2861,17 @@ export async function runStageReanalysis(input: {
     feedback.at(-1)?.feedbackId ??
     null;
   const stagePartial = !stageComplete(pairs);
-  const prior = (await input.store.listReviews(input.userId, input.projectId))
+  const records = await input.store.listReviews(input.userId, input.projectId);
+  const prior = records
     .filter(
       (record) =>
         record.parentReviewId === parent.reviewId &&
         record.supplementSha === supplementSha &&
-        record.status === 'succeeded' &&
+        (record.status === 'succeeded' || record.status === 'failed') &&
         Boolean(record.stagePartial) === stagePartial,
     )
     .at(-1);
-  if (prior && prior.status === 'succeeded' && !input.forceNew) {
+  if (prior && !input.forceNew) {
     return {
       ok: true,
       called: false,
@@ -2536,35 +2881,46 @@ export async function runStageReanalysis(input: {
   }
   if (!input.chat) return { ok: false, error: input.notRunReason === 'gpt_api_key_missing' ? 'gpt_api_key_missing' : 'engine_unconfigured' };
   const latest = await input.store.latestForInput(input.userId, parent.inputSha, input.projectId);
-  const records = await input.store.listReviews(input.userId, input.projectId);
-  const projectFeedback = (await input.store.listFeedback(input.userId)).filter((item) =>
-    records.some((record) => record.reviewId === item.reviewId),
+  const chain = reviewChain(records, parent);
+  const root = chain[0] ?? parent;
+  const priorStagePairs = chain.flatMap((record) => record.stageAnswers ?? []);
+  const stageRecords = chain.filter((record) => (record.stageAnswers?.length ?? 0) > 0);
+  const priorAnalyses: PriorAnalysisBrief[] = stageRecords.map((record) => ({
+    reviewId: record.reviewId,
+    judgment: record.sections?.analysis?.judgmentDetail || record.sections?.judgment || '',
+    nextQuestion: record.sections?.nextQuestion ?? '',
+    assumptions: record.sections?.analysis?.assumptions ?? record.sections?.hypotheses ?? [],
+    risks: record.sections?.risks ?? [],
+  }));
+  let pathOrder = 0;
+  const consultingPath: ConsultingPathStep[] = stageRecords.flatMap((record) =>
+    (record.stageAnswers ?? []).map((pair) => {
+      pathOrder += 1;
+      return {
+        order: pathOrder,
+        reviewId: record.reviewId,
+        choice: pair.choiceLabel,
+        supplement: pair.supplement,
+        answeredQuestion: pair.question,
+        judgment: record.sections?.analysis?.judgmentDetail || record.sections?.judgment || '',
+        nextQuestion: record.sections?.nextQuestion ?? '',
+        assumptions: record.sections?.analysis?.assumptions ?? [],
+        risks: record.sections?.risks ?? [],
+        judgmentStatus: 'adopted' as const,
+      };
+    }),
   );
-  const history = assembleConsultingHistory({ records, parent, supplement: supplementKey, feedback: projectFeedback });
-  const root = history.root;
-  const priorStagePairs = reviewChain(records, parent).flatMap((record) => record.stageAnswers ?? []);
-  const supplementText = answered.map((pair) => pair.supplement).join('\n');
-  const ledger = buildEvidenceLedger({
-    consultingPath: history.consultingPath,
-    newFounderInformation: history.newFounderInformation,
-    founderChoice: null,
-    founderSupplement: supplementText,
-  });
-  const asked = new Set(
-    [...priorStagePairs, ...pairs].map((pair) => pair.question.trim()).filter((question) => question.length > 0),
-  );
+  const previousQuestions = [...priorStagePairs, ...pairs].map((pair) => pair.question);
   const productRequest = buildProductReanalysisRequest({
     originalInput: root.inputText,
     firstAnalysis: root.sections ?? parent.sections,
-    priorTurns: history.priorTurns,
-    priorAnalyses: history.priorAnalyses,
-    previousQuestions: history.previousQuestions,
-    founderAnswerSource: history.founderAnswerSource,
+    priorTurns: [],
+    priorAnalyses,
+    previousQuestions,
     latestAnalysis: parent.sections,
-    consultingPath: history.consultingPath,
-    experimentRecords: history.experimentRecords,
-    failedCalls: history.failedCalls,
-    newFounderInformation: history.newFounderInformation,
+    consultingPath,
+    experimentRecords: [],
+    failedCalls: [],
     founderChoice: null,
     founderSupplement: '',
     founderFeedback: null,
@@ -2593,31 +2949,10 @@ export async function runStageReanalysis(input: {
     consultingAnswer: null,
     stageAnswers: answered,
     stagePartial,
-    founderAnswerSource: history.founderAnswerSource,
-    readingIssues: (content) => {
-      const parsed = parseSections(content, parent.inputText);
-      const analysis = parsed?.analysis;
-      if (!parsed || !analysis) return [];
-      return [
-        ...productReadingIssues({
-          judgment: analysis.judgmentDetail,
-          summary: analysis.summary,
-          assumptions: analysis.assumptions,
-          inferences: analysis.inferences,
-          nextVerification: analysis.nextVerification ?? '',
-          nextQuestion: parsed.nextQuestion,
-          unresolved: ledger.unresolved,
-          priorGoals: ledger.priorGoals,
-          founderClaims: ledger.founderClaims,
-          founderFacts: analysis.founderFacts,
-          founderSupplement: supplementText,
-          answeredQuestion: questions.map((question) => question.text).join('\n'),
-          answeredVerification: parent.sections?.analysis?.nextVerification ?? '',
-        }),
-        ...stageQuestionIssues(content, asked, parent.inputText),
-      ];
+    stageContract: {
+      askedQuestions: previousQuestions,
+      pairs,
     },
-    readingRepairContext: { supplement: supplementText },
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
 }
@@ -4010,6 +4345,8 @@ async function finishCall(input: {
   stageAnswers?: StagePair[];
   stagePartial?: boolean;
   founderAnswerSource?: FounderAnswerCitation | null;
+  /** One integrated call. A format error is stored as failed. It is not repaired. */
+  stageContract?: { askedQuestions: string[]; pairs: StagePair[] };
   /** Structural reading checks. They do not choose the business judgment. */
   readingIssues?: (content: string) => string[];
   readingRepairContext?: { supplement?: string };
@@ -4042,6 +4379,53 @@ async function finishCall(input: {
     let promptTokens = usageKnown ? first.usage.inputTokens : null;
     let completionTokens = usageKnown ? first.usage.outputTokens : null;
     let totalTokens = usageKnown ? first.usage.totalTokens : null;
+    if (input.stageContract) {
+      const judged = judgeStageContract(first.content, input.stageContract);
+      const accepted = judged.issues.length === 0 && judged.sections !== null;
+      const record = baseRecord({
+        input: input.input,
+        sha: input.sha,
+        version: input.version,
+        parentReviewId: input.parentReviewId,
+        sourceFeedbackId: input.sourceFeedbackId,
+        supplementSha: input.supplementSha,
+        status: accepted ? 'succeeded' : 'failed',
+        evidence: input.input.evidence,
+        callCount: 1,
+        error: accepted ? null : judged.issues.join(','),
+        provider: first.provider === 'google' ? 'google' : first.provider === 'openai' ? 'openai' : null,
+        model: first.model,
+        sections: accepted ? judged.sections : null,
+        rawContent: first.content,
+        stageAnswers: input.stageAnswers,
+        stagePartial: input.stagePartial,
+        stageReading: judged.reading,
+        founderAnswerSource: input.founderAnswerSource ?? null,
+        callLedger: [
+          {
+            index: 1,
+            promptTokens,
+            completionTokens,
+            totalTokens,
+            readingIssues: judged.issues,
+            ...(judged.reading
+              ? {
+                  judgment: judged.reading.updatedJudgment.slice(0, 400),
+                  nextQuestion: judged.reading.nextQuestions[0]?.text.slice(0, 400) ?? '',
+                  nextVerification: judged.reading.nextVerification.slice(0, 400),
+                }
+              : {}),
+          },
+        ],
+        promptTokens,
+        completionTokens,
+        totalTokens,
+        usageKnown,
+        latencyMs: first.latencyMs ?? Date.now() - started,
+      });
+      await input.store.insertReview(record);
+      return { called: true, record, view: toAiPmReviewView(record, []) };
+    }
     const score = (content: string) =>
       input.outputContract && input.previousSections
         ? normalizeIncrementalSections(input.previousSections, content, input.outputContract)
@@ -4252,6 +4636,7 @@ function baseRecord(input: {
   consultingTurn?: ConsultingTurn | null;
   stageAnswers?: StagePair[];
   stagePartial?: boolean;
+  stageReading?: StageReading | null;
   founderAnswerSource?: FounderAnswerCitation | null;
   callLedger?: ReviewCallNote[];
   promptTokens?: number | null;
@@ -4283,6 +4668,7 @@ function baseRecord(input: {
     ...(input.consultingTurn ? { consultingTurn: input.consultingTurn } : {}),
     ...(input.stageAnswers && input.stageAnswers.length > 0 ? { stageAnswers: input.stageAnswers } : {}),
     ...(input.stagePartial ? { stagePartial: true } : {}),
+    ...(input.stageReading ? { stageReading: input.stageReading } : {}),
     ...(input.founderAnswerSource ? { founderAnswerSource: input.founderAnswerSource } : {}),
     ...(input.callLedger && input.callLedger.length > 0 ? { callLedger: input.callLedger } : {}),
     promptTokens: input.promptTokens ?? null,

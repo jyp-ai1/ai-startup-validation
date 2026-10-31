@@ -2526,6 +2526,49 @@ The stage route stores N answers and calls the model once when the stage is comp
 
 ---
 
+## ADR-076: Follow-up reanalysis has its own response contract
+
+**Status:** Accepted  
+**Date:** 2026-10-31  
+**Sprint:** AI PM consulting stage  
+**Authors:** CTO (autonomous)
+
+### Context
+
+A stage answer was stored and sent to the model, but the request dropped the choice menu and `choiceId`, renamed question choices to `priorChoices`, and filled the next purpose from an empty answer. Repeat-experiment judgments were sent as if they were the consulting dialogue. The follow-up response used the first-review business schema, and format repairs were stored as later consulting judgments.
+
+### Decision
+
+1. `stagePairs` and `priorStagePairs` carry `questionId`, the question text, `offeredChoices`, `choiceId`, `choiceLabel`, the supplement, and the answer status. The menu key is `offeredChoices`. It is not renamed to `priorChoices`.
+2. A stage request carries the ancestor chain of stored stage answers. It does not carry experiment records, failed calls, prior turns, or `verificationStage`. `nextFactToAsk` remains on the one-answer path and does not choose the stage's next topic.
+3. The follow-up response schema is `answerInterpretation`, `impactOnPreviousJudgment`, `updatedJudgment`, `judgmentReason`, `verifiedFacts`, `unverifiedClaims`, `assumptions`, `resolvedIssues`, `unresolvedIssues`, `nextVerification`, `nextQuestions`, and `nextQuestionChoices`. The model writes those fields. Code checks missing fields, choice links, empty choices, and an exact repeat of an already asked question. It does not score the business.
+4. The stage path calls the model once. A format error is stored as `failed` with the raw text. It is not repaired into a success, and the same answer set does not call the model again. The first-review schema is unchanged.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Keep repairing the first-review schema | Existing sentence checks would still run | A repair is not a new consulting judgment |
+| Let code choose the next brewery topic | The next question would be predictable | The topic would no longer be the model's judgment |
+
+### Consequences
+
+**Positive:**
+
+- The model can read which option the founder selected and what the other options were.
+- A failed format stays a failed row.
+
+**Negative:**
+
+- A malformed follow-up is not rewritten by a second call.
+- Unit tests do not approve the business judgment.
+
+**Neutral:**
+
+- Production stays locked. Existing review rows are not updated.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

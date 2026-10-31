@@ -127,16 +127,41 @@ export type ConsultingQuestion = {
   choices?: ReviewChoice[];
 };
 
+/** One option the founder was shown for a question. This is not a sentence to copy. */
+export type StageChoiceOffer = {
+  choiceId: string;
+  label: string;
+};
+
 /**
  * One question and the founder answer that belongs to it.
  * Open means this stage has not received that answer yet.
+ * offeredChoices is the menu that was shown. choiceId is the selected option.
  */
 export type StagePair = {
   questionId: string;
   question: string;
+  offeredChoices: StageChoiceOffer[];
+  choiceId: string | null;
   choiceLabel: string | null;
   supplement: string;
   status: 'answered' | 'open';
+};
+
+/** Follow-up reanalysis written by the model. Absent on a first review and on a failed parse. */
+export type StageReading = {
+  answerInterpretation: { questionId: string; choiceId: string; meaning: string }[];
+  impactOnPreviousJudgment: string;
+  updatedJudgment: string;
+  judgmentReason: string;
+  verifiedFacts: string[];
+  unverifiedClaims: string[];
+  assumptions: string[];
+  resolvedIssues: string[];
+  unresolvedIssues: string[];
+  nextVerification: string;
+  nextQuestions: { text: string; choices: string[] }[];
+  nextQuestionChoices: string[][];
 };
 
 export type ReviewCallNote = {
@@ -186,6 +211,8 @@ export type StoredReview = {
   stageAnswers?: StagePair[];
   /** True when analysis was requested before every question in the stage had an answer. */
   stagePartial?: boolean;
+  /** The follow-up contract the model returned. Absent on a first review. */
+  stageReading?: StageReading | null;
   /** Where that answer already lives. Citing it does not move the feedback row. */
   founderAnswerSource?: {
     feedbackId: string;
