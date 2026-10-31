@@ -1034,6 +1034,71 @@ export function answerSaysNoCandidate(text: string): boolean {
   return /아직 떠오르는 양조장|떠오르는 양조장이 없다|선정하지 못|후보가 없|구체적인 후보가 없/.test(text);
 }
 
+export type EvidenceLedger = {
+  newFounderInformation: boolean;
+  unresolvedStillApplies: boolean;
+  verifiedFacts: string[];
+  founderClaims: string[];
+  unresolved: string[];
+  priorGoals: string[];
+  stillUnknown: string[];
+};
+
+function uniqueTexts(values: string[]): string[] {
+  return values.filter((value, index, all) => value.trim().length > 0 && all.indexOf(value) === index);
+}
+
+/** Classifies stored answers. It does not decide the business judgment. */
+export function buildEvidenceLedger(input: {
+  consultingPath?: ConsultingPathStep[];
+  newFounderInformation?: boolean;
+  founderChoice?: string | null;
+  founderSupplement?: string;
+}): EvidenceLedger {
+  const path = input.consultingPath ?? [];
+  const current = `${input.founderChoice ?? ''} ${input.founderSupplement ?? ''}`;
+  const unresolved = uniqueTexts([
+    ...path
+      .filter((step) => step.judgmentStatus === 'unresolved' || answerSaysNoCandidate(`${step.choice ?? ''} ${step.supplement}`))
+      .map((step) => step.supplement),
+    ...(answerSaysNoCandidate(current) ? [input.founderSupplement ?? ''] : []),
+  ]);
+  const joined = path.map((step) => `${step.supplement} ${step.judgment}`).join('\n');
+  return {
+    newFounderInformation: input.newFounderInformation ?? true,
+    unresolvedStillApplies: unresolved.length > 0,
+    verifiedFacts: [],
+    founderClaims: uniqueTexts(path.filter((step) => /가능성이 높/.test(step.supplement)).map((step) => step.supplement)),
+    unresolved,
+    priorGoals: uniqueTexts(
+      path
+        .filter((step) => step.judgmentStatus === 'adopted' && /우선 검증|구체화/.test(`${step.choice ?? ''} ${step.supplement}`))
+        .flatMap((step) => [step.choice ?? '', step.supplement]),
+    ),
+    stillUnknown: [
+      /만나|미팅|연락했|계약|입금/.test(joined) ? '' : '실제 접촉',
+      /협력 의사가 있|의향이 있/.test(joined) ? '' : '상대의 협력 의사',
+      /조건에 합의|배분에 합의/.test(joined) ? '' : '협력 조건',
+    ].filter((item) => item.length > 0),
+  };
+}
+
+/** An unresolved candidate gap is still present in the judgment. */
+export function judgmentAccountsForUnresolved(judgment: string, unresolved: string[]): boolean {
+  if (!unresolved.some(answerSaysNoCandidate)) return judgment.trim().length > 0;
+  return /후보/.test(judgment) && /없|못|선정|비어/.test(judgment);
+}
+
+/** The next verification repeats a goal the founder already chose. */
+export function verificationRepeatsPriorGoal(nextVerification: string, priorGoals: string[]): boolean {
+  const compact = (value: string) => value.replace(/\s+/g, '');
+  const next = compact(nextVerification);
+  return priorGoals.some((goal) => {
+    const prior = compact(goal);
+    return prior.length > 8 && (next === prior || next.includes(prior) || prior.includes(next));
+  });
+}
+
 /** The question asks again whether a brewery candidate has already been chosen. */
 export function questionRepeatsAnsweredSelection(question: string): boolean {
   return /정했|골랐|선정했|한 곳|떠오르는|이름이 있/.test(question) && /양조장|후보|이름/.test(question);
@@ -1230,11 +1295,11 @@ function productReanalysisSchema(): Record<string, unknown> {
       judgment: {
         type: 'string',
         description:
-          'inferences와 같은 결론. 협력 가능성이 높지만으로 시작하지 않는다. 후보가 없다는 답이 고객, 운영, 협력, 수익 중 어디에 영향을 주는지를 적고 유지, 상향, 하향, 유보 중 하나를 고른다. 협력이 불가능하다고 쓰지 않는다.',
+          'evidenceLedger.unresolved를 빠뜨리지 않는다. newFounderInformation이 false여도 빼지 않는다. 협력 가능성이 높지만으로 시작하지 않는다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 그 이유를 적는다. 협력이 불가능하다고 쓰지 않는다.',
       },
       nextVerification: {
         type: 'string',
-        description: '이번 질문이 확인할 정보. priorVerificationText와 같으면 실패다.',
+        description: 'evidenceLedger.priorGoals의 문장을 반복하지 않는다. nextQuestion과 같은 다음 검증 목표를 새 문장으로 적는다.',
       },
       nextQuestion: {
         type: 'string',
@@ -1256,7 +1321,9 @@ function productReanalysisSystemPrompt(): string {
     '응답 전에 한 순서로만 분석한다. summary, inferences, assumptions, risks, evidenceToChange, judgment, nextQuestion은 그 하나의 결론을 나눈 것이다. 필드마다 다른 논리를 쓰지 않는다.',
     '순서는 누적 이력, 증거 구분, 사업성 재평가, 최종 판단, 다음 질문이다.',
     'consultingPath는 Founder 답변의 시간 순서다. experimentRecords는 같은 답변을 다시 호출한 기록이다. 재호출을 다음 상담 턴으로 세지 않고, 그 판단을 복사하지 않는다. failedCalls는 실패한 호출이다.',
-    '응답 전에 새 Founder 정보가 있는지 본다. newFounderInformation이 false면 이번 호출에 새 답변이 없다. 판단을 억지로 바꾸지 않는다. 유지하면 바꾸지 않은 이유와 다음 검증을 새 문장으로 적는다. 이전 판단 문장과 같으면 실패다.',
+    'evidenceLedger를 먼저 읽는다. newFounderInformation이 false여도 unresolvedStillApplies가 true면 unresolved를 판단에 넣는다. false는 이번 호출에 새 답이 없다는 뜻이지, 미해결 답을 빼도 된다는 뜻이 아니다.',
+    'founderClaims는 확인된 사실이 아니다. verifiedFacts만 확인된 사실이다. stillUnknown은 아직 없는 근거다. 판단을 유지하거나 바꾸거나 유보할 수 있다. 후보 부재가 실행 가능성에 주는 영향을 이유로 적는다. 이전 판단 문장과 같으면 실패다.',
+    'nextVerification은 priorGoals의 문장을 다시 쓰지 않는다. 그 목표를 확인하는 다음 질문과 같은 목적을 새 문장으로 적는다.',
     '증거 구분에서 구체적인 양조장 후보가 아직 없다는 Founder의 답은 확인된 상태다. 양조장 협력 가능성이 높다는 문장은 Founder의 주장 또는 기대다. 접촉, 협력 의사, 협력 조건, 실제 협력 가능성은 미확인이다. 주장을 했다는 사실과 가능성이 실제로 높다는 결론을 섞지 않는다.',
     '사업성 재평가는 고객과 문제, 가치의 실현, 운영, 파트너십 확보, 수익 구조, 확인된 근거와 불확실성, 이번 답이 기존 판단에 주는 영향을 본다. 유지하거나 높이거나 낮추거나 유보할 수 있다. 점수를 만들지 않는다.',
     'inferences가 주장을 검증되지 않았다고 적으면 judgment와 summary는 그 주장을 현재 가능성으로 쓰지 않는다.',
@@ -1275,7 +1342,7 @@ function productReanalysisSystemPrompt(): string {
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',
-    '새 Founder 정보가 있으면 그 답이 판단, 가정, 위험, 다음 검증, 다음 질문에 반영되어야 한다. 새 정보가 없으면 유지 이유와 다음 검증을 적는다.',
+    '새 답이 없어도 evidenceLedger.unresolved는 판단, 가정, 위험, 다음 검증, 다음 질문에 남는다.',
   ].join(' ');
 }
 
@@ -1377,8 +1444,15 @@ export function buildProductReanalysisRequest(input: {
   };
   let analyses = [...(input.priorAnalyses ?? [])];
   let turns = [...input.priorTurns];
+  const evidenceLedger = buildEvidenceLedger({
+    consultingPath: input.consultingPath,
+    newFounderInformation: input.newFounderInformation,
+    founderChoice: input.founderChoice?.label ?? null,
+    founderSupplement: input.founderSupplement,
+  });
   const payload = () =>
     renameEchoKeys({
+      evidenceLedger,
       ...anchors,
       founderAnswers: [
         ...(input.consultingPath ?? []).map((step) => ({

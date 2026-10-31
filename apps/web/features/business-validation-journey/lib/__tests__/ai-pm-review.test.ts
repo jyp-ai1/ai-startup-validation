@@ -24,6 +24,9 @@ import {
   buildFollowUpRequest,
   assembleConsultingHistory,
   normalizeConsultingRecords,
+  buildEvidenceLedger,
+  judgmentAccountsForUnresolved,
+  verificationRepeatsPriorGoal,
   buildProductReanalysisRequest,
   AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS,
   judgmentIsConsistent,
@@ -2683,6 +2686,97 @@ describe('AI PM first review', () => {
     expect(normalized.priorAnalyses.map((item) => item.reviewId)).toEqual(['side', 'claim-b']);
     expect(normalized.newFounderInformation).toBe(false);
     expect(JSON.stringify(normalized.experimentRecords)).not.toContain('나중 재호출 판단');
+  });
+
+  it('keeps an unresolved answer in the ledger when this call adds no new founder information', () => {
+    const ledger = buildEvidenceLedger({
+      newFounderInformation: false,
+      founderChoice: '아직 떠오르는 양조장이 없다',
+      founderSupplement: '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.',
+      consultingPath: [
+        {
+          order: 1,
+          reviewId: 'claim',
+          choice: null,
+          supplement: '양조장과의 협력 가능성이 높다.',
+          answeredQuestion: '계획?',
+          judgment: '이전 판단',
+          nextQuestion: '이름?',
+          assumptions: [],
+          risks: [],
+          judgmentStatus: 'adopted',
+        },
+        {
+          order: 2,
+          reviewId: 'plan',
+          choice: '양조장과의 협력 방안 구체화',
+          supplement: '양조장 후보 선정과 연락 경로 확보를 우선 검증한다.',
+          answeredQuestion: '이름?',
+          judgment: '이전 판단',
+          nextQuestion: '후보?',
+          assumptions: [],
+          risks: [],
+          judgmentStatus: 'adopted',
+        },
+        {
+          order: 3,
+          reviewId: 'gap',
+          choice: '아직 떠오르는 양조장이 없다',
+          supplement: '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.',
+          answeredQuestion: '후보?',
+          judgment: '',
+          nextQuestion: '',
+          assumptions: [],
+          risks: [],
+          judgmentStatus: 'unresolved',
+        },
+      ],
+    });
+    expect(ledger.newFounderInformation).toBe(false);
+    expect(ledger.unresolvedStillApplies).toBe(true);
+    expect(ledger.verifiedFacts).toEqual([]);
+    expect(ledger.founderClaims).toEqual(['양조장과의 협력 가능성이 높다.']);
+    expect(ledger.unresolved).toContain('현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.');
+    expect(ledger.priorGoals).toContain('양조장 후보 선정과 연락 경로 확보를 우선 검증한다.');
+    expect(ledger.stillUnknown).toEqual(['실제 접촉', '상대의 협력 의사', '협력 조건']);
+    const copied = '현재 사업성 판단은 유지되며, 양조장과의 협력 가능성이 높지만, 실제 접촉 및 협력 조건에 대한 구체적인 증거가 부족하다.';
+    const reviewed = '협력 가능성이 높다는 주장은 확인되지 않았고, 구체적인 후보가 없어 실행 경로는 아직 비어 있다. 그래서 판단은 유보한다.';
+    expect(judgmentAccountsForUnresolved(copied, ledger.unresolved)).toBe(false);
+    expect(judgmentAccountsForUnresolved(reviewed, ledger.unresolved)).toBe(true);
+    expect(founderClaimTreatedAsFact(copied)).toBe(true);
+    expect(founderClaimTreatedAsFact(reviewed)).toBe(false);
+    expect(verificationRepeatsPriorGoal('양조장 후보 선정과 연락 경로 확보를 우선 검증한다.', ledger.priorGoals)).toBe(true);
+    expect(verificationRepeatsPriorGoal('후보를 고를 기준이 있는지를 확인한다.', ledger.priorGoals)).toBe(false);
+    const request = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [],
+      consultingPath: [
+        {
+          order: 3,
+          reviewId: 'gap',
+          choice: '아직 떠오르는 양조장이 없다',
+          supplement: '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.',
+          answeredQuestion: '후보?',
+          judgment: '',
+          nextQuestion: '',
+          assumptions: [],
+          risks: [],
+          judgmentStatus: 'unresolved',
+        },
+      ],
+      newFounderInformation: false,
+      latestAnalysis: sections(),
+      founderChoice: { label: '아직 떠오르는 양조장이 없다', otherText: '' },
+      founderSupplement: '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.',
+      founderFeedback: null,
+    });
+    const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      evidenceLedger: { unresolvedStillApplies: boolean; newFounderInformation: boolean };
+    };
+    expect(payload.evidenceLedger.unresolvedStillApplies).toBe(true);
+    expect(payload.evidenceLedger.newFounderInformation).toBe(false);
+    expect(request.messages.find((message) => message.role === 'system')?.content).toContain('미해결 답을 빼도 된다는 뜻이 아니다');
   });
 
   it('renders both founder answers and keeps a failed review off the current analysis', () => {
