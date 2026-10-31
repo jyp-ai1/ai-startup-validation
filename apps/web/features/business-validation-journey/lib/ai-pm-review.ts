@@ -833,8 +833,8 @@ export function verificationPurposeAligns(input: {
 }
 
 /**
- * Potential, missing confirmation, and a kept judgment can sit in neighboring fields.
- * A current positive effect inside the judgment conflicts with keeping it.
+ * The judgment names a limit or a reason and does not treat an unverified claim as a current gain.
+ * Keeping, raising, or lowering the judgment is left to the model.
  */
 export function judgmentIsConsistent(input: {
   judgment: string;
@@ -842,11 +842,9 @@ export function judgmentIsConsistent(input: {
   evidenceToChange?: string[];
 }): boolean {
   const around = [input.judgment, ...(input.assumptions ?? []), ...(input.evidenceToChange ?? [])].join('\n');
-  const keeps = /유지/.test(input.judgment);
-  const hypothesis = /가설/.test(around);
-  const unconfirmed = /부족|확인되지|미확인|없다/.test(around);
+  const explained = /부족|확인되지|미확인|없다|이유|때문|근거/.test(around);
   const currentEffect = /긍정적 영향을 미|사업성이 높아졌|긍정적으로 바뀌/.test(input.judgment);
-  return keeps && hypothesis && unconfirmed && !currentEffect;
+  return input.judgment.trim().length > 0 && explained && !currentEffect;
 }
 
 /** A kept judgment may call the answer a hypothesis. It may not call it a current positive effect. */
@@ -1004,15 +1002,14 @@ function productReanalysisSchema(): Record<string, unknown> {
       operations: text,
       profitability: text,
       strengths: list,
-      risks: { ...list, description: '이번 답이 드러낸 미확인을 새 문장으로 포함한다.' },
+      risks: { ...list, description: '이번 답으로 새로 보인 불확실성이 있으면 새 문장으로 적는다. 이전 문장만 반복하면 실패다.' },
       assumptions: {
         ...list,
-        description: '첫 문장은 이번 답을 검증되지 않은 전제라고 적는다. 사업 실행의 긍정적 가설도 적는다. 이전 가정만 반복하면 실패다.',
+        description: '이번 답의 근거 수준을 새 문장으로 적는다. 확인되지 않은 주장을 긍정적 가설로 단정하지 않는다. 이전 가정만 반복하면 실패다.',
       },
       evidenceToChange: {
         ...list,
-        description:
-          '판단을 바꾸게 되는 확인 항목만 적는다. 기준에 맞는 양조장, 접근 가능한 후보군, 실제 접촉, 협력 조건처럼 아직 없는 근거다. judgment와 같은 문장이면 실패다.',
+        description: '이 판단을 바꾸게 될 확인 항목. judgment와 같은 문장이면 실패다.',
       },
       founderFacts: { ...list, description: '확인된 접촉, 계약, 입금, 예약만. 없으면 빈 배열.' },
       inferences: {
@@ -1023,22 +1020,21 @@ function productReanalysisSchema(): Record<string, unknown> {
       judgment: {
         type: 'string',
         description:
-          '이번 선택이 기존 판단에 준 영향과 유지하거나 바꾼 이유. priorJudgmentText와 같으면 안 된다. 후보가 없다는 답을 협력 불가능으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다.',
+          '누적 답변을 반영한 새 사업성 판단. priorJudgmentText와 같으면 실패다. 유지하거나 높이거나 낮춘 이유. 후보가 없다는 답만으로 사업성이 없다고 쓰지 않는다. 확인되지 않은 주장을 긍정적 영향으로 쓰지 않는다.',
       },
       nextVerification: {
         type: 'string',
-        description: 'verificationStage.verificationText와 같은 한 문장. 구축 계획으로 바꾸지 않는다.',
+        description: '이번 질문이 확인할 정보. priorVerificationText와 같으면 실패다.',
       },
       nextQuestion: {
         type: 'string',
-        description:
-          'nextPurpose가 candidate_criteria가 아니면 verificationStage.factToAsk와 같은 한 질문. candidate_criteria이면 factToAsk를 복사하지 않고, 기준이나 접근 가능한 후보군 중 하나만 묻는 새 질문이다.',
+        description: '이번 판단을 더 정확하게 만드는 새 질문 하나. priorQuestionTexts와 factToAsk를 복사하지 않는다.',
       },
       nextQuestionReason: {
         type: 'string',
-        description: 'verificationStage.reasonText와 같은 한 문장. 실제 접촉 여부를 확인한다고 바꾸지 않는다.',
+        description: '그 답이 다음 사업성 판단에 왜 필요한지. priorReasonText와 같으면 실패다.',
       },
-      choices: { ...list, description: '이번 질문이 묻는 다음 행동 두 개 이상. 이전 선택지와 같은 문장을 두지 않는다.' },
+      choices: { ...list, description: '이번 질문에 답하는 서로 다른 선택 두 개 이상. priorChoices와 같은 문장을 두지 않는다.' },
     },
   };
 }
@@ -1047,19 +1043,17 @@ function productReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
     '사용자 JSON의 priorJudgmentText, priorQuestionText, priorVerificationText, priorReasonText, priorChoices, priorInferences, priorAssumptions, priorEvidenceNotes, priorRisks는 이전 문장이다. 출력의 judgment, nextQuestion, nextVerification, nextQuestionReason, choices, inferences, assumptions, evidenceToChange, risks에 그 문장을 복사하지 않는다.',
-    '이번 답을 여섯 가지로 새 문장에 적는다. 새로 알게 된 내용, 근거 수준, 기존 판단에서 영향을 받는 부분, 바뀐 판단 또는 유지한 판단, 바꾸지 않은 이유, 추가 검증이다.',
+    '이번 답을 여섯 가지로 새 문장에 적는다. 새로 알게 된 내용, 근거 수준, 기존 판단에서 영향을 받는 부분, 유지하거나 높이거나 낮춘 판단, 그 이유, 추가 검증이다.',
     '근거 수준은 검증된 사실, Founder의 경험, Founder의 주장 또는 기대, 실행 계획, 추정 및 가정, 근거가 부족한 정보 중 하나다. 확인된 사실, 경험, 추정, 계획을 섞지 않는다.',
     '가능성이 높다처럼 확인 절차가 없는 답은 Founder의 주장 또는 기대이자 자체 판단이다. 구체적 증거가 없으면 검증된 사실이 아니다. inferences는 이번 답만 해석한다. 답 유형, 증거가 있는지, 확인된 사실, 미확인 사항을 적는다. 시장 관심이나 수요를 확인된 사실로 올리지 않는다. 경험이나 실행 결과를 만들지 않는다.',
     '확인되지 않은 협력 가능성, 추정, 기대, 계획은 founderFacts에 넣지 않는다. founderFacts는 접촉, 계약, 입금, 예약처럼 확인된 사실만 담는다. 근거가 없으면 빈 배열이다.',
-    'assumptions의 첫 문장은 이번 답을 검증되지 않은 전제라고 적는다. 그 전제가 사업 실행에 주는 긍정적 가설도 적는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
-    'evidenceToChange에는 이 답이 판단에 어떤 영향을 주는지, 파트너십 실행 가능성에 대한 긍정적 가설인지, 판단을 바꾸기에는 무엇이 부족한지를 적는다. 답 문장만 다시 적으면 실패다. 판단을 유지해도 사업성 평가의 잠재적 의미를 적는다. evidenceToChange는 judgment와 같은 문장을 두지 않는다. 판단을 바꾸게 되는 확인 항목을 적는다. 기준에 맞는 양조장, 접근 가능한 후보군, 실제 접촉, 협력 조건처럼 아직 없는 근거를 적는다.',
-    'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 그 문자열에 유지와 이유를 넣는다. 문장은 셋만 쓴다. 이번 답은 Founder의 자체 판단이자 실행 가능성에 대한 긍정적 가설이다. 접촉, 상대 의사, 협력 조건의 구체적 증거는 확인되지 않았다. 그래서 현재 사업성 판단은 유지하고 이유를 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. 가설을 현재의 긍정적 영향으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다. 이전 분석의 시장 설명 문장을 judgment에 다시 쓰지 않는다. priorJudgmentText와 같은 문장이면 실패다. 후보가 아직 없다는 선택은 협력이 불가능하다는 증거가 아니다. judgment는 이번 선택이 기존 판단에 준 영향과, 유지하거나 바꾼 이유를 적는다.',
-    'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉, 상대의 의사, 협력 조건처럼 아직 없는 항목을 적는다. 작성 규칙 문장과 이전 위험만 반복하면 실패다.',
-    'nextPurpose가 candidate_criteria가 아니면 nextQuestion은 verificationStage.factToAsk와 같은 한 질문이다. 다른 문장을 붙이지 않는다. 이번 답에 연락하거나 미팅한 결과와 양조장 이름이 없고 nextPurpose가 named_target_and_path이면 한 곳을 정했는지, 그 이름, 담당자 또는 연락 경로를 사실로 묻는다. 방법, 구축, 계획, 어떻게, 어떤 방식, 방안, 구체화, 다음 단계를 붙이면 실패다. 협력 가능성이 높은지를 다시 묻지 않는다. priorQuestionTexts와 같거나 표현만 바꾼 계획 질문이면 실패다.',
-    'verificationStage.nextPurpose가 candidate_criteria이면 이 문단을 따른다. founderChoice는 떠오르는 양조장 이름이 아직 없다는 선택이다. 협력이 불가능하다는 증거가 아니다. founderFacts에 넣지 않는다. 이름이 있는지 다시 묻지 않는다. 한 곳을 정했는지 다시 묻지 않는다. factToAsk 문장을 출력하지 않는다. askOneOf 가운데 가장 중요한 하나만 묻고 물음표로 끝낸다. 예시 문장을 그대로 복사하지 않는다. nextVerification은 verificationText와 같다. nextQuestionReason은 reasonText와 같다. choices의 앞 두 문장은 choiceTexts와 같다. risks에는 후보를 찾을 기준 또는 접근 가능한 후보군이 아직 없다는 문장을 더한다.',
-    'nextVerification은 verificationStage.verificationText와 같은 한 문장이다. 구축 계획으로 바꾸지 않는다.',
-    'nextQuestionReason은 verificationStage.reasonText와 같은 한 문장이다. 실제 접촉 여부를 확인한다고 바꾸지 않는다.',
-    'founderChoice는 다음에 검증할 우선순위다. 양조장을 정했거나 연락했다는 사실이 아니다. founderFacts에 넣지 않는다. choices의 앞 두 문장은 verificationStage.choiceTexts와 같다. priorChoices와 같은 문장을 앞에 두지 않는다.',
+    'assumptions는 이번 답의 근거 수준을 새 문장으로 적는다. 확인되지 않은 주장을 사업 실행의 긍정적 가설로 단정하지 않는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
+    'evidenceToChange에는 다음에 확인되면 판단을 바꾸게 되는 항목을 적는다. 이번 답이 판단에 어떤 영향을 주는지는 judgment에 적는다. 답 문장만 다시 적으면 실패다. judgment와 같은 문장을 두지 않는다.',
+    'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 매 회차 최초 사업 아이디어와 이전 판단과 누적 답변을 다시 읽고 새 문장으로 사업성을 판단한다. priorJudgmentText와 같으면 실패다. 이전 문장을 복사하지 않는다. 이번 답이 판단에 어떤 영향을 주는지 이유를 적는다. 유지하거나 높이거나 낮출 수 있다. 근거가 부족하면 유지할 수 있으나 그 이유를 새 문장으로 적는다. 확인되지 않은 주장을 현재의 긍정적 영향으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다. 후보가 아직 없다는 답만으로 사업성이 없다고 쓰지 않는다. 그 답이 실행 경로의 빈칸이면 그 빈칸을 판단에 적는다.',
+    'risks는 이번 답으로 새로 보인 불확실성이 있을 때 새 문장으로 적는다. 위험을 매번 늘리지 않는다. 이전 위험만 반복하면 실패다. 사업이 불가능하다고 단정하지 않는다.',
+    'nextQuestion은 이번 사업성 판단을 더 정확하게 만들기 위해 아직 없는 정보 하나를 묻는다. priorQuestionTexts와 같거나 표현만 바꾼 질문이면 실패다. verificationStage의 factToAsk, verificationText, reasonText, choiceTexts는 이미 나온 단계이므로 출력에 복사하지 않는다. 이미 founderChoice와 founderSupplement와 이전 답에 있는 내용을 다시 묻지 않는다. 연락하거나 미팅한 결과가 없으면 그 결과를 만들지 않는다. 협력 가능성이 높은지를 다시 묻지 않는다.',
+    'nextVerification과 nextQuestionReason은 이번 질문이 다음 판단을 어떻게 돕는지 새 문장으로 적는다. priorVerificationText, priorReasonText와 같으면 실패다.',
+    'founderChoice와 founderSupplement는 이번 답이다. 양조장을 정했거나 연락한 사실이 아니면 founderFacts에 넣지 않는다. 후보가 없다는 선택은 협력 불가능이 아니다. choices는 이번 질문에 대한 서로 다른 답 두 개 이상이다. priorChoices와 같은 문장을 앞에 두지 않는다.',
     'JSON만 반환한다.',
     '키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices 이다.',
     'choices는 서로 다른 다음 행동 두 개 이상의 문자열 배열이다.',

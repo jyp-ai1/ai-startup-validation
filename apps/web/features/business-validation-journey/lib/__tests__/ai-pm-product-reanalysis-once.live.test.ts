@@ -42,6 +42,10 @@ const ROUND3_PARENT_ID = 'cbaec036-603a-49ff-8a35-64e4b74859d2';
 const ROUND3_LABEL = '아직 떠오르는 양조장이 없다';
 const ROUND3_SUPPLEMENT = '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.';
 const ROUND3_OBJECT = 'product-choice-round-2026-10-31-c.json';
+const REREVIEW_OBJECT = 'product-judgment-rereview-2026-10-31.json';
+const REREVIEW_PRIOR_ID = '82d949b0-d344-44df-a9be-5dddfce79c73';
+const COPIED_JUDGMENT =
+  '현재 사업성 판단은 유지되며, 양조장과의 협력 가능성이 높지만, 실제 접촉 및 협력 조건에 대한 구체적인 증거가 부족하다.';
 const ROUND3_EXAMPLES = [
   '전통주 체험을 제공하는 양조장을 어떤 기준으로 찾을 것인가?',
   '관광객 체험 프로그램 운영이 가능한 양조장을 어떻게 선별할 것인가?',
@@ -756,6 +760,188 @@ describe.skipIf(!enabled)('stored brewery cumulative reanalysis', () => {
     } finally {
       await writeMarker(config, marker, ROUND3_OBJECT);
       console.log(`preview-choice-round-3 stored status=${marker.status}`);
+    }
+    expect(marker.status).toBe('RECORDED');
+  }, 240_000);
+
+  it('asks GPT to rewrite the business judgment from the accumulated answers', async () => {
+    const config = supabaseConfig();
+    expect(config).not.toBeNull();
+    if (!config) return;
+    const preview = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_GIT_COMMIT_REF !== 'main';
+    const apiKey = process.env.GPT_API_KEY?.trim() ?? '';
+    if (!preview || !apiKey) {
+      console.log(`preview-judgment-rereview hold preview=${preview} gpt_key=${apiKey ? 'present' : 'absent'}`);
+      return;
+    }
+    const existing = await readMarker(config, REREVIEW_OBJECT);
+    if (existing && ['RECORDED', 'failed', 'limited', 'quality_failed'].includes(String(existing.status))) {
+      console.log(`preview-judgment-rereview skip status=${existing.status}`);
+      return;
+    }
+    const parentRow = await restGet(config, `ai_pm_reviews?select=user_id&review_id=eq.${ROUND3_PARENT_ID}`);
+    const userId = (parentRow[0] as { user_id?: string } | undefined)?.user_id ?? '';
+    const backend = openReviewBackend();
+    const parent = await backend.store.readReview(userId, ROUND3_PARENT_ID);
+    expect(parent?.status).toBe('succeeded');
+    const saved = (await backend.store.listFeedback(userId, ROUND3_PARENT_ID)).find(
+      (item) => item.choiceAnswer?.label === ROUND3_LABEL,
+    );
+    expect(saved?.feedbackId).toBeTruthy();
+    expect(saved?.modelCalls).toBe(0);
+    const preservedIds = [
+      PARENT_ID,
+      QUALITY_PARENT_ID,
+      CHOICE_PARENT_ID,
+      '1ac01e37-d90f-414b-aa51-883a118f6dd9',
+      ROUND3_PARENT_ID,
+      REREVIEW_PRIOR_ID,
+    ];
+    const preserved = await Promise.all(preservedIds.map((reviewId) => backend.store.readReview(userId, reviewId)));
+    const startedAt = new Date().toISOString();
+    await writeMarker(config, { status: 'started', startedAt, parentReviewId: ROUND3_PARENT_ID }, REREVIEW_OBJECT);
+    let marker: Record<string, unknown> = { status: 'failed', startedAt, parentReviewId: ROUND3_PARENT_ID };
+    try {
+      const records = await backend.store.listReviews(userId, PROJECT_ID);
+      const feedback = (await backend.store.listFeedback(userId)).filter((item) =>
+        records.some((record) => record.reviewId === item.reviewId),
+      );
+      const history = assembleConsultingHistory({ records, parent: parent!, supplement: ROUND3_SUPPLEMENT, feedback });
+      const request = buildProductReanalysisRequest({
+        originalInput: parent?.inputText ?? '',
+        firstAnalysis: parent!.sections!,
+        priorTurns: history.priorTurns,
+        priorAnalyses: history.priorAnalyses,
+        previousQuestions: history.previousQuestions,
+        latestAnalysis: parent!.sections!,
+        founderChoice: { label: ROUND3_LABEL, otherText: '' },
+        founderSupplement: ROUND3_SUPPLEMENT,
+        founderFeedback: { comment: ROUND3_LABEL },
+      });
+      const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+      const userPayload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+        originalInput: string;
+        founderChoice: { label: string } | null;
+        founderSupplement: string;
+        priorQuestionTexts: string[];
+      };
+      expect(system).toContain('priorJudgmentText와 같으면 실패다');
+      expect(system).not.toContain('문장은 셋만 쓴다');
+      expect(userPayload.originalInput.includes('양조장')).toBe(true);
+      expect(userPayload.founderChoice?.label).toBe(ROUND3_LABEL);
+      expect(userPayload.founderSupplement).toBe(ROUND3_SUPPLEMENT);
+      const result = await runFollowUpReview({
+        store: backend.store,
+        userId,
+        projectId: PROJECT_ID,
+        reviewId: ROUND3_PARENT_ID,
+        supplement: ROUND3_SUPPLEMENT,
+        now: startedAt,
+        chat: openReviewChat(),
+        evidence: 'live_network',
+        forceNew: true,
+      });
+      for (const before of preserved) {
+        if (!before) continue;
+        const after = await backend.store.readReview(userId, before.reviewId);
+        expect(after?.finishedAt).toBe(before.finishedAt);
+        expect(after?.status).toBe(before.status);
+        expect(after?.totalTokens).toBe(before.totalTokens);
+      }
+      if (!result.ok || result.record.status !== 'succeeded' || !result.record.sections?.analysis) {
+        marker = {
+          ...marker,
+          status: 'failed',
+          error: result.ok ? result.record.error : result.error,
+          reviewId: result.ok ? result.record.reviewId : null,
+          called: result.ok ? result.called : false,
+        };
+      } else {
+        const sections = result.record.sections;
+        const analysis = sections.analysis!;
+        const judgment = analysis.judgmentDetail;
+        const parentJudgment = parent?.sections?.analysis?.judgmentDetail ?? '';
+        const nextQuestion = sections.nextQuestion;
+        const compact = (value: string) => value.replace(/\s+/g, '').replace(/[.?？!]/g, '');
+        const copiedJudgment = compact(judgment) === compact(parentJudgment) || compact(judgment).includes(compact(COPIED_JUDGMENT));
+        const reflectsAnswer = /후보|떠오르|선정|이름/.test(judgment);
+        const explainsReason = /때문|이유|부족|확인|근거|없/.test(judgment);
+        const callsBusinessDead = /사업성이 없|사업성 없|협력이 불가능|협력 불가능/.test(judgment);
+        const upgradesClaim = /긍정적 영향을 미|사업성이 높아졌|긍정적으로 바뀌/.test(judgment);
+        const evidence = analysis.evidenceToChange;
+        const evidenceCopies =
+          evidence.length === 0 ||
+          evidence.some((item) => compact(item) === compact(judgment) || compact(item) === compact(COPIED_JUDGMENT));
+        const priorQuestions = userPayload.priorQuestionTexts;
+        const repeatedQuestion = priorQuestions.some((question) => compact(question) === compact(nextQuestion));
+        const isQuestion = /[?？]|있나요|인가|습니까|것인가|무엇/.test(nextQuestion);
+        const choiceLabels = analysis.choices.map((choice) => choice.label);
+        const parentLabels = (parent?.sections?.analysis?.choices ?? []).map((choice) => choice.label);
+        const previousRoundLabels = ['체험 양조장을 가릴 기준이 있다', '아직 접근 가능한 후보군이 없다', '기타 / 직접 입력'];
+        const actionable = choiceLabels.filter((label) => !/기타|직접 입력/.test(label));
+        const sameAsParent = actionable.length > 0 && actionable.every((label) => parentLabels.includes(label));
+        const sameAsPreviousRound =
+          actionable.length > 0 && actionable.every((label) => previousRoundLabels.includes(label));
+        const invented = analysis.founderFacts.some((fact) => /연락했|미팅했|선정했|담당자/.test(fact));
+        const claimIsFact = unverifiedClaimStoredAsFact(ROUND3_SUPPLEMENT, analysis.founderFacts);
+        const canContinue = actionable.length >= 2 && nextQuestion.length > 0;
+        const qualityPass =
+          !copiedJudgment &&
+          reflectsAnswer &&
+          explainsReason &&
+          !callsBusinessDead &&
+          !upgradesClaim &&
+          !evidenceCopies &&
+          !repeatedQuestion &&
+          isQuestion &&
+          !sameAsParent &&
+          !sameAsPreviousRound &&
+          !invented &&
+          !claimIsFact &&
+          canContinue &&
+          result.record.parentReviewId === ROUND3_PARENT_ID &&
+          result.record.sourceFeedbackId === saved?.feedbackId;
+        marker = {
+          status: qualityPass ? 'RECORDED' : 'quality_failed',
+          startedAt,
+          finishedAt: new Date().toISOString(),
+          called: result.called,
+          reviewId: result.record.reviewId,
+          parentOfChild: result.record.parentReviewId,
+          sourceFeedbackId: result.record.sourceFeedbackId,
+          feedbackId: saved?.feedbackId ?? null,
+          model: result.record.model,
+          promptTokens: result.record.promptTokens,
+          completionTokens: result.record.completionTokens,
+          totalTokens: result.record.totalTokens,
+          callCount: result.record.callCount,
+          judgment,
+          parentJudgment,
+          nextQuestion,
+          nextQuestionReason: sections.nextQuestionReason,
+          nextVerification: analysis.nextVerification,
+          founderFacts: analysis.founderFacts,
+          assumptions: analysis.assumptions,
+          risks: sections.risks,
+          evidenceToChange: evidence,
+          choices: choiceLabels,
+          copiedJudgment,
+          reflectsAnswer,
+          explainsReason,
+          callsBusinessDead,
+          upgradesClaim,
+          evidenceCopies,
+          repeatedQuestion,
+          sameAsParent,
+          sameAsPreviousRound,
+          canContinue,
+          priorQuestionTexts: priorQuestions,
+          rawContent: result.record.rawContent,
+        };
+      }
+    } finally {
+      await writeMarker(config, marker, REREVIEW_OBJECT);
+      console.log(`preview-judgment-rereview stored status=${marker.status}`);
     }
     expect(marker.status).toBe('RECORDED');
   }, 240_000);

@@ -4896,9 +4896,10 @@ describe('AI PM first review', () => {
       founderFeedback: null,
     });
     const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
-    expect(system).toContain('근거가 부족하면 기존 판단을 유지');
+    expect(system).toContain('유지하거나 높이거나 낮출 수 있다');
     expect(system).toContain('이유를 적는다');
-    expect(system).toContain('유지와 이유');
+    expect(system).toContain('priorJudgmentText와 같으면 실패다');
+    expect(system).not.toContain('문장은 셋만 쓴다');
     expect(request.maxTokens).toBe(AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS);
     expect(request.responseFormat?.type).toBe('json_schema');
     if (request.responseFormat?.type === 'json_schema') {
@@ -5142,6 +5143,9 @@ describe('AI PM first review', () => {
     expect(judgmentSeparatesPotential(judgment)).toBe(false);
     const mixed = '이는 사업의 실행 가능성에 긍정적 영향을 미칠 것으로 보인다. 기존 판단을 유지한다.';
     expect(judgmentIsConsistent({ judgment: mixed, assumptions: ['긍정적 가설이다.'], evidenceToChange: ['정보가 부족하다.'] })).toBe(false);
+    const revised =
+      '떠오르는 양조장 이름이 아직 없어 첫 협력 경로는 비어 있다. 협력 가능성이 높다는 주장은 아직 확인되지 않았다.';
+    expect(judgmentIsConsistent({ judgment: revised, assumptions: ['후보 이름은 확인되지 않았다.'], evidenceToChange: ['접근 가능한 양조장 이름'] })).toBe(true);
     const request = buildProductReanalysisRequest({
       originalInput: PLAN,
       firstAnalysis: sections(),
@@ -5251,9 +5255,10 @@ describe('AI PM first review', () => {
       founderChoice: { label: string };
       verificationStage: { nextPurpose: string; factToAsk: string; choiceTexts: string[] };
     };
-    expect(system).toContain('candidate_criteria');
-    expect(system).toContain('협력이 불가능하다는 증거가 아니다');
+    expect(system).toContain('factToAsk, verificationText, reasonText, choiceTexts는 이미 나온 단계');
+    expect(system).toContain('후보가 없다는 선택은 협력 불가능이 아니다');
     expect(system).toContain('judgment와 같은 문장을 두지 않는다');
+    expect(system).not.toContain('choiceTexts와 같다');
     expect(payload.founderChoice.label).toBe(choice);
     expect(payload.verificationStage.nextPurpose).toBe('candidate_criteria');
     expect(payload.verificationStage.factToAsk).not.toBe(nameQuestion);
