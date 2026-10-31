@@ -1243,6 +1243,8 @@ export function productReadingRepairMessage(issues: string[], context?: { supple
   const lines = [
     '이전 JSON은 구조 검증에 걸렸다.',
     `실패 코드: ${issues.join(',')}.`,
+    'judgment에 이미 있는 검증되지 않은 가설, 체험, 후보가 선정되지 않았다는 미해결은 지우지 않는다.',
+    '협력 가능성이 높다는 주장은 검증되지 않은 가설로 judgment 안에 남긴다.',
   ];
   if (issues.includes('new_answer_missing') || issues.includes('answer_collapsed_to_choice') || issues.includes('answer_not_classified')) {
     const supplement = context?.supplement?.trim();
@@ -3670,7 +3672,10 @@ async function finishCall(input: {
           }
           const repairIssues = input.readingIssues(repair.content);
           const parsed = Boolean(parseSections(repair.content, input.input.text));
-          if (repairIssues.length < bestCount && parsed) {
+          const reopenedClaim = ['claim_not_labeled', 'claim_used_as_premise', 'claim_in_summary'].some(
+            (code) => repairIssues.includes(code) && !issues.includes(code),
+          );
+          if (repairIssues.length < bestCount && parsed && !reopenedClaim) {
             response = repair;
             issues = repairIssues;
             bestCount = repairIssues.length;
