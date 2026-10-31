@@ -39,6 +39,8 @@ import {
   nextStepMatchesQuestion,
   productReadingIssues,
   productReadingRepairMessage,
+  verificationAssertsUngroundedGain,
+  verificationStaysOnAnsweredCriterion,
   followThroughQuality,
   followThroughRequestCoverage,
   answerSaysNoCandidate,
@@ -5578,6 +5580,8 @@ describe('AI PM first review', () => {
     expect(system).toContain('문장 중간의 현재 상태로도 쓰지 않는다');
     expect(system).toContain('summary에 협력 가능성이 높지만을 넣지 않는다');
     expect(system).toContain('이번 답이 체험 기준을 고르는 계획');
+    expect(system).toContain('고르겠다는 계획만으로는 미해결이 아니다');
+    expect(system).toContain('기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다');
   });
 
   it('carries the stored history into the next answer and scores that answer without choosing a direction', () => {
@@ -5694,6 +5698,52 @@ describe('AI PM first review', () => {
       doesNotRepeatQuestion: true,
       newStep: true,
     });
+    const stalledJudgment =
+      '현재 사업성 판단은 유지되며, 양조장과의 협력 가능성에 대한 주장은 검증되지 않은 가설이다. 체험으로 만들고 마실 수 있는 양조장인지를 기준으로 후보를 고르겠다는 계획이 있다.';
+    const stalledVerification = '양조장 후보 선정 기준을 확인하면, 향후 협력 가능성을 높일 수 있는 방향으로 나아갈 수 있다.';
+    const stalledQuestion = '양조장과의 협력 의사는 어떻게 되는지 확인할 수 있는 방법이 있나요?';
+    const stalled = followThroughQuality({
+      ...shared,
+      judgment: stalledJudgment,
+      summary: stalledJudgment,
+      inferences: ['현재 구체적인 양조장 후보가 선정되지 않았고, 협력 가능성에 대한 근거가 확인되지 않았다.'],
+      nextVerification: stalledVerification,
+      nextQuestion: stalledQuestion,
+    });
+    expect(stalled.understandsAnswer).toBe(true);
+    expect(stalled.separatesClaim).toBe(true);
+    expect(stalled.classifiesChoice).toBe(true);
+    expect(stalled.keepsUnresolved).toBe(false);
+    expect(stalled.explainsDirection).toBe(true);
+    expect(stalled.doesNotRepeatQuestion).toBe(true);
+    expect(stalled.newStep).toBe(false);
+    expect(verificationAssertsUngroundedGain(stalledVerification)).toBe(true);
+    expect(verificationStaysOnAnsweredCriterion(stalledVerification)).toBe(true);
+    expect(verificationAssertsUngroundedGain('그 효과는 확인되지 않았다.')).toBe(false);
+    expect(
+      productReadingIssues({
+        judgment: stalledJudgment,
+        summary: stalledJudgment,
+        assumptions: shared.assumptions,
+        inferences: ['현재 구체적인 양조장 후보가 선정되지 않았고, 협력 가능성에 대한 근거가 확인되지 않았다.'],
+        nextVerification: stalledVerification,
+        nextQuestion: stalledQuestion,
+        unresolved,
+        priorGoals,
+        founderClaims,
+        founderFacts: [],
+        founderSupplement: supplement,
+        answeredQuestion: asked,
+        answeredVerification,
+      }),
+    ).toEqual(
+      expect.arrayContaining([
+        'unresolved_gap_missing',
+        'verification_question_mismatch',
+        'verification_asserts_positive_effect',
+        'answered_criterion_still_open',
+      ]),
+    );
     expect(
       productReadingIssues({
         judgment,
@@ -5711,10 +5761,78 @@ describe('AI PM first review', () => {
         answeredVerification,
       }),
     ).toEqual([]);
-    const repair = productReadingRepairMessage(['new_answer_missing', 'answered_question_repeated']);
+    const repair = productReadingRepairMessage(['new_answer_missing', 'answered_question_repeated'], { supplement });
     expect(repair).toContain('new_answer_missing');
     expect(repair).toContain('대체 문장을 받지 않는다');
+    expect(repair).toContain('고르겠다는 문장만으로는 미해결이 아니다');
+    expect(repair).toContain('기준을 확인하면 협력 가능성이 높아진다고 적지 않는다');
+    expect(repair).toContain(supplement);
     expect(repair).not.toContain(judgment);
+  });
+
+  it('repairs a criterion answer once and does not spend a blocked third call', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const supplement = '체험으로 만들고 마실 수 있는 양조장인지를 기준으로 후보를 고르겠다. 그 기준에 맞는 양조장은 아직 정하지 못했다.';
+    const calls: string[] = [];
+    const first = await runFirstReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      text: PLAN,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat: async () => reply(JSON.stringify(sections())),
+      evidence: 'injected_http',
+    });
+    const follow = await runFollowUpReview({
+      projectId: 'project-test',
+      store,
+      userId: 'user-a',
+      reviewId: first.record.reviewId,
+      supplement,
+      now: NOW,
+      chat: async (request) => {
+        calls.push(request.messages.at(-1)?.content ?? '');
+        if (calls.length === 1) {
+          return reply(
+            productAnalysisRaw({
+              judgment: '근거가 부족하다.',
+              nextQuestion: '체험 양조장을 고를 기준은 무엇인가요?',
+              nextVerification: '양조장 후보 선정 기준을 확인하면, 향후 협력 가능성을 높일 수 있는 방향으로 나아갈 수 있다.',
+            }),
+            { usage: { inputTokens: 10, outputTokens: 4, totalTokens: 14 } },
+          );
+        }
+        return reply(
+          productAnalysisRaw({
+            judgment: '체험으로 고르겠다는 계획은 선택이다. 판단은 유지한다. 이유는 접촉이 없기 때문이다.',
+            nextQuestion: '그 양조장에 닿는 경로는 무엇인가요?',
+            nextVerification: '양조장 후보 선정 기준을 확인하면, 향후 협력 가능성을 높일 수 있는 방향으로 나아갈 수 있다.',
+          }),
+          { usage: { inputTokens: 12, outputTokens: 5, totalTokens: 17 } },
+        );
+      },
+      evidence: 'injected_http',
+    });
+    expect(follow.ok).toBe(true);
+    if (!follow.ok) return;
+    expect(calls).toHaveLength(2);
+    expect(calls[1]).toContain('verification_asserts_positive_effect');
+    expect(calls[1]).toContain('고르겠다는 문장만으로는 미해결이 아니다');
+    expect(follow.record.callCount).toBe(2);
+    expect(follow.record.callLedger?.map((note) => note.readingIssues.some((issue) => issue.startsWith('repair_failed')))).toEqual([
+      false,
+      false,
+    ]);
+    expect(follow.record.firstRawContent).toContain('근거가 부족하다');
+    expect(follow.record.sections?.nextQuestion).toBe('그 양조장에 닿는 경로는 무엇인가요?');
+    expect(follow.record.promptTokens).toBe(22);
+    expect(follow.record.completionTokens).toBe(9);
+    expect(follow.record.totalTokens).toBe(31);
+    const parent = await store.readReview('user-a', first.record.reviewId);
+    expect(parent?.finishedAt).toBe(first.record.finishedAt);
+    store.close();
   });
 
   it('reads the missing-candidate answer as a stated gap', () => {

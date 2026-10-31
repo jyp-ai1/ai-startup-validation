@@ -1119,10 +1119,26 @@ export function buildEvidenceLedger(input: {
   };
 }
 
-/** An unresolved candidate gap is still present in the judgment. */
+/**
+ * An unresolved candidate gap is still present in the judgment.
+ * Naming a selection criterion is not the same as saying no candidate is selected.
+ */
 export function judgmentAccountsForUnresolved(judgment: string, unresolved: string[]): boolean {
   if (!unresolved.some(answerSaysNoCandidate)) return judgment.trim().length > 0;
-  return /후보/.test(judgment) && /없|못|선정|비어/.test(judgment);
+  return /후보/.test(judgment) && /없|못|비어|선정되지|선정하지/.test(judgment);
+}
+
+/** The next verification treats an unverified step as a gain. */
+export function verificationAssertsUngroundedGain(text: string): boolean {
+  if (!/가능성을 높|긍정적 영향을 미칠|사업성이 높아|긍정적인 영향/.test(text)) return false;
+  return !/확인되지|미확인|검증되지|단정하지/.test(text);
+}
+
+/** The verification is still the criterion step the founder already answered. */
+export function verificationStaysOnAnsweredCriterion(nextVerification: string): boolean {
+  const targets = questionVerificationTargets(nextVerification).filter((target) => target !== 'selection');
+  const forward = targets.filter((target) => target !== 'criteria');
+  return /기준/.test(nextVerification) && forward.length === 0;
 }
 
 /** The next verification repeats a goal the founder already chose. */
@@ -1180,6 +1196,10 @@ export function productReadingIssues(input: {
   if (input.priorGoals.length > 0 && !nextStepMatchesQuestion(input.nextVerification, input.nextQuestion)) {
     issues.push('verification_question_mismatch');
   }
+  if (verificationAssertsUngroundedGain(input.nextVerification)) issues.push('verification_asserts_positive_effect');
+  if (criterionAnswer(input.founderSupplement ?? '') && verificationStaysOnAnsweredCriterion(input.nextVerification)) {
+    issues.push('answered_criterion_still_open');
+  }
   if (criterionAnswer(input.founderSupplement ?? '')) {
     const reviewed = `${input.judgment}\n${input.inferences.join('\n')}`;
     if (!/체험/.test(reviewed)) issues.push('new_answer_missing');
@@ -1223,12 +1243,21 @@ export function productReadingRepairMessage(issues: string[], context?: { supple
   if (issues.includes('assumption_asserts_positive_effect')) {
     lines.push('assumptions에서 긍정적 영향을 미칠 것이다라고 단정하지 않는다. 가설이 성립하는지도, 성립할 때의 영향도 확인되지 않았다고 적는다.');
   }
-  if (issues.includes('unresolved_gap_missing')) lines.push('구체적인 후보가 선정되지 않았다는 미해결을 judgment에 남긴다.');
+  if (issues.includes('unresolved_gap_missing') || criterionAnswer(context?.supplement ?? '')) {
+    lines.push('judgment에 후보가 아직 선정되지 않았다는 미해결을 계획과 따로 적는다. 고르겠다는 문장만으로는 미해결이 아니다.');
+  }
   if (issues.includes('prior_goal_repeated')) {
     lines.push('nextVerification에 이미 선택한 상위 목표 문장을 다시 넣지 않는다. 그 목표 아래의 다음 한 단계만 적는다.');
   }
-  if (issues.includes('verification_question_mismatch')) {
-    lines.push('nextVerification과 nextQuestion은 기준, 접근 경로, 협력 의사, 협력 조건 가운데 같은 하나여야 한다.');
+  if (
+    issues.includes('verification_question_mismatch') ||
+    issues.includes('answered_criterion_still_open') ||
+    issues.includes('verification_asserts_positive_effect') ||
+    issues.includes('answered_question_repeated') ||
+    criterionAnswer(context?.supplement ?? '')
+  ) {
+    lines.push('nextVerification은 nextQuestion과 같은 대상 하나만 적는다. 이번 답이 이미 기준이면 기준 확인을 다시 적지 않는다. 접근 경로, 협력 의사, 협력 조건 중 하나만 고른다.');
+    lines.push('기준을 확인하면 협력 가능성이 높아진다고 적지 않는다. 그 효과는 확인되지 않았다.');
   }
   if (issues.includes('new_answer_missing') || issues.includes('answer_promoted_to_fact') || issues.includes('judgment_reason_missing')) {
     const supplement = context?.supplement?.trim();
@@ -1297,7 +1326,9 @@ export function followThroughQuality(input: {
       targets.length === 1 &&
       nextStepMatchesQuestion(input.nextVerification, input.nextQuestion) &&
       !verificationRepeatsPriorGoal(input.nextVerification, input.priorGoals) &&
-      !verificationRepeatsPriorGoal(input.nextVerification, [input.answeredVerification]),
+      !verificationRepeatsPriorGoal(input.nextVerification, [input.answeredVerification]) &&
+      !verificationAssertsUngroundedGain(input.nextVerification) &&
+      !(criterionAnswer(input.supplement) && verificationStaysOnAnsweredCriterion(input.nextVerification)),
   };
 }
 
@@ -1540,12 +1571,12 @@ function productReanalysisSchema(): Record<string, unknown> {
       judgment: {
         type: 'string',
         description:
-          'founderClaims의 협력 가능성 문장은 검증되지 않은 가설로 judgment 안에 적는다. founderSupplement에 체험 기준이 있으면 그 기준을 계획 또는 선택으로 judgment 안에 적는다. 협력 가능성이 높지만을 현재 상태로 쓰지 않는다. unresolved의 후보 부재를 포함한다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 이유를 적는다.',
+          'founderClaims의 협력 가능성 문장은 검증되지 않은 가설로 judgment 안에 적는다. founderSupplement에 체험 기준이 있으면 그 기준을 계획 또는 선택으로 judgment 안에 적는다. 고르겠다는 계획과 별도로, 후보가 아직 선정되지 않았다는 미해결을 같은 judgment에 적는다. 협력 가능성이 높지만을 현재 상태로 쓰지 않는다. unresolved의 후보 부재를 포함한다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 이유를 적는다.',
       },
       nextVerification: {
         type: 'string',
         description:
-          'priorGoals 문장을 복사하지 않는다. 이번 답이 이미 기준이면 기준 확인을 다시 적지 않는다. nextQuestion과 같은 대상만 적는다. 접근 경로, 협력 의사, 협력 조건 중 하나다.',
+          'priorGoals 문장을 복사하지 않는다. 이번 답이 이미 기준이면 기준 확인을 다시 적지 않는다. nextQuestion과 같은 대상만 적는다. 접근 경로, 협력 의사, 협력 조건 중 하나다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다. 그 효과는 확인되지 않았다.',
       },
       nextQuestion: {
         type: 'string',
@@ -1570,7 +1601,7 @@ function productReanalysisSystemPrompt(): string {
     'evidenceLedger를 먼저 읽는다. newFounderInformation이 false여도 unresolvedStillApplies가 true면 unresolved를 판단에 넣는다. false는 이번 호출에 새 답이 없다는 뜻이지, 미해결 답을 빼도 된다는 뜻이 아니다.',
     'founderClaims는 확인된 사실이 아니다. verifiedFacts만 확인된 사실이다. stillUnknown은 아직 없는 근거다. 판단을 유지하거나 바꾸거나 유보할 수 있다. 후보 부재가 실행 가능성에 주는 영향을 이유로 적는다. 이전 판단 문장과 같으면 실패다.',
     'nextVerification은 priorGoals의 문장을 다시 쓰지 않는다. 이미 고른 상위 목표를 반복하지 않는다. 그 아래의 다음 한 단계만 적고, nextQuestion과 같은 대상을 새 문장으로 적는다.',
-    '이번 답이 체험 기준을 고르는 계획이나 선택이면 그 답을 확인된 사실로 올리지 않는다. judgment에 그 기준과 아직 없는 후보를 함께 적고, 유지하거나 바꾸거나 유보한 이유를 적는다. 그 기준 질문을 다시 내지 않는다. 다음 질문에는 기준을 넣지 않고, 접근 경로, 협력 의사, 협력 조건 중 아직 없는 하나만 묻는다.',
+    '이번 답이 체험 기준을 고르는 계획이나 선택이면 그 답을 확인된 사실로 올리지 않는다. judgment에 그 기준을 계획으로 적고, 그와 별도로 후보가 아직 선정되지 않았다는 미해결을 적는다. 고르겠다는 계획만으로는 미해결이 아니다. 유지하거나 바꾸거나 유보한 이유를 적는다. 그 기준 질문을 다시 내지 않는다. nextQuestion과 nextVerification은 같은 대상이다. 다음 질문에는 기준을 넣지 않고, 접근 경로, 협력 의사, 협력 조건 중 아직 없는 하나만 묻는다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다.',
     '증거 구분에서 구체적인 양조장 후보가 아직 없다는 Founder의 답은 확인된 상태다. 양조장 협력 가능성이 높다는 문장은 Founder의 주장 또는 기대다. 접촉, 협력 의사, 협력 조건, 실제 협력 가능성은 미확인이다. 주장을 했다는 사실과 가능성이 실제로 높다는 결론을 섞지 않는다.',
     '사업성 재평가는 고객과 문제, 가치의 실현, 운영, 파트너십 확보, 수익 구조, 확인된 근거와 불확실성, 이번 답이 기존 판단에 주는 영향을 본다. 유지하거나 높이거나 낮추거나 유보할 수 있다. 점수를 만들지 않는다.',
     'inferences가 주장을 검증되지 않았다고 적으면 judgment와 summary는 그 주장을 현재 가능성으로 쓰지 않는다. summary에 협력 가능성이 높지만을 넣지 않는다. judgment에는 그 문장을 검증되지 않은 가설로 적는다.',
@@ -1709,7 +1740,8 @@ export function buildProductReanalysisRequest(input: {
       readingContract: {
         claim: 'founderClaims는 검증되지 않은 가설이다. 현재 사업성의 긍정 근거로 쓰지 않는다.',
         effect: '가설의 성립과 그 영향은 확인되지 않았다. 긍정적 영향을 미칠 것이다라고 단정하지 않는다.',
-        nextStep: 'priorGoals는 이미 고른 상위 목표다. nextVerification은 그 문장을 반복하지 않고 한 단계 아래를 적는다.',
+        nextStep:
+          'priorGoals는 이미 고른 상위 목표다. nextVerification은 그 문장을 반복하지 않고 한 단계 아래를 적는다. nextQuestion과 같은 대상만 적는다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다.',
       },
       ...anchors,
       founderAnswers: [
@@ -3567,7 +3599,8 @@ async function finishCall(input: {
     }
     if (input.readingIssues && !input.outputContract) {
       let issues = input.readingIssues(response.content);
-      for (let attempt = 0; attempt < 2 && issues.length > 0; attempt += 1) {
+      // The provider chat allows the first call plus one repair. A second repair is blocked before it is sent.
+      for (let attempt = 0; attempt < 1 && issues.length > 0; attempt += 1) {
         firstRawContent = firstRawContent ?? first.content;
         try {
           const repair = await input.chat({
