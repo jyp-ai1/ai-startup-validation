@@ -2397,6 +2397,50 @@ The stored brewery reading asked only whether partnership likelihood was high, l
 
 ---
 
+## ADR-073: One consulting stage sends N question-answer pairs in one reanalysis
+
+**Status:** Accepted  
+**Date:** 2026-10-31  
+**Sprint:** AI PM consulting stage  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The stored consulting path sends one founder supplement to one product reanalysis. A stage is N questions and N answers linked by question id. Collecting those answers must not call the model. The integrated call happens once, after the stage is complete, and the request keeps each answer attached to the question that asked it. An earlier row is not rewritten.
+
+### Decision
+
+1. `questions` on a business analysis is the next stage. A row that only has `nextQuestion` stays a one-question stage.
+2. Feedback may carry `questionId`. Saving feedback still sets `modelCalls: 0`. A comment without a question id does not answer every question of a multi-question stage.
+3. `runStageReanalysis` returns `stage_incomplete` and does not call the model while any question is open. `allowPartial` is the explicit mid-stage call and is stored as `stagePartial`.
+4. The product request includes `stagePairs` and `priorStagePairs` only for that call. The one-supplement request does not gain those keys. `POST /api/ai-pm-review/follow-up` still calls `runFollowUpReview`.
+5. The model writes the judgment. The stage check only requires two or more distinct next questions that do not copy an already asked question string.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Switch the follow-up route to the stage call | The shipped path would match the stage | The live supplement is the route argument, not the feedback comment, so existing answers would be dropped |
+| Call the model once per question | Each answer could be checked alone | That is the structure this decision closes |
+
+### Consequences
+
+**Positive:**
+
+- A completed stage is one request with paired question ids, and a later stage receives the earlier pairs.
+- Existing review rows stay insert-only.
+
+**Negative:**
+
+- The HTTP follow-up route is still one call per supplement until a later change wires the stage function.
+- A live model call of the stage path was not part of this decision. Unit tests inject the model text.
+
+**Neutral:**
+
+- Production stays locked. No panel change.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
