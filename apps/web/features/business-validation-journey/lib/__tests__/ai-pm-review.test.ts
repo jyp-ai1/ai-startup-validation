@@ -5208,6 +5208,58 @@ describe('AI PM first review', () => {
     });
   });
 
+  it('moves a missing brewery name to a search criterion', () => {
+    const named =
+      '협력 가능성을 확인하기 위해 우선 접촉할 양조장을 한 곳 정했나요? 정했다면 양조장 이름과 실제 연락할 수 있는 담당자 또는 연락 경로를 알려주세요.';
+    const nameQuestion =
+      '후보 선정을 시작하면서 가장 먼저 떠오르는 양조장 이름이 있나요? 있으면 그 이름만 알려 주세요. 없으면 아직 떠오른 곳이 없다고 적어 주세요.';
+    const choice = '아직 떠오르는 양조장이 없다.';
+    const supplement = '현재 우선 접촉할 구체적인 양조장 후보를 선정하지 못했다.';
+    const stage = nextFactToAsk({ supplement, previousQuestions: [named, nameQuestion], choiceLabel: choice });
+    expect(stage.nextPurpose).toBe('candidate_criteria');
+    expect(stage.factToAsk.endsWith('?')).toBe(false);
+    expect(questionVerificationStage(nameQuestion)).toBe('candidate_name');
+    expect(questionRepeatsPrior([named, nameQuestion], stage.factToAsk)).toBe(false);
+    const criterion = '체험을 운영할 수 있는 양조장을 찾을 기준이 이미 있나요?';
+    const screening = '관광객 체험 프로그램 운영이 가능한 양조장을 어떻게 선별할 것인가?';
+    const pool = '실제로 접근 가능한 후보군을 확보할 수 있는가?';
+    expect(questionVerificationStage(criterion)).toBe('candidate_criteria');
+    expect(questionVerificationStage(screening)).toBe('candidate_criteria');
+    expect(questionVerificationStage(pool)).toBe('candidate_criteria');
+    expect(
+      verificationPurposeAligns({
+        nextQuestion: criterion,
+        nextVerification: stage.verificationText,
+        nextQuestionReason: stage.reasonText,
+      }),
+    ).toBe(true);
+    expect(stage.verificationText).not.toBe(criterion);
+    expect(stage.reasonText).toContain('불가능하다는 뜻이 아니');
+    expect(stage.choiceTexts).toEqual(['체험 양조장을 가릴 기준이 있다', '아직 접근 가능한 후보군이 없다']);
+    const request = buildProductReanalysisRequest({
+      originalInput: PLAN,
+      firstAnalysis: sections(),
+      priorTurns: [],
+      previousQuestions: [named, nameQuestion],
+      latestAnalysis: { ...sections(), nextQuestion: nameQuestion },
+      founderChoice: { label: choice, otherText: '' },
+      founderSupplement: supplement,
+      founderFeedback: { comment: choice },
+    });
+    const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+    const payload = JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      founderChoice: { label: string };
+      verificationStage: { nextPurpose: string; factToAsk: string; choiceTexts: string[] };
+    };
+    expect(system).toContain('candidate_criteria');
+    expect(system).toContain('협력이 불가능하다는 증거가 아니다');
+    expect(system).toContain('judgment와 같은 문장을 두지 않는다');
+    expect(payload.founderChoice.label).toBe(choice);
+    expect(payload.verificationStage.nextPurpose).toBe('candidate_criteria');
+    expect(payload.verificationStage.factToAsk).not.toBe(nameQuestion);
+    expect(payload.verificationStage.choiceTexts).toEqual(stage.choiceTexts);
+  });
+
   it('cites a failed review answer without moving it onto the succeeded parent', async () => {
     const store = openAiPmReviewStore(storePath());
     const ready = await runFirstReview({

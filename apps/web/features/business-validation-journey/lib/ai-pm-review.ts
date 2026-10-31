@@ -665,12 +665,14 @@ export type QuestionVerificationStage =
   | 'past_contact'
   | 'named_target_and_path'
   | 'candidate_name'
+  | 'candidate_criteria'
   | 'willingness'
   | 'terms'
   | 'other';
 
-/** What a question is trying to verify. A method clause keeps it on the plan stage. */
+/** What a question is trying to verify. A search criterion stays ahead of a generic plan. */
 export function questionVerificationStage(question: string): QuestionVerificationStage {
+  if (/기준|선별|후보군/.test(question) && /양조장|체험|접근|후보/.test(question)) return 'candidate_criteria';
   if (questionAsksForPlan(question)) return 'plan';
   if (/떠오르는/.test(question) && /이름/.test(question) && !/담당|경로/.test(question)) return 'candidate_name';
   if (/정했|골랐|한 곳/.test(question) && /이름/.test(question) && /담당|경로|연락/.test(question)) return 'named_target_and_path';
@@ -697,6 +699,11 @@ const CANDIDATE_NAME_QUESTION =
 const CANDIDATE_NAME_VERIFICATION = '가장 먼저 떠오르는 양조장 후보의 이름 유무 확인';
 const CANDIDATE_NAME_REASON =
   '협력 방안을 우선하기로 한 다음, 떠오르는 양조장 후보의 이름이 있는지를 확인하기 위한 것이다.';
+const CANDIDATE_CRITERIA_RULE = '이 문장을 질문으로 출력하지 않는다.';
+const CANDIDATE_CRITERIA_VERIFICATION = '체험이 가능한 양조장을 가려낼 기준 또는 접근 가능한 후보군 확인';
+const CANDIDATE_CRITERIA_REASON =
+  '이름이 아직 없다는 선택은 협력이 불가능하다는 뜻이 아니므로, 후보를 찾을 기준이나 접근 가능한 후보군을 다음으로 확인하기 위한 것이다.';
+const CANDIDATE_CRITERIA_CHOICES = ['체험 양조장을 가릴 기준이 있다', '아직 접근 가능한 후보군이 없다'];
 
 /**
  * The next fact to ask from the answer and the stages already used.
@@ -706,11 +713,12 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
   priorStages: QuestionVerificationStage[];
   answerHasNamedTarget: boolean;
   answerHasContactResult: boolean;
-  nextPurpose: 'named_target_and_path' | 'candidate_name' | 'past_contact' | 'willingness' | 'terms';
+  nextPurpose: 'named_target_and_path' | 'candidate_name' | 'candidate_criteria' | 'past_contact' | 'willingness' | 'terms';
   factToAsk: string;
   verificationText: string;
   reasonText: string;
   choiceTexts: string[];
+  askOneOf: string | null;
 } {
   const supplement = input.supplement.trim();
   const answerHasContactResult = /연락했|미팅했|만났|회신|반응을 받/.test(supplement);
@@ -726,6 +734,7 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
       verificationText: '역할, 비용, 수익 배분, 운영 책임 중 정해진 항목 확인',
       reasonText: '상대의 긍정 반응 다음으로 역할, 비용, 수익 배분, 운영 책임 중 정해진 항목을 확인하기 위한 것이다.',
       choiceTexts: ['역할과 비용이 정해졌다', '아직 역할과 비용이 없다'],
+      askOneOf: null,
     };
   }
   if (answerHasContactResult) {
@@ -738,6 +747,7 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
       verificationText: '접촉한 양조장의 반응과 후속 협의 일정 확인',
       reasonText: '이미 접촉한 양조장의 반응과 후속 협의 일정을 확인하기 위한 것이다.',
       choiceTexts: ['상대의 반응을 들었다', '아직 반응이 없다'],
+      askOneOf: null,
     };
   }
   if (answerHasNamedTarget) {
@@ -750,6 +760,23 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
       verificationText: '선정한 양조장에 실제 연락하거나 미팅했는지와 상대 반응 확인',
       reasonText: '이미 정한 양조장에 연락하거나 미팅했는지와 상대의 반응을 확인하기 위한 것이다.',
       choiceTexts: ['그 양조장에 연락했다', '아직 연락하지 않았다'],
+      askOneOf: null,
+    };
+  }
+  const choiceLabel = input.choiceLabel ?? '';
+  const askedCandidateName = input.previousQuestions.some((question) => questionVerificationStage(question) === 'candidate_name');
+  const noCandidateYet = /아직 떠오르는 양조장|떠오르는 양조장이 없다/.test(choiceLabel);
+  if (askedCandidateName && noCandidateYet) {
+    return {
+      priorStages,
+      answerHasNamedTarget,
+      answerHasContactResult,
+      nextPurpose: 'candidate_criteria',
+      factToAsk: CANDIDATE_CRITERIA_RULE,
+      verificationText: CANDIDATE_CRITERIA_VERIFICATION,
+      reasonText: CANDIDATE_CRITERIA_REASON,
+      choiceTexts: [...CANDIDATE_CRITERIA_CHOICES],
+      askOneOf: '체험이 가능한 양조장을 찾는 기준, 또는 지금 접근 가능한 후보군',
     };
   }
   const askedNamedTarget = input.previousQuestions.some((question) => questionVerificationStage(question) === 'named_target_and_path');
@@ -765,6 +792,7 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
       verificationText: CANDIDATE_NAME_VERIFICATION,
       reasonText: CANDIDATE_NAME_REASON,
       choiceTexts: ['떠오르는 양조장 이름이 있다', '아직 떠오르는 양조장이 없다'],
+      askOneOf: null,
     };
   }
   return {
@@ -776,11 +804,13 @@ export function nextFactToAsk(input: { supplement: string; previousQuestions: st
     verificationText: NAMED_TARGET_VERIFICATION,
     reasonText: NAMED_TARGET_REASON,
     choiceTexts: ['이름과 연락 경로를 적을 수 있다', '아직 정한 양조장이 없다'],
+    askOneOf: null,
   };
 }
 
 /** Purpose text for a verification field. A plan label or a past-contact label stays on that stage. */
 export function purposeStage(text: string): QuestionVerificationStage {
+  if (/기준|선별|후보군/.test(text) && /양조장|체험|접근|후보/.test(text)) return 'candidate_criteria';
   if (/파트너십 구축|구축 계획|실행 계획/.test(text)) return 'plan';
   if (/떠오르는 양조장/.test(text) && /이름/.test(text)) return 'candidate_name';
   if (/접촉 여부|만났는지|미팅했는지|연락했는지/.test(text) && !/접촉 전|선정|연락 경로|담당/.test(text)) {
@@ -981,7 +1011,8 @@ function productReanalysisSchema(): Record<string, unknown> {
       },
       evidenceToChange: {
         ...list,
-        description: '답이 판단과 실행 가능성에 주는 영향을 적는다. 답 문장만 두지 않는다. 유지해도 잠재적 의미를 적는다.',
+        description:
+          '판단을 바꾸게 되는 확인 항목만 적는다. 기준에 맞는 양조장, 접근 가능한 후보군, 실제 접촉, 협력 조건처럼 아직 없는 근거다. judgment와 같은 문장이면 실패다.',
       },
       founderFacts: { ...list, description: '확인된 접촉, 계약, 입금, 예약만. 없으면 빈 배열.' },
       inferences: {
@@ -992,7 +1023,7 @@ function productReanalysisSchema(): Record<string, unknown> {
       judgment: {
         type: 'string',
         description:
-          '세 문장만. 자체 판단이자 긍정적 가설, 접촉과 조건은 확인되지 않음, 그래서 현재 판단 유지. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다.',
+          '이번 선택이 기존 판단에 준 영향과 유지하거나 바꾼 이유. priorJudgmentText와 같으면 안 된다. 후보가 없다는 답을 협력 불가능으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다.',
       },
       nextVerification: {
         type: 'string',
@@ -1000,7 +1031,8 @@ function productReanalysisSchema(): Record<string, unknown> {
       },
       nextQuestion: {
         type: 'string',
-        description: 'verificationStage.factToAsk와 같은 한 질문. 방법, 구축, 계획, 어떻게를 붙이지 않는다.',
+        description:
+          'nextPurpose가 candidate_criteria가 아니면 verificationStage.factToAsk와 같은 한 질문. candidate_criteria이면 factToAsk를 복사하지 않고, 기준이나 접근 가능한 후보군 중 하나만 묻는 새 질문이다.',
       },
       nextQuestionReason: {
         type: 'string',
@@ -1020,10 +1052,11 @@ function productReanalysisSystemPrompt(): string {
     '가능성이 높다처럼 확인 절차가 없는 답은 Founder의 주장 또는 기대이자 자체 판단이다. 구체적 증거가 없으면 검증된 사실이 아니다. inferences는 이번 답만 해석한다. 답 유형, 증거가 있는지, 확인된 사실, 미확인 사항을 적는다. 시장 관심이나 수요를 확인된 사실로 올리지 않는다. 경험이나 실행 결과를 만들지 않는다.',
     '확인되지 않은 협력 가능성, 추정, 기대, 계획은 founderFacts에 넣지 않는다. founderFacts는 접촉, 계약, 입금, 예약처럼 확인된 사실만 담는다. 근거가 없으면 빈 배열이다.',
     'assumptions의 첫 문장은 이번 답을 검증되지 않은 전제라고 적는다. 그 전제가 사업 실행에 주는 긍정적 가설도 적는다. 이전 가정 문장만 반복하면 실패다. 입력에 없는 수치는 만들지 않는다.',
-    'evidenceToChange에는 이 답이 판단에 어떤 영향을 주는지, 파트너십 실행 가능성에 대한 긍정적 가설인지, 판단을 바꾸기에는 무엇이 부족한지를 적는다. 답 문장만 다시 적으면 실패다. 판단을 유지해도 사업성 평가의 잠재적 의미를 적는다.',
-    'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 그 문자열에 유지와 이유를 넣는다. 문장은 셋만 쓴다. 이번 답은 Founder의 자체 판단이자 실행 가능성에 대한 긍정적 가설이다. 접촉, 상대 의사, 협력 조건의 구체적 증거는 확인되지 않았다. 그래서 현재 사업성 판단은 유지하고 이유를 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. 가설을 현재의 긍정적 영향으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다. 이전 분석의 시장 설명 문장을 judgment에 다시 쓰지 않는다. priorJudgmentText와 같은 문장이면 실패다.',
+    'evidenceToChange에는 이 답이 판단에 어떤 영향을 주는지, 파트너십 실행 가능성에 대한 긍정적 가설인지, 판단을 바꾸기에는 무엇이 부족한지를 적는다. 답 문장만 다시 적으면 실패다. 판단을 유지해도 사업성 평가의 잠재적 의미를 적는다. evidenceToChange는 judgment와 같은 문장을 두지 않는다. 판단을 바꾸게 되는 확인 항목을 적는다. 기준에 맞는 양조장, 접근 가능한 후보군, 실제 접촉, 협력 조건처럼 아직 없는 근거를 적는다.',
+    'judgment는 사업 설명문이 아니다. 문자열이다. 객체로 나누면 실패다. 그 문자열에 유지와 이유를 넣는다. 문장은 셋만 쓴다. 이번 답은 Founder의 자체 판단이자 실행 가능성에 대한 긍정적 가설이다. 접촉, 상대 의사, 협력 조건의 구체적 증거는 확인되지 않았다. 그래서 현재 사업성 판단은 유지하고 이유를 적는다. 근거가 부족하면 기존 판단을 유지하고 이유를 적는다. 가설을 현재의 긍정적 영향으로 쓰지 않는다. 긍정적 영향을 미칠 것으로 보인다고 쓰지 않는다. 이전 분석의 시장 설명 문장을 judgment에 다시 쓰지 않는다. priorJudgmentText와 같은 문장이면 실패다. 후보가 아직 없다는 선택은 협력이 불가능하다는 증거가 아니다. judgment는 이번 선택이 기존 판단에 준 영향과, 유지하거나 바꾼 이유를 적는다.',
     'risks에는 이번 답이 드러낸 미확인을 새 문장으로 더한다. 실제 접촉, 상대의 의사, 협력 조건처럼 아직 없는 항목을 적는다. 작성 규칙 문장과 이전 위험만 반복하면 실패다.',
-    'nextQuestion은 verificationStage.factToAsk와 같은 한 질문이다. 다른 문장을 붙이지 않는다. 이번 답에 연락하거나 미팅한 결과와 양조장 이름이 없으면 한 곳을 정했는지, 그 이름, 담당자 또는 연락 경로를 사실로 묻는다. 방법, 구축, 계획, 어떻게, 어떤 방식, 방안, 구체화, 다음 단계를 붙이면 실패다. 협력 가능성이 높은지를 다시 묻지 않는다. priorQuestionTexts와 같거나 표현만 바꾼 계획 질문이면 실패다.',
+    'nextPurpose가 candidate_criteria가 아니면 nextQuestion은 verificationStage.factToAsk와 같은 한 질문이다. 다른 문장을 붙이지 않는다. 이번 답에 연락하거나 미팅한 결과와 양조장 이름이 없고 nextPurpose가 named_target_and_path이면 한 곳을 정했는지, 그 이름, 담당자 또는 연락 경로를 사실로 묻는다. 방법, 구축, 계획, 어떻게, 어떤 방식, 방안, 구체화, 다음 단계를 붙이면 실패다. 협력 가능성이 높은지를 다시 묻지 않는다. priorQuestionTexts와 같거나 표현만 바꾼 계획 질문이면 실패다.',
+    'verificationStage.nextPurpose가 candidate_criteria이면 이 문단을 따른다. founderChoice는 떠오르는 양조장 이름이 아직 없다는 선택이다. 협력이 불가능하다는 증거가 아니다. founderFacts에 넣지 않는다. 이름이 있는지 다시 묻지 않는다. 한 곳을 정했는지 다시 묻지 않는다. factToAsk 문장을 출력하지 않는다. askOneOf 가운데 가장 중요한 하나만 묻고 물음표로 끝낸다. 예시 문장을 그대로 복사하지 않는다. nextVerification은 verificationText와 같다. nextQuestionReason은 reasonText와 같다. choices의 앞 두 문장은 choiceTexts와 같다. risks에는 후보를 찾을 기준 또는 접근 가능한 후보군이 아직 없다는 문장을 더한다.',
     'nextVerification은 verificationStage.verificationText와 같은 한 문장이다. 구축 계획으로 바꾸지 않는다.',
     'nextQuestionReason은 verificationStage.reasonText와 같은 한 문장이다. 실제 접촉 여부를 확인한다고 바꾸지 않는다.',
     'founderChoice는 다음에 검증할 우선순위다. 양조장을 정했거나 연락했다는 사실이 아니다. founderFacts에 넣지 않는다. choices의 앞 두 문장은 verificationStage.choiceTexts와 같다. priorChoices와 같은 문장을 앞에 두지 않는다.',
