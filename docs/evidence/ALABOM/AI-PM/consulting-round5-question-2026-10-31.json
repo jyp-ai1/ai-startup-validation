@@ -1,0 +1,45 @@
+{
+  "status": "question_stored",
+  "integratedCall": "NOT RUN",
+  "repairCall": "NOT RUN",
+  "rounds1to4": "unchanged",
+  "production": "locked",
+  "storedAt": "2026-10-31T13:06:27.809Z",
+  "reviewId": "e3d42c90-5358-40a0-91e3-52cf439551a5",
+  "parentReviewId": "cbf201a2-0ed5-41b8-b225-ff022e5b253a",
+  "callCount": 0,
+  "version": 67,
+  "question": "체험형 양조장 후보를 실제로 발굴하기 위해 어느 지역과 경로부터 검토할 계획인가요?",
+  "questionId": "round5-q1",
+  "choices": [
+    {
+      "id": "c1",
+      "label": "우선 공략할 지역이 정해져 있고, 해당 지역 양조장 목록을 조사할 수 있다."
+    },
+    {
+      "id": "c2",
+      "label": "지역은 정하지 않았지만, 전통주 관련 협회·기관·플랫폼을 통해 후보를 찾을 수 있다."
+    },
+    {
+      "id": "c3",
+      "label": "관광지나 지역 관광사업자와 연계해 체험 가능한 양조장을 찾을 계획이다."
+    },
+    {
+      "id": "c4",
+      "label": "후보를 찾을 경로나 정보원이 아직 없다."
+    },
+    {
+      "id": "c5",
+      "label": "다른 발굴 방법이 있다."
+    }
+  ],
+  "answerHint": "가능하다면 우선 검토할 지역, 후보를 찾을 정보원 또는 실제 후보 양조장 이름을 적어주세요. 실제 후보가 없다면 없다고 답해도 됩니다.",
+  "answer": null,
+  "simulation": null,
+  "preservation": {
+    "reviewCountBefore": 67,
+    "reviewCountAfter": 68,
+    "feedbackCount": 32,
+    "priorFinishedAtChanged": []
+  }
+}
