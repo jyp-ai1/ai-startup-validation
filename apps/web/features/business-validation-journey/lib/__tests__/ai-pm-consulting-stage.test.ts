@@ -1761,6 +1761,210 @@ describe('consulting stage batch', () => {
     expect(failed.record.rawContent).toContain('아직 분석되지 않았다');
   });
 
+  it('stores the quality-fix-4 reassessment that kept the judgment without the four labels', async () => {
+    const first = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-real-gpt-continuity.json', import.meta.url), 'utf8'),
+    ) as { rounds: Array<{ raw: string }> };
+    const follow = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-quality-fix-4.json', import.meta.url), 'utf8'),
+    ) as { rounds: Array<{ raw: string; rowError: string; executionId: string }> };
+    expect(follow.rounds[0]?.executionId).toBe('chatcmpl-EfIFfQCEMCFaqtK3Av6GpcAW6qS9U');
+    expect(follow.rounds[0]?.rowError).toBe('stage_reassessment_missing');
+    const store = openAiPmReviewStore(storePath());
+    const chat = async (request: ChatRequest) => {
+      const payload = requestPayload(request);
+      return reply(payload && Array.isArray(payload.stagePairs) ? follow.rounds[0]?.raw ?? '' : first.rounds[0]?.raw ?? '');
+    };
+    const parent = await runFirstReview({
+      store,
+      userId: 'user-quality-fix-4',
+      projectId: 'project-quality-fix-4',
+      text: '다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.',
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    const questions = consultingQuestions(parent.record.sections);
+    const judged = await submitConsultingStage({
+      store,
+      userId: 'user-quality-fix-4',
+      projectId: 'project-quality-fix-4',
+      reviewId: parent.record.reviewId,
+      now: NOW,
+      answers: questions.map((question, index) => ({
+        questionId: question.questionId,
+        comment: index === 0 ? '양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.' : '추가 사실은 없다.',
+      })),
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(judged.ok).toBe(true);
+    if (!judged.ok) return;
+    expect(judged.record.callCount).toBe(1);
+    expect(judged.record.error ?? '').not.toContain('stage_reassessment_missing');
+    expect(judged.record.sections).not.toBeNull();
+    expect(judged.record.stageReading?.updatedJudgment).toContain('확인되지 않았다');
+    expect(judged.record.stageReading?.impactOnPreviousJudgment).toContain('유지');
+    expect(judged.record.stageReading?.judgmentReason.length).toBeGreaterThan(0);
+    expect(judged.record.stageReading?.answerInterpretation[0]?.meaning).toContain('확인된 사실이 아니다');
+    expect(judged.record.stageReading?.unresolvedIssues).toContain('양조장 후보가 없다.');
+    expect(judged.record.sections?.nextQuestion).toContain('후보');
+    expect(judged.record.rawContent).toContain('유지, 양조장 협력 가능성이 높다는 주장은 확인되지 않았다');
+  });
+
+  it('accepts a kept or changed reassessment and rejects a response that does not reassess', async () => {
+    const prior = '가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.';
+    const nextQuestion = '첫 유료 참가자는 있는가?';
+    const cases: Array<{ id: string; patch: Record<string, unknown>; error: string | null }> = [
+      {
+        id: 'case-change',
+        patch: {
+          updatedJudgment: '고객을 직장인으로 좁혀도 가격은 없고 지불 확인이 없어 이전보다 낮게 본다.',
+          impactOnPreviousJudgment: '이번 답은 고객 범위를 줄였고 가격 공백은 그대로라 이전 판단을 낮춘다.',
+          judgmentReason: '확인된 지불이 없어 낙관을 낮춘다.',
+          unresolvedIssues: ['첫 유료 참가자가 없다'],
+          resolvedIssues: [],
+        },
+        error: null,
+      },
+      {
+        id: 'case-keep',
+        patch: {
+          updatedJudgment: '가격 공백은 그대로라 기존 판단을 유지한다.',
+          impactOnPreviousJudgment: '이번 답은 새 증거를 더하지 않아 이전 판단의 결론을 바꾸지 않는다.',
+          judgmentReason: '지불 확인이 여전히 없어 같은 결론을 유지한다.',
+          unresolvedIssues: ['지불 의사가 있는 참가자가 없다'],
+          resolvedIssues: [],
+        },
+        error: null,
+      },
+      {
+        id: 'case-claim',
+        patch: {
+          updatedJudgment: '가격이 곧 정해질 것이라는 말은 근거가 없어 성공 가능성을 올리지 않는다.',
+          impactOnPreviousJudgment: '긍정적 주장은 확인된 사실이 아니라 이전 판단을 바꾸지 않는다.',
+          judgmentReason: '별도 증거가 없어 그 주장을 근거로 쓰지 않는다.',
+          verifiedFacts: [],
+          unverifiedClaims: ['가격이 곧 정해질 것이라는 주장이 있다'],
+          unresolvedIssues: ['실제 가격 제안이 없다'],
+          resolvedIssues: [],
+        },
+        error: null,
+      },
+      {
+        id: 'case-resolved',
+        patch: {
+          updatedJudgment: '장소 공백은 닫혔고 지불은 그대로 미확인이라 그 부분만 남긴다.',
+          impactOnPreviousJudgment: '이번 답은 장소 위험을 닫고 지불 위험은 그대로 둔다.',
+          judgmentReason: '장소는 확인됐고 지불 증거는 늘지 않았다.',
+          resolvedIssues: ['장소가 없다는 위험은 이번 답으로 닫혔다'],
+          unresolvedIssues: ['첫 모임의 지불은 아직 없다'],
+        },
+        error: null,
+      },
+      {
+        id: 'case-new-risk',
+        patch: {
+          updatedJudgment: '가격 공백에 더해 장소 대관이 거절될 수 있어 위험은 늘었다.',
+          impactOnPreviousJudgment: '이번 답은 기존 판단을 유지한 채 장소 대관 거절을 새 위험으로 더한다.',
+          judgmentReason: '새 위험은 확인된 대관이 없기 때문이다.',
+          unresolvedIssues: ['장소 대관이 거절될 수 있다'],
+          resolvedIssues: [],
+          risks: ['장소 대관이 거절될 수 있다'],
+        },
+        error: null,
+      },
+      {
+        id: 'case-no-reassessment',
+        patch: {
+          impactOnPreviousJudgment: '기존 문장을 한 줄로만 반복한다.',
+          updatedJudgment: '기존 문장을 한 줄로만 반복한다.',
+          judgmentReason: '기존 문장을 한 줄로만 반복한다.',
+          unresolvedIssues: ['아직 확인하지 않은 지불이 있다'],
+          resolvedIssues: [],
+        },
+        error: 'stage_reassessment_missing',
+      },
+      {
+        id: 'case-pasted-prior',
+        patch: {
+          impactOnPreviousJudgment: prior,
+          updatedJudgment: '가격 공백은 남았으나 문장을 새로 적는다.',
+          judgmentReason: '지불 증거가 없어 결론을 유지한다.',
+          unresolvedIssues: ['지불 의사 확인이 아직 없다'],
+          resolvedIssues: [],
+        },
+        error: 'stage_reassessment_missing',
+      },
+    ];
+    const store = openAiPmReviewStore(storePath());
+    const chat = async (request: ChatRequest) => {
+      const payload = requestPayload(request);
+      if (!payload || !Array.isArray(payload.stagePairs)) return reply(stageRaw(prior, FIRST_QUESTIONS));
+      const supplement = JSON.stringify(payload.stagePairs);
+      const matched = cases.find((item) => supplement.includes(item.id));
+      const parsed = JSON.parse(contractReply(request, '지불은 그대로 미확인이다.', [nextQuestion])) as Record<string, unknown>;
+      if (matched) Object.assign(parsed, matched.patch);
+      return reply(JSON.stringify(parsed));
+    };
+    for (const item of cases) {
+      const userId = `user-${item.id}`;
+      const parent = await runFirstReview({
+        store,
+        userId,
+        projectId: `project-${item.id}`,
+        text: `${IDEA} ${item.id}`,
+        origin: 'typed',
+        fileName: null,
+        now: NOW,
+        chat,
+        evidence: 'injected_http',
+      });
+      const judged = await submitConsultingStage({
+        store,
+        userId,
+        projectId: `project-${item.id}`,
+        reviewId: parent.record.reviewId,
+        now: NOW,
+        answers: [
+          { questionId: 'q1', comment: item.id },
+          { questionId: 'q2', comment: '가격은 정하지 않았다' },
+          { questionId: 'q3', comment: '온라인 게시로 알린다' },
+        ],
+        chat,
+        evidence: 'injected_http',
+      });
+      expect(judged.ok).toBe(true);
+      if (!judged.ok) return;
+      expect(judged.record.callCount).toBe(1);
+      if (item.error) {
+        expect(judged.record.error).toContain(item.error);
+        expect(judged.record.sections).toBeNull();
+      } else {
+        expect(judged.record.error ?? null).toBeNull();
+        expect(judged.record.sections).not.toBeNull();
+        expect(judged.record.error ?? '').not.toContain('stage_reassessment_missing');
+      }
+    }
+    const kept = (await store.listReviews('user-case-keep', 'project-case-keep')).at(-1);
+    expect(kept?.stageReading?.updatedJudgment).toBe('가격 공백은 그대로라 기존 판단을 유지한다.');
+    expect(kept?.stageReading?.updatedJudgment).not.toContain('이번 답');
+    const changed = (await store.listReviews('user-case-change', 'project-case-change')).at(-1);
+    expect(changed?.stageReading?.updatedJudgment).toContain('이전보다 낮게 본다');
+    const claim = (await store.listReviews('user-case-claim', 'project-case-claim')).at(-1);
+    expect(claim?.stageReading?.verifiedFacts).toEqual([]);
+    expect(claim?.stageReading?.unverifiedClaims).toContain('가격이 곧 정해질 것이라는 주장이 있다');
+    expect(claim?.error ?? '').not.toContain('stage_claim_promoted');
+    expect(claim?.error ?? '').not.toContain('stage_claim_as_positive');
+    const resolved = (await store.listReviews('user-case-resolved', 'project-case-resolved')).at(-1);
+    expect(resolved?.stageReading?.resolvedIssues).toContain('장소가 없다는 위험은 이번 답으로 닫혔다');
+    const added = (await store.listReviews('user-case-new-risk', 'project-case-new-risk')).at(-1);
+    expect(added?.stageReading?.unresolvedIssues).toContain('장소 대관이 거절될 수 있다');
+    expect(added?.sections?.risks).toContain('장소 대관이 거절될 수 있다');
+  });
+
   it('renders one answer field per question and does not reuse one shared choice list', () => {
     const inputText = composeReviewInput({ text: IDEA, purpose: 'overall' });
     const raw = JSON.parse(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS)) as {
