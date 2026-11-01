@@ -1362,6 +1362,53 @@ describe('consulting stage batch', () => {
     expect(failed.record.sections).toBeNull();
   });
 
+  it('marks the reordered cooperation question from the live quality-fix raw as repeated', async () => {
+    const first = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-real-gpt-continuity.json', import.meta.url), 'utf8'),
+    ) as { rounds: Array<{ raw: string }> };
+    const follow = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-quality-fix-1.json', import.meta.url), 'utf8'),
+    ) as { rounds: Array<{ raw: string; rowError: string }> };
+    expect(follow.rounds[0]?.rowError).toBe('stage_fields_missing');
+    const store = openAiPmReviewStore(storePath());
+    const calls: ChatRequest[] = [];
+    const chat = async (request: ChatRequest) => {
+      calls.push(request);
+      const payload = requestPayload(request);
+      return reply(payload && Array.isArray(payload.stagePairs) ? follow.rounds[0]?.raw ?? '' : first.rounds[0]?.raw ?? '');
+    };
+    const base = {
+      store,
+      userId: 'user-quality-fix-raw',
+      projectId: 'project-quality-fix-raw',
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const parent = await runFirstReview({
+      ...base,
+      text: '다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.',
+      origin: 'typed',
+      fileName: null,
+    });
+    const questions = consultingQuestions(parent.record.sections);
+    const failed = await submitConsultingStage({
+      ...base,
+      reviewId: parent.record.reviewId,
+      answers: questions.map((question, index) => ({
+        questionId: question.questionId,
+        comment: index === 0 ? '양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.' : '추가 사실은 없다.',
+      })),
+    });
+    expect(failed.ok).toBe(true);
+    if (!failed.ok) return;
+    expect(calls).toHaveLength(2);
+    expect(failed.record.callCount).toBe(1);
+    expect(failed.record.error).toContain('stage_fields_missing');
+    expect(failed.record.error).toContain('stage_questions_repeated');
+    expect(failed.record.rawContent).toContain('구축할 계획인가');
+  });
+
   it('renders one answer field per question and does not reuse one shared choice list', () => {
     const inputText = composeReviewInput({ text: IDEA, purpose: 'overall' });
     const raw = JSON.parse(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS)) as {
