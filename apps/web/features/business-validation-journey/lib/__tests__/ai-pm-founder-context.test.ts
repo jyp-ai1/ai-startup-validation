@@ -6,8 +6,15 @@ import type { ChatRequest, ChatResponse } from '@repo/ai';
 import { expect, it } from 'vitest';
 
 import { COMPARE_BUSINESS_BODY } from '../ai-pm-quality-compare';
-import { runFirstReview, runStageReanalysis, saveReviewFeedback, submitConsultingStage } from '../ai-pm-review';
-import { openAiPmReviewStore } from '../ai-pm-review-store';
+import {
+  buildProductReanalysisRequest,
+  runFirstReview,
+  runStageReanalysis,
+  saveReviewFeedback,
+  submitConsultingStage,
+  type StagePriorReading,
+} from '../ai-pm-review';
+import { openAiPmReviewStore, type ReviewSections, type StagePair } from '../ai-pm-review-store';
 
 const IDEA = COMPARE_BUSINESS_BODY;
 const OTHER = '도시 농장 키트 사업. 양조장 체험과 무관하다.';
@@ -140,6 +147,124 @@ function stageRaw(input: {
     nextQuestionChoices: nextQuestions.map((item) => item.choices),
   });
 }
+
+function sections(judgment: string): ReviewSections {
+  return {
+    customer: '전통주를 좋아하는 관광객',
+    problem: '체험을 제공할 양조장 연결이 확인되지 않았다',
+    market: '시장 크기는 입력에 없다',
+    revenueModel: '수익 구조는 가설이며 원문에 없다',
+    execution: '운영은 아직 구상이다',
+    risks: ['공급 계약이 없다'],
+    uncertain: ['공급 양조장과 체험 상품의 연결은 확인되지 않았다'],
+    hypotheses: ['공급 양조장과 체험 상품의 연결은 확인되지 않았다'],
+    judgment,
+    nextQuestion: '양조장 협력에 대해 지금 무엇을 가정하나요?',
+    nextQuestionReason: '연결이 없으면 체험 상품을 실행할 수 없다',
+    answerHint: '선택하거나 직접 적습니다.',
+    claimConfirmation: null,
+    analysis: {
+      summary: judgment,
+      value: '양조장 체험을 안내한다',
+      operatingModel: '구상',
+      payer: '지불자는 확인되지 않았다',
+      competition: '경쟁은 확인되지 않았다',
+      operations: '운영은 아직 구상이다',
+      profitability: '수익성은 확인되지 않았다',
+      strengths: ['체험 구상이 있다'],
+      assumptions: ['공급 연결은 확인되지 않았다'],
+      evidenceToChange: ['양조장 접촉'],
+      founderFacts: [],
+      inferences: ['체험 수요는 가설이다'],
+      judgmentDetail: judgment,
+      choices: [
+        { id: 'c1', label: '협력을 가정으로 남긴다' },
+        { id: 'c2', label: '아직 가정하지 않는다' },
+      ],
+      product: '양조장 체험 안내',
+      supply: '공급 양조장은 아직 없다',
+      marketing: '온라인 마케팅 지원은 구상이다',
+    },
+  };
+}
+
+it('keeps the business core when older analysis briefs exceed the token budget', () => {
+  const keptJudgment = '확정 판단: 협력 가능성은 주장이고 공급 계약은 없다';
+  const keptResolved = '해결 근거: 체험 선호는 계획으로 접수했다';
+  const keptUnresolved = '미해결 위험: 실제 협의와 공급 계약은 아직 없다';
+  const keptAnswer = '구체적인 양조장 후보는 아직 선정하지 않았다';
+  const pair: StagePair = {
+    questionId: 'q1',
+    question: '체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?',
+    offeredChoices: [],
+    choiceId: null,
+    choiceLabel: null,
+    supplement: keptAnswer,
+    status: 'answered',
+  };
+  const reading: StagePriorReading = {
+    reviewId: 'core-review',
+    judgment: keptJudgment,
+    judgmentReason: '확인된 협력이 없어 그 판단을 유지한다',
+    impactOnPreviousJudgment: '최초 방향은 유지되고 공급은 아직 비어 있다',
+    resolvedIssues: [keptResolved],
+    unresolvedIssues: [keptUnresolved],
+    customer: '전통주를 좋아하는 관광객',
+    problem: '양조장 연결이 확인되지 않았다',
+    revenueModel: '수익 구조는 가설이며 원문에 없다',
+    product: '양조장 체험 안내',
+    supply: '공급 양조장은 아직 없다',
+    marketing: '온라인 마케팅 지원은 구상이다',
+    nextQuestion: '다음에 직접 확인할 행동은 무엇인가요?',
+  };
+  const filler = Array.from({ length: 8 }, (_, index) => ({
+    reviewId: `drop-${index}`,
+    judgment: `DROP_OLD_${index} ${'과거 세부 문장 '.repeat(4000)}`,
+    nextQuestion: `DROP_OLD_Q_${index}`,
+    assumptions: [`DROP_OLD_ASSUMPTION_${index}`],
+    risks: [`DROP_OLD_RISK_${index}`],
+  }));
+  const request = buildProductReanalysisRequest({
+    originalInput: IDEA,
+    firstAnalysis: sections(keptJudgment),
+    priorTurns: [],
+    priorAnalyses: filler,
+    previousQuestions: [pair.question],
+    latestAnalysis: sections(keptJudgment),
+    founderChoice: null,
+    founderSupplement: '',
+    founderFeedback: null,
+    stagePairs: [pair],
+    priorStagePairs: [pair],
+    answerLinks: [
+      {
+        sourceReviewId: 'core-review',
+        questionId: 'q1',
+        question: pair.question,
+        choiceId: null,
+        choiceLabel: null,
+        supplement: keptAnswer,
+        submittedAt: '2026-11-01T01:10:00.000Z',
+        status: 'answered',
+      },
+    ],
+    priorReadings: [reading],
+  });
+  const payload = userPayload(request);
+  const serialized = JSON.stringify(payload);
+  expect(payload.originalInput).toBe(IDEA);
+  expect(serialized).toContain(keptJudgment);
+  expect(serialized).toContain(keptResolved);
+  expect(serialized).toContain(keptUnresolved);
+  expect(serialized).toContain(keptAnswer);
+  expect(serialized).toContain('수익 구조는 가설이며 원문에 없다');
+  expect(serialized).not.toContain('DROP_OLD_0');
+  expect(serialized).not.toContain('DROP_OLD_RISK_7');
+  expect(payload.priorAnalyses).toEqual([]);
+  expect(payload.priorReadings).toHaveLength(1);
+  expect(payload.answerLinks).toHaveLength(1);
+  expect(payload.priorStagePairs).toHaveLength(1);
+});
 
 it('keeps one brewery business in every follow-up payload', async () => {
   const store = openAiPmReviewStore(storePath());
