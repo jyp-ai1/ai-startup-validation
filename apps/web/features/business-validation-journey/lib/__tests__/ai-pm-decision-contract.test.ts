@@ -32,6 +32,15 @@ describe('decision contract', () => {
     expect(contract).toContain('currentAnswer: input.currentAnswer');
   });
 
+  it('fails an empty change list when the answer has business content', () => {
+    const ledger = validLedger();
+    ledger.changes = [];
+    const verdict = evaluateDecisionContract(contextOf(ANSWER), ledger);
+    expect(verdict.failures).toContain('answer_not_recorded');
+    expect(verdict.groundingPass).toBe(false);
+    expect(verdict.selectionAllowed).toBe(false);
+  });
+
   it('rejects a request that drops the answer', () => {
     expect(requestCarriesAnswer({ model: 'gpt-4o', messages: [{ role: 'user', content: JSON.stringify({ priorJudgment: PRIOR_JUDGMENT }) }] }, ANSWER)).toBe(false);
   });

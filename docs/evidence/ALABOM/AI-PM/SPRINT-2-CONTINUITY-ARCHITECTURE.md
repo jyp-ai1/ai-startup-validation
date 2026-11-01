@@ -1,6 +1,8 @@
 # Sprint 2 — 상담 연속성 구조
 
-2026-11-01 23:29 KST 설계다. 코드는 바꾸지 않았다. 프롬프트 문장은 바꾸지 않았다. GPT 호출은 0회다. PR #227의 실패 실행과 추적 자료는 수정하지 않았다. Production은 잠겨 있다. Sprint 2 PASS는 선언하지 않는다. Sprint 3은 시작하지 않는다.
+2026-11-01 23:29 KST 설계다. 그 시점의 코드 변경과 프롬프트 변경과 GPT 호출은 0이었다. PR #227의 실패 실행과 추적 자료는 수정하지 않았다. Production은 잠겨 있다. Sprint 2 PASS는 선언하지 않는다. Sprint 3은 시작하지 않는다.
+
+2026-11-01 23:49 KST 같은 구조에 CPO 보완을 반영했다. `epistemicStatus`와 `provenance`는 다른 축이다. 원문 구간은 `VERIFIED_FACT`가 아니다. 미연결 정보는 질문과 따로 쌓인다. 구현 증거는 `SPRINT-2-CONTINUITY-IMPLEMENTATION.md`다. GPT 실호출은 0회다.
 
 기준 실행은 PR #227, 기록 커밋 `8afa04b3`, 추적 커밋 `f3ee8e6d`다. 추적 원문은 `docs/evidence/ALABOM/AI-PM/SPRINT-2-END-TO-END-TRACE.md`와 `sprint-2-end-to-end-trace.json`이다. 이 문서는 그 실패를 고친 결과가 아니다. 현재 코드가 실제로 데이터를 어디로 보내는지, 그리고 하나의 사업 맥락으로 이어지려면 어느 연결이 필요한지를 적는다.
 
@@ -96,15 +98,16 @@
 | --- | --- |
 | `statementId` | 코드가 발급 |
 | `text` | GPT 또는 창업자 원문 |
-| `status` | GPT가 제안. 코드는 구간 검사로 `VERIFIED_FACT`와 `SIMULATION` 승격만 거절 |
-| `sourceKind` | `founder_input`, `founder_answer`, `unlinked_statement`, `model_output` |
+| `epistemicStatus` | `VERIFIED_FACT`, `FOUNDER_CLAIM`, `ASSUMPTION`, `UNKNOWN`. 코드가 별도 증거 없이 `VERIFIED_FACT`를 내림 |
+| `provenance` | `FOUNDER_INPUT`, `SIMULATION`, `EXTERNAL_EVIDENCE`, `AI_INFERENCE`. `SIMULATION` 접두 본문은 `SIMULATION`으로 고정 |
 | `sourceId` | `reviewId` 또는 `feedbackId` |
-| `span` | 출처 원문의 `start`, `end`, `text`. 모델이 적고 코드가 원문과 비교 |
+| `span` | 출처 원문에 그 문장이 있는지. 구간이 맞아도 사실 검증은 아님 |
+| `evidenceId` | `VERIFIED_FACT`를 유지하는 외부 근거. 없으면 사실은 아님 |
 | `createdAt` | 저장 시각 |
 
-상태 값은 `VERIFIED_FACT`, `FOUNDER_CLAIM`, `ASSUMPTION`, `UNKNOWN`, `SIMULATION`이다. 정의는 `SPRINT-2-DECISION-CONTRACT.md`에 있다.
+정의는 `SPRINT-2-DECISION-CONTRACT.md`에 있다. `SIMULATION`은 사실 상태 목록에 없다.
 
-1차 응답의 문제, 고객, 경쟁, 수요, 협력, 가격, 수익은 이 레코드 없이는 다음 요청의 근거 칸으로 들어가지 않는다. 입력 원문에 구간이 없으면 `VERIFIED_FACT`가 될 수 없다. 모델이 그 문장을 가정으로 적으면 `ASSUMPTION`으로 다음 요청에 남고, 판단의 확인 근거로는 쓸 수 없다.
+1차 응답의 문제, 고객, 경쟁, 수요, 협력, 가격, 수익은 별도 `evidenceId` 없이 `VERIFIED_FACT`가 되지 않는다. 입력에 구간이 없는 문장도 `VERIFIED_FACT`가 아니다. 구간이 있는 창업자 문장 “양조장과 계약했다”도 그 말만으로는 `FOUNDER_CLAIM`이다.
 
 ## 6. 질문과 답
 
@@ -115,17 +118,24 @@
 | `questionId` | 피드백. 단계의 질문과 같을 때만 그 질문의 답 |
 | `reviewId` | 질문을 만든 부모 리뷰 |
 | 제공 선택지 | 부모 `analysis.questions[].choices`. 답 행이 라벨을 다시 쓰지 않음 |
-| `choiceId` | 창업자가 고른 id. 비어 있으면 null. `c1`으로 채우지 않음 |
-| 선택 라벨 | 그 id의 라벨과 같아야 함. 다르면 저장 거절 |
+| `choiceId` | 창업자가 고른 id. 비어 있거나 제공 선택지에 없으면 ChoiceAnswer를 만들지 않음. `c1`으로 채우지 않음 |
+| 선택 라벨 | id가 있을 때만 choiceAnswer에 남음. id 없는 라벨은 본문으로만 남음 |
 | 직접 입력 | `otherText` 또는 comment. `other`가 아닐 때도 보충으로 남김 |
-| 출처 | `founder` 또는 `simulation`. 값이 없으면 `founder`로 추정하지 않고 `unspecified` |
+| `provenance` | `FOUNDER_INPUT`, `SIMULATION`, `EXTERNAL_EVIDENCE`, `AI_INFERENCE`. 본문이 `SIMULATION`으로 시작하면 `SIMULATION` |
+| `epistemicStatus` | 기본 `FOUNDER_CLAIM`. `VERIFIED_FACT`는 `EXTERNAL_EVIDENCE`와 `evidenceId`가 있을 때만 |
 | 저장 시각 | `submittedAt` |
-| 상태 | `answered` 또는 `open` |
-| SIMULATION | 출처가 `simulation`이거나 본문이 `SIMULATION`으로 시작 |
+| 질문 상태 | `answered` 또는 `open`. 미연결 문장은 이 상태를 바꾸지 않음 |
 
-질문 밖의 새 사업 정보는 `questionId` 없이 `unlinked`로 저장한다. 어떤 질문의 `status`도 `answered`로 바뀌지 않는다. 그 저장은 GPT 0회다. 미완료 단계는 계속 GPT 0회다. 다음에 허용되는 재분석 요청의 `unlinkedStatements`에 원문, `feedbackId`, 시각, 출처가 들어간다. 그 배열을 `stagePairs`의 답으로 옮기지 않는다.
+질문 밖의 새 사업 정보는 다음을 지킨다.
 
-#227의 문장 “상품은 구상, 공급 계약과 가격은 없다”는 협력 질문의 선택지가 아니다. 목표 구조에서는 `q1`이 `open`으로 남고, 그 문장은 `unlinkedStatements`의 `SIMULATION`이다. 재분석은 단계가 끝나거나, 이미 있는 `allowPartial`처럼 창업자가 중간 분석을 명시할 때만 1회 호출된다. 그 호출은 열린 `q1`과 별도 문장을 둘 다 본다.
+- `questionId`가 없거나 그 단계의 질문이 아니면 어떤 질문에도 붙이지 않는다.
+- 질문은 `open`으로 남는다.
+- 원문, `provenance`, `epistemicStatus`를 보존한다.
+- 다음 통합 재분석의 `unlinkedStatements`로 `stagePairs`와 따로 전달한다.
+- 같은 원문을 다시 보내도 행을 추가하지 않고, 변화로 다시 세지 않는다.
+- 미연결 정보만으로 미완료 단계를 완료로 두지 않는다. 저장의 GPT 호출은 0회다.
+
+#227의 문장 “상품은 구상, 공급 계약과 가격은 없다”는 질문 id가 없었다. 그 경우 `q1`은 `open`이고 문장은 `unlinkedStatements`다. 연습 접두가 있으면 `provenance`는 `SIMULATION`이고 `epistemicStatus`는 `FOUNDER_CLAIM`이다. 창업자가 같은 문장을 질문 id와 함께 보내면 그 질문의 답으로 남고, 사실로 올라가지 않는다. 재분석은 단계가 끝나거나, 이미 있는 `allowPartial`처럼 창업자가 중간 분석을 명시할 때만 1회 호출된다.
 
 ## 7. 후속 요청이 보존할 18항목
 
@@ -137,7 +147,7 @@
 | 2 | 최초 전체 분석 | `firstAnalysis` 일부 | 문장마다 상태와 구간. 상태 없는 추정은 `ASSUMPTION` |
 | 3 | 현재 사업 모델 | `latestAnalysis` | 판단 문장과 사업 모델 문장을 분리 |
 | 4 | 고객과 문제 | 분석 필드 | 입력 구간이 없으면 `ASSUMPTION` 또는 `UNKNOWN` |
-| 5 | 제품과 가치 | 단계 요청은 비어 있으면 `not_analyzed` 문장 | 이번 답의 구상은 `FOUNDER_CLAIM` 또는 `SIMULATION` |
+| 5 | 제품과 가치 | 단계 요청은 비어 있으면 `not_analyzed` 문장 | 구상은 `FOUNDER_CLAIM`. 연습 입력이면 `provenance`는 `SIMULATION` |
 | 6 | 시장과 경쟁 | 1차 문장이 그대로 들어갈 수 있음 | 입력에 없는 경쟁 유형은 `ASSUMPTION` |
 | 7 | 수익과 지불 | 1차 가설 문장 | 가격 미정은 `UNKNOWN`. 참가비 가설을 확정 수익으로 올리지 않음 |
 | 8 | 공급과 파트너 | 1차 협력 문장 | 계약 없음은 이번 답의 구간. 협력 가능성은 `UNKNOWN` |
@@ -149,7 +159,7 @@
 | 14 | 미해결 문제 | `doNotCopy.priorUnresolvedIssues`와 새 `unresolvedIssues` | 미답 질문은 `UNKNOWN`으로 남김 |
 | 15 | 이전 질문과 답 | `priorStagePairs`, `answerLinks` | id, 선택, 시각, 출처 |
 | 16 | 이번 질문과 답 | `stagePairs` | 이번 단계의 id만. 질문 밖 정보는 여기 넣지 않음 |
-| 17 | 출처와 검증 상태 | `answerSource`가 접두 검사 | 명시적 `founder` `simulation` `unspecified`. 접두만으로 `founder`가 되지 않음 |
+| 17 | 출처와 검증 상태 | `answerRecords`의 `provenance`와 `epistemicStatus`. 접두 `answerSource`는 유지 | `SIMULATION` 접두는 `provenance` `SIMULATION`. 구간은 `VERIFIED_FACT`가 아님 |
 | 18 | 다음 검증 목표 | 모델이 `selectedCandidateId`로 고름 | 코드는 후보를 바꾸지 않음. 앞의 세 검사가 실패하면 그 질문을 창업자에게 보여 주지 않음 |
 
 예산으로 `priorAnalyses`가 빠져도 1, 15, 16, 17과 현재 판단 이력의 최신 행은 남긴다. 빠진 리뷰 id는 `omittedPriorReviewIds`로 요청에 적는다.
@@ -158,7 +168,7 @@
 
 | 실패 | 이 구조에서의 위치 |
 | --- | --- |
-| 입력에 없는 수요·경쟁·지불자 | 1차 문장에 구간이 없으므로 `VERIFIED_FACT` 불가. 다음 요청의 근거 칸으로 승격하지 않음 |
+| 입력에 없는 수요·경쟁·지불자 | 구간이 없고 별도 증거도 없으므로 `VERIFIED_FACT` 불가 |
 | 추정이 다음 판단의 근거가 됨 | `priorJudgment` 한 줄 전달을 그만두고, 상태 있는 판단 이력으로 전달 |
 | 질문과 답의 연결 불완전 | `q1`과 `feedbackId` 없이 `currentAnswer`만 보내던 조립을 제품 경로의 `stagePairs`로 대체 |
 | 질문 밖 정보를 구분하지 못함 | 그 문장은 `unlinkedStatements`. `q1`은 `open` |
@@ -166,6 +176,6 @@
 | 유지와 유보의 이유가 없음 | `RETAIN`과 `DEFER`는 근거 id와 이유가 있을 때만 통과 |
 | 다음 질문이 반복될 수 있음 | 선택 호출이 없어 아직 관찰되지 않음. 통과 조건은 닫힌 목적과 다른 `verificationPurpose` |
 
-## 9. 이번 문서가 하지 않은 일
+## 9. 범위
 
-제품 코드, 프롬프트, DB 스키마, Founder 세션, Production, 실패 증거 파일을 바꾸지 않았다. 구현 순서와 파일 범위는 `SPRINT-2-IMPLEMENTATION-PLAN.md`에 있다.
+23:29 KST 문서는 코드를 바꾸지 않았다. 23:49 KST 보완 이후의 1차 구현은 제품 경로의 저장·요청 조립·검사다. 프롬프트 문장, DB SQL, Founder 세션, Production, #227 실패 증거는 그대로다. 파일 범위는 `SPRINT-2-IMPLEMENTATION-PLAN.md`다. 실행 결과는 `SPRINT-2-CONTINUITY-IMPLEMENTATION.md`다.

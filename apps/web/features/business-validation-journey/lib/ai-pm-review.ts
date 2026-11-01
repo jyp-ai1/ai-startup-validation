@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 
 import { googleChat, OpenAIProviderAdapter, type ChatRequest, type ChatResponse } from '@repo/ai';
 
+import { collapseDuplicateStatements, settleSavedStatement, type EpistemicStatus, type StatementProvenance } from './ai-pm-decision-contract';
 import { feedbackFromMarks, normalizeMarks, UNCONFIRMED_CLAIM } from './ai-pm-review-marks';
 import type {
   Accuracy,
@@ -2148,6 +2149,39 @@ function stageLatestForRequest(sections: ReviewSections): Record<string, unknown
   return { ...latest, analysis };
 }
 
+export type ContinuityStatement = {
+  feedbackId: string;
+  questionId: string | null;
+  choiceId: string | null;
+  text: string;
+  submittedAt: string;
+  provenance: StatementProvenance;
+  epistemicStatus: EpistemicStatus;
+  evidenceId: string | null;
+};
+
+export function continuityStatements(rows: StoredFeedback[]): { unlinked: ContinuityStatement[]; linked: ContinuityStatement[] } {
+  const unlinked: ContinuityStatement[] = [];
+  const linked: ContinuityStatement[] = [];
+  for (const row of rows) {
+    const text = row.comment.trim();
+    if (!text || !row.provenance || !row.epistemicStatus) continue;
+    const record: ContinuityStatement = {
+      feedbackId: row.feedbackId,
+      questionId: row.unlinked ? null : (row.questionId ?? null),
+      choiceId: row.unlinked ? null : (row.choiceAnswer?.choiceId ?? null),
+      text,
+      submittedAt: row.submittedAt,
+      provenance: row.provenance,
+      epistemicStatus: row.epistemicStatus,
+      evidenceId: row.evidenceId ?? null,
+    };
+    if (row.unlinked || !row.questionId) unlinked.push(record);
+    else linked.push(record);
+  }
+  return { unlinked: collapseDuplicateStatements(unlinked), linked };
+}
+
 export function buildProductReanalysisRequest(input: {
   originalInput: string;
   firstAnalysis: ReviewSections;
@@ -2173,6 +2207,10 @@ export function buildProductReanalysisRequest(input: {
   answerLinks?: StageAnswerLink[];
   /** Analyses already stored on this business chain, oldest first. */
   priorReadings?: StagePriorReading[];
+  /** Business text that did not answer a question. Kept out of stagePairs. */
+  unlinkedStatements?: ContinuityStatement[];
+  /** Provenance of answers that are linked to a question. */
+  answerRecords?: ContinuityStatement[];
 }): ChatRequest {
   const previousQuestions = input.previousQuestions ?? [input.latestAnalysis.nextQuestion];
   const stagePairs = input.stagePairs ?? [];
@@ -2267,6 +2305,8 @@ export function buildProductReanalysisRequest(input: {
             },
             stagePairs: stagePairs.map(stagePairPayload),
             priorStagePairs: (input.priorStagePairs ?? []).map(stagePairPayload),
+            ...(input.unlinkedStatements && input.unlinkedStatements.length > 0 ? { unlinkedStatements: input.unlinkedStatements } : {}),
+            ...(input.answerRecords && input.answerRecords.length > 0 ? { answerRecords: input.answerRecords } : {}),
             stagePartial: input.stagePartial === true,
             answerReading: [...(input.priorStagePairs ?? []), ...stagePairs].map((pair) => ({
               questionId: pair.questionId,
@@ -2614,12 +2654,43 @@ function readQuestionId(source: Record<string, unknown>): string | null {
   return questionId || null;
 }
 
+function statementRecord(source: Record<string, unknown>, text: string): Pick<StoredFeedback, 'provenance' | 'epistemicStatus' | 'evidenceId'> | Record<string, never> {
+  if (source.unlinked !== true && source.provenance === undefined && source.epistemicStatus === undefined && source.evidenceId === undefined) return {};
+  const settled = settleSavedStatement({
+    text,
+    provenance: source.provenance,
+    epistemicStatus: source.epistemicStatus,
+    evidenceId: typeof source.evidenceId === 'string' ? source.evidenceId : null,
+  });
+  return settled;
+}
+
 export function parseFeedbackBody(body: unknown): { ok: true; value: Omit<StoredFeedback, 'feedbackId' | 'userId' | 'submittedAt' | 'modelCalls'> } | { ok: false; error: 'feedback_incomplete' } {
   if (!body || typeof body !== 'object') return { ok: false, error: 'feedback_incomplete' };
   const source = body as Record<string, unknown>;
   const reviewId = typeof source.reviewId === 'string' ? source.reviewId.trim() : '';
   const questionId = readQuestionId(source);
   const linked = questionId ? { questionId } : {};
+  const commentText = typeof source.comment === 'string' ? source.comment.trim().slice(0, 4000) : '';
+  if (reviewId && source.unlinked === true) {
+    if (!commentText) return { ok: false, error: 'feedback_incomplete' };
+    return {
+      ok: true,
+      value: {
+        reviewId,
+        agreement: 'need_info',
+        accuracy: 'hard_to_compare',
+        revisionAreas: ['other'],
+        comment: commentText,
+        nextAction: 'verify_hypotheses',
+        marks: [],
+        choiceAnswer: null,
+        questionId: null,
+        unlinked: true,
+        ...statementRecord(source, commentText),
+      },
+    };
+  }
   const choiceAnswer = readChoiceAnswer(source);
   if (reviewId && choiceAnswer) {
     return {
@@ -2634,6 +2705,7 @@ export function parseFeedbackBody(body: unknown): { ok: true; value: Omit<Stored
         marks: [],
         choiceAnswer,
         ...linked,
+        ...statementRecord(source, choiceAnswer.otherText || choiceAnswer.label),
       },
     };
   }
@@ -2662,6 +2734,7 @@ export function parseFeedbackBody(body: unknown): { ok: true; value: Omit<Stored
         marks: [],
         choiceAnswer: null,
         questionId,
+        ...statementRecord(source, comment),
       },
     };
   }
@@ -2926,11 +2999,24 @@ export function acceptedStageQuestions(sections: ReviewSections | null | undefin
   return ids.size === questions.length && texts.size === questions.length && [...texts].every((text) => text.length > 0);
 }
 
-function stageSupplementKey(pairs: StagePair[]): string {
-  return pairs
+/** Same clock values stay in save order. A missing choice must not replace a later real choice by tie. */
+function nextFeedbackInstant(requested: string, stored: string[]): string {
+  const floor = stored.reduce((max, item) => (item > max ? item : max), '');
+  if (!floor || requested > floor) return requested;
+  const parsed = Date.parse(floor);
+  if (Number.isNaN(parsed)) return requested;
+  return new Date(parsed + 1).toISOString();
+}
+
+function stageSupplementKey(pairs: StagePair[], unlinkedTexts: string[] = []): string {
+  const answered = pairs
     .filter((pair) => pair.status === 'answered')
     .map((pair) => `${pair.questionId}\n${pair.question}\n${pair.choiceId ?? ''}\n${pair.choiceLabel ?? ''}\n${pair.supplement}`)
     .join('\n---\n');
+  const extra = collapseDuplicateStatements(unlinkedTexts.map((text) => ({ text })))
+    .map((item) => item.text)
+    .join('\n---\n');
+  return extra ? `${answered}\n---unlinked---\n${extra}` : answered;
 }
 
 function answerSource(pair: { choiceLabel: string | null; supplement: string }): 'simulation' | 'founder' {
@@ -3525,13 +3611,20 @@ export async function runStageReanalysis(input: {
   const answered = pairs.filter((pair) => pair.status === 'answered');
   if (answered.length === 0) return { ok: false, error: 'feedback_required' };
   if (!stageComplete(pairs) && !input.allowPartial) return { ok: false, error: 'stage_incomplete' };
-  const supplementKey = stageSupplementKey(pairs);
-  const supplementSha = sha256(supplementKey);
   const sourceFeedbackId =
     [...feedback].reverse().find((item) => item.questionId && answered.some((pair) => pair.questionId === item.questionId))?.feedbackId ??
     null;
   const stagePartial = !stageComplete(pairs);
   const records = await input.store.listReviews(input.userId, input.projectId);
+  const chain = reviewChain(records, parent);
+  const feedbackByReview = new Map<string, StoredFeedback[]>([[parent.reviewId, feedback]]);
+  for (const record of chain) {
+    const sourceId = record.parentReviewId;
+    if (!sourceId || feedbackByReview.has(sourceId)) continue;
+    feedbackByReview.set(sourceId, await input.store.listFeedback(input.userId, sourceId));
+  }
+  const continuity = continuityStatements([...feedbackByReview.values()].flat());
+  const supplementSha = sha256(stageSupplementKey(pairs, continuity.unlinked.map((item) => item.text)));
   const prior = records
     .filter(
       (record) =>
@@ -3551,7 +3644,6 @@ export async function runStageReanalysis(input: {
   }
   if (!input.chat) return { ok: false, error: input.notRunReason === 'gpt_api_key_missing' ? 'gpt_api_key_missing' : 'engine_unconfigured' };
   const latest = await input.store.latestForInput(input.userId, parent.inputSha, input.projectId);
-  const chain = reviewChain(records, parent);
   const root = chain[0] ?? parent;
   const priorStagePairs = chain.flatMap((record) => record.stageAnswers ?? []);
   const stageRecords = chain.filter((record) => (record.stageAnswers?.length ?? 0) > 0);
@@ -3581,12 +3673,6 @@ export async function runStageReanalysis(input: {
     }),
   );
   const previousQuestions = [...priorStagePairs, ...pairs].map((pair) => pair.question);
-  const feedbackByReview = new Map<string, StoredFeedback[]>([[parent.reviewId, feedback]]);
-  for (const record of chain) {
-    const sourceId = record.parentReviewId;
-    if (!sourceId || feedbackByReview.has(sourceId)) continue;
-    feedbackByReview.set(sourceId, await input.store.listFeedback(input.userId, sourceId));
-  }
   const linkFor = (pair: StagePair, sourceReviewId: string): StageAnswerLink => {
     const item = [...(feedbackByReview.get(sourceReviewId) ?? [])].reverse().find((row) => row.questionId === pair.questionId);
     return {
@@ -3642,6 +3728,8 @@ export async function runStageReanalysis(input: {
     stagePartial,
     answerLinks,
     priorReadings,
+    unlinkedStatements: continuity.unlinked,
+    answerRecords: continuity.linked,
   });
   const finished = await finishCall({
     store: input.store,
@@ -3679,11 +3767,15 @@ export async function runStageReanalysis(input: {
 }
 
 export type StageAnswerInput = {
-  questionId: string;
+  questionId?: string;
   choiceId?: string;
   choiceLabel?: string;
   otherText?: string;
   comment?: string;
+  unlinked?: boolean;
+  provenance?: StatementProvenance;
+  epistemicStatus?: EpistemicStatus;
+  evidenceId?: string;
 };
 
 /**
@@ -3718,29 +3810,56 @@ export async function submitConsultingStage(input: {
   const known = new Set(questions.map((question) => question.questionId));
   let existing = await input.store.listFeedback(input.userId, parent.reviewId);
   for (const answer of input.answers ?? []) {
-    const questionId = answer.questionId.trim();
-    if (!known.has(questionId)) continue;
+    const questionId = (answer.questionId ?? '').trim();
     const comment = (answer.comment ?? '').trim();
     const choiceLabel = (answer.choiceLabel ?? '').trim();
     const otherText = (answer.otherText ?? '').trim();
     if (!comment && !choiceLabel && !otherText) continue;
     const supplement = [otherText, comment].filter((part, index, list) => part.length > 0 && list.indexOf(part) === index).join('\n');
+    const bodyText = supplement || choiceLabel;
+    const savedAt = nextFeedbackInstant(input.now, existing.map((item) => item.submittedAt));
+    const unlinked = answer.unlinked === true || !known.has(questionId);
+    if (unlinked) {
+      const duplicate = [...existing].reverse().find((item) => item.unlinked === true && compact(item.comment) === compact(bodyText));
+      if (duplicate) continue;
+      const saved = await saveReviewFeedback({
+        store: input.store,
+        userId: input.userId,
+        projectId: input.projectId,
+        now: savedAt,
+        body: {
+          reviewId: parent.reviewId,
+          unlinked: true,
+          comment: bodyText,
+          provenance: answer.provenance,
+          epistemicStatus: answer.epistemicStatus,
+          evidenceId: answer.evidenceId,
+        },
+      });
+      if (!saved.ok) return saved;
+      existing = await input.store.listFeedback(input.userId, parent.reviewId);
+      continue;
+    }
+    const offered = questions.find((question) => question.questionId === questionId)?.choices ?? [];
+    const requestedId = (answer.choiceId ?? '').trim();
+    const choiceId = offered.length > 0 ? (offered.some((choice) => choice.id === requestedId) ? requestedId : '') : requestedId;
     const latest = [...existing].reverse().find((item) => item.questionId === questionId);
-    const sameChoice = (latest?.choiceAnswer?.label ?? '') === choiceLabel && (latest?.choiceAnswer?.otherText ?? '') === (choiceLabel ? supplement : '');
-    const sameComment = (latest?.comment ?? '') === (supplement || choiceLabel);
+    const sameChoice = (latest?.choiceAnswer?.label ?? '') === (choiceId ? choiceLabel : '') && (latest?.choiceAnswer?.otherText ?? '') === (choiceId && choiceLabel ? supplement : '');
+    const sameComment = (latest?.comment ?? '') === bodyText;
     if (latest && sameChoice && sameComment) continue;
     const saved = await saveReviewFeedback({
       store: input.store,
       userId: input.userId,
       projectId: input.projectId,
-      now: input.now,
+      now: savedAt,
       body: {
         reviewId: parent.reviewId,
         questionId,
-        comment: supplement || choiceLabel,
-        ...(choiceLabel
-          ? { choiceId: (answer.choiceId ?? '').trim() || 'c1', choiceLabel, otherText: supplement }
-          : {}),
+        comment: bodyText,
+        provenance: answer.provenance ?? (bodyText.startsWith('SIMULATION') ? 'SIMULATION' : 'FOUNDER_INPUT'),
+        epistemicStatus: answer.epistemicStatus ?? 'FOUNDER_CLAIM',
+        evidenceId: answer.evidenceId,
+        ...(choiceLabel && choiceId ? { choiceId, choiceLabel, otherText: supplement } : {}),
       },
     });
     if (!saved.ok) return saved;
