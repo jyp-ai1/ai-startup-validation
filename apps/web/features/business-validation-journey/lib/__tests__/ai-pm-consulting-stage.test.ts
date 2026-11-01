@@ -1890,6 +1890,145 @@ describe('consulting stage batch', () => {
     expect(judged.record.rawContent).toContain('유지, 양조장 협력 가능성이 높다는 주장은 확인되지 않았다');
   });
 
+  it('replays the quality-fix-6 raw and keeps the not-analyzed sentence punctuation', async () => {
+    const first = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-real-gpt-continuity.json', import.meta.url), 'utf8'),
+    ) as { rounds: Array<{ raw: string }> };
+    const follow = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-quality-fix-6.json', import.meta.url), 'utf8'),
+    ) as { rounds: Array<{ raw: string; rowError: string; executionId: string }> };
+    expect(follow.rounds[0]?.executionId).toBe('chatcmpl-EfIliKvGG2fydxXw2ZlhTjjSlcrGH');
+    expect(follow.rounds[0]?.rowError).toBe('stage_content_insufficient');
+    expect(follow.rounds[0]?.raw).toContain('아직 분석되지 않았다.');
+    const store = openAiPmReviewStore(storePath());
+    const chat = async (request: ChatRequest) => {
+      const payload = requestPayload(request);
+      return reply(payload && Array.isArray(payload.stagePairs) ? follow.rounds[0]?.raw ?? '' : first.rounds[0]?.raw ?? '');
+    };
+    const parent = await runFirstReview({
+      store,
+      userId: 'user-quality-fix-6',
+      projectId: 'project-quality-fix-6',
+      text: '다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.',
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    const questions = consultingQuestions(parent.record.sections);
+    const judged = await submitConsultingStage({
+      store,
+      userId: 'user-quality-fix-6',
+      projectId: 'project-quality-fix-6',
+      reviewId: parent.record.reviewId,
+      now: NOW,
+      answers: questions.map((question, index) => ({
+        questionId: question.questionId,
+        comment: index === 0 ? '양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.' : '추가 사실은 없다.',
+      })),
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(judged.ok).toBe(true);
+    if (!judged.ok) return;
+    expect(judged.record.callCount).toBe(1);
+    expect(judged.record.error ?? null).toBeNull();
+    const reread = await store.readReview('user-quality-fix-6', judged.record.reviewId);
+    expect(reread?.error ?? null).toBeNull();
+    expect(reread?.sections?.analysis?.supply).toBe('아직 분석되지 않았다.');
+    expect(reread?.sections?.analysis?.marketing).toBe('아직 분석되지 않았다.');
+    expect(reread?.rawContent).toContain('"supply": "아직 분석되지 않았다."');
+    expect(reread?.rawContent).toContain('"supplyState": "not_analyzed"');
+    expect(reread?.rawContent).toContain('"marketing": "아직 분석되지 않았다."');
+    expect(reread?.rawContent).toContain('"marketingState": "not_analyzed"');
+    expect(reread?.stageReading?.updatedJudgment).toBe(
+      '사업 모델의 잠재력은 남을 수 있으나, 양조장과의 협력 관계가 불확실하다. 추가 검증이 필요하다.',
+    );
+    expect(reread?.sections?.nextQuestion).toBe('양조장과의 접촉이 있었는가?');
+    expect(reread?.stageReading?.verifiedFacts).toEqual([]);
+    expect(reread?.stageReading?.unverifiedClaims?.[0]).toContain('양조장 협력 가능성이 높다고 판단한다');
+  });
+
+  it('accepts trailing punctuation only for not_analyzed and keeps the model sentence', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const chat = async (request: ChatRequest) => {
+      const payload = requestPayload(request);
+      if (!payload || !Array.isArray(payload.stagePairs)) {
+        return reply(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS));
+      }
+      const parsed = JSON.parse(
+        contractReply(request, '지불은 그대로 미확인이다. 이유는 새 증거가 없기 때문이다.', ['첫 유료 참가자는 있는가?']),
+      ) as Record<string, unknown>;
+      const supplement = JSON.stringify(payload.stagePairs);
+      if (supplement.includes('마침표 미분석')) {
+        parsed.supply = '  아직 분석되지 않았다.  ';
+        parsed.supplyState = 'not_analyzed';
+        parsed.marketing = '아직 분석되지 않았다。';
+        parsed.marketingState = 'not_analyzed';
+        return reply(JSON.stringify(parsed));
+      }
+      parsed.supply = '아직 확인되지 않았다.';
+      parsed.supplyState = 'unconfirmed';
+      return reply(JSON.stringify(parsed));
+    };
+    const base = {
+      store,
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const keptParent = await runFirstReview({
+      ...base,
+      userId: 'user-not-analyzed-period',
+      projectId: 'project-not-analyzed-period',
+      text: `${IDEA} 마침표 미분석.`,
+      origin: 'typed',
+      fileName: null,
+    });
+    const kept = await submitConsultingStage({
+      ...base,
+      userId: 'user-not-analyzed-period',
+      projectId: 'project-not-analyzed-period',
+      reviewId: keptParent.record.reviewId,
+      answers: [
+        { questionId: 'q1', comment: '마침표 미분석' },
+        { questionId: 'q2', comment: '가격은 정하지 않았다' },
+        { questionId: 'q3', comment: '온라인 게시로 알린다' },
+      ],
+    });
+    expect(kept.ok).toBe(true);
+    if (!kept.ok) return;
+    expect(kept.record.error ?? null).toBeNull();
+    const reread = await store.readReview('user-not-analyzed-period', kept.record.reviewId);
+    expect(reread?.sections?.analysis?.supply).toBe('아직 분석되지 않았다.');
+    expect(reread?.sections?.analysis?.marketing).toBe('아직 분석되지 않았다。');
+    expect(reread?.rawContent).toContain('"supplyState":"not_analyzed"');
+    const otherParent = await runFirstReview({
+      ...base,
+      userId: 'user-unconfirmed-period',
+      projectId: 'project-unconfirmed-period',
+      text: `${IDEA} 마침표 미확인.`,
+      origin: 'typed',
+      fileName: null,
+    });
+    const other = await submitConsultingStage({
+      ...base,
+      userId: 'user-unconfirmed-period',
+      projectId: 'project-unconfirmed-period',
+      reviewId: otherParent.record.reviewId,
+      answers: [
+        { questionId: 'q1', comment: '마침표 미확인' },
+        { questionId: 'q2', comment: '가격은 정하지 않았다' },
+        { questionId: 'q3', comment: '온라인 게시로 알린다' },
+      ],
+    });
+    expect(other.ok).toBe(true);
+    if (!other.ok) return;
+    expect(other.record.error).toContain('stage_content_insufficient');
+    expect(other.record.sections).toBeNull();
+  });
+
   it('accepts a kept or changed reassessment and rejects a response that does not reassess', async () => {
     const prior = '가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.';
     const nextQuestion = '첫 유료 참가자는 있는가?';

@@ -1,0 +1,21 @@
+{
+  "kind": "replay_quality_fix_6_raw",
+  "provenance": "injected_replay",
+  "liveCallCount": 0,
+  "laterRounds": "NOT RUN",
+  "sourceExecutionId": "chatcmpl-EfIliKvGG2fydxXw2ZlhTjjSlcrGH",
+  "sourceRaw": "docs/evidence/ALABOM/AI-PM/sprint-2-quality-fix-6.json",
+  "sourceRowError": "stage_content_insufficient",
+  "sourcePreserved": true,
+  "replay": {
+    "callCount": 1,
+    "rowError": null,
+    "supply": "아직 분석되지 않았다.",
+    "supplyState": "not_analyzed",
+    "marketing": "아직 분석되지 않았다.",
+    "marketingState": "not_analyzed",
+    "updatedJudgment": "사업 모델의 잠재력은 남을 수 있으나, 양조장과의 협력 관계가 불확실하다. 추가 검증이 필요하다.",
+    "verifiedFacts": [],
+    "nextQuestion": "양조장과의 접촉이 있었는가?"
+  }
+}

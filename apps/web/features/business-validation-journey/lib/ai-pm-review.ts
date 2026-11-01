@@ -1560,8 +1560,13 @@ export function stageFieldForRequest(value: unknown): { state: 'confirmed' | 'un
   return { state: 'confirmed', text };
 }
 
+/** Comparison only. The stored sentence keeps the model's punctuation. */
+function notAnalyzedSentence(text: string): string {
+  return text.trim().replace(/[.。]+$/u, '').trim();
+}
+
 function stageFieldStateMatches(state: string, text: string): boolean {
-  if (state === 'not_analyzed') return text === STAGE_FIELD_NOT_ANALYZED;
+  if (state === 'not_analyzed') return notAnalyzedSentence(text) === STAGE_FIELD_NOT_ANALYZED;
   if (state === 'unconfirmed') return text === STAGE_FIELD_UNCONFIRMED;
   return state === 'confirmed' && text !== STAGE_FIELD_NOT_ANALYZED && text !== STAGE_FIELD_UNCONFIRMED;
 }
