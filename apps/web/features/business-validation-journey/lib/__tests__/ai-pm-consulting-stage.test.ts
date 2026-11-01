@@ -430,14 +430,16 @@ describe('consulting stage batch', () => {
         'competition',
         'executionNote',
         'risks',
+        'businessReconstruction',
+        'nextReviewObjective',
+        'nextVerification',
+        'nextQuestions',
+        'nextQuestionChoices',
         'impactOnPreviousJudgment',
         'keptBusinessPremise',
         'executionPossibility',
         'updatedJudgment',
         'judgmentReason',
-        'nextVerification',
-        'nextQuestions',
-        'nextQuestionChoices',
       ]);
     }
   });
@@ -1730,6 +1732,12 @@ describe('consulting stage batch', () => {
       { questionId: 'q1', source: 'simulation', index: 3, statement: '체험과 운영 조건은 합의되지 않았다.' },
     ]);
     expect(payload.closedQuestions).toEqual([{ questionId: 'q1', text: '양조장과의 접촉이 있었는가?', askAgain: false }]);
+    expect(Object.keys(payload)[0]).toBe('businessState');
+    const businessState = payload.businessState as { useForNextObjective: boolean; reviewedObjectives: string[]; unresolved: string[] };
+    expect(businessState.useForNextObjective).toBe(true);
+    expect(businessState.reviewedObjectives).toEqual(['양조장과의 접촉이 있었는가?']);
+    expect(JSON.stringify(businessState)).not.toContain(prior);
+    expect(businessState.unresolved).toEqual(['대상이 있는지 모른다']);
     expect(JSON.stringify(payload)).not.toContain('상대의 회신이 있었는가');
     if (request.responseFormat?.type === 'json_schema') {
       const properties = request.responseFormat.schema.properties as {
