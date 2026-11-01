@@ -23,10 +23,11 @@ import {
   runFirstReview,
   runStageReanalysis,
   saveReviewFeedback,
+  stageFieldForRequest,
   submitConsultingStage,
   type AiPmReviewView,
 } from '../ai-pm-review';
-import { openAiPmReviewStore, type StoredFeedback } from '../ai-pm-review-store';
+import { openAiPmReviewStore, type ReviewSections, type StagePair, type StagePriorReading, type StoredFeedback } from '../ai-pm-review-store';
 
 const NOW = '2026-10-31T07:40:00.000Z';
 const IDEA = '도심 독서 모임. 참가자는 직장인이고 아직 운영 전이다. 가격은 정하지 않았다.';
@@ -90,7 +91,7 @@ function contractReply(request: ChatRequest, judgment: string, questions: string
     unverifiedClaims: [],
     assumptions: ['가격은 확인되지 않았다'],
     resolvedIssues: [],
-    unresolvedIssues: ['지불 의사는 확인되지 않았다'],
+    unresolvedIssues: [`${questions[0] ?? '다음 확인'}는 아직 확인되지 않았다`],
     nextVerification: '지불 의사를 확인한다.',
     customer: '직장인',
     problem: '모임 수요가 확인되지 않았다',
@@ -100,7 +101,9 @@ function contractReply(request: ChatRequest, judgment: string, questions: string
     revenueModel: '가격은 가설이며 원문에 없다',
     operations: '운영은 아직 구상이다',
     supply: '장소 공급은 입력에 없다',
+    supplyState: 'confirmed',
     marketing: '알림 방법은 아직 확인되지 않았다',
+    marketingState: 'confirmed',
     competition: '경쟁은 확인되지 않았다',
     executionNote: '실행은 아직 확인되지 않았다',
     risks: ['수요가 확인되지 않았다'],
@@ -398,7 +401,9 @@ describe('consulting stage batch', () => {
         'revenueModel',
         'operations',
         'supply',
+        'supplyState',
         'marketing',
+        'marketingState',
         'competition',
         'executionNote',
         'risks',
@@ -1407,6 +1412,208 @@ describe('consulting stage batch', () => {
     expect(failed.record.error).toContain('stage_fields_missing');
     expect(failed.record.error).toContain('stage_questions_repeated');
     expect(failed.record.rawContent).toContain('구축할 계획인가');
+  });
+
+  it('normalizes a stored blank supply at request time and does not rewrite the stored row', () => {
+    const stored: ReviewSections = {
+      customer: '관광객',
+      problem: '연결이 없다',
+      market: '시장은 입력에 없다',
+      revenueModel: '수익은 가설이다',
+      execution: '',
+      risks: ['수요'],
+      uncertain: ['협력이 원활할 것이다'],
+      hypotheses: ['협력이 원활할 것이다'],
+      judgment: '기회이나 리스크가 있다',
+      nextQuestion: '협력 관계를 어떻게 구축할 것인가?',
+      nextQuestionReason: '공급이 없다',
+      answerHint: '적습니다',
+      claimConfirmation: null,
+      analysis: {
+        summary: '요약',
+        value: '체험',
+        operatingModel: '구상',
+        payer: '미확인',
+        competition: '미확인',
+        operations: '구상',
+        profitability: '미확인',
+        strengths: [],
+        assumptions: ['협력이 원활할 것이다'],
+        evidenceToChange: [],
+        founderFacts: [],
+        inferences: [],
+        judgmentDetail: '기회이나 리스크가 있다',
+        choices: [],
+        product: '',
+        supply: '',
+        marketing: '   ',
+      },
+    };
+    const reading: StagePriorReading = {
+      reviewId: 'parent',
+      judgment: stored.judgment,
+      judgmentReason: '',
+      impactOnPreviousJudgment: '',
+      resolvedIssues: [],
+      unresolvedIssues: ['협력이 원활할 것이다'],
+      customer: stored.customer,
+      problem: stored.problem,
+      revenueModel: stored.revenueModel,
+      product: '',
+      supply: '',
+      marketing: '',
+      nextQuestion: stored.nextQuestion,
+    };
+    const pair: StagePair = {
+      questionId: 'q1',
+      question: stored.nextQuestion,
+      offeredChoices: [],
+      choiceId: null,
+      choiceLabel: null,
+      supplement: '가능성이 높다',
+      status: 'answered',
+    };
+    const request = buildProductReanalysisRequest({
+      originalInput: '양조장 체험',
+      firstAnalysis: stored,
+      priorTurns: [],
+      latestAnalysis: stored,
+      founderChoice: null,
+      founderSupplement: '',
+      founderFeedback: null,
+      stagePairs: [pair],
+      priorReadings: [reading],
+    });
+    expect(stored.analysis?.supply).toBe('');
+    expect(stored.analysis?.marketing).toBe('   ');
+    expect(reading.supply).toBe('');
+    const payload = userPayload(request);
+    const serialized = JSON.stringify(payload);
+    expect(serialized).not.toContain('"supply":""');
+    expect(serialized).not.toContain('"marketing":""');
+    expect((payload.firstAnalysis as { supply: { state: string; text: string } }).supply).toEqual({
+      state: 'not_analyzed',
+      text: '아직 분석되지 않았다',
+    });
+    const readings = payload.priorReadings as Array<{ supply: { state: string }; marketing: { state: string } }>;
+    expect(readings[0]?.supply).toEqual({ state: 'not_analyzed', text: '아직 분석되지 않았다' });
+    expect(readings[0]?.marketing.state).toBe('not_analyzed');
+    const latest = payload.latestAnalysis as { analysis: { supply: { state: string }; marketing: { state: string } } };
+    expect(latest.analysis.marketing.state).toBe('not_analyzed');
+    expect(stageFieldForRequest('공급 계약이 있다')).toEqual({ state: 'confirmed', text: '공급 계약이 있다' });
+    expect(stageFieldForRequest('아직 확인되지 않았다').state).toBe('unconfirmed');
+    if (request.responseFormat?.type === 'json_schema') {
+      const supply = request.responseFormat.schema.properties as {
+        supply: { pattern?: string };
+        supplyState: { enum: string[] };
+      };
+      expect(supply.supply.pattern).toBe('^.+$');
+      expect(supply.supplyState.enum).toEqual(['confirmed', 'unconfirmed', 'not_analyzed']);
+    }
+  });
+
+  it('separates a blank supply from a missing supply and rejects a state that does not match the text', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const calls: ChatRequest[] = [];
+    const chat = async (request: ChatRequest) => {
+      calls.push(request);
+      const payload = requestPayload(request);
+      if (!payload || !Array.isArray(payload.stagePairs)) {
+        return reply(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS));
+      }
+      const parsed = JSON.parse(
+        contractReply(request, '지불은 그대로 미확인이다. 이유는 새 증거가 없기 때문이다.', ['지불 의사를 누구에게 확인할 것인가?']),
+      ) as Record<string, unknown>;
+      const supplement = JSON.stringify(payload.stagePairs);
+      if (supplement.includes('공백 공급')) {
+        parsed.supply = '   ';
+        return reply(JSON.stringify(parsed));
+      }
+      if (supplement.includes('빠진 공급')) {
+        delete parsed.supply;
+        return reply(JSON.stringify(parsed));
+      }
+      if (supplement.includes('상태 불일치')) {
+        parsed.supply = '독점 공급 계약을 체결했다';
+        parsed.supplyState = 'not_analyzed';
+        return reply(JSON.stringify(parsed));
+      }
+      parsed.updatedJudgment = '가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.';
+      return reply(JSON.stringify(parsed));
+    };
+    const base = {
+      store,
+      userId: 'user-blank-field',
+      projectId: 'project-blank-field',
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const first = await runFirstReview({ ...base, text: `${IDEA} 공급 상태.`, origin: 'typed', fileName: null });
+    const answersFor = (comment: string) => [
+      { questionId: 'q1', comment },
+      { questionId: 'q2', comment: '가격은 정하지 않았다' },
+      { questionId: 'q3', comment: '온라인 게시로 알린다' },
+    ];
+    const blank = await submitConsultingStage({ ...base, reviewId: first.record.reviewId, answers: answersFor('공백 공급') });
+    expect(blank.ok).toBe(true);
+    if (!blank.ok) return;
+    expect(blank.record.callCount).toBe(1);
+    expect(blank.record.error).toContain('stage_field_blank');
+    expect(blank.record.error).not.toContain('stage_fields_missing');
+    expect(blank.record.rawContent).toContain('"supply":"   "');
+    const missingParent = await runFirstReview({
+      ...base,
+      userId: 'user-missing-field',
+      projectId: 'project-missing-field',
+      text: `${IDEA} 공급 누락.`,
+    });
+    const missing = await submitConsultingStage({
+      ...base,
+      userId: 'user-missing-field',
+      projectId: 'project-missing-field',
+      reviewId: missingParent.record.reviewId,
+      answers: answersFor('빠진 공급'),
+    });
+    expect(missing.ok).toBe(true);
+    if (!missing.ok) return;
+    expect(missing.record.error).toContain('stage_fields_missing');
+    expect(missing.record.error).not.toContain('stage_field_blank');
+    const mismatchParent = await runFirstReview({
+      ...base,
+      userId: 'user-mismatch-field',
+      projectId: 'project-mismatch-field',
+      text: `${IDEA} 상태 불일치.`,
+    });
+    const mismatch = await submitConsultingStage({
+      ...base,
+      userId: 'user-mismatch-field',
+      projectId: 'project-mismatch-field',
+      reviewId: mismatchParent.record.reviewId,
+      answers: answersFor('상태 불일치'),
+    });
+    expect(mismatch.ok).toBe(true);
+    if (!mismatch.ok) return;
+    expect(mismatch.record.error).toContain('stage_content_insufficient');
+    expect(mismatch.record.callCount).toBe(1);
+    const copiedParent = await runFirstReview({
+      ...base,
+      userId: 'user-copied-judgment',
+      projectId: 'project-copied-judgment',
+      text: `${IDEA} 판단 복사.`,
+    });
+    const copied = await submitConsultingStage({
+      ...base,
+      userId: 'user-copied-judgment',
+      projectId: 'project-copied-judgment',
+      reviewId: copiedParent.record.reviewId,
+      answers: answersFor('판단만 복사'),
+    });
+    expect(copied.ok).toBe(true);
+    if (!copied.ok) return;
+    expect(copied.record.error).toContain('stage_judgment_copied');
+    expect(copied.record.sections).toBeNull();
+    expect(calls.filter((request) => Array.isArray(requestPayload(request)?.stagePairs))).toHaveLength(4);
   });
 
   it('renders one answer field per question and does not reuse one shared choice list', () => {

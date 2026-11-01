@@ -1549,6 +1549,23 @@ function compactConsultingAnalysis(sections: ReviewSections): {
   };
 }
 
+const STAGE_FIELD_NOT_ANALYZED = '아직 분석되지 않았다';
+const STAGE_FIELD_UNCONFIRMED = '아직 확인되지 않았다';
+
+/** Request-only state. Stored rows keep their original string, including "". */
+export function stageFieldForRequest(value: unknown): { state: 'confirmed' | 'unconfirmed' | 'not_analyzed'; text: string } {
+  const text = typeof value === 'string' ? value.trim() : '';
+  if (!text || text === STAGE_FIELD_NOT_ANALYZED) return { state: 'not_analyzed', text: STAGE_FIELD_NOT_ANALYZED };
+  if (text === STAGE_FIELD_UNCONFIRMED) return { state: 'unconfirmed', text: STAGE_FIELD_UNCONFIRMED };
+  return { state: 'confirmed', text };
+}
+
+function stageFieldStateMatches(state: string, text: string): boolean {
+  if (state === 'not_analyzed') return text === STAGE_FIELD_NOT_ANALYZED;
+  if (state === 'unconfirmed') return text === STAGE_FIELD_UNCONFIRMED;
+  return state === 'confirmed' && text !== STAGE_FIELD_NOT_ANALYZED && text !== STAGE_FIELD_UNCONFIRMED;
+}
+
 /** Stage requests keep the first business fields that compact analysis drops. */
 function stageFirstAnalysis(sections: ReviewSections) {
   return {
@@ -1762,7 +1779,9 @@ function stageReanalysisSchema(): Record<string, unknown> {
       'revenueModel',
       'operations',
       'supply',
+      'supplyState',
       'marketing',
+      'marketingState',
       'competition',
       'executionNote',
       'risks',
@@ -1843,14 +1862,26 @@ function stageReanalysisSchema(): Record<string, unknown> {
       revenueModel: { ...text, description: '수익 구조. 입력에 없으면 가설이라고 적고 확정 수익으로 쓰지 않는다.' },
       operations: { ...text, description: '운영 방식. 점수가 아니다.' },
       supply: {
-        ...text,
+        type: 'string',
+        pattern: '^.+$',
         description:
-          '공급. 빈 문자열은 실패다. 입력과 답에 없으면 아직 확인되지 않았다라고 적는다. 부모의 빈 문자열을 복사하지 않는다. 확인되지 않은 계약을 만들지 않는다.',
+          '공급 문장. 빈 문자열은 실패다. supplyState가 not_analyzed이면 아직 분석되지 않았다. unconfirmed이면 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 입력에 없는 계약을 만들지 않는다.',
+      },
+      supplyState: {
+        type: 'string',
+        enum: ['confirmed', 'unconfirmed', 'not_analyzed'],
+        description: 'supply의 상태. confirmed는 확인된 내용, unconfirmed는 미확인, not_analyzed는 아직 분석되지 않은 내용이다.',
       },
       marketing: {
-        ...text,
+        type: 'string',
+        pattern: '^.+$',
         description:
-          '알리는 방법. 빈 문자열은 실패다. 입력과 답에 없으면 아직 확인되지 않았다라고 적는다. 부모의 빈 문자열을 복사하지 않는다. 확인되지 않은 성과를 만들지 않는다.',
+          '알리는 방법. 빈 문자열은 실패다. marketingState가 not_analyzed이면 아직 분석되지 않았다. unconfirmed이면 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 입력에 없는 성과를 만들지 않는다.',
+      },
+      marketingState: {
+        type: 'string',
+        enum: ['confirmed', 'unconfirmed', 'not_analyzed'],
+        description: 'marketing의 상태. confirmed는 확인된 내용, unconfirmed는 미확인, not_analyzed는 아직 분석되지 않은 내용이다.',
       },
       competition: { ...text, description: '경쟁. 입력과 답에 없으면 없다고 적는다.' },
       executionNote: {
@@ -1921,13 +1952,13 @@ function stageReanalysisSystemPrompt(): string {
     '이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
     '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 사업에 의미하는 바다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다.',
     '2. 확인된 사실, 주장, 가설을 가른다. Founder의 가능성 판단, 선호, 기대는 unverifiedClaims로 남긴다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 접촉, 협력 의사, 합의, 공급 조건이 없으면 그 기대를 사업 성과나 성공 가능성의 근거로 쓰지 않는다. 긍정적 사업 판단은 verifiedFacts의 별도 근거가 있을 때만 적는다. 근거가 없으면 그 문장은 창업자의 기대이고 파트너 확보와 실행은 검증되지 않았다고 적는다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다.',
-    '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 각 문장이 빈 문자열이면 실패다. 입력과 답에 없으면 아직 확인되지 않았다라고 적는다. 부모 Payload의 빈 문자열을 복사하지 않는다. 확인되지 않은 공급 계약, 마케팅 성과, 수익을 만들어 내지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다.',
+    '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. supply와 marketing은 supplyState, marketingState와 함께 적는다. state는 confirmed, unconfirmed, not_analyzed다. not_analyzed의 문장은 아직 분석되지 않았다. unconfirmed의 문장은 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 빈 문자열과 공백은 실패다. 부모의 빈 문자열은 요청에 없고 state는 not_analyzed다. 입력에도 없으면 unconfirmed로 둔다. 입력에 없는 공급 계약, 마케팅 성과, 수익을 만들어 내지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다.',
     '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 적는다. priorReadings의 priorJudgmentText에서 핵심 판단과 아직 유효한 위험을 남긴다. 이번 답이 그 위험을 해소하지 않으면 위험을 빼지 않는다. 유지인지 변경인지, Founder 답이 준 영향, 바꾼다면 그 근거를 적는다. 이전 문장 전체를 그대로 붙여 새 판단인 척하지 않는다. 코드는 결론을 정하지 않는다.',
     '5. 다음 검증 질문은 당신이 고른다. priorStagePairs, 이번 답, resolvedIssues, unresolvedIssues를 보고 지금 없는 사실의 다음 단계를 고른다. verificationPurpose에 그 불확실성을 적는다. 이미 한 질문, 선택, 보충, 해결된 문제를 다른 말로 다시 묻지 않는다. 구체적으로만 더한 문장은 같은 질문이다. 답이 기대나 선호뿐이면 후보가 있는지, 접촉했는지, 상대의 의사가 확인됐는지, 조건이 무엇인지를 묻는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. unresolvedIssues는 이전 목록을 그대로 복사하지 않고 이번 답으로 확인된 것과 아직 없는 것을 다시 적는다.',
     'JSON만 반환한다.',
-    '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
+    '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
     'answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
     'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. verificationPurpose는 질문 문장과 다른 불확실성이다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
@@ -1986,6 +2017,15 @@ function coveredStage(stage: ReturnType<typeof nextFactToAsk>, answeredText: str
   };
 }
 
+function stageLatestForRequest(sections: ReviewSections): Record<string, unknown> {
+  const latest = followUpPreviousAnalysis(sections);
+  if (!latest.analysis || typeof latest.analysis !== 'object') return latest;
+  const analysis = { ...(latest.analysis as Record<string, unknown>) };
+  analysis.supply = stageFieldForRequest(analysis.supply);
+  analysis.marketing = stageFieldForRequest(analysis.marketing);
+  return { ...latest, analysis };
+}
+
 export function buildProductReanalysisRequest(input: {
   originalInput: string;
   firstAnalysis: ReviewSections;
@@ -2020,11 +2060,19 @@ export function buildProductReanalysisRequest(input: {
   const anchors = stageBatch
     ? {
         originalInput: input.originalInput,
-        firstAnalysis: stageFirstAnalysis(input.firstAnalysis),
-        latestAnalysis: followUpPreviousAnalysis(latestForRequest),
+        firstAnalysis: {
+          ...stageFirstAnalysis(input.firstAnalysis),
+          supply: stageFieldForRequest(input.firstAnalysis.analysis?.supply),
+          marketing: stageFieldForRequest(input.firstAnalysis.analysis?.marketing),
+        },
+        latestAnalysis: stageLatestForRequest(latestForRequest),
         priorQuestionTexts: previousQuestions,
         answerLinks: input.answerLinks ?? [],
-        priorReadings: input.priorReadings ?? [],
+        priorReadings: (input.priorReadings ?? []).map((reading) => ({
+          ...reading,
+          supply: stageFieldForRequest(reading.supply),
+          marketing: stageFieldForRequest(reading.marketing),
+        })),
         doNotCopy: {
           priorJudgmentText: latestForRequest.analysis?.judgmentDetail || latestForRequest.judgment,
           priorQuestionText: latestForRequest.nextQuestion,
@@ -2826,34 +2874,64 @@ function choicesFromLabels(labels: string[]): BusinessAnalysis['choices'] {
   }));
 }
 
-function readStageBusinessProfile(parsed: Record<string, unknown>): StageBusinessProfile | null {
-  const keys = [
-    'customer',
-    'problem',
-    'value',
-    'product',
-    'market',
-    'revenueModel',
-    'operations',
-    'supply',
-    'marketing',
-    'competition',
-    'executionNote',
-  ] as const;
-  const profile = {} as Record<(typeof keys)[number], string>;
-  for (const key of keys) {
-    const value = textField(parsed[key]);
-    if (!value) return null;
-    profile[key] = value;
+const STAGE_PROFILE_KEYS = [
+  'customer',
+  'problem',
+  'value',
+  'product',
+  'market',
+  'revenueModel',
+  'operations',
+  'supply',
+  'marketing',
+  'competition',
+  'executionNote',
+] as const;
+
+function classifyStageText(value: unknown): { kind: 'missing' } | { kind: 'blank' } | { kind: 'text'; text: string } {
+  if (typeof value !== 'string') return { kind: 'missing' };
+  const text = value.trim();
+  if (!text) return { kind: 'blank' };
+  return { kind: 'text', text };
+}
+
+function readStageBusinessProfile(parsed: Record<string, unknown>): {
+  profile: StageBusinessProfile | null;
+  missingKeys: string[];
+  blankKeys: string[];
+} {
+  const missingKeys: string[] = [];
+  const blankKeys: string[] = [];
+  const profile = {} as Record<(typeof STAGE_PROFILE_KEYS)[number], string>;
+  for (const key of STAGE_PROFILE_KEYS) {
+    const classified = classifyStageText(parsed[key]);
+    if (classified.kind === 'missing') missingKeys.push(key);
+    else if (classified.kind === 'blank') blankKeys.push(key);
+    else profile[key] = classified.text;
   }
   const risks = stringArrayField(parsed.risks);
-  if (!risks) return null;
-  return { ...profile, risks };
+  if (!risks) missingKeys.push('risks');
+  if (missingKeys.length > 0 || blankKeys.length > 0 || !risks) return { profile: null, missingKeys, blankKeys };
+  return { profile: { ...profile, risks }, missingKeys, blankKeys };
+}
+
+function sameTextSet(left: string[], right: string[]): boolean {
+  if (left.length !== right.length || left.length === 0) return false;
+  const sort = (items: string[]) => [...items].map((item) => item.trim()).sort();
+  const a = sort(left);
+  const b = sort(right);
+  return a.every((item, index) => item === b[index]);
 }
 
 function judgeStageContract(
   content: string,
-  contract: { askedQuestions: string[]; pairs: StagePair[]; closedSentences?: string[] },
+  contract: {
+    askedQuestions: string[];
+    pairs: StagePair[];
+    closedSentences?: string[];
+    priorJudgmentText?: string;
+    priorUnresolved?: string[];
+  },
 ): { sections: ReviewSections | null; issues: string[]; reading: StageReading | null } {
   let parsed: Record<string, unknown>;
   try {
@@ -2876,7 +2954,9 @@ function judgeStageContract(
   const interpretations = Array.isArray(parsed.answerInterpretation) ? parsed.answerInterpretation : null;
   const nextQuestionItems = Array.isArray(parsed.nextQuestions) ? parsed.nextQuestions : null;
   const choiceMatrix = Array.isArray(parsed.nextQuestionChoices) ? parsed.nextQuestionChoices : null;
-  const businessProfile = readStageBusinessProfile(parsed);
+  const profileReading = readStageBusinessProfile(parsed);
+  const businessProfile = profileReading.profile;
+  if (profileReading.blankKeys.length > 0) issues.push('stage_field_blank');
   if (
     !impactOnPreviousJudgment ||
     !updatedJudgment ||
@@ -2890,9 +2970,32 @@ function judgeStageContract(
     !interpretations ||
     !nextQuestionItems ||
     !choiceMatrix ||
-    !businessProfile
+    profileReading.missingKeys.length > 0
   ) {
     issues.push('stage_fields_missing');
+  }
+  for (const key of ['supply', 'marketing'] as const) {
+    const state = parsed[`${key}State`];
+    const text = classifyStageText(parsed[key]);
+    if (state !== 'confirmed' && state !== 'unconfirmed' && state !== 'not_analyzed') {
+      issues.push('stage_fields_missing');
+      continue;
+    }
+    if (text.kind === 'text' && !stageFieldStateMatches(state, text.text)) issues.push('stage_content_insufficient');
+  }
+  if (
+    verifiedFacts &&
+    verifiedFacts.some((fact) =>
+      contract.pairs.some((pair) => sameCompact(fact, pair.supplement) || sameCompact(fact, pair.choiceLabel ?? '')),
+    )
+  ) {
+    issues.push('stage_claim_promoted');
+  }
+  if (updatedJudgment && contract.priorJudgmentText && sameCompact(updatedJudgment, contract.priorJudgmentText)) {
+    issues.push('stage_judgment_copied');
+  }
+  if (unresolvedIssues && contract.priorUnresolved && sameTextSet(unresolvedIssues, contract.priorUnresolved)) {
+    issues.push('stage_issues_copied');
   }
   const answerInterpretation: StageReading['answerInterpretation'] = [];
   if (interpretations) {
@@ -3241,6 +3344,11 @@ export async function runStageReanalysis(input: {
       askedQuestions: previousQuestions,
       pairs,
       closedSentences: [...priorStagePairs, ...pairs].flatMap((pair) => [pair.question, pair.choiceLabel ?? '', pair.supplement]),
+      priorJudgmentText: parent.sections?.analysis?.judgmentDetail || parent.sections?.judgment || '',
+      priorUnresolved:
+        parent.stageReading?.unresolvedIssues && parent.stageReading.unresolvedIssues.length > 0
+          ? parent.stageReading.unresolvedIssues
+          : [...(parent.sections?.uncertain ?? [])],
     },
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
@@ -4635,7 +4743,13 @@ async function finishCall(input: {
   stagePartial?: boolean;
   founderAnswerSource?: FounderAnswerCitation | null;
   /** One integrated call. A format error is stored as failed. It is not repaired. */
-  stageContract?: { askedQuestions: string[]; pairs: StagePair[]; closedSentences?: string[] };
+  stageContract?: {
+    askedQuestions: string[];
+    pairs: StagePair[];
+    closedSentences?: string[];
+    priorJudgmentText?: string;
+    priorUnresolved?: string[];
+  };
   /** Structural reading checks. They do not choose the business judgment. */
   readingIssues?: (content: string) => string[];
   readingRepairContext?: { supplement?: string };
