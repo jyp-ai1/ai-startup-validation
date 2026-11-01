@@ -3098,6 +3098,27 @@ function sameTextSet(left: string[], right: string[]): boolean {
   return a.every((item, index) => item === b[index]);
 }
 
+/** A stated rise. The same sentence withdrawing that rise is not a positive claim. */
+function statesUnnegatedPositiveRise(sentence: string): boolean {
+  const compact = sentence.replace(/\s+/g, '');
+  const statesRise =
+    /높아졌다|높아진다|높아질|높아진|가능성이높다(?![는고])|가능성은높다(?![는고])|긍정적인전망/.test(compact);
+  if (!statesRise) return false;
+  const withdrawn =
+    /유지되지않는다|유지하지않는다|유지할수없|높지않다|높아지지않|높이지않|올리지않|높아질수없|높일수없|사실이아니|아니라고|아니다|확인되지않/.test(
+      compact,
+    );
+  return !withdrawn;
+}
+
+function textStatesUnnegatedPositiveRise(text: string): boolean {
+  return text
+    .split(/(?<=[.!?。])\s*/u)
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0)
+    .some((sentence) => statesUnnegatedPositiveRise(sentence));
+}
+
 function judgeStageContract(
   content: string,
   contract: {
@@ -3220,12 +3241,11 @@ function judgeStageContract(
       });
     }
   }
-  if (
-    verifiedFacts &&
-    verifiedFacts.length === 0 &&
-    answerInterpretation.some((item) => item.judgmentEffect && !item.judgmentEffect.includes('성공 가능성은 높아지지 않았다'))
-  ) {
-    issues.push('stage_claim_as_positive');
+  if (verifiedFacts && verifiedFacts.length === 0) {
+    const claimTexts = [updatedJudgment, judgmentReason, ...answerInterpretation.flatMap((item) => [item.meaning, item.judgmentEffect])].filter(
+      (text): text is string => Boolean(text),
+    );
+    if (claimTexts.some((text) => textStatesUnnegatedPositiveRise(text))) issues.push('stage_claim_as_positive');
   }
   const nextQuestions: StageReading['nextQuestions'] = [];
   if (nextQuestionItems) {

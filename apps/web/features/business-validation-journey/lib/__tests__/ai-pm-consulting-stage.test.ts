@@ -2095,6 +2095,190 @@ describe('consulting stage batch', () => {
     expect(reread?.stageReading?.unverifiedClaims?.[0]).toContain('양조장 협력 가능성이 높다고 판단한다');
   });
 
+  it('rejects an unnegated rise and stores a sentence that withdraws that rise', async () => {
+    const risen = '협력 가능성이 높아졌다.';
+    const withdrawn = '협력 가능성이 높다는 판단은 유지되지 않는다.';
+    const cases: Array<{ id: string; sentence: string; error: string | null }> = [
+      { id: 'rise-claim', sentence: risen, error: 'stage_claim_as_positive' },
+      { id: 'rise-withdrawn', sentence: withdrawn, error: null },
+    ];
+    const store = openAiPmReviewStore(storePath());
+    const chat = async (request: ChatRequest) => {
+      const payload = requestPayload(request);
+      if (!payload || !Array.isArray(payload.stagePairs)) {
+        return reply(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS));
+      }
+      const supplement = JSON.stringify(payload.stagePairs);
+      const matched = cases.find((item) => supplement.includes(item.id));
+      const parsed = JSON.parse(contractReply(request, '지불은 그대로 미확인이다.', ['첫 유료 참가자는 있는가?'])) as Record<string, unknown>;
+      if (matched) {
+        const items = parsed.answerInterpretation as Array<Record<string, string>>;
+        for (const item of items) {
+          item.meaning = matched.sentence;
+          item.judgmentEffect = matched.sentence;
+        }
+        parsed.judgmentReason = matched.sentence;
+        parsed.updatedJudgment = matched.sentence;
+        parsed.verifiedFacts = [];
+      }
+      return reply(JSON.stringify(parsed));
+    };
+    for (const item of cases) {
+      const userId = `user-${item.id}`;
+      const parent = await runFirstReview({
+        store,
+        userId,
+        projectId: `project-${item.id}`,
+        text: `${IDEA} ${item.id}`,
+        origin: 'typed',
+        fileName: null,
+        now: NOW,
+        chat,
+        evidence: 'injected_http',
+      });
+      const judged = await submitConsultingStage({
+        store,
+        userId,
+        projectId: `project-${item.id}`,
+        reviewId: parent.record.reviewId,
+        now: NOW,
+        answers: [
+          { questionId: 'q1', comment: item.id },
+          { questionId: 'q2', comment: '가격은 정하지 않았다' },
+          { questionId: 'q3', comment: '온라인 게시로 알린다' },
+        ],
+        chat,
+        evidence: 'injected_http',
+      });
+      expect(judged.ok).toBe(true);
+      if (!judged.ok) return;
+      expect(judged.record.callCount).toBe(1);
+      if (item.error) {
+        expect(judged.record.error).toContain(item.error);
+        expect(judged.record.sections).toBeNull();
+      } else {
+        expect(judged.record.error ?? null).toBeNull();
+        expect(judged.record.sections).not.toBeNull();
+      }
+    }
+    const failed = await store.readReview('user-rise-claim', (await store.listReviews('user-rise-claim', 'project-rise-claim')).at(-1)?.reviewId ?? '');
+    expect(failed?.error).toContain('stage_claim_as_positive');
+    expect(failed?.sections).toBeNull();
+    expect(failed?.rawContent).toContain(risen);
+    const kept = await store.readReview('user-rise-withdrawn', (await store.listReviews('user-rise-withdrawn', 'project-rise-withdrawn')).at(-1)?.reviewId ?? '');
+    expect(kept?.error ?? null).toBeNull();
+    expect(kept?.stageReading?.answerInterpretation[0]?.meaning).toBe(withdrawn);
+    expect(kept?.stageReading?.answerInterpretation[0]?.judgmentEffect).toBe(withdrawn);
+    expect(kept?.stageReading?.judgmentReason).toBe(withdrawn);
+    expect(kept?.stageReading?.updatedJudgment).toBe(withdrawn);
+    expect(kept?.stageReading?.verifiedFacts).toEqual([]);
+    expect(kept?.sections?.nextQuestion).toBe('첫 유료 참가자는 있는가?');
+  });
+
+  it('revalidates the quality-fix-11 raw without a new model call', async () => {
+    const evidencePath = new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-quality-fix-11.json', import.meta.url);
+    const evidence = JSON.parse(readFileSync(evidencePath, 'utf8')) as {
+      liveCallCount: number;
+      simulationAnswer: string;
+      rounds: Array<{ raw?: string; rowError: string | null; executionId: string; reviewId: string }>;
+    };
+    expect(evidence.liveCallCount).toBe(1);
+    expect(evidence.rounds[1]?.executionId).toBe('chatcmpl-EfKI4PVBVfvgbQLpkkOODPZkgudWH');
+    expect(evidence.rounds[1]?.rowError).toBe('stage_claim_as_positive');
+    expect(evidence.rounds[1]?.reviewId).toBe('d311d088-71ad-4131-9614-3c8ec178a24a');
+    const preservedRaw = evidence.rounds[1]?.raw ?? '';
+    expect(preservedRaw).toContain('협력 가능성이 높다는 판단은 유지되지 않는다.');
+    const first = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-real-gpt-continuity.json', import.meta.url), 'utf8'),
+    ) as { rounds: Array<{ raw: string }> };
+    const second = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-quality-fix-6.json', import.meta.url), 'utf8'),
+    ) as { rounds: Array<{ raw: string }> };
+    const store = openAiPmReviewStore(storePath());
+    let injectedCalls = 0;
+    const chat = async (request: ChatRequest) => {
+      injectedCalls += 1;
+      const payload = requestPayload(request);
+      if (!payload || !Array.isArray(payload.stagePairs)) return reply(first.rounds[0]?.raw ?? '');
+      const current = JSON.stringify(payload.stagePairs);
+      return reply(current.includes('문의했다고') ? preservedRaw : (second.rounds[0]?.raw ?? ''));
+    };
+    const userId = 'user-quality-fix-12';
+    const projectId = 'project-quality-fix-12';
+    const parent = await runFirstReview({
+      store,
+      userId,
+      projectId,
+      text: '다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.',
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat,
+      evidence: 'injected_http',
+    });
+    const firstQuestions = consultingQuestions(parent.record.sections);
+    const secondReview = await submitConsultingStage({
+      store,
+      userId,
+      projectId,
+      reviewId: parent.record.reviewId,
+      now: NOW,
+      answers: firstQuestions.map((question, index) => ({
+        questionId: question.questionId,
+        comment: index === 0 ? '양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.' : '추가 사실은 없다.',
+      })),
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(secondReview.ok).toBe(true);
+    if (!secondReview.ok) return;
+    expect(secondReview.record.error ?? null).toBeNull();
+    expect(secondReview.record.sections?.nextQuestion).toContain('접촉');
+    const thirdQuestions = consultingQuestions(secondReview.record.sections);
+    const replay = await submitConsultingStage({
+      store,
+      userId,
+      projectId,
+      reviewId: secondReview.record.reviewId,
+      now: NOW,
+      answers: thirdQuestions.map((question, index) => ({
+        questionId: question.questionId,
+        comment: index === 0 ? evidence.simulationAnswer : '추가 사실은 없다.',
+      })),
+      chat,
+      evidence: 'injected_http',
+    });
+    expect(replay.ok).toBe(true);
+    if (!replay.ok) return;
+    expect(injectedCalls).toBe(3);
+    expect(replay.record.callCount).toBe(1);
+    expect(replay.record.reviewId).not.toBe(evidence.rounds[1]?.reviewId);
+    expect(replay.record.error ?? null).toBeNull();
+    const reread = await store.readReview(userId, replay.record.reviewId);
+    expect(reread?.error ?? null).toBeNull();
+    expect(reread?.stageReading?.answerInterpretation[0]?.meaning).toBe('양조장에 문의했다고 주장하나, 확인된 사실은 없다.');
+    expect(reread?.stageReading?.answerInterpretation[0]?.judgmentEffect).toBe('협력 가능성이 높다는 판단은 유지되지 않는다.');
+    expect(reread?.stageReading?.judgmentReason).toBe(
+      '협력 가능성이 높다는 판단은 유지되지 않는다. 확인된 접촉이 없으므로 성공 가능성은 높아지지 않았다.',
+    );
+    expect(reread?.stageReading?.updatedJudgment).toBe(
+      '사업 모델의 잠재력은 남을 수 있으나, 협력 가능성은 높지 않다. 현재 가장 중요한 미해결 위험은 양조장과의 협력 관계가 불확실하다는 점이다. 추가 검증이 필요한 이유는 상대의 반응이 없고, 참여 의향이 확인되지 않았기 때문이다.',
+    );
+    expect(reread?.stageReading?.verifiedFacts).toEqual([]);
+    expect(reread?.stageReading?.unresolvedIssues).toEqual([
+      '양조장과의 협력 관계가 불확실하다.',
+      '상대의 반응이 없다.',
+      '참여 의향이 확인되지 않았다.',
+      '체험과 운영 조건이 합의되지 않았다.',
+    ]);
+    expect(reread?.sections?.nextQuestion).toBe('양조장과의 후속 연락이 가능한가?');
+    expect(reread?.rawContent).toContain('협력 가능성이 높다는 판단은 유지되지 않는다.');
+    expect(reread?.rawContent).toContain('"verifiedFacts": []');
+    const stillFailed = JSON.parse(readFileSync(evidencePath, 'utf8')) as { rounds: Array<{ rowError: string | null; executionId: string }> };
+    expect(stillFailed.rounds[1]?.executionId).toBe('chatcmpl-EfKI4PVBVfvgbQLpkkOODPZkgudWH');
+    expect(stillFailed.rounds[1]?.rowError).toBe('stage_claim_as_positive');
+  });
+
   it('accepts trailing punctuation only for not_analyzed and keeps the model sentence', async () => {
     const store = openAiPmReviewStore(storePath());
     const chat = async (request: ChatRequest) => {
