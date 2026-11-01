@@ -1504,6 +1504,9 @@ describe('consulting stage batch', () => {
     expect(first.priorHypotheses).toEqual(['협력이 원활할 것이다']);
     const blocked = payload.doNotCopy as { priorUnresolvedIssues: string[] };
     expect(blocked.priorUnresolvedIssues).toEqual(['협력이 원활할 것이다']);
+    const task = payload.revisionTask as { nextQuestion?: string; priorQuestionText?: string };
+    expect(task.nextQuestion).toContain('같은 목적');
+    expect(task.priorQuestionText).toBeUndefined();
     const readings = payload.priorReadings as Array<{
       supply: { state: string };
       marketing: { state: string };
@@ -1657,6 +1660,53 @@ describe('consulting stage batch', () => {
     expect(wrapped.record.error).toContain('stage_judgment_copied');
     expect(wrapped.record.sections).toBeNull();
     expect(calls.filter((request) => Array.isArray(requestPayload(request)?.stagePairs))).toHaveLength(5);
+  });
+
+  it('marks the live multi-round cooperation question as repeated and the empty issue lists as dropped', async () => {
+    const first = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-real-gpt-continuity.json', import.meta.url), 'utf8'),
+    ) as { rounds: Array<{ raw: string }> };
+    const follow = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-real-gpt-multi-round-validation.json', import.meta.url), 'utf8'),
+    ) as { rounds: Array<{ raw: string; rowStatus: string; rowError: string | null }> };
+    expect(follow.rounds[0]?.rowStatus).toBe('succeeded');
+    expect(follow.rounds[0]?.rowError ?? null).toBeNull();
+    const store = openAiPmReviewStore(storePath());
+    const calls: ChatRequest[] = [];
+    const chat = async (request: ChatRequest) => {
+      calls.push(request);
+      const payload = requestPayload(request);
+      return reply(payload && Array.isArray(payload.stagePairs) ? follow.rounds[0]?.raw ?? '' : first.rounds[0]?.raw ?? '');
+    };
+    const base = {
+      store,
+      userId: 'user-multi-round',
+      projectId: 'project-multi-round',
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const parent = await runFirstReview({
+      ...base,
+      text: '다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.',
+      origin: 'typed',
+      fileName: null,
+    });
+    const questions = consultingQuestions(parent.record.sections);
+    const judged = await submitConsultingStage({
+      ...base,
+      reviewId: parent.record.reviewId,
+      answers: questions.map((question, index) => ({
+        questionId: question.questionId,
+        comment: index === 0 ? '양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.' : '추가 사실은 없다.',
+      })),
+    });
+    expect(judged.ok).toBe(true);
+    if (!judged.ok) return;
+    expect(judged.record.callCount).toBe(1);
+    expect(judged.record.error).toContain('stage_questions_repeated');
+    expect(judged.record.error).toContain('stage_issues_dropped');
+    expect(judged.record.rawContent).toContain('어떻게 구체화할 것인가');
   });
 
   it('marks the live quality-fix-2 cooperation-plan question as repeated after punctuation is ignored', async () => {

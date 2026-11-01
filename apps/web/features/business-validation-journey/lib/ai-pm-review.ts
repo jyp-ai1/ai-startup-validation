@@ -1994,6 +1994,10 @@ function renameEchoKeys(value: unknown): unknown {
   if (!value || typeof value !== 'object') return value;
   const renamed: Record<string, unknown> = {};
   for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+    if (key === 'revisionTask') {
+      renamed[key] = child;
+      continue;
+    }
     const name =
       key === 'judgment' || key === 'judgmentDetail'
         ? 'priorJudgmentText'
@@ -2874,6 +2878,7 @@ function compactQuestion(text: string): string {
 function questionPurposeKey(text: string): string {
   return compactQuestion(text)
     .replace(/[?？!！。]/g, '')
+    .replace(/구축|구체화/g, '실행')
     .replace(/구체적으로|구체적|정확히|실제로|어떻게|할계획인가|할것인가|계획인가|것인가/g, '');
 }
 
@@ -3045,6 +3050,9 @@ function judgeStageContract(
   }
   if (unresolvedIssues && contract.priorUnresolved && sameTextSet(unresolvedIssues, contract.priorUnresolved)) {
     issues.push('stage_issues_copied');
+  }
+  if (resolvedIssues && unresolvedIssues && resolvedIssues.length === 0 && unresolvedIssues.length === 0 && (contract.priorUnresolved?.length ?? 0) > 0) {
+    issues.push('stage_issues_dropped');
   }
   const answerInterpretation: StageReading['answerInterpretation'] = [];
   if (interpretations) {
