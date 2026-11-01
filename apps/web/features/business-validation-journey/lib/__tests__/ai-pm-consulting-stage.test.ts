@@ -357,6 +357,12 @@ describe('consulting stage batch', () => {
     expect(system).toContain('성공 가능성은 높아지지 않았다');
     expect(system).toContain('이번 답');
     expect(system).toContain('남은 위험');
+    expect(system).toContain('사업 모델의 잠재력');
+    expect(system).toContain('미확인 주장');
+    expect(system).toContain('실행 가능성');
+    expect(system).toContain('priorJudgmentText를 출력하지 않는');
+    expect(system).toContain('존재 여부에 이미 답이 있으면');
+    expect(system).not.toContain('양조장 후보가 있는가');
     expect(system).not.toContain('후보 양조장');
     expect(system).toContain('아직 확인되지 않았다');
     expect(system).toContain('위험을 빼지 않는다');
@@ -1509,9 +1515,13 @@ describe('consulting stage batch', () => {
     expect(first.priorHypotheses).toEqual(['협력이 원활할 것이다']);
     const blocked = payload.doNotCopy as { priorUnresolvedIssues: string[] };
     expect(blocked.priorUnresolvedIssues).toEqual(['협력이 원활할 것이다']);
-    const task = payload.revisionTask as { nextQuestion?: string; priorQuestionText?: string };
+    const task = payload.revisionTask as { updatedJudgment?: string; nextQuestion?: string; priorQuestionText?: string };
+    expect(task.updatedJudgment).toContain('사업 모델의 잠재력');
+    expect(task.updatedJudgment).toContain('priorJudgmentText를 출력하지 않는다');
     expect(task.nextQuestion).toContain('같은 목적');
+    expect(task.nextQuestion).toContain('존재 여부');
     expect(task.priorQuestionText).toBeUndefined();
+    expect(serialized).not.toContain('양조장 후보가 있는가');
     const readings = payload.priorReadings as Array<{
       supply: { state: string };
       marketing: { state: string };
@@ -1539,6 +1549,72 @@ describe('consulting stage batch', () => {
       expect(profile.value.pattern).toBe('^.+$');
       expect(profile.product.pattern).toBe('^.+$');
     }
+  });
+
+  it('simulation: an answered existence question is context for the model, and the code does not write the next question', () => {
+    const stored: ReviewSections = {
+      customer: '방문객',
+      problem: '자리가 없다',
+      market: '수요는 입력에 없다',
+      revenueModel: '가격은 가설이다',
+      execution: '',
+      risks: ['자리가 없다'],
+      uncertain: ['대상이 있는지 모른다'],
+      hypotheses: ['수요가 있다'],
+      judgment: '모델의 여지는 남으나 대상은 확인되지 않았다',
+      nextQuestion: '볼 대상이 있는가?',
+      nextQuestionReason: '존재가 다음 확인이다',
+      answerHint: '적습니다',
+      claimConfirmation: null,
+      analysis: {
+        summary: '요약',
+        value: '자리',
+        operatingModel: '구상',
+        payer: '미확인',
+        competition: '미확인',
+        operations: '구상',
+        profitability: '미확인',
+        strengths: [],
+        assumptions: ['수요가 있다'],
+        evidenceToChange: [],
+        founderFacts: [],
+        inferences: [],
+        judgmentDetail: '모델의 여지는 남으나 대상은 확인되지 않았다',
+        choices: [],
+        product: '체험 자리',
+        supply: '아직 분석되지 않았다',
+        marketing: '아직 분석되지 않았다',
+      },
+    };
+    const request = buildProductReanalysisRequest({
+      originalInput: 'SIMULATION 대상 존재 답변',
+      firstAnalysis: stored,
+      priorTurns: [],
+      latestAnalysis: stored,
+      founderChoice: null,
+      founderSupplement: '',
+      founderFeedback: null,
+      stagePairs: [
+        {
+          questionId: 'q1',
+          question: '볼 대상이 있는가?',
+          offeredChoices: [],
+          choiceId: null,
+          choiceLabel: null,
+          supplement: 'SIMULATION 대상은 아직 없다',
+          status: 'answered',
+        },
+      ],
+    });
+    const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+    const payload = userPayload(request);
+    const task = payload.revisionTask as { nextQuestion?: string };
+    expect(system).toContain('존재 여부에 이미 답이 있으면');
+    expect(system).toContain('코드는 질문 문장을 정하지 않는다');
+    expect(task.nextQuestion).toContain('접촉');
+    expect(task.nextQuestion).not.toContain('볼 대상이 있는가');
+    expect(JSON.stringify(payload.stagePairs)).toContain('SIMULATION 대상은 아직 없다');
+    expect(JSON.stringify(payload)).not.toContain('양조장 후보가 있는가');
   });
 
   it('separates a blank supply from a missing supply and rejects a state that does not match the text', async () => {

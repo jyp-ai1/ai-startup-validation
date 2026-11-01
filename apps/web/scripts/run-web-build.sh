@@ -4,6 +4,7 @@ node scripts/preview-quality-compare-once.mjs || echo "preview-quality-compare-e
 if [ "$VERCEL_ENV" = "preview" ]; then
   if [ -n "$VERCEL_GIT_COMMIT_REF" ]; then
     if [ "$VERCEL_GIT_COMMIT_REF" != "main" ]; then
+      AI_PM_REAL_GPT_QUALITY_FIX_6=1 pnpm exec vitest run features/business-validation-journey/lib/__tests__/ai-pm-real-gpt-quality-fix-6.live.test.ts || echo "preview-real-gpt-quality-fix-6-exit=$?"
       AI_PM_REAL_GPT_QUALITY_FIX_5=1 pnpm exec vitest run features/business-validation-journey/lib/__tests__/ai-pm-real-gpt-quality-fix-5.live.test.ts || echo "preview-real-gpt-quality-fix-5-exit=$?"
       AI_PM_REAL_GPT_QUALITY_FIX_4=1 pnpm exec vitest run features/business-validation-journey/lib/__tests__/ai-pm-real-gpt-quality-fix-4.live.test.ts || echo "preview-real-gpt-quality-fix-4-exit=$?"
       AI_PM_REAL_GPT_MULTI_ROUND=1 pnpm exec vitest run features/business-validation-journey/lib/__tests__/ai-pm-real-gpt-multi-round.live.test.ts || echo "preview-real-gpt-multi-round-exit=$?"
