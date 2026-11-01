@@ -1,0 +1,842 @@
+{
+  "kind": "sprint2_final_completion",
+  "gptApiKey": "PRESENT",
+  "vercelEnv": "unset",
+  "gptCallMade": true,
+  "supabaseTouched": false,
+  "productionDeployed": false,
+  "founderProjectTouched": false,
+  "productFilesEdited": false,
+  "experimentBHarnessEdited": false,
+  "decisionContractPromptsEdited": false,
+  "runStageReanalysisCalled": false,
+  "modelRequested": "gpt-4o",
+  "rate": {
+    "model": "gpt-4o",
+    "inputPer1MUsd": 2.5,
+    "outputPer1MUsd": 10,
+    "label": "repository rate, not an invoice",
+    "source": "packages/ai/src/token/manager.ts"
+  },
+  "commit": "a4da4c063aa40ab670c104ce0dfccfc332093fad",
+  "branch": "cursor/sprint2-final-completion-4b88",
+  "startedAt": "2026-11-01T13:48:06.467Z",
+  "finishedAt": "2026-11-01T13:48:15.597Z",
+  "businessInput": "COMPARE_BUSINESS_BODY",
+  "simulationAnswers": [
+    "SIMULATION. 체험을 원하는 고객과 상품 구성은 구상이다. 공급 계약과 가격은 없다. 이 답은 연습 입력이고 확인된 기록이 아니다.",
+    "SIMULATION. 실제 예약과 지불은 없다. 누가 비용을 낼지는 정하지 않았다. 이 답은 연습 입력이고 확인된 기록이 아니다.",
+    "SIMULATION. 알릴 채널과 운영 책임자는 정하지 않았다. 이 답은 연습 입력이고 확인된 기록이 아니다."
+  ],
+  "store": {
+    "kind": "local_sqlite",
+    "path": ".data/alabom-sprint2-final-completion/reviews.sqlite",
+    "productionDatabase": false,
+    "durable": false
+  },
+  "productModel": "gpt-4o-mini",
+  "chainFinished": false,
+  "rounds": [
+    {
+      "round": 1,
+      "status": "PASS",
+      "reason": null,
+      "answer": null,
+      "answerSource": null,
+      "productModel": "gpt-4o-mini",
+      "sentModel": "gpt-4o",
+      "responseModel": "gpt-4o-2024-08-06",
+      "reviewId": "ff2b5f3e-0ec5-4c8d-8ae6-e43322a5c4b4",
+      "parentReviewId": null,
+      "rowStatus": "succeeded",
+      "rowError": null,
+      "evidence": "live_network",
+      "confirmedFacts": [],
+      "judgment": "전통주 양조장 체험을 중심으로 한 관광 사업은 관광객의 개인화된 경험 수요를 충족시킬 수 있는 잠재력이 있다. 그러나 양조장과의 협력 및 관광객 수요에 대한 불확실성이 존재한다.",
+      "nextQuestion": "양조장과의 협력 가능성을 어떻게 확인할 것인가?",
+      "questions": [
+        "양조장과의 협력 가능성을 어떻게 확인할 것인가?"
+      ],
+      "gates": {
+        "answerGrounding": "NOT RUN",
+        "unknownPreservation": "NOT RUN",
+        "judgmentDelta": "NOT RUN",
+        "prioritySelection": "NOT RUN"
+      },
+      "failures": [],
+      "qualityPass": true,
+      "chainContinues": true,
+      "sections": {
+        "customer": "전통주 양조장 체험을 선호하는 내국인 및 외국인 관광객",
+        "problem": "관광객들이 개인별로 다양한 경험을 원하지만, 전통주 양조장 체험과 같은 특화된 경험을 쉽게 찾기 어렵다.",
+        "market": "전통주에 관심이 있는 국내외 관광객 시장",
+        "revenueModel": "가설로, 체험 프로그램 참가비와 온라인 플랫폼 수수료를 통해 수익을 창출할 수 있다.",
+        "execution": "양조장과 협력하여 체험 프로그램을 운영하고, 온라인 플랫폼을 통해 예약 및 홍보를 지원한다.",
+        "risks": [
+          "양조장과의 협력 실패 가능성",
+          "관광객 수요 예측의 불확실성"
+        ],
+        "uncertain": [
+          "관광객들이 전통주 양조장 체험에 높은 관심을 가질 것이다.",
+          "양조장들이 협력에 적극적일 것이다."
+        ],
+        "hypotheses": [
+          "관광객들이 전통주 양조장 체험에 높은 관심을 가질 것이다.",
+          "양조장들이 협력에 적극적일 것이다."
+        ],
+        "judgment": "다양한 관광객의 증가와 개인별 경험의 중요성을 반영하여, 전통주 양조장 체험을 중심으로 한 관광 사업을 구상하고 있다. 이 사업은 내국인 및 외국인 관광객을 대상으로 하며, 양조장 체험과 주변 관광을 결합한 형태로, 온라인 마케팅을 통해 홍보 및 지원할 계획이다.",
+        "nextQuestion": "양조장과의 협력 가능성을 어떻게 확인할 것인가?",
+        "nextQuestionReason": "양조장과의 협력 여부가 사업의 성패를 좌우할 수 있기 때문이다.",
+        "answerHint": "선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.",
+        "claimConfirmation": null,
+        "analysis": {
+          "summary": "다양한 관광객의 증가와 개인별 경험의 중요성을 반영하여, 전통주 양조장 체험을 중심으로 한 관광 사업을 구상하고 있다. 이 사업은 내국인 및 외국인 관광객을 대상으로 하며, 양조장 체험과 주변 관광을 결합한 형태로, 온라인 마케팅을 통해 홍보 및 지원할 계획이다.",
+          "value": "관광객들에게 전통주 양조장 체험을 통해 독특하고 개인화된 경험을 제공한다.",
+          "operatingModel": "양조장과 협력하여 체험 프로그램을 운영하고, 온라인 플랫폼을 통해 예약 및 홍보를 지원한다.",
+          "payer": "전통주 양조장 체험을 원하는 관광객",
+          "competition": "다른 전통주 양조장 체험 프로그램이나 일반적인 관광 패키지 제공업체",
+          "operations": "양조장과의 협력 및 온라인 플랫폼 운영을 통해 체험 프로그램을 관리한다.",
+          "profitability": "가설로, 체험 프로그램의 참가비와 플랫폼 수수료를 통해 수익성을 확보할 수 있다.",
+          "strengths": [
+            "전통주에 대한 관심 증가",
+            "개인화된 관광 경험에 대한 수요 증가"
+          ],
+          "assumptions": [
+            "관광객들이 전통주 양조장 체험에 높은 관심을 가질 것이다.",
+            "양조장들이 협력에 적극적일 것이다."
+          ],
+          "evidenceToChange": [
+            "관광객의 전통주 체험 선호도 조사",
+            "양조장의 협력 의사 확인"
+          ],
+          "founderFacts": [],
+          "inferences": [
+            "관광객들이 전통주 체험에 관심이 있을 가능성이 높다."
+          ],
+          "judgmentDetail": "전통주 양조장 체험을 중심으로 한 관광 사업은 관광객의 개인화된 경험 수요를 충족시킬 수 있는 잠재력이 있다. 그러나 양조장과의 협력 및 관광객 수요에 대한 불확실성이 존재한다.",
+          "choices": [
+            {
+              "id": "c1",
+              "label": "양조장과 직접 협상하여 의사를 확인한다."
+            },
+            {
+              "id": "c2",
+              "label": "양조장에 설문조사를 실시하여 협력 의사를 파악한다."
+            },
+            {
+              "id": "c3",
+              "label": "아직 정하지 못했다."
+            },
+            {
+              "id": "other",
+              "label": "기타 / 직접 입력"
+            }
+          ],
+          "alternatives": "기존의 일반적인 관광 패키지나 양조장 자체의 개별 체험 프로그램",
+          "differentiation": "전통주 양조장 체험과 주변 관광을 결합하여 독특한 경험을 제공한다는 점에서 차별화된다.",
+          "nextVerification": "양조장과의 협력 의사를 확인한다.",
+          "questions": [
+            {
+              "questionId": "q1",
+              "text": "양조장과의 협력 가능성을 어떻게 확인할 것인가?",
+              "choices": [
+                {
+                  "id": "c1",
+                  "label": "양조장과 직접 협상하여 의사를 확인한다."
+                },
+                {
+                  "id": "c2",
+                  "label": "양조장에 설문조사를 실시하여 협력 의사를 파악한다."
+                },
+                {
+                  "id": "c3",
+                  "label": "아직 정하지 못했다."
+                },
+                {
+                  "id": "other",
+                  "label": "기타 / 직접 입력"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "ledger": null,
+      "selection": null,
+      "calls": [
+        {
+          "sent": true,
+          "request": {
+            "model": "gpt-4o",
+            "temperature": 0.2,
+            "maxTokens": 2400,
+            "responseFormat": {
+              "type": "json_schema",
+              "schema": {
+                "title": "product_reanalysis",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "summary",
+                  "customer",
+                  "problem",
+                  "value",
+                  "operatingModel",
+                  "alternatives",
+                  "differentiation",
+                  "payer",
+                  "revenueModel",
+                  "market",
+                  "competition",
+                  "operations",
+                  "profitability",
+                  "strengths",
+                  "risks",
+                  "assumptions",
+                  "evidenceToChange",
+                  "founderFacts",
+                  "inferences",
+                  "judgment",
+                  "nextVerification",
+                  "nextQuestion",
+                  "nextQuestionReason",
+                  "choices",
+                  "questions"
+                ],
+                "properties": {
+                  "summary": {
+                    "type": "string",
+                    "description": "judgment와 같은 결론. 협력 가능성이 높지만을 넣지 않는다. 협력 가능성이 높다를 쓰려면 검증되지 않은 가설이라고 같은 문장에 적는다."
+                  },
+                  "customer": {
+                    "type": "string"
+                  },
+                  "problem": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  },
+                  "operatingModel": {
+                    "type": "string"
+                  },
+                  "alternatives": {
+                    "type": "string"
+                  },
+                  "differentiation": {
+                    "type": "string"
+                  },
+                  "payer": {
+                    "type": "string"
+                  },
+                  "revenueModel": {
+                    "type": "string"
+                  },
+                  "market": {
+                    "type": "string"
+                  },
+                  "competition": {
+                    "type": "string"
+                  },
+                  "operations": {
+                    "type": "string"
+                  },
+                  "profitability": {
+                    "type": "string"
+                  },
+                  "strengths": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "risks": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "이번 답의 빈칸을 새 문장으로 적는다. 접촉 여부 문장만 반복하면 실패다. 사업이 불가능하다고 단정하지 않는다."
+                  },
+                  "assumptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "가설이 성립하는지도, 그 영향도 확인되지 않았다고 적는다. 긍정적 영향을 미칠 것이다라고 쓰지 않는다. 만약이라는 말로 긍정 효과를 단정하지 않는다."
+                  },
+                  "evidenceToChange": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "이 판단을 바꾸게 될 확인 항목. judgment와 같은 문장이면 실패다."
+                  },
+                  "founderFacts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "확인된 접촉, 계약, 입금, 예약만. 없으면 빈 배열."
+                  },
+                  "inferences": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "협력 가능성이 높다를 현재 상태로 반복하지 않는다. 후보 부재와 접촉, 협력 의사, 협력 조건이 확인되지 않은 데서 추론한다. 주장을 적으면 검증되지 않은 가설이라고 적는다."
+                  },
+                  "judgment": {
+                    "type": "string",
+                    "description": "founderClaims의 협력 가능성 문장은 검증되지 않은 가설로 judgment 안에 적는다. founderSupplement에 체험 기준이 있으면 그 기준을 계획 또는 선택으로 judgment 안에 적는다. 고르겠다는 계획과 별도로, 후보가 아직 선정되지 않았다는 미해결을 같은 judgment에 적는다. 협력 가능성이 높지만을 현재 상태로 쓰지 않는다. unresolved의 후보 부재를 포함한다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 이유를 적는다."
+                  },
+                  "nextVerification": {
+                    "type": "string",
+                    "description": "priorGoals 문장을 복사하지 않는다. 이번 답이 이미 기준이면 기준 확인을 다시 적지 않는다. nextQuestion과 같은 대상만 적는다. 접근 경로, 협력 의사, 협력 조건 중 하나다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다. 그 효과는 확인되지 않았다."
+                  },
+                  "nextQuestion": {
+                    "type": "string",
+                    "description": "이미 후보가 없다고 답했다. 정했나요, 한 곳, 이름, 떠오르는, 이름이 있는가, 선정했는지를 묻지 않는다. 이번 답이 기준을 골랐으면 기준을 다시 묻지 않는다. 기준이 구체화되었다만 쓰면 실패다. 접근 경로, 협력 의사, 협력 조건 중 하나만 묻는다."
+                  },
+                  "nextQuestionReason": {
+                    "type": "string",
+                    "description": "그 답이 다음 사업성 판단에 왜 필요한지. priorReasonText와 같으면 실패다."
+                  },
+                  "choices": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "이번 질문에 답하는 서로 다른 선택 두 개 이상. priorChoices와 같은 문장을 두지 않는다."
+                  },
+                  "questions": {
+                    "type": "array",
+                    "minItems": 1,
+                    "description": "다음 상담 단계의 서로 다른 검증 질문 1개 이상. 개수는 모델이 정한다. 첫 질문의 text는 nextQuestion과 같다. 이미 답한 질문 문장을 반복하지 않는다.",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "text",
+                        "choices"
+                      ],
+                      "properties": {
+                        "text": {
+                          "type": "string",
+                          "description": "이 질문의 문장. 다른 질문과 같지 않다."
+                        },
+                        "choices": {
+                          "type": "array",
+                          "minItems": 2,
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "이 질문에만 해당하는 서로 다른 선택 2개 이상."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "messages": [
+              {
+                "role": "system",
+                "content": "프롬프트 버전 quality-2. 당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 말고 성립 조건과 가장 큰 불확실성을 분석한다. 창업자가 아직 고르지 않은 답을 사실로 만들지 않는다. 첫 질문은 정도(높다, 낮다)가 아니라 사업의 갈림길을 가른다. 사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다. 고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다. 가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다. 분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 1개 이상으로 questions에 둔다. 개수는 모델이 정한다. 각 질문은 text와 그 질문의 choices를 가진다. nextQuestion은 첫 text와 같다. 질문이 없거나 배열이 없으면 상담 단계가 아니다. 모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다. 선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다. JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다. 키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다. summary는 원문을 반영한 설명, judgment는 예비 판단과 근거, nextVerification은 적은 비용의 확인 행동이다. assumptions는 1개에서 3개다."
+              },
+              {
+                "role": "user",
+                "content": "사업 입력:\n다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 1개 이상이다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 questions 첫 text와 같다. questions가 없거나 비어 있으면 상담 단계가 아니다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다."
+              }
+            ]
+          },
+          "response": {
+            "id": "chatcmpl-EfQCm9ORwEBK97bV0qZXYjOY5vZYN",
+            "model": "gpt-4o-2024-08-06",
+            "provider": "openai",
+            "finishReason": "stop",
+            "content": "{\"summary\":\"다양한 관광객의 증가와 개인별 경험의 중요성을 반영하여, 전통주 양조장 체험을 중심으로 한 관광 사업을 구상하고 있다. 이 사업은 내국인 및 외국인 관광객을 대상으로 하며, 양조장 체험과 주변 관광을 결합한 형태로, 온라인 마케팅을 통해 홍보 및 지원할 계획이다.\",\"customer\":\"전통주 양조장 체험을 선호하는 내국인 및 외국인 관광객\",\"problem\":\"관광객들이 개인별로 다양한 경험을 원하지만, 전통주 양조장 체험과 같은 특화된 경험을 쉽게 찾기 어렵다.\",\"value\":\"관광객들에게 전통주 양조장 체험을 통해 독특하고 개인화된 경험을 제공한다.\",\"operatingModel\":\"양조장과 협력하여 체험 프로그램을 운영하고, 온라인 플랫폼을 통해 예약 및 홍보를 지원한다.\",\"alternatives\":\"기존의 일반적인 관광 패키지나 양조장 자체의 개별 체험 프로그램\",\"differentiation\":\"전통주 양조장 체험과 주변 관광을 결합하여 독특한 경험을 제공한다는 점에서 차별화된다.\",\"payer\":\"전통주 양조장 체험을 원하는 관광객\",\"revenueModel\":\"가설로, 체험 프로그램 참가비와 온라인 플랫폼 수수료를 통해 수익을 창출할 수 있다.\",\"market\":\"전통주에 관심이 있는 국내외 관광객 시장\",\"competition\":\"다른 전통주 양조장 체험 프로그램이나 일반적인 관광 패키지 제공업체\",\"operations\":\"양조장과의 협력 및 온라인 플랫폼 운영을 통해 체험 프로그램을 관리한다.\",\"profitability\":\"가설로, 체험 프로그램의 참가비와 플랫폼 수수료를 통해 수익성을 확보할 수 있다.\",\"strengths\":[\"전통주에 대한 관심 증가\",\"개인화된 관광 경험에 대한 수요 증가\"],\"risks\":[\"양조장과의 협력 실패 가능성\",\"관광객 수요 예측의 불확실성\"],\"assumptions\":[\"관광객들이 전통주 양조장 체험에 높은 관심을 가질 것이다.\",\"양조장들이 협력에 적극적일 것이다.\"],\"evidenceToChange\":[\"관광객의 전통주 체험 선호도 조사\",\"양조장의 협력 의사 확인\"],\"founderFacts\":[],\"inferences\":[\"관광객들이 전통주 체험에 관심이 있을 가능성이 높다.\"],\"judgment\":\"전통주 양조장 체험을 중심으로 한 관광 사업은 관광객의 개인화된 경험 수요를 충족시킬 수 있는 잠재력이 있다. 그러나 양조장과의 협력 및 관광객 수요에 대한 불확실성이 존재한다.\",\"nextVerification\":\"양조장과의 협력 의사를 확인한다.\",\"nextQuestion\":\"양조장과의 협력 가능성을 어떻게 확인할 것인가?\",\"nextQuestionReason\":\"양조장과의 협력 여부가 사업의 성패를 좌우할 수 있기 때문이다.\",\"choices\":[\"양조장과 직접 협상하여 의사를 확인한다.\",\"양조장에 설문조사를 실시하여 협력 의사를 파악한다.\",\"아직 정하지 못했다.\",\"기타 / 직접 입력\"],\"questions\":[{\"text\":\"양조장과의 협력 가능성을 어떻게 확인할 것인가?\",\"choices\":[\"양조장과 직접 협상하여 의사를 확인한다.\",\"양조장에 설문조사를 실시하여 협력 의사를 파악한다.\",\"아직 정하지 못했다.\",\"기타 / 직접 입력\"]}]}",
+            "usageKnown": true,
+            "promptTokens": 3692,
+            "completionTokens": 777,
+            "totalTokens": 4469,
+            "latencyMs": 6751
+          },
+          "error": null,
+          "currentAnswerPresent": false,
+          "repositoryCostUsd": 0.017,
+          "repositoryCostLabel": "repository rate, not an invoice"
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "status": "FAIL",
+      "reason": "decision_contract",
+      "answer": "SIMULATION. 체험을 원하는 고객과 상품 구성은 구상이다. 공급 계약과 가격은 없다. 이 답은 연습 입력이고 확인된 기록이 아니다.",
+      "answerSource": "simulation",
+      "productModel": null,
+      "sentModel": "gpt-4o",
+      "responseModel": "gpt-4o-2024-08-06",
+      "reviewId": "58bcce50-4f79-47c3-8f62-924f9542db0b",
+      "parentReviewId": "ff2b5f3e-0ec5-4c8d-8ae6-e43322a5c4b4",
+      "rowStatus": "failed",
+      "rowError": "decision_contract",
+      "evidence": "injected_http",
+      "confirmedFacts": [],
+      "judgment": "전통주 양조장 체험을 중심으로 한 관광 사업은 관광객의 개인화된 경험 수요를 충족시킬 수 있는 잠재력이 있다. 그러나 양조장과의 협력 및 관광객 수요에 대한 불확실성이 존재한다.",
+      "nextQuestion": null,
+      "questions": [],
+      "gates": {
+        "answerGrounding": "PASS",
+        "unknownPreservation": "FAIL",
+        "judgmentDelta": "FAIL",
+        "prioritySelection": "NOT RUN"
+      },
+      "failures": [
+        "unanswered_promoted_positive",
+        "delta_bad_cite",
+        "uncertainty_not_kept",
+        "judgment_not_withheld",
+        "invented_judgment_improvement"
+      ],
+      "qualityPass": false,
+      "chainContinues": false,
+      "sections": null,
+      "ledger": {
+        "changes": [],
+        "answeredQuestions": [],
+        "unansweredQuestions": [
+          {
+            "id": "closedQuestions",
+            "question": "양조장과의 협력 가능성을 어떻게 확인할 것인가?",
+            "changeIds": []
+          }
+        ],
+        "unconfirmed": [
+          {
+            "id": "관광객들이 전통주 양조장 체험에 높은 관심을 가질 것이다.",
+            "text": "관광객들이 전통주 양조장 체험에 높은 관심을 가질 것이다."
+          },
+          {
+            "id": "양조장들이 협력에 적극적일 것이다.",
+            "text": "양조장들이 협력에 적극적일 것이다."
+          }
+        ],
+        "confirmedFacts": [],
+        "delta": [
+          {
+            "kind": "kept",
+            "text": "양조장과의 협력 실패 가능성",
+            "cites": []
+          },
+          {
+            "kind": "kept",
+            "text": "관광객 수요 예측의 불확실성",
+            "cites": []
+          }
+        ],
+        "judgmentKept": true,
+        "judgmentText": "전통주 양조장 체험을 중심으로 한 관광 사업은 관광객의 개인화된 경험 수요를 충족시킬 수 있는 잠재력이 있다. 그러나 양조장과의 협력 및 관광객 수요에 대한 불확실성이 존재한다.",
+        "answerImpact": "none"
+      },
+      "selection": null,
+      "calls": [
+        {
+          "sent": true,
+          "request": {
+            "model": "gpt-4o",
+            "temperature": 0.2,
+            "maxTokens": 1600,
+            "responseFormat": {
+              "type": "json_schema",
+              "schema": {
+                "title": "decision_contract_state",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "changes",
+                  "answeredQuestions",
+                  "unansweredQuestions",
+                  "unconfirmed",
+                  "confirmedFacts",
+                  "delta",
+                  "judgmentKept",
+                  "judgmentText",
+                  "answerImpact"
+                ],
+                "properties": {
+                  "changes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "statement",
+                        "span",
+                        "spanStart",
+                        "spanEnd"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "statement": {
+                          "type": "string"
+                        },
+                        "span": {
+                          "type": "string"
+                        },
+                        "spanStart": {
+                          "type": "integer"
+                        },
+                        "spanEnd": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "answeredQuestions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "question",
+                        "changeIds"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "question": {
+                          "type": "string"
+                        },
+                        "changeIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "unansweredQuestions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "question",
+                        "changeIds"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "question": {
+                          "type": "string"
+                        },
+                        "changeIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "unconfirmed": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "text"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "text": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "confirmedFacts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "delta": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "text",
+                        "cites"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "kept",
+                            "modified",
+                            "added",
+                            "withheld"
+                          ]
+                        },
+                        "text": {
+                          "type": "string"
+                        },
+                        "cites": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "judgmentKept": {
+                    "type": "boolean"
+                  },
+                  "judgmentText": {
+                    "type": "string"
+                  },
+                  "answerImpact": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "messages": [
+              {
+                "role": "system",
+                "content": "당신은 이번 답의 구간만 변화로 적는다.\ncurrentAnswer에 없는 문장은 변화가 아니다.\nspan은 currentAnswer의 spanStart부터 spanEnd 직전까지와 같은 문자열이다.\n닫힌 질문이 이번 답의 구간으로 갈리지 않으면 unansweredQuestions에 둔다.\n선택지를 긍정 사실이나 사업성 개선으로 바꾸지 않는다.\nSIMULATION이면 confirmedFacts는 빈 배열이다.\n이전 판단의 불확실이 남으면 kept가 그 미확인 id를 가리키고 불확실 또는 미확인을 적는다.\n미확인이 남아 있으면 withheld가 유보를 적고 미확인 id를 가리킨다.\nadded와 modified는 근거 있는 변화 id를 가리킨다.\n아이디어와 답에 없는 점포나 접촉은 적지 않는다.\n후보와 질문은 만들지 않는다."
+              },
+              {
+                "role": "user",
+                "content": "{\"originalIdea\":\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\",\"priorAnswers\":[],\"currentAnswer\":\"SIMULATION. 체험을 원하는 고객과 상품 구성은 구상이다. 공급 계약과 가격은 없다. 이 답은 연습 입력이고 확인된 기록이 아니다.\",\"answerSource\":\"simulation\",\"priorJudgment\":\"전통주 양조장 체험을 중심으로 한 관광 사업은 관광객의 개인화된 경험 수요를 충족시킬 수 있는 잠재력이 있다. 그러나 양조장과의 협력 및 관광객 수요에 대한 불확실성이 존재한다.\",\"priorRisks\":[\"양조장과의 협력 실패 가능성\",\"관광객 수요 예측의 불확실성\"],\"openUncertainties\":[\"관광객들이 전통주 양조장 체험에 높은 관심을 가질 것이다.\",\"양조장들이 협력에 적극적일 것이다.\"],\"closedQuestions\":[\"양조장과의 협력 가능성을 어떻게 확인할 것인가?\"],\"priorChoiceLabels\":[[\"양조장과 직접 협상하여 의사를 확인한다.\",\"양조장에 설문조사를 실시하여 협력 의사를 파악한다.\",\"아직 정하지 못했다.\",\"기타 / 직접 입력\"]],\"unresolvedMarks\":[{\"text\":\"관광객들이 전통주 양조장 체험에 높은 관심을 가질 것이다.\",\"presentInAnswers\":false},{\"text\":\"양조장들이 협력에 적극적일 것이다.\",\"presentInAnswers\":false},{\"text\":\"양조장과의 협력 실패 가능성\",\"presentInAnswers\":false},{\"text\":\"관광객 수요 예측의 불확실성\",\"presentInAnswers\":false},{\"text\":\"관광객의 전통주 체험 선호도 조사\",\"presentInAnswers\":false},{\"text\":\"양조장의 협력 의사 확인\",\"presentInAnswers\":false}],\"areaOrderIsNotPriority\":true}"
+              }
+            ]
+          },
+          "response": {
+            "id": "chatcmpl-EfQCrUCmtR7uZRBse4zNPX5iJy2Ox",
+            "model": "gpt-4o-2024-08-06",
+            "provider": "openai",
+            "finishReason": "stop",
+            "content": "{\"changes\":[],\"answeredQuestions\":[],\"unansweredQuestions\":[{\"id\":\"closedQuestions\",\"question\":\"양조장과의 협력 가능성을 어떻게 확인할 것인가?\",\"changeIds\":[]}],\"unconfirmed\":[{\"id\":\"관광객들이 전통주 양조장 체험에 높은 관심을 가질 것이다.\",\"text\":\"관광객들이 전통주 양조장 체험에 높은 관심을 가질 것이다.\"},{\"id\":\"양조장들이 협력에 적극적일 것이다.\",\"text\":\"양조장들이 협력에 적극적일 것이다.\"}],\"confirmedFacts\":[],\"delta\":[{\"kind\":\"kept\",\"text\":\"양조장과의 협력 실패 가능성\",\"cites\":[]},{\"kind\":\"kept\",\"text\":\"관광객 수요 예측의 불확실성\",\"cites\":[]}],\"judgmentKept\":true,\"judgmentText\":\"전통주 양조장 체험을 중심으로 한 관광 사업은 관광객의 개인화된 경험 수요를 충족시킬 수 있는 잠재력이 있다. 그러나 양조장과의 협력 및 관광객 수요에 대한 불확실성이 존재한다.\",\"answerImpact\":\"none\"}",
+            "usageKnown": true,
+            "promptTokens": 974,
+            "completionTokens": 248,
+            "totalTokens": 1222,
+            "latencyMs": 2349
+          },
+          "error": null,
+          "currentAnswerPresent": true,
+          "repositoryCostUsd": 0.004915,
+          "repositoryCostLabel": "repository rate, not an invoice"
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "status": "NOT RUN",
+      "reason": "decision_contract",
+      "answer": "SIMULATION. 실제 예약과 지불은 없다. 누가 비용을 낼지는 정하지 않았다. 이 답은 연습 입력이고 확인된 기록이 아니다.",
+      "answerSource": "simulation",
+      "productModel": null,
+      "sentModel": null,
+      "responseModel": null,
+      "reviewId": null,
+      "parentReviewId": null,
+      "rowStatus": null,
+      "rowError": null,
+      "evidence": null,
+      "confirmedFacts": null,
+      "judgment": null,
+      "nextQuestion": null,
+      "questions": [],
+      "gates": {
+        "answerGrounding": "NOT RUN",
+        "unknownPreservation": "NOT RUN",
+        "judgmentDelta": "NOT RUN",
+        "prioritySelection": "NOT RUN"
+      },
+      "failures": [],
+      "qualityPass": null,
+      "chainContinues": null,
+      "sections": null,
+      "ledger": null,
+      "selection": null,
+      "calls": []
+    },
+    {
+      "round": 4,
+      "status": "NOT RUN",
+      "reason": "decision_contract",
+      "answer": "SIMULATION. 알릴 채널과 운영 책임자는 정하지 않았다. 이 답은 연습 입력이고 확인된 기록이 아니다.",
+      "answerSource": "simulation",
+      "productModel": null,
+      "sentModel": null,
+      "responseModel": null,
+      "reviewId": null,
+      "parentReviewId": null,
+      "rowStatus": null,
+      "rowError": null,
+      "evidence": null,
+      "confirmedFacts": null,
+      "judgment": null,
+      "nextQuestion": null,
+      "questions": [],
+      "gates": {
+        "answerGrounding": "NOT RUN",
+        "unknownPreservation": "NOT RUN",
+        "judgmentDelta": "NOT RUN",
+        "prioritySelection": "NOT RUN"
+      },
+      "failures": [],
+      "qualityPass": null,
+      "chainContinues": null,
+      "sections": null,
+      "ledger": null,
+      "selection": null,
+      "calls": []
+    }
+  ],
+  "storageIds": [
+    {
+      "reviewId": "ff2b5f3e-0ec5-4c8d-8ae6-e43322a5c4b4",
+      "parentReviewId": null,
+      "status": "succeeded",
+      "error": null,
+      "callCount": 1,
+      "evidence": "live_network",
+      "model": "gpt-4o-2024-08-06"
+    },
+    {
+      "reviewId": "58bcce50-4f79-47c3-8f62-924f9542db0b",
+      "parentReviewId": "ff2b5f3e-0ec5-4c8d-8ae6-e43322a5c4b4",
+      "status": "failed",
+      "error": "decision_contract",
+      "callCount": 1,
+      "evidence": "injected_http",
+      "model": "gpt-4o-2024-08-06"
+    }
+  ],
+  "repeatedQuestionCheck": {
+    "exactCompactRepeats": [],
+    "questions": [
+      {
+        "round": 1,
+        "text": "양조장과의 협력 가능성을 어떻게 확인할 것인가?"
+      }
+    ]
+  },
+  "businessJudgmentChange": {
+    "judgments": [
+      {
+        "round": 1,
+        "judgment": "전통주 양조장 체험을 중심으로 한 관광 사업은 관광객의 개인화된 경험 수요를 충족시킬 수 있는 잠재력이 있다. 그러나 양조장과의 협력 및 관광객 수요에 대한 불확실성이 존재한다."
+      },
+      {
+        "round": 2,
+        "judgment": "전통주 양조장 체험을 중심으로 한 관광 사업은 관광객의 개인화된 경험 수요를 충족시킬 수 있는 잠재력이 있다. 그러나 양조장과의 협력 및 관광객 수요에 대한 불확실성이 존재한다."
+      }
+    ],
+    "changedFromPrevious": [
+      false
+    ]
+  },
+  "totals": {
+    "callCount": 2,
+    "openaiResponseIds": [
+      "chatcmpl-EfQCm9ORwEBK97bV0qZXYjOY5vZYN",
+      "chatcmpl-EfQCrUCmtR7uZRBse4zNPX5iJy2Ox"
+    ],
+    "promptTokens": 4666,
+    "completionTokens": 1025,
+    "repositoryCostUsd": 0.021915,
+    "rateLabel": "repository rate, not an invoice"
+  },
+  "executionCommit": "a4da4c063aa40ab670c104ce0dfccfc332093fad",
+  "evidenceCommit": "8afa04b394a93ae8c0539a793e93db8a62efac38",
+  "chainVerdict": "FAIL",
+  "sprint2": "FAIL",
+  "passDeclared": false,
+  "prioritySelection": "NOT TESTED",
+  "promptsEditedAfterFailure": false,
+  "failedRoundRetried": false,
+  "completionRounds": [
+    {
+      "round": 1,
+      "verdict": "FAIL",
+      "scriptStatus": "PASS",
+      "storedStatus": "succeeded",
+      "contractGates": "NOT RUN",
+      "reason": "Product row succeeded on gpt-4o. Decision-contract gates were not run. The reading states market growth, a payer, and competitor types absent from the input."
+    },
+    {
+      "round": 2,
+      "verdict": "FAIL",
+      "scriptStatus": "FAIL",
+      "storedStatus": "failed",
+      "contractGates": {
+        "answerGrounding": "PASS",
+        "unknownPreservation": "FAIL",
+        "judgmentDelta": "FAIL",
+        "prioritySelection": "NOT RUN"
+      },
+      "failures": [
+        "unanswered_promoted_positive",
+        "delta_bad_cite",
+        "uncertainty_not_kept",
+        "judgment_not_withheld",
+        "invented_judgment_improvement"
+      ],
+      "reason": "Judgment text copies the prior detail, including 충족 and the unanswered choice stem 협력. Changes are empty. Selection was not called."
+    },
+    {
+      "round": 3,
+      "verdict": "NOT RUN",
+      "reason": "Stopped after round 2 contract failure."
+    },
+    {
+      "round": 4,
+      "verdict": "NOT RUN",
+      "reason": "Stopped after round 2 contract failure."
+    }
+  ],
+  "selfAssessment": {
+    "verdict": "FAIL",
+    "sprint2PassDeclared": false,
+    "summary": "Two live gpt-4o calls ran. Round 1 stored a succeeded first review and invented market, payer, and competitor statements. Round 2 failed Unknown Preservation and Judgment Delta, left confirmedFacts empty, copied the prior judgment, and did not ground the simulation answer. Priority selection and rounds 3-4 were not run.",
+    "confirmedFactsEmpty": true,
+    "simulationTreatedAsConfirmedFact": false,
+    "judgmentChanged": false,
+    "repeatedQuestionCheck": "No second question exists. Zero compact repeats is not a pass.",
+    "nextObjectiveFromUnresolvedRisk": "Round 1 question comes from the cooperation risk. No later selection ran.",
+    "resolvedDistinctFromUnresolved": "answeredQuestions is empty and the cooperation question stays unanswered, while judgmentText still says the experience can 충족 demand.",
+    "wholeBusiness": {
+      "customer": "Aligned with domestic and foreign tourists who like traditional-liquor breweries. Preference is stronger than the input wording.",
+      "problem": "States that specialized experiences are hard to find. That problem is absent from the input.",
+      "value": "Rewrites the conceived brewery visit as a personalized experience.",
+      "product": "No product field. The round-2 statement that the offer is still a concept was not written as a change.",
+      "supply": "Cooperation failure stays a risk, while the operating sentence assumes cooperation. The answer that there is no supply contract was not ledgered.",
+      "market": "Names the tourist segment and adds an unstated increase in interest as a strength. No market size.",
+      "competition": "Names other brewery experiences and generic tour packages. Those competitors are absent from the input.",
+      "revenue": "Participant fees and platform fees are marked as a hypothesis. The answer that price is unset was not ledgered.",
+      "marketing": "Online marketing is a plan. The channel answer was not sent.",
+      "operations": "Cooperation and a platform are written as the operation. The operator answer was not sent.",
+      "risk": "Cooperation failure and demand uncertainty remain listed and are not separated from the 충족 judgment."
+    }
+  }
+}
