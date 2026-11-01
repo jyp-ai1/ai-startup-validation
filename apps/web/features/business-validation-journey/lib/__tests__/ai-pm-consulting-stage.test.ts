@@ -364,6 +364,9 @@ describe('consulting stage batch', () => {
     expect(system).toContain('priorJudgmentText를 출력하지 않는');
     expect(system).toContain('전략 컨설턴트');
     expect(system).toContain('고정된 순서를 강제하지 않는다');
+    expect(system).toContain('사업 목적은 방금 답한 질문의 목적과 달라야 한다');
+    expect(system).toContain('다음 판단을 가장 크게 바꾸는 영역');
+    expect(system).not.toContain('어떻게 구체화할 것인가');
     expect(system).not.toContain('순서는 대상이 있는지');
     expect(system).toContain('존재 여부에 이미 답이 있으면');
     expect(system).toContain('answerSource.source가 simulation');
@@ -398,6 +401,8 @@ describe('consulting stage batch', () => {
       expect(meaning.verifiedFacts.description).toContain('주장');
       expect(meaning.nextQuestions.items.properties.text.description).toContain('이미 제출된 질문');
       expect(meaning.nextQuestions.items.properties.text.description).toContain('구체적으로만 더한');
+      expect(meaning.nextQuestions.items.properties.text.description).toContain('다른 사업 목적');
+      expect(meaning.nextQuestions.items.properties.text.description).not.toContain('후보, 접촉');
       const supply = request.responseFormat.schema.properties as { supply: { description: string }; marketing: { description: string } };
       expect(supply.supply.description).toContain('아직 확인되지 않았다');
       expect(supply.marketing.description).toContain('빈 문자열은 실패다');
