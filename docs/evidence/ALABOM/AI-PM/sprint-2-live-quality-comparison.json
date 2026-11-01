@@ -1,0 +1,53 @@
+{
+  "kind": "execution_record",
+  "executedAt": "2026-11-01T00:43:39Z",
+  "functionName": "executeWholeBusinessCompare",
+  "env": {
+    "GPT_API_KEY": "absent",
+    "OPENAI_API_KEY": "absent"
+  },
+  "status": "NOT RUN",
+  "reason": "GPT_API_KEY missing",
+  "requestedModel": "gpt-4o-mini",
+  "temperature": 0.2,
+  "maxTokens": 2400,
+  "reportResponseFormatLabel": "json_object",
+  "productFollowUpInvoked": false,
+  "httpAttempts": 0,
+  "calls": [
+    {
+      "promptVersion": "quality-2",
+      "status": "not_run",
+      "raw": null,
+      "error": null,
+      "model": null,
+      "completionId": null,
+      "requestId": null,
+      "finishReason": null,
+      "promptTokens": null,
+      "completionTokens": null,
+      "totalTokens": null,
+      "usageKnown": false,
+      "jsonParsed": null,
+      "systemPromptSha256": "2e25a917a346602c2c71163a86de3408c2cc5458fc7b5bf6361cf10b2b472792",
+      "userPromptSha256": "03624d8cef1c0e69da7f5e05fc28d553587ead1e3fc41a5b92dece60b1ad9cdc"
+    },
+    {
+      "promptVersion": "quality-15-whole-business",
+      "status": "not_run",
+      "raw": null,
+      "error": null,
+      "model": null,
+      "completionId": null,
+      "requestId": null,
+      "finishReason": null,
+      "promptTokens": null,
+      "completionTokens": null,
+      "totalTokens": null,
+      "usageKnown": false,
+      "jsonParsed": null,
+      "systemPromptSha256": "7017f5cceed361dd64823a5b3b50fce67d99874742487e7825aedc62bb472723",
+      "userPromptSha256": "aa9cf4cad3bfdefcfd3a5dbd2e68dea594ec03a963d9c69f1dac87ff5294ddb2"
+    }
+  ]
+}

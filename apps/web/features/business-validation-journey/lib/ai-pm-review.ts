@@ -13,6 +13,7 @@ import type {
   ConsultingTurn,
   StagePair,
   StageReading,
+  StageBusinessProfile,
   NextAction,
   ReviewMark,
   ReviewSections,
@@ -236,6 +237,8 @@ export type AiPmReviewView = {
     consultingTurn: ConsultingTurn | null;
     /** Stored error. A type mismatch is not shown as an analysis. */
     failure: string | null;
+    /** Stage interpretation. Absent on a first review. */
+    stageReading?: StageReading | null;
   };
 
 export function normalizeReviewText(text: string): string {
@@ -435,6 +438,7 @@ export function toAiPmReviewView(record: StoredReview, feedback: StoredFeedback[
       : null,
     consultingTurn: record.consultingTurn ?? null,
     failure: clientFailure(record.error),
+    ...(record.stageReading ? { stageReading: record.stageReading } : {}),
   };
 }
 
@@ -1545,6 +1549,92 @@ function compactConsultingAnalysis(sections: ReviewSections): {
   };
 }
 
+const STAGE_FIELD_NOT_ANALYZED = '아직 분석되지 않았다';
+const STAGE_FIELD_UNCONFIRMED = '아직 확인되지 않았다';
+
+/** Request-only state. Stored rows keep their original string, including "". */
+export function stageFieldForRequest(value: unknown): { state: 'confirmed' | 'unconfirmed' | 'not_analyzed'; text: string } {
+  const text = typeof value === 'string' ? value.trim() : '';
+  if (!text || text === STAGE_FIELD_NOT_ANALYZED) return { state: 'not_analyzed', text: STAGE_FIELD_NOT_ANALYZED };
+  if (text === STAGE_FIELD_UNCONFIRMED) return { state: 'unconfirmed', text: STAGE_FIELD_UNCONFIRMED };
+  return { state: 'confirmed', text };
+}
+
+/** Comparison only. The stored sentence keeps the model's punctuation. */
+function notAnalyzedSentence(text: string): string {
+  return text.trim().replace(/[.。]+$/u, '').trim();
+}
+
+function stageFieldStateMatches(state: string, text: string): boolean {
+  if (state === 'not_analyzed') return notAnalyzedSentence(text) === STAGE_FIELD_NOT_ANALYZED;
+  if (state === 'unconfirmed') return text === STAGE_FIELD_UNCONFIRMED;
+  return state === 'confirmed' && text !== STAGE_FIELD_NOT_ANALYZED && text !== STAGE_FIELD_UNCONFIRMED;
+}
+
+/** Blank profile text becomes an explicit gap. It does not invent a strategy sentence. */
+function stageTextForRequest(value: unknown): string {
+  const text = typeof value === 'string' ? value.trim() : '';
+  return text || STAGE_FIELD_NOT_ANALYZED;
+}
+
+/**
+ * A first review has hypotheses in unresolvedIssues and no stage judgment.
+ * The request keeps those sentences as hypotheses. A stored stage reading keeps its own issues.
+ */
+function stageReadingForRequest(reading: StagePriorReading): StagePriorReading {
+  const tracked = reading.judgmentReason.trim().length > 0 || reading.impactOnPreviousJudgment.trim().length > 0;
+  return {
+    ...reading,
+    product: stageTextForRequest(reading.product),
+    unresolvedIssues: tracked ? reading.unresolvedIssues : [],
+    priorHypotheses: tracked ? [...(reading.priorHypotheses ?? [])] : [...reading.unresolvedIssues],
+  };
+}
+
+/** Stage requests keep the first business fields that compact analysis drops. */
+function stageFirstAnalysis(sections: ReviewSections) {
+  return {
+    ...compactConsultingAnalysis(sections),
+    customer: sections.customer,
+    problem: sections.problem,
+    market: sections.market,
+    revenueModel: sections.revenueModel,
+    unresolvedIssues: [...sections.uncertain],
+    product: sections.analysis?.product ?? '',
+    supply: sections.analysis?.supply ?? '',
+    marketing: sections.analysis?.marketing ?? '',
+  };
+}
+
+export type StageAnswerLink = {
+  sourceReviewId: string;
+  questionId: string;
+  question: string;
+  choiceId: string | null;
+  choiceLabel: string | null;
+  supplement: string;
+  submittedAt: string | null;
+  status: StagePair['status'];
+};
+
+export type StagePriorReading = {
+  reviewId: string;
+  judgment: string;
+  judgmentReason: string;
+  impactOnPreviousJudgment: string;
+  resolvedIssues: string[];
+  unresolvedIssues: string[];
+  customer: string;
+  problem: string;
+  revenueModel: string;
+  product: string;
+  supply: string;
+  marketing: string;
+  nextQuestion: string;
+  /** First-review hypotheses moved off unresolvedIssues. Absent when this reading already tracked issues. */
+  priorHypotheses?: string[];
+};
+
 function productReanalysisSchema(): Record<string, unknown> {
   const text = { type: 'string' };
   const list = { type: 'array', items: { type: 'string' } };
@@ -1696,24 +1786,45 @@ function productReanalysisSystemPrompt(): string {
 /** Follow-up reanalysis. The first-review business profile is a different contract. */
 function stageReanalysisSchema(): Record<string, unknown> {
   const text = { type: 'string' };
-  const list = { type: 'array', items: { type: 'string' } };
+  const filled = { type: 'string', pattern: '^.+$' };
+  const list = { type: 'array', items: filled };
   return {
     title: 'stage_reanalysis',
     type: 'object',
     additionalProperties: false,
     required: [
       'answerInterpretation',
+      'statementReadings',
       'verifiedFacts',
       'unverifiedClaims',
       'assumptions',
       'resolvedIssues',
       'unresolvedIssues',
-      'impactOnPreviousJudgment',
-      'updatedJudgment',
-      'judgmentReason',
+      'customer',
+      'problem',
+      'value',
+      'product',
+      'market',
+      'revenueModel',
+      'operations',
+      'supply',
+      'supplyState',
+      'marketing',
+      'marketingState',
+      'competition',
+      'executionNote',
+      'risks',
+      'objectiveCandidates',
+      'selectedCandidateId',
+      'selectionReason',
       'nextVerification',
       'nextQuestions',
       'nextQuestionChoices',
+      'impactOnPreviousJudgment',
+      'keptBusinessPremise',
+      'executionPossibility',
+      'updatedJudgment',
+      'judgmentReason',
     ],
     properties: {
       answerInterpretation: {
@@ -1722,14 +1833,70 @@ function stageReanalysisSchema(): Record<string, unknown> {
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['questionId', 'choiceId', 'meaning'],
+          required: ['questionId', 'choiceId', 'meaning', 'founderBasis', 'observedEvidence', 'judgmentEffect', 'openRisk'],
           properties: {
-            questionId: text,
+            questionId: filled,
             choiceId: text,
             meaning: {
-              type: 'string',
+              ...filled,
               description:
-                'choiceLabel만 반복하면 실패다. supplement의 기준, 계획, 아직 없는 사실을 포함한다. 보존된 선택지가 고른 항목뿐이면 다른 선택지를 만들지 않는다.',
+                '이 답이 사업에 의미하는 바. choiceLabel이나 supplement와 같은 문장이면 실패다. 선택지를 새로 만들지 않는다. source가 simulation이면 사실, 사실을 제공한다, 이는 사실이다라고 쓰지 않는다. 그 문장은 주장이나 미확인이다.',
+            },
+            founderBasis: {
+              ...filled,
+              description: 'Founder가 이렇게 말한 이유. 라벨 반복은 이유가 아니다. 입력에 이유가 없으면 이유가 없다고 적는다.',
+            },
+            observedEvidence: {
+              ...filled,
+              description:
+                '접촉, 합의, 입금, 예약처럼 실제로 확인된 것. 없으면 확인된 접촉이나 합의가 없다고 적는다. 주장을 확인된 사실로 올리지 않는다.',
+            },
+            judgmentEffect: {
+              ...filled,
+              description:
+                'updatedJudgment와 같은 판단이다. 유지된 전제, 이번 답으로 바뀐 실행 판단, 그 근거를 같이 적는다. 라벨 반복은 영향이 아니다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 긍정적인 전망이라고 쓰지 않는다. verifiedFacts가 비어 있으면 성공 가능성은 높아지지 않았다라고 적는다. 그 문장을 updatedJudgment에만 두지 않는다.',
+            },
+            openRisk: {
+              ...filled,
+              description:
+                '이 답이 남긴 미검증 위험. statementReadings의 openGap과 같은 위험이다. 이전 미해결 문장을 그대로 쓰지 않는다. 없으면 없다고 적는다. 빈 문자열은 실패다.',
+            },
+          },
+        },
+      },
+      statementReadings: {
+        type: 'array',
+        minItems: 1,
+        description: 'currentAnswerStatements의 각 문장마다 하나. 문장을 한 항목으로 합치지 않는다.',
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['questionId', 'index', 'statement', 'source', 'kind', 'certainty', 'openGap'],
+          properties: {
+            questionId: filled,
+            index: { type: 'integer' },
+            statement: { ...filled, description: 'currentAnswerStatements의 그 문장.' },
+            source: {
+              type: 'string',
+              enum: ['simulation', 'founder'],
+              description: 'currentAnswerStatements의 그 문장과 같은 출처. 한 답의 문장은 모두 같은 출처다. simulation을 founder나 observed로 올리지 않는다.',
+            },
+            kind: {
+              type: 'string',
+              enum: ['stated_action', 'counterparty_response', 'participation_intent', 'agreed_terms', 'other'],
+              description:
+                '한 문장에 하나. stated_action은 했다고 말한 행동이다. counterparty_response는 상대의 회신이나 그 부재다. participation_intent는 참여 의향이 확인됐는지다. agreed_terms는 조건이 합의됐는지다. 이 넷에 해당하면 other를 쓰지 않는다. 코드가 고르지 않는다.',
+            },
+            certainty: {
+              type: 'string',
+              enum: ['claim_only', 'unconfirmed', 'observed'],
+              description:
+                '별도 증거가 없으면 observed가 아니다. simulation은 observed가 아니다. 했다고 말한 행동은 claim_only다. 반응이 없다, 확인하지 못했다, 합의되지 않았다는 문장은 unconfirmed다.',
+            },
+            openGap: {
+              ...filled,
+              description:
+                '이 문장 자체가 남긴 위험이다. 다음 문장을 빈칸으로 옮기지 않는다. 회신, 의향, 조건이 없다는 문장은 그 부재가 빈칸이다. 없다고 적는 것은 이 문장이 위험을 닫았을 때만이다.',
             },
           },
         },
@@ -1737,12 +1904,12 @@ function stageReanalysisSchema(): Record<string, unknown> {
       verifiedFacts: {
         ...list,
         description:
-          '접촉, 계약, 입금, 예약처럼 별도 증거가 있는 사실만. 주장과 계획은 넣지 않는다. 없으면 빈 배열. 실행 가능성의 긍정 근거는 이 목록뿐이다.',
+          '접촉, 계약, 입금, 예약처럼 별도 증거가 있는 사실만. Founder의 주장, 선호, 기대, 계획은 넣지 않는다. 없으면 빈 배열. 실행 가능성의 긍정 근거는 이 목록뿐이다.',
       },
       unverifiedClaims: {
         ...list,
         description:
-          'Founder의 주장이나 기대. 가능성이 높다는 문장은 여기에 둔다. 잠재력은 있을 수 있으나 현재 확인된 실행 가능성은 아니다. verifiedFacts와 같은 문장을 두지 않는다.',
+          'Founder의 주장, 선호, 기대. 가능성이 높다는 문장은 여기에 둔다. 접촉, 협력 의사, 합의, 공급 조건이 없으면 사업 성과의 근거가 아니다. verifiedFacts와 같은 문장을 두지 않는다.',
       },
       assumptions: {
         ...list,
@@ -1752,60 +1919,142 @@ function stageReanalysisSchema(): Record<string, unknown> {
       resolvedIssues: {
         ...list,
         description:
-          '계획이나 기준이 구체화된 진전. supplement가 말한 선정 기준 문장을 여기 적는다. choiceLabel만 반복하면 진전이 빠진다. 후보가 없다는 사실은 넣지 않는다. 이 목록은 다음 질문에서 닫힌다.',
+          '실제로 해결된 항목만. 의향, 선호, 기대는 해결이 아니다. 확인되지 않은 주장은 넣지 않는다. 이 목록은 다음 질문에서 다시 묻지 않는다.',
       },
       unresolvedIssues: {
         ...list,
         description:
-          '아직 남은 실행 문제. 후보가 없거나 접촉과 협력 의사가 없으면 여기에 남긴다. 기준이 생겼다고 이 목록에서 지우지 않는다.',
+          'currentAnswerStatements와 같은 개수의 새 문장. 각 openGap이 한 항목이다. 이전 unresolvedIssues와 같은 문장만 두지 않는다. 행동 주장, 회신 부재, 의향 미확인, 조건 미합의는 서로 다른 항목이다.',
       },
-      impactOnPreviousJudgment: {
+      customer: { ...filled, description: '핵심 고객. 입력과 답에 없으면 없다고 적는다. 빈 문자열은 실패다.' },
+      problem: { ...filled, description: '해결하려는 문제. 입력과 답에 없으면 없다고 적는다. 빈 문자열은 실패다.' },
+      value: { ...filled, description: '제공하는 가치. 요청에 문장이 있으면 그 내용을 다시 쓴다. 없으면 아직 분석되지 않았다. 빈 문자열은 실패다.' },
+      product: { ...filled, description: '상품 또는 경험. 요청에 문장이 있으면 그 내용을 다시 쓴다. 없으면 아직 분석되지 않았다. 빈 문자열은 실패다. 없는 상품을 만들지 않는다.' },
+      market: { ...filled, description: '시장. 입력에 없는 규모 숫자는 만들지 않는다. 빈 문자열은 실패다.' },
+      revenueModel: { ...filled, description: '수익 구조. 입력에 없으면 가설이라고 적고 확정 수익으로 쓰지 않는다. 빈 문자열은 실패다.' },
+      operations: { ...filled, description: '운영 방식. 점수가 아니다. 빈 문자열은 실패다.' },
+      supply: {
         type: 'string',
+        pattern: '^.+$',
         description:
-          '앞의 목록이 이전 판단을 어떻게 바꾸는지. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 잠재력, 현재 확보된 근거, 실행 가능성, 실행상 위험을 나눈다. 증거가 없으면 아직 확인되지 않은 상태다. 낮다고 단정하지 않는다. unverifiedClaims는 아직 검증되지 않은 기회로만 인용한다. priorJudgmentText를 이어 쓰지 않는다.',
+          '공급 문장. 빈 문자열은 실패다. supplyState가 not_analyzed이면 아직 분석되지 않았다. unconfirmed이면 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 입력에 없는 계약을 만들지 않는다.',
       },
-      updatedJudgment: {
+      supplyState: {
         type: 'string',
-        description:
-          '앞의 목록으로 다시 쓴 현재 판단. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 실행 가능성은 아직 확인되지 않은 상태다. 낮다고 단정하지 않는다. unverifiedClaims는 잠재적 기회로만 남긴다. 계획의 구체화는 진전으로 적고 가설의 확인으로 쓰지 않는다.',
+        enum: ['confirmed', 'unconfirmed', 'not_analyzed'],
+        description: 'supply의 상태. confirmed는 확인된 내용, unconfirmed는 미확인, not_analyzed는 아직 분석되지 않은 내용이다.',
       },
-      judgmentReason: {
+      marketing: {
         type: 'string',
+        pattern: '^.+$',
         description:
-          'updatedJudgment를 유지하거나 바꾼 이유. verifiedFacts, unverifiedClaims, resolvedIssues, unresolvedIssues와 같은 방향이다.',
+          '알리는 방법. 빈 문자열은 실패다. marketingState가 not_analyzed이면 아직 분석되지 않았다. unconfirmed이면 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 입력에 없는 성과를 만들지 않는다.',
+      },
+      marketingState: {
+        type: 'string',
+        enum: ['confirmed', 'unconfirmed', 'not_analyzed'],
+        description: 'marketing의 상태. confirmed는 확인된 내용, unconfirmed는 미확인, not_analyzed는 아직 분석되지 않은 내용이다.',
+      },
+      competition: { ...filled, description: '경쟁. 입력과 답에 없으면 없다고 적는다. 빈 문자열은 실패다.' },
+      executionNote: {
+        ...filled,
+        description: '실행이 확인됐는지를 문장으로 적는다. 점수, 높다, 낮다로 단정하지 않는다. 증거가 없으면 아직 확인되지 않았다고 적는다. 운영 계획을 실행이 끝난 것처럼 적지 않는다. 빈 문자열은 실패다.',
+      },
+      risks: { ...list, description: '사업 위험. 없으면 빈 배열. 만들어 내지 않는다.' },
+      objectiveCandidates: {
+        type: 'array',
+        minItems: 2,
+        description:
+          '서로 다른 검토 목적 2개 이상. areaStatus를 읽고 고른다. 배열 순서는 우선순위가 아니다. priorReview의 문장을 목적으로 복사하지 않는다. 코드가 후보를 고르지 않는다.',
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['candidateId', 'areaId', 'objective', 'importance', 'uncertainty', 'prerequisite', 'overlapsReviewedObjective'],
+          properties: {
+            candidateId: { ...filled, description: '이 후보의 식별자. selectedCandidateId가 이 값을 가리킨다.' },
+            areaId: { ...filled, description: 'areaStatus의 areaId 하나. 코드가 정하지 않는다.' },
+            objective: {
+              ...filled,
+              description: '이번에 새로 할 사업 판단. 질문 문장이 아니다. reviewedObjectives와 같은 목적이면 overlapsReviewedObjective는 true다.',
+            },
+            importance: { ...filled, description: '이 판단이 다음 사업 판단에 필요한 이유.' },
+            uncertainty: { ...filled, description: '지금 모르는 것.' },
+            prerequisite: { ...filled, description: '먼저 알아야 하는 것. 없으면 없다고 적는다.' },
+            overlapsReviewedObjective: {
+              type: 'boolean',
+              description: '이미 검토한 목적과 같으면 true. 표현만 바꾼 목적도 true다.',
+            },
+          },
+        },
+      },
+      selectedCandidateId: {
+        ...filled,
+        description: 'overlapsReviewedObjective가 false인 후보의 candidateId. 코드가 고르지 않는다. nextQuestions는 그 후보의 objective만 묻는다.',
+      },
+      selectionReason: {
+        ...filled,
+        description: '선택한 후보의 중요성, 불확실성, 선행조건. 후보 문장을 질문으로 복사하지 않는다.',
       },
       nextVerification: {
-        type: 'string',
+        ...filled,
         description:
-          'unresolvedIssues 중 다음에 확인할 하나. resolvedIssues의 선정 기준은 다시 확인 대상으로 쓰지 않는다. 후보 확보나 실제 접근이 남아 있으면 그중 하나를 고른다.',
+          '선택된 후보가 확인하려는 불확실성. 이미 답한 질문, choiceLabel, supplement와 같은 문장을 다시 확인 대상으로 쓰지 않는다.',
       },
       nextQuestions: {
         type: 'array',
         minItems: 1,
         description:
-          'unresolvedIssues만 묻는 서로 다른 질문 1개 이상. 개수는 모델이 정한다. resolvedIssues와 supplement에 이미 있는 문장을 다시 묻지 않는다.',
+          'selectedCandidateId 후보의 objective만 묻는 질문 1개 이상. 개수는 모델이 정한다. closedQuestions와 같은 목적은 묻지 않는다. resolvedIssues와 supplement에 이미 있는 문장을 다시 묻지 않는다.',
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['text', 'choices'],
+          required: ['text', 'choices', 'verificationPurpose'],
           properties: {
             text: {
-              type: 'string',
+              ...filled,
               description:
-                'unresolvedIssues의 한 문제만 묻는다. 선정 기준이 resolvedIssues에 있으면 그 기준이 무엇인지, 또는 그 기준을 더 자세히 설명해 달라고 다시 묻지 않는다. 후보 확보나 실제 접근이 남아 있으면 그중 가장 중요한 것을 묻는다.',
+                '선택된 후보의 objective를 묻는다. closedQuestions와 다른 사업 목적을 묻는다. 이미 제출된 질문, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. priorReview의 주제를 질문으로 고정하지 않는다. 영역 목록을 순서대로 따르지 않는다.',
+            },
+            verificationPurpose: {
+              ...filled,
+              description:
+                '이 질문이 확인하려는 불확실성. 질문 문장, 이전 질문, 선택, 보충, 이미 해결된 문제와 같으면 실패다. 같은 검증을 다른 말로 적은 목적은 실패다.',
             },
             choices: {
               type: 'array',
               minItems: 2,
-              items: { type: 'string' },
-              description: '새 검증의 갈림길. 이미 제출한 supplement 문장을 다시 고르는 항목으로 넣지 않는다.',
+              items: filled,
+              description: '선택된 후보의 갈림길. 이미 제출한 supplement 문장을 다시 고르는 항목으로 넣지 않는다.',
             },
           },
         },
       },
       nextQuestionChoices: {
         type: 'array',
-        items: { type: 'array', items: { type: 'string' } },
+        items: { type: 'array', items: filled },
+      },
+      impactOnPreviousJudgment: {
+        ...filled,
+        description:
+          '이번 답이 이전 판단에 주는 영향이다. 사업 모델의 잠재력과 미확인 주장을 가른다. 잠재력은 유지할 수 있다. 확인된 접촉이 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. 해소되지 않은 위험은 빼지 않는다. unverifiedClaims는 창업자의 기대로만 인용하고 성공 가능성을 높이지 않는다. priorJudgmentText를 그대로 붙이지 않는다.',
+      },
+      keptBusinessPremise: {
+        ...filled,
+        description: '이전 단계에서 유지할 사업 전제 한 문장. 실행 가능성과 같은 문장이면 안 된다.',
+      },
+      executionPossibility: {
+        ...filled,
+        description: '이번 답으로 다시 본 실행 가능성 한 문장. 사업 전제와 같은 문장이면 안 된다.',
+      },
+      updatedJudgment: {
+        ...filled,
+        description:
+          'keptBusinessPremise와 executionPossibility가 둘 다 드러나는 새 문장. priorJudgmentText를 출력하지 않는다. 유지할 잠재력, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 파트너 확보와 실행은 검증되지 않았다고 적고 성공 가능성은 높아지지 않았다라고 적는다. unverifiedClaims로 성공 가능성을 높이지 않는다. 의향은 해결이 아니다. priorJudgmentText와 같거나 그 문장을 포함하면 실패다.',
+      },
+      judgmentReason: {
+        ...filled,
+        description:
+          'updatedJudgment와 judgmentEffect와 같은 판단의 이유. 유지된 전제와 이번 답의 근거를 같이 적는다. 세 칸을 같은 문장으로 복사하지 않는다. verifiedFacts가 비어 있으면 성공 가능성은 높아지지 않았다와 같은 방향이다. priorJudgmentText를 그대로 붙이지 않는다.',
       },
     },
   };
@@ -1813,19 +2062,21 @@ function stageReanalysisSchema(): Record<string, unknown> {
 
 function stageReanalysisSystemPrompt(): string {
   return [
-    '당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다.',
-    '이 호출은 후속 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
-    '1. 각 답을 읽는다. stagePairs와 priorStagePairs에서 question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. questionId가 질문과 답을 잇는다. choiceLabel만 반복하면 해석이 아니다. 이번 stagePairs의 supplement에 있는 기준, 계획, 아직 없는 사실을 그 questionId의 meaning에 포함한다. priorStagePairs는 판단의 맥락이고 answerInterpretation에 넣지 않는다. offeredChoices가 고른 항목 하나뿐이면 다른 선택지는 보존되지 않은 정보다.',
-    'answerReading.kinds는 답의 성격이다. fact, claim, plan, choice다. 점수가 아니다. claim은 검증되지 않은 주장이다. 가능성이 높다는 문장은 claim이다. plan은 계획이다. fact는 현재 상태일 수 있으나 확인된 협력은 아니다.',
-    '2. 진전과 미해결을 먼저 적는다. 계획이 구체화된 것은 진전이다. supplement가 선정 기준을 말하면 그 기준 문장을 resolvedIssues에 적고 닫힌 항목으로 둔다. choiceLabel의 기준을 구체화한다만 적으면 진전 내용이 빠진 것이다. 후보가 없거나 접촉과 협력 의사가 없으면 unresolvedIssues에 남긴다. 기준이 생겼다고 미해결을 지우지 않는다. 기준이 생겼다고 협력이 확인된 것도 아니다.',
-    '3. 신뢰 수준을 적는다. 주장과 기대는 unverifiedClaims다. 그 가설에는 잠재력이 있을 수 있다. 잠재력과 현재 확인된 실행 가능성은 별개다. verifiedFacts에는 접촉, 계약, 입금, 예약처럼 별도 증거가 있는 것만 넣고 없으면 빈 배열이다. 주장은 verifiedFacts에 넣지 않는다. assumptions에는 아직 검증되지 않은 가설과 판단이 바뀔 추가 증거를 적는다.',
-    '4. 그 목록으로 사업성을 다시 평가한다. priorJudgmentText를 이어 쓰지 않는다. impactOnPreviousJudgment와 updatedJudgment는 방금 적은 resolvedIssues 한 항목과 unresolvedIssues 한 항목을 각각 문장 안에 남긴다. 목록과 다른 이전 문장만 반복하지 않는다. 잠재력, 실행 가능성, 현재 확보된 근거, 실행상 위험을 나눈다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 현재 실행 가능성은 아직 확인되지 않은 상태다. 증거가 없다고 실행 가능성이 낮다고 단정하지 않는다. unverifiedClaims는 잠재적 기회로만 인용한다. 가설을 긍정적인 실행 근거로 쓰지 않고, 부정으로 단정하지도 않는다. judgmentReason은 그 구분과 같은 방향이다. 점수를 만들지 않는다. 코드는 결론을 정하지 않는다.',
-    '5. 다음 질문은 unresolvedIssues만 묻는다. resolvedIssues와 supplement에 이미 있는 문장을 질문이나 선택지로 다시 넣지 않는다. 선정 기준이 resolvedIssues에 있으면 그 기준이 무엇인지, 또는 그 기준을 더 자세히 설명해 달라고 다시 묻지 않는다. 남은 문제 가운데 가장 중요한 것을 당신이 고른다. 후보 확보나 실제 접근이 남아 있으면 그중 하나를 묻는다.',
+    '당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다.',
+    '당신은 단순한 사업 아이디어 평가자가 아니라 지속적으로 사업을 발전시키는 전략 컨설턴트다. 최초 사업 아이디어와 모든 이전 검토 및 파운더 답변을 종합해 이해한다. 파운더의 답변을 단순 요약하지 말고 사업 모델에 미치는 영향을 판단한다. 다음 질문은 이전 질문의 후속이 아니다. 확인된 것, 아직 중요한 미확인, 다음 판단을 가장 크게 바꾸는 영역을 가른 뒤 그 영역의 사업 목적을 고른다. 고객, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 질문은 현재 사업 상황에 맞춰 고르며 고정된 순서를 강제하지 않는다. 이전에 답변된 질문을 단순히 반복하지 않는다. 질문의 표현이 아니라 질문이 해결하려는 사업 목적이 이전 질문과 달라야 한다. 기존 판단을 유지하거나 바꿀 수 있으며 그 이유를 사업 맥락에서 적는다. 확인되지 않은 주장은 검증된 사실로 취급하지 않는다. 사업의 잠재력과 실제 실행 가능성을 구분한다. 이미 해결된 영역은 근거와 함께 해결 상태로 남긴다.',
+    '이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
+    '판단 예시는 다른 사업이다. 그 문장을 출력에 복사하지 말고 이번 사업으로 다시 쓴다. 이전 판단이 점포는 없으나 좋은 기회라는 문장이면 그 문장을 다시 쓰지 않는다. 사업 모델의 잠재력은 고객에게 가치를 줄 여지로 남을 수 있다. 이번 답이 상권이 좋을 것 같다이면 그 말은 미확인 주장이고 unverifiedClaims다. verifiedFacts는 빈 배열이다. 확인된 협력이나 점포는 없다. 실행 가능성은 검증되지 않았다. judgmentEffect에는 잠재력은 남을 수 있으나 상권 주장은 유지하지 않으며 성공 가능성은 높아지지 않았다라고 적는다. updatedJudgment는 새 문장으로 유지할 잠재력, 근거가 부족한 주장, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. 남은 위험은 점포와 조건이 없다는 현재 빈칸이다. unresolvedIssues에는 점포가 없다는 현재 빈칸을 새로 적는다. 다음 질문은 방금 물은 문장의 단어를 바꾼 질문이 아니다. 방금 답한 목적과 다른 미확인 영역이다. 그 존재 질문에 이미 답이 있으면 같은 질문을 반복하지 않고 아직 확인되지 않은 다른 영역을 고른다.',
+    '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 새로 준 정보와 그 정보가 주장인지 미확인인지 적는다. 연습 입력을 사실로 부르지 않는다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. answerSource.source가 simulation이거나 답이 SIMULATION으로 시작하면 연습 입력이고 실제 Founder 답변과 구분한다. 그 문장에 이는 사실이다라고 쓰지 않는다. 사실을 제공한다라고도 쓰지 않는다. Founder가 문의하거나 접촉했다고 말해도 그 말은 주장이다. 상대의 기록, 회신, 합의가 없으면 답 문장을 observedEvidence로 옮기지 않는다. 한 답 안의 주장, 없는 반응, 없는 참여 의향, 없는 조건은 서로 다른 정보다. 하나를 사실로 나머지를 덮지 않는다. 문의 주장만으로 협력 가능성을 높이지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 사업 모델의 잠재력을 유지하는 것과 미확인 주장을 유지하는 것을 가른다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 긍정적인 전망이라고 쓰지 않는다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다.',
+    '2. 확인된 사실, 주장, 가설을 가른다. Founder의 가능성 판단, 선호, 기대는 unverifiedClaims로 남긴다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 접촉, 협력 의사, 합의, 공급 조건이 없으면 그 기대를 사업 성과나 성공 가능성의 근거로 쓰지 않는다. 긍정적 사업 판단은 verifiedFacts의 별도 근거가 있을 때만 적는다. 근거가 없으면 그 문장은 창업자의 기대이고 파트너 확보와 실행은 검증되지 않았다고 적는다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다.',
+    '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 정보가 부족한 칸은 부족하다고 적는다. supply와 marketing은 supplyState, marketingState와 함께 적는다. state는 confirmed, unconfirmed, not_analyzed다. not_analyzed의 문장은 아직 분석되지 않았다. unconfirmed의 문장은 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 빈 문자열과 공백은 실패다. value와 product도 빈 문자열이면 실패다. 요청에 문장이 있으면 지우지 말고 이번 답에 맞게 다시 쓴다. 요청에 아직 분석되지 않았다만 있으면 그 상태를 유지하거나 이번 답으로 알게 된 범위만 적는다. 부모의 빈 문자열은 요청에 없고 state는 not_analyzed다. 입력에도 없으면 unconfirmed로 둔다. 입력에 없는 공급 계약, 마케팅 성과, 수익, 상품을 만들어 내지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다. 확인된 접촉이 없으면 운영 계획을 실행이 끝난 것처럼 적지 않는다.',
+    '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason은 서로 다른 역할의 새 문장이다. 사업 모델의 잠재력, Founder의 미확인 주장, 실제 확인된 협력, 실행 가능성, 새로 보인 위험을 한 덩어리로 유지하지 않는다. 잠재력은 유지할 수 있다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. impactOnPreviousJudgment는 이번 답이 그 구분 중 어디에 영향을 주는지다. updatedJudgment는 priorJudgmentText를 출력하지 않는 현재 판단이다. 사업 모델의 잠재력은 유지할 수 있다. 협력의 실행 가능성은 그 잠재력과 따로 재평가한다. 새 사실이 없어도 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. judgmentReason은 그 구분의 이유다. 남은 위험은 빼지 말고 unresolvedIssues에 현재 빈칸으로 적는다. unresolvedIssues는 priorUnresolvedIssues와 다른 새 문장이다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건을 한 문장으로 뭉치지 않는다. 새로 보인 위험도 거기 적는다. 세 문장을 한 문장으로 반복하지 않는다. priorJudgmentText를 세 칸에 그대로 붙이지 않는다. updatedJudgment가 priorJudgmentText와 같거나 그 문장을 포함하면 재평가가 아니다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다. 미확인 주장을 긍정적인 전망으로 쓰지 않는다. 이번 답이 그 위험을 해소하지 않으면 위험을 빼지 않는다. 코드는 결론을 정하지 않는다.',
+    '5. 다음 검증은 statedRecord와 areaStatus를 읽고 objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId로 하나 고른다. 코드는 질문 문장을 정하지 않는다. 코드는 후보도 고르지 않는다. 질문 개수도 당신이 정한다. priorReview는 판단을 갱신할 때 읽고 질문의 주제로 고정하지 않는다. overlapsReviewedObjective가 true인 후보는 고르지 않는다. closedQuestions의 사업 목적은 끝난 목적이다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 이미 답한 질문은 표현만 바꾸어 다시 묻지 않는다. 다음 질문의 사업 목적은 방금 답한 질문의 목적과 달라야 한다. 고정된 질문 순서는 없다. areaStatus의 배열 순서는 우선순위가 아니다. 고객, 문제, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 해결된 내용은 근거와 함께 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
+    'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. priorHypotheses와 doNotCopy.priorUnresolvedIssues는 가설이거나 이전 목록이다. unresolvedIssues는 그 목록을 그대로 복사하지 않고 이번 답이 남긴 빈칸과 새로 보인 빈칸만 적는다. 근거가 없으면 미해결로 남긴다.',
     'JSON만 반환한다.',
-    '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
-    'answerInterpretation은 이번 stagePairs의 questionId만 담는다. priorStagePairs의 questionId는 넣지 않는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
-    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text와 choices다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
+    '키 순서는 answerInterpretation, statementReadings, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, objectiveCandidates, selectedCandidateId, selectionReason, nextVerification, nextQuestions, nextQuestionChoices, impactOnPreviousJudgment, keptBusinessPremise, executionPossibility, updatedJudgment, judgmentReason 이다.',
+    'answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
+    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. verificationPurpose는 질문 문장과 다른 불확실성이다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
   ].join(' ');
 }
@@ -1836,6 +2087,10 @@ function renameEchoKeys(value: unknown): unknown {
   if (!value || typeof value !== 'object') return value;
   const renamed: Record<string, unknown> = {};
   for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+    if (key === 'revisionTask' || key === 'businessState') {
+      renamed[key] = child;
+      continue;
+    }
     const name =
       key === 'judgment' || key === 'judgmentDetail'
         ? 'priorJudgmentText'
@@ -1882,6 +2137,17 @@ function coveredStage(stage: ReturnType<typeof nextFactToAsk>, answeredText: str
   };
 }
 
+function stageLatestForRequest(sections: ReviewSections): Record<string, unknown> {
+  const latest = followUpPreviousAnalysis(sections);
+  if (!latest.analysis || typeof latest.analysis !== 'object') return latest;
+  const analysis = { ...(latest.analysis as Record<string, unknown>) };
+  analysis.supply = stageFieldForRequest(analysis.supply);
+  analysis.marketing = stageFieldForRequest(analysis.marketing);
+  if (typeof analysis.value !== 'string' || !analysis.value.trim()) analysis.value = STAGE_FIELD_NOT_ANALYZED;
+  if (typeof analysis.product !== 'string' || !analysis.product.trim()) analysis.product = STAGE_FIELD_NOT_ANALYZED;
+  return { ...latest, analysis };
+}
+
 export function buildProductReanalysisRequest(input: {
   originalInput: string;
   firstAnalysis: ReviewSections;
@@ -1903,6 +2169,10 @@ export function buildProductReanalysisRequest(input: {
   priorStagePairs?: StagePair[];
   /** True only when the founder asked for analysis before every question was answered. */
   stagePartial?: boolean;
+  /** Question-linked answers, including earlier stages. Absent on the one-answer path. */
+  answerLinks?: StageAnswerLink[];
+  /** Analyses already stored on this business chain, oldest first. */
+  priorReadings?: StagePriorReading[];
 }): ChatRequest {
   const previousQuestions = input.previousQuestions ?? [input.latestAnalysis.nextQuestion];
   const stagePairs = input.stagePairs ?? [];
@@ -1912,12 +2182,29 @@ export function buildProductReanalysisRequest(input: {
   const anchors = stageBatch
     ? {
         originalInput: input.originalInput,
-        firstAnalysis: compactConsultingAnalysis(input.firstAnalysis),
-        latestAnalysis: followUpPreviousAnalysis(latestForRequest),
+        firstAnalysis: {
+          ...stageFirstAnalysis(input.firstAnalysis),
+          supply: stageFieldForRequest(input.firstAnalysis.analysis?.supply),
+          marketing: stageFieldForRequest(input.firstAnalysis.analysis?.marketing),
+          product: stageTextForRequest(input.firstAnalysis.analysis?.product),
+          unresolvedIssues: [],
+          priorHypotheses: [...input.firstAnalysis.uncertain],
+        },
+        latestAnalysis: stageLatestForRequest(latestForRequest),
         priorQuestionTexts: previousQuestions,
+        answerLinks: input.answerLinks ?? [],
+        priorReadings: (input.priorReadings ?? []).map((reading) => {
+          const normalized = stageReadingForRequest(reading);
+          return {
+            ...normalized,
+            supply: stageFieldForRequest(reading.supply),
+            marketing: stageFieldForRequest(reading.marketing),
+          };
+        }),
         doNotCopy: {
           priorJudgmentText: latestForRequest.analysis?.judgmentDetail || latestForRequest.judgment,
           priorQuestionText: latestForRequest.nextQuestion,
+          priorUnresolvedIssues: [...latestForRequest.uncertain],
         },
         consultingPath: input.consultingPath ?? [],
       }
@@ -1957,16 +2244,37 @@ export function buildProductReanalysisRequest(input: {
         founderChoice: input.founderChoice?.label ?? null,
         founderSupplement: input.founderSupplement,
       });
-  const payload = () =>
-    renameEchoKeys({
+  const payload = () => {
+    const renamed = renameEchoKeys({
       ...(stageBatch
         ? {
+            businessState: stageBusinessState({
+              originalInput: input.originalInput,
+              latest: latestForRequest,
+              pairs: [...(input.priorStagePairs ?? []), ...stagePairs],
+              ledger: evidenceLedger as EvidenceLedger,
+              reading: (input.priorReadings ?? []).at(-1),
+            }),
+            currentAnswerStatements: currentAnswerStatementPayload(stagePairs),
+            closedQuestions: closedQuestionPayload([...(input.priorStagePairs ?? []), ...stagePairs]),
+            revisionTask: {
+              updatedJudgment:
+                'priorJudgmentText를 출력하지 않는다. 그 문장을 유지라고 다시 적는 것은 재평가가 아니다. 새 문장에서 사업 모델의 잠재력과 미확인 주장을 가른다. 확인된 접촉이 없으면 협력 가능성이 높다는 판단을 유지하지 않는다. 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다.',
+              unresolvedIssues:
+                'priorUnresolvedIssues와 같은 문장을 두지 않는다. unresolvedIssues의 개수는 currentAnswerStatements와 같다. 각 문장이 남긴 위험을 새 문장으로 하나씩 적는다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건이 서로 다르면 한 문장으로 뭉치지 않는다. priorHypotheses를 복사하지 않는다.',
+              nextQuestion:
+                '질문 문장은 당신이 고른다. 질문 개수도 당신이 정한다. objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId의 목적만 묻는다. priorReview는 판단 갱신에만 쓰고 질문의 주제로 고정하지 않는다. priorQuestionText와 같은 목적을 다른 말로 묻지 않는다. 방금 답한 질문을 반복하지 않는다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 단어만 바꾼 질문은 같은 목적이다. 미확인 영역은 areaStatus에서 고른다. 고정된 질문 순서는 없다. 영역 목록은 순서가 아니다. 해결된 내용은 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다.',
+            },
             stagePairs: stagePairs.map(stagePairPayload),
             priorStagePairs: (input.priorStagePairs ?? []).map(stagePairPayload),
             stagePartial: input.stagePartial === true,
             answerReading: [...(input.priorStagePairs ?? []), ...stagePairs].map((pair) => ({
               questionId: pair.questionId,
               kinds: founderAnswerKinds(pair),
+            })),
+            answerSource: [...(input.priorStagePairs ?? []), ...stagePairs].map((pair) => ({
+              questionId: pair.questionId,
+              source: answerSource(pair),
             })),
           }
         : {
@@ -2017,6 +2325,8 @@ export function buildProductReanalysisRequest(input: {
       priorAnalyses: analyses,
       ...(stageBatch ? {} : { priorTurns: turns }),
     }) as Record<string, unknown>;
+    return renamed;
+  };
   const systemTokens = estimateReviewTokens(system);
   const overBudget = () =>
     systemTokens + estimateReviewTokens(JSON.stringify(payload())) > AI_PM_PRODUCT_REANALYSIS_INPUT_TOKEN_BUDGET;
@@ -2623,6 +2933,47 @@ function stageSupplementKey(pairs: StagePair[]): string {
     .join('\n---\n');
 }
 
+function answerSource(pair: { choiceLabel: string | null; supplement: string }): 'simulation' | 'founder' {
+  const text = `${pair.choiceLabel ?? ''}\n${pair.supplement}`;
+  return /^\s*SIMULATION\b/m.test(text) ? 'simulation' : 'founder';
+}
+
+/** Sentence splits of one answer. A simulation label is not a statement. This does not classify the sentences. */
+function answerStatements(text: string): string[] {
+  const stripped = text.replace(/^\s*SIMULATION\b[.:]?\s*/iu, '').trim();
+  const source = stripped.length > 0 ? stripped : text.trim();
+  if (!source) return [];
+  const parts = source
+    .split(/(?<=[.!?。])\s+/u)
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+  return parts.length > 0 ? parts : [source];
+}
+
+function currentAnswerStatementPayload(pairs: StagePair[]): Array<{
+  questionId: string;
+  source: 'simulation' | 'founder';
+  index: number;
+  statement: string;
+}> {
+  return pairs.flatMap((pair) => {
+    const source = answerSource(pair);
+    const statements = [pair.choiceLabel, pair.supplement].flatMap((item) => answerStatements(item ?? ''));
+    return statements.map((statement, index) => ({
+      questionId: pair.questionId,
+      source,
+      index,
+      statement,
+    }));
+  });
+}
+
+function closedQuestionPayload(pairs: StagePair[]): Array<{ questionId: string; text: string; askAgain: false }> {
+  return pairs
+    .filter((pair) => pair.status === 'answered' && pair.question.trim().length > 0)
+    .map((pair) => ({ questionId: pair.questionId, text: pair.question, askAgain: false as const }));
+}
+
 function stagePairPayload(pair: StagePair): {
   questionId: string;
   question: string;
@@ -2651,6 +3002,86 @@ function analysisForStageContext(sections: ReviewSections): ReviewSections {
   return { ...sections, analysis };
 }
 
+const AREA_STATUS_IDS = ['customer', 'problem', 'product', 'supply', 'price', 'revenue', 'market', 'marketing', 'operations', 'risk'] as const;
+
+const AREA_CLAIM_MARKERS: Record<(typeof AREA_STATUS_IDS)[number], RegExp> = {
+  customer: /고객/,
+  problem: /문제/,
+  product: /상품/,
+  supply: /공급|계약/,
+  price: /가격/,
+  revenue: /수익|참가비/,
+  market: /시장/,
+  marketing: /마케팅/,
+  operations: /운영비|운영 비용|책임/,
+  risk: /위험/,
+};
+
+function profileTextForArea(latest: ReviewSections, areaId: (typeof AREA_STATUS_IDS)[number]): string | undefined {
+  const analysis = latest.analysis;
+  if (areaId === 'customer') return latest.customer;
+  if (areaId === 'problem') return latest.problem;
+  if (areaId === 'product') return analysis?.product;
+  if (areaId === 'supply') return analysis?.supply;
+  if (areaId === 'market') return latest.market;
+  if (areaId === 'revenue') return latest.revenueModel;
+  if (areaId === 'marketing') return analysis?.marketing;
+  if (areaId === 'operations') return analysis?.operations || latest.execution;
+  return undefined;
+}
+
+/** Status from sentinels and answer text. Prior prose does not become a status, and nothing here ranks the next area. */
+function mechanicalAreaStatus(
+  latest: ReviewSections,
+  claims: string[],
+): Array<{ areaId: (typeof AREA_STATUS_IDS)[number]; status: 'not_analyzed' | 'unconfirmed' | 'claim'; basis: 'field' | 'answer' | 'no_evidence' }> {
+  return AREA_STATUS_IDS.map((areaId) => {
+    const raw = profileTextForArea(latest, areaId);
+    const hasField = areaId !== 'price' && areaId !== 'risk';
+    if (hasField) {
+      const text = raw?.trim() ?? '';
+      if (!text || text === STAGE_FIELD_NOT_ANALYZED) return { areaId, status: 'not_analyzed' as const, basis: 'field' as const };
+      if (text === STAGE_FIELD_UNCONFIRMED) return { areaId, status: 'unconfirmed' as const, basis: 'field' as const };
+    }
+    if (claims.some((claim) => AREA_CLAIM_MARKERS[areaId].test(claim))) return { areaId, status: 'claim' as const, basis: 'answer' as const };
+    return { areaId, status: 'not_analyzed' as const, basis: 'no_evidence' as const };
+  });
+}
+
+/** Three records. Prior judgment and prior prose stay in priorReview. */
+function stageBusinessState(input: {
+  originalInput: string;
+  latest: ReviewSections;
+  pairs: StagePair[];
+  ledger: EvidenceLedger;
+  reading?: StagePriorReading;
+}): Record<string, unknown> {
+  const analysis = input.latest.analysis;
+  const claims = currentAnswerStatementPayload(input.pairs).map((item) => item.statement);
+  const tracked = input.reading ? input.reading.judgmentReason.trim().length > 0 || input.reading.impactOnPreviousJudgment.trim().length > 0 : false;
+  const hypotheses = input.reading ? (tracked ? [...(input.reading.priorHypotheses ?? [])] : [...input.reading.unresolvedIssues]) : [...input.latest.uncertain];
+  const unresolved = input.reading && tracked ? [...input.reading.unresolvedIssues] : [];
+  const resolved = input.reading ? [...input.reading.resolvedIssues] : [];
+  return {
+    areaOrderIsNotPriority: true,
+    statedRecord: {
+      originalIdea: input.originalInput,
+      answers: currentAnswerStatementPayload(input.pairs),
+      confirmed: input.ledger.verifiedFacts,
+    },
+    areaStatus: mechanicalAreaStatus(input.latest, claims),
+    priorReview: {
+      judgment: analysis?.judgmentDetail || input.latest.judgment,
+      reviewedObjectives: closedQuestionPayload(input.pairs).map((item) => item.text),
+      hypotheses,
+      unresolved,
+      resolved,
+      operations: analysis?.operations?.trim() || input.latest.execution,
+      risks: input.latest.risks,
+    },
+  };
+}
+
 /** Delivers stated claims and stated gaps. It does not choose the next topic. */
 function stageDeliveryLedger(pairs: StagePair[]): EvidenceLedger {
   const answered = pairs.filter((pair) => pair.status === 'answered');
@@ -2674,6 +3105,42 @@ function compactQuestion(text: string): string {
   return text.replace(/\s+/g, '').trim();
 }
 
+function questionPurposeKey(text: string): string {
+  return compactQuestion(text)
+    .replace(/[?？!！。]/g, '')
+    .replace(/구축|구체화/g, '실행')
+    .replace(/구체적으로|구체적|정확히|실제로|어떻게|할계획인가|할것인가|계획인가|것인가/g, '');
+}
+
+/** Same purpose after a wording change. It does not write a replacement question. */
+function repeatsAskedQuestion(text: string, asked: Set<string>): boolean {
+  const purpose = questionPurposeKey(text);
+  if (!purpose) return false;
+  for (const prior of asked) {
+    const priorPurpose = questionPurposeKey(prior);
+    if (!priorPurpose) continue;
+    if (purpose === priorPurpose) return true;
+    const shorter = purpose.length < priorPurpose.length ? purpose : priorPurpose;
+    const longer = purpose.length < priorPurpose.length ? priorPurpose : purpose;
+    if (shorter.length >= 12 && longer.includes(shorter)) return true;
+  }
+  return false;
+}
+
+function repeatsPriorJudgment(updated: string, prior: string): boolean {
+  const updatedCompact = compactQuestion(updated);
+  const priorCompact = compactQuestion(prior);
+  if (!updatedCompact || !priorCompact) return false;
+  if (updatedCompact === priorCompact) return true;
+  return priorCompact.length >= 24 && updatedCompact.includes(priorCompact);
+}
+
+function sameCompact(left: string, right: string): boolean {
+  const a = compactQuestion(left);
+  const b = compactQuestion(right);
+  return a.length > 0 && a === b;
+}
+
 function stringArrayField(value: unknown): string[] | null {
   if (!Array.isArray(value)) return null;
   if (!value.every((item) => typeof item === 'string')) return null;
@@ -2691,9 +3158,85 @@ function choicesFromLabels(labels: string[]): BusinessAnalysis['choices'] {
   }));
 }
 
+const STAGE_PROFILE_KEYS = [
+  'customer',
+  'problem',
+  'value',
+  'product',
+  'market',
+  'revenueModel',
+  'operations',
+  'supply',
+  'marketing',
+  'competition',
+  'executionNote',
+] as const;
+
+function classifyStageText(value: unknown): { kind: 'missing' } | { kind: 'blank' } | { kind: 'text'; text: string } {
+  if (typeof value !== 'string') return { kind: 'missing' };
+  const text = value.trim();
+  if (!text) return { kind: 'blank' };
+  return { kind: 'text', text };
+}
+
+function readStageBusinessProfile(parsed: Record<string, unknown>): {
+  profile: StageBusinessProfile | null;
+  missingKeys: string[];
+  blankKeys: string[];
+} {
+  const missingKeys: string[] = [];
+  const blankKeys: string[] = [];
+  const profile = {} as Record<(typeof STAGE_PROFILE_KEYS)[number], string>;
+  for (const key of STAGE_PROFILE_KEYS) {
+    const classified = classifyStageText(parsed[key]);
+    if (classified.kind === 'missing') missingKeys.push(key);
+    else if (classified.kind === 'blank') blankKeys.push(key);
+    else profile[key] = classified.text;
+  }
+  const risks = stringArrayField(parsed.risks);
+  if (!risks) missingKeys.push('risks');
+  if (missingKeys.length > 0 || blankKeys.length > 0 || !risks) return { profile: null, missingKeys, blankKeys };
+  return { profile: { ...profile, risks }, missingKeys, blankKeys };
+}
+
+function sameTextSet(left: string[], right: string[]): boolean {
+  if (left.length !== right.length || left.length === 0) return false;
+  const sort = (items: string[]) => [...items].map((item) => item.trim()).sort();
+  const a = sort(left);
+  const b = sort(right);
+  return a.every((item, index) => item === b[index]);
+}
+
+/** A stated rise. The same sentence withdrawing that rise is not a positive claim. */
+function statesUnnegatedPositiveRise(sentence: string): boolean {
+  const compact = sentence.replace(/\s+/g, '');
+  const statesRise =
+    /높아졌다|높아진다|높아질|높아진|가능성이높다(?![는고])|가능성은높다(?![는고])|긍정적인전망/.test(compact);
+  if (!statesRise) return false;
+  const withdrawn =
+    /유지되지않는다|유지하지않는다|유지할수없|높지않다|높아지지않|높이지않|올리지않|높아질수없|높일수없|사실이아니|아니라고|아니다|확인되지않/.test(
+      compact,
+    );
+  return !withdrawn;
+}
+
+function textStatesUnnegatedPositiveRise(text: string): boolean {
+  return text
+    .split(/(?<=[.!?。])\s*/u)
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0)
+    .some((sentence) => statesUnnegatedPositiveRise(sentence));
+}
+
 function judgeStageContract(
   content: string,
-  contract: { askedQuestions: string[]; pairs: StagePair[] },
+  contract: {
+    askedQuestions: string[];
+    pairs: StagePair[];
+    closedSentences?: string[];
+    priorJudgmentText?: string;
+    priorUnresolved?: string[];
+  },
 ): { sections: ReviewSections | null; issues: string[]; reading: StageReading | null } {
   let parsed: Record<string, unknown>;
   try {
@@ -2716,6 +3259,9 @@ function judgeStageContract(
   const interpretations = Array.isArray(parsed.answerInterpretation) ? parsed.answerInterpretation : null;
   const nextQuestionItems = Array.isArray(parsed.nextQuestions) ? parsed.nextQuestions : null;
   const choiceMatrix = Array.isArray(parsed.nextQuestionChoices) ? parsed.nextQuestionChoices : null;
+  const profileReading = readStageBusinessProfile(parsed);
+  const businessProfile = profileReading.profile;
+  if (profileReading.blankKeys.length > 0) issues.push('stage_field_blank');
   if (
     !impactOnPreviousJudgment ||
     !updatedJudgment ||
@@ -2728,10 +3274,47 @@ function judgeStageContract(
     !unresolvedIssues ||
     !interpretations ||
     !nextQuestionItems ||
-    !choiceMatrix
+    !choiceMatrix ||
+    profileReading.missingKeys.length > 0
   ) {
     issues.push('stage_fields_missing');
   }
+  for (const key of ['supply', 'marketing'] as const) {
+    const state = parsed[`${key}State`];
+    const text = classifyStageText(parsed[key]);
+    if (state !== 'confirmed' && state !== 'unconfirmed' && state !== 'not_analyzed') {
+      issues.push('stage_fields_missing');
+      continue;
+    }
+    if (text.kind === 'text' && !stageFieldStateMatches(state, text.text)) issues.push('stage_content_insufficient');
+  }
+  if (
+    verifiedFacts &&
+    verifiedFacts.some((fact) =>
+      contract.pairs.some((pair) => sameCompact(fact, pair.supplement) || sameCompact(fact, pair.choiceLabel ?? '')),
+    )
+  ) {
+    issues.push('stage_claim_promoted');
+  }
+  if (updatedJudgment && contract.priorJudgmentText && repeatsPriorJudgment(updatedJudgment, contract.priorJudgmentText)) {
+    issues.push('stage_judgment_copied');
+  }
+  if (unresolvedIssues && contract.priorUnresolved && sameTextSet(unresolvedIssues, contract.priorUnresolved)) {
+    issues.push('stage_issues_copied');
+  }
+  if (resolvedIssues && unresolvedIssues && resolvedIssues.length === 0 && unresolvedIssues.length === 0 && (contract.priorUnresolved?.length ?? 0) > 0) {
+    issues.push('stage_issues_dropped');
+  }
+  const priorJudgmentText = contract.priorJudgmentText ?? '';
+  const rolesCollapsed =
+    Boolean(updatedJudgment && impactOnPreviousJudgment && judgmentReason) &&
+    sameCompact(impactOnPreviousJudgment, updatedJudgment) &&
+    sameCompact(judgmentReason, updatedJudgment);
+  const pastedPrior =
+    priorJudgmentText.length > 0 &&
+    ((Boolean(impactOnPreviousJudgment) && sameCompact(impactOnPreviousJudgment, priorJudgmentText)) ||
+      (Boolean(judgmentReason) && sameCompact(judgmentReason, priorJudgmentText)));
+  if (rolesCollapsed || pastedPrior) issues.push('stage_reassessment_missing');
   const answerInterpretation: StageReading['answerInterpretation'] = [];
   if (interpretations) {
     for (const item of interpretations) {
@@ -2742,12 +3325,36 @@ function judgeStageContract(
       const record = item as Record<string, unknown>;
       const questionId = typeof record.questionId === 'string' ? record.questionId.trim() : '';
       const meaning = typeof record.meaning === 'string' ? record.meaning.trim() : '';
-      if (!questionId || typeof record.choiceId !== 'string' || !meaning) {
+      const founderBasis = typeof record.founderBasis === 'string' ? record.founderBasis.trim() : '';
+      const observedEvidence = typeof record.observedEvidence === 'string' ? record.observedEvidence.trim() : '';
+      const judgmentEffect = typeof record.judgmentEffect === 'string' ? record.judgmentEffect.trim() : '';
+      const openRisk = typeof record.openRisk === 'string' ? record.openRisk.trim() : '';
+      if (!questionId || typeof record.choiceId !== 'string' || !meaning || !founderBasis || !observedEvidence || !judgmentEffect || !openRisk) {
         issues.push('stage_fields_missing');
         break;
       }
-      answerInterpretation.push({ questionId, choiceId: record.choiceId.trim(), meaning });
+      const pair = contract.pairs.find((item) => item.questionId === questionId);
+      const spoken = [pair?.choiceLabel ?? '', pair?.supplement ?? ''];
+      const echoed = [meaning, founderBasis, observedEvidence, judgmentEffect, openRisk].some((field) =>
+        spoken.some((line) => sameCompact(field, line)),
+      );
+      if (echoed) issues.push('stage_answer_echo');
+      answerInterpretation.push({
+        questionId,
+        choiceId: record.choiceId.trim(),
+        meaning,
+        founderBasis,
+        observedEvidence,
+        judgmentEffect,
+        openRisk,
+      });
     }
+  }
+  if (verifiedFacts && verifiedFacts.length === 0) {
+    const claimTexts = [updatedJudgment, judgmentReason, ...answerInterpretation.flatMap((item) => [item.meaning, item.judgmentEffect])].filter(
+      (text): text is string => Boolean(text),
+    );
+    if (claimTexts.some((text) => textStatesUnnegatedPositiveRise(text))) issues.push('stage_claim_as_positive');
   }
   const nextQuestions: StageReading['nextQuestions'] = [];
   if (nextQuestionItems) {
@@ -2758,11 +3365,12 @@ function judgeStageContract(
       }
       const text = textField((item as { text?: unknown }).text);
       const choices = stringArrayField((item as { choices?: unknown }).choices);
-      if (!text || !choices) {
+      const verificationPurpose = textField((item as { verificationPurpose?: unknown }).verificationPurpose);
+      if (!text || !choices || !verificationPurpose) {
         issues.push('stage_fields_missing');
         break;
       }
-      nextQuestions.push({ text, choices });
+      nextQuestions.push({ text, choices, verificationPurpose });
     }
   }
   const nextQuestionChoices: string[][] = [];
@@ -2786,6 +3394,7 @@ function judgeStageContract(
     assumptions &&
     resolvedIssues &&
     unresolvedIssues &&
+    businessProfile &&
     !issues.includes('stage_fields_missing')
       ? {
           answerInterpretation,
@@ -2800,6 +3409,7 @@ function judgeStageContract(
           nextVerification,
           nextQuestions,
           nextQuestionChoices,
+          businessProfile,
         }
       : null;
   const answered = contract.pairs.filter((pair) => pair.status === 'answered');
@@ -2811,33 +3421,46 @@ function judgeStageContract(
     }) &&
     reading.answerInterpretation.every((item) => answered.some((pair) => pair.questionId === item.questionId));
   if (reading && !linked) issues.push('choice_link_mismatch');
-  const texts = reading?.nextQuestions.map((item) => item.text) ?? [];
-  if (!reading || texts.length < 1 || new Set(texts.map(compactQuestion)).size !== texts.length) issues.push('stage_questions_missing');
-  const menus = reading?.nextQuestions ?? [];
-  const matrix = reading?.nextQuestionChoices ?? [];
+  const texts = nextQuestions.map((item) => item.text);
+  if (texts.length < 1 || new Set(texts.map(compactQuestion)).size !== texts.length) issues.push('stage_questions_missing');
   const menusMissing =
-    !reading ||
-    menus.some((item) => item.choices.length < 2) ||
-    matrix.length !== menus.length ||
-    menus.some((item, index) => !sameLabels(item.choices, matrix[index] ?? []));
+    nextQuestions.length < 1 ||
+    nextQuestions.some((item) => item.choices.length < 2) ||
+    nextQuestionChoices.length !== nextQuestions.length ||
+    nextQuestions.some((item, index) => !sameLabels(item.choices, nextQuestionChoices[index] ?? []));
   if (menusMissing) issues.push('stage_choices_missing');
   const asked = new Set(contract.askedQuestions.map(compactQuestion).filter((text) => text.length > 0));
-  if (reading && texts.some((text) => asked.has(compactQuestion(text)))) issues.push('stage_questions_repeated');
+  const closed = new Set(
+    [...contract.askedQuestions, ...(contract.closedSentences ?? []), ...contract.pairs.flatMap((pair) => [pair.question, pair.choiceLabel ?? '', pair.supplement])]
+      .map(compactQuestion)
+      .filter((text) => text.length > 0),
+  );
+  const purposes = nextQuestions.map((item) => compactQuestion(item.verificationPurpose ?? ''));
+  const purposeRepeats =
+    nextQuestions.length > 0 &&
+    (purposes.some((purpose) => purpose.length === 0 || closed.has(purpose)) ||
+      new Set(purposes).size !== purposes.length ||
+      nextQuestions.some((item) => compactQuestion(item.verificationPurpose ?? '') === compactQuestion(item.text)));
+  const questionRepeats = texts.some(
+    (text) => asked.has(compactQuestion(text)) || closed.has(compactQuestion(text)) || repeatsAskedQuestion(text, asked),
+  );
+  if (questionRepeats || purposeRepeats) issues.push('stage_questions_repeated');
   const uniqueIssues = [...new Set(issues)];
-  if (uniqueIssues.length > 0 || !reading) return { sections: null, issues: uniqueIssues.length > 0 ? uniqueIssues : ['stage_fields_missing'], reading };
+  if (uniqueIssues.length > 0 || !reading || !businessProfile) return { sections: null, issues: uniqueIssues.length > 0 ? uniqueIssues : ['stage_fields_missing'], reading };
   const firstChoices = choicesFromLabels(reading.nextQuestions[0]?.choices ?? []);
   const questions: ConsultingQuestion[] = reading.nextQuestions.map((item, index) => ({
     questionId: `q${index + 1}`,
     text: item.text,
     choices: choicesFromLabels(item.choices),
+    ...(item.verificationPurpose ? { verificationPurpose: item.verificationPurpose } : {}),
   }));
   const sections: ReviewSections = {
-    customer: '',
-    problem: '',
-    market: '',
-    revenueModel: '',
+    customer: businessProfile.customer,
+    problem: businessProfile.problem,
+    market: businessProfile.market,
+    revenueModel: businessProfile.revenueModel,
     execution: '',
-    risks: reading.unresolvedIssues,
+    risks: businessProfile.risks,
     uncertain: reading.unresolvedIssues,
     hypotheses: reading.assumptions,
     judgment: reading.updatedJudgment,
@@ -2847,13 +3470,16 @@ function judgeStageContract(
     claimConfirmation: null,
     analysis: {
       summary: reading.impactOnPreviousJudgment,
-      value: '',
-      operatingModel: '',
+      value: businessProfile.value,
+      operatingModel: businessProfile.operations,
       payer: '',
-      competition: '',
-      operations: '',
+      competition: businessProfile.competition,
+      operations: businessProfile.executionNote,
       profitability: '',
       strengths: [],
+      product: businessProfile.product,
+      supply: businessProfile.supply,
+      marketing: businessProfile.marketing,
       assumptions: reading.assumptions,
       evidenceToChange: [],
       founderFacts: reading.verifiedFacts,
@@ -2955,6 +3581,49 @@ export async function runStageReanalysis(input: {
     }),
   );
   const previousQuestions = [...priorStagePairs, ...pairs].map((pair) => pair.question);
+  const feedbackByReview = new Map<string, StoredFeedback[]>([[parent.reviewId, feedback]]);
+  for (const record of chain) {
+    const sourceId = record.parentReviewId;
+    if (!sourceId || feedbackByReview.has(sourceId)) continue;
+    feedbackByReview.set(sourceId, await input.store.listFeedback(input.userId, sourceId));
+  }
+  const linkFor = (pair: StagePair, sourceReviewId: string): StageAnswerLink => {
+    const item = [...(feedbackByReview.get(sourceReviewId) ?? [])].reverse().find((row) => row.questionId === pair.questionId);
+    return {
+      sourceReviewId,
+      questionId: pair.questionId,
+      question: pair.question,
+      choiceId: pair.choiceId,
+      choiceLabel: pair.choiceLabel,
+      supplement: pair.supplement,
+      submittedAt: item?.submittedAt ?? null,
+      status: pair.status,
+    };
+  };
+  const answerLinks = [
+    ...chain.flatMap((record) => (record.stageAnswers ?? []).map((pair) => linkFor(pair, record.parentReviewId ?? record.reviewId))),
+    ...pairs.map((pair) => linkFor(pair, parent.reviewId)),
+  ];
+  const priorReadings: StagePriorReading[] = chain
+    .filter((record) => record.sections)
+    .map((record) => ({
+      reviewId: record.reviewId,
+      judgment: record.stageReading?.updatedJudgment || record.sections?.analysis?.judgmentDetail || record.sections?.judgment || '',
+      judgmentReason: record.stageReading?.judgmentReason ?? '',
+      impactOnPreviousJudgment: record.stageReading?.impactOnPreviousJudgment ?? '',
+      resolvedIssues: record.stageReading?.resolvedIssues ?? [],
+      unresolvedIssues:
+        record.stageReading?.unresolvedIssues && record.stageReading.unresolvedIssues.length > 0
+          ? record.stageReading.unresolvedIssues
+          : [...(record.sections?.uncertain ?? [])],
+      customer: record.sections?.customer ?? '',
+      problem: record.sections?.problem ?? '',
+      revenueModel: record.sections?.revenueModel ?? '',
+      product: record.sections?.analysis?.product ?? '',
+      supply: record.sections?.analysis?.supply ?? '',
+      marketing: record.sections?.analysis?.marketing ?? '',
+      nextQuestion: record.sections?.nextQuestion ?? '',
+    }));
   const productRequest = buildProductReanalysisRequest({
     originalInput: root.inputText,
     firstAnalysis: root.sections ?? parent.sections,
@@ -2971,6 +3640,8 @@ export async function runStageReanalysis(input: {
     stagePairs: pairs,
     priorStagePairs,
     stagePartial,
+    answerLinks,
+    priorReadings,
   });
   const finished = await finishCall({
     store: input.store,
@@ -2996,6 +3667,12 @@ export async function runStageReanalysis(input: {
     stageContract: {
       askedQuestions: previousQuestions,
       pairs,
+      closedSentences: [...priorStagePairs, ...pairs].flatMap((pair) => [pair.question, pair.choiceLabel ?? '', pair.supplement]),
+      priorJudgmentText: parent.sections?.analysis?.judgmentDetail || parent.sections?.judgment || '',
+      priorUnresolved:
+        parent.stageReading?.unresolvedIssues && parent.stageReading.unresolvedIssues.length > 0
+          ? parent.stageReading.unresolvedIssues
+          : [...(parent.sections?.uncertain ?? [])],
     },
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
@@ -4390,7 +5067,13 @@ async function finishCall(input: {
   stagePartial?: boolean;
   founderAnswerSource?: FounderAnswerCitation | null;
   /** One integrated call. A format error is stored as failed. It is not repaired. */
-  stageContract?: { askedQuestions: string[]; pairs: StagePair[] };
+  stageContract?: {
+    askedQuestions: string[];
+    pairs: StagePair[];
+    closedSentences?: string[];
+    priorJudgmentText?: string;
+    priorUnresolved?: string[];
+  };
   /** Structural reading checks. They do not choose the business judgment. */
   readingIssues?: (content: string) => string[];
   readingRepairContext?: { supplement?: string };

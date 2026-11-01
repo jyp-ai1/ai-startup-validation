@@ -792,6 +792,212 @@ export function buildQuality14InputRequests(): Array<{ inputId: string; promptVe
 }
 
 /**
+ * Separate from quality-2. The product route does not call this.
+ * Same business input as buildQuality2CompareRequest so the two requests can be compared.
+ */
+export const QUALITY15_PROMPT_VERSION = 'quality-15-whole-business';
+
+export const QUALITY15_ABSENT = '이 입력에서는 확인되지 않음';
+
+export const QUALITY15_OUTPUT_KEYS = `${QUALITY5_OUTPUT_KEYS}, product, supply, marketing`;
+
+export const QUALITY15_SYSTEM_PROMPT = [
+  '프롬프트 버전 quality-15-whole-business.',
+  '당신은 초기 창업자의 사업 전체 구조를 검토하는 전략 파트너다. 이 문장은 제품의 quality-2 요청이 아니다.',
+  'JSON 객체만 반환한다.',
+  `키는 ${QUALITY15_OUTPUT_KEYS} 이다.`,
+  'customer, problem, value, product, supply, marketing, market, revenueModel, operations, competition은 비어 있지 않은 문자열이다.',
+  `입력에 없는 영역은 ${QUALITY15_ABSENT}이라고 적는다. 빈 문자열은 실패다.`,
+  'product는 고객이 사고 경험하는 것이다. supply는 그것을 제공하는 주체와 파트너 구조다. marketing은 누구에게 어떻게 알리고 판매하는가다.',
+  '입력이 이용자의 경험과 공급자 지원을 함께 말하면, product, supply, marketing, operatingModel, revenueModel에 그 연결을 입력에 있는 만큼 적는다. 누가 경험을 사고, 누가 제공하고, 누가 알리고, 예약과 운영과 수익 배분이 입력에 없으면 그 칸은 확인되지 않음이다.',
+  '입력에 없는 가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정을 만들지 않는다. 가능한 수익은 가설이라고 적고 새 숫자를 붙이지 않는다.',
+  'questions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 이미 입력에 있는 문장을 다시 묻지 않는다.',
+  '모델이나 공급사 이름은 쓰지 않는다.',
+].join('\n');
+
+export function buildQuality15CompareRequest(text = COMPARE_BUSINESS_INPUT): ChatRequest {
+  return {
+    model: AI_PM_REVIEW_MODEL,
+    temperature: 0.2,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: QUALITY15_SYSTEM_PROMPT },
+      {
+        role: 'user',
+        content: `사업 입력:\n${text}\n\n프롬프트 버전 ${QUALITY15_PROMPT_VERSION}.\n키: ${QUALITY15_OUTPUT_KEYS}.\n입력에 없는 칸은 ${QUALITY15_ABSENT}. 가격과 시장 숫자는 입력에 있는 것만 적는다.`,
+      },
+    ],
+  };
+}
+
+const WHOLE_BUSINESS_FIELDS = ['customer', 'problem', 'value', 'product', 'supply', 'marketing', 'market', 'revenueModel', 'operations', 'competition'] as const;
+
+/** Structure gate for the quality-15 draft. It does not score strategy quality and it does not parse a product review. */
+export function gradeWholeBusinessDraft(content: string, sourceText: string): { status: 'pass' | 'fail'; issues: string[] } {
+  let parsed: Record<string, unknown>;
+  try {
+    const value = JSON.parse(content) as unknown;
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return { status: 'fail', issues: ['invalid_json'] };
+    parsed = value as Record<string, unknown>;
+  } catch {
+    return { status: 'fail', issues: ['invalid_json'] };
+  }
+  const issues: string[] = [];
+  for (const field of WHOLE_BUSINESS_FIELDS) {
+    const text = typeof parsed[field] === 'string' ? parsed[field].trim() : '';
+    if (!text) issues.push(`${field}_missing`);
+    else if (fieldHasInventedFigure(text, sourceText)) issues.push(`${field}_invented_figure`);
+  }
+  return { status: issues.length > 0 ? 'fail' : 'pass', issues };
+}
+
+function fieldHasInventedFigure(field: string, sourceText: string): boolean {
+  const matches = field.match(/\d[\d,.]*(?:\s*(?:만원|원|%))?/g) ?? [];
+  return matches.some((token) => {
+    const digits = token.replace(/[^\d]/g, '');
+    return digits.length > 0 && !sourceText.includes(digits);
+  });
+}
+
+/** Two wordings of one verification. A criterion, not a stored model response. */
+export const QUESTION_PARAPHRASE_FAIL_EXAMPLE = [
+  '체험형 양조장 후보를 어디에서 찾을 계획인가요?',
+  '양조장 파트너를 어떤 경로로 발굴하시겠습니까?',
+] as const;
+
+export const WHOLE_BUSINESS_USEFULNESS_CRITERIA = [
+  {
+    id: 'structure',
+    text: '최초 분석이 고객, 문제, 제품, 공급, 시장, 수익, 운영과 그 연결, 핵심 가설을 설명하는가.',
+  },
+  {
+    id: 'answer_reflection',
+    text: 'Founder 답변 이후 유지되는 판단, 바뀌는 판단, 그 이유가 구분되는가.',
+  },
+  {
+    id: 'resolved_open',
+    text: '이번 답으로 해결된 문제와 아직 열린 문제가 구분되는가.',
+  },
+  {
+    id: 'operating_links',
+    text: '공급자 확보, 상품 구성, 고객 확보, 운영, 수익 구조가 서로 연결되는가.',
+  },
+  {
+    id: 'question_advance',
+    text: '다음 질문이 후보 선정, 실제 접촉, 협력 의사, 공급 조건처럼 이전보다 구체적인 검증으로 나아가는가. 발굴 경로를 다른 말로 다시 묻는 것은 발전이 아니다.',
+  },
+] as const;
+
+export type WholeBusinessUsefulnessId = (typeof WHOLE_BUSINESS_USEFULNESS_CRITERIA)[number]['id'];
+
+/**
+ * Strategy usefulness is not scored from filled fields.
+ * A missing response stays not_run. A present response also stays not_run here.
+ */
+export function scoreWholeBusinessUsefulness(raw: string | null): Array<{
+  id: WholeBusinessUsefulnessId;
+  status: 'not_run';
+  evidence: string;
+}> {
+  const evidence = raw?.trim()
+    ? '응답 원문이 있어도 이 함수는 전략 품질을 통과시키지 않는다.'
+    : '모델 응답 원문 없음';
+  return WHOLE_BUSINESS_USEFULNESS_CRITERIA.map((item) => ({
+    id: item.id,
+    status: 'not_run' as const,
+    evidence,
+  }));
+}
+
+/** Records the known paraphrase as FAIL. Other sets stay not_run. This does not call a model. */
+export function gradeQuestionPurposeQuality(
+  questions: string[],
+  provenance: 'model_response' | 'evaluation_example',
+): { status: 'fail' | 'not_run'; provenance: 'model_response' | 'evaluation_example'; evidence: string } {
+  const compact = (value: string) => value.replace(/\s+/g, '').trim();
+  const present = new Set(questions.map(compact));
+  const repeated = QUESTION_PARAPHRASE_FAIL_EXAMPLE.every((question) => present.has(compact(question)));
+  if (!repeated) {
+    return {
+      status: 'not_run',
+      provenance,
+      evidence: '유사 반복의 일반 판정은 하지 않는다. 응답 원문이 없으면 NOT RUN이다.',
+    };
+  }
+  return {
+    status: 'fail',
+    provenance,
+    evidence:
+      provenance === 'evaluation_example'
+        ? '표현만 바꾼 같은 검증이다. 이 쌍은 평가 기준이며 모델 응답이 아니다.'
+        : '응답에 표현만 바꾼 같은 검증이 있다. 원문을 유지하고 품질 FAIL로 둔다.',
+  };
+}
+
+function storedCompareRequest(request: ChatRequest): {
+  model: ChatRequest['model'];
+  temperature: ChatRequest['temperature'];
+  maxTokens: ChatRequest['maxTokens'];
+  responseFormat: ChatRequest['responseFormat'];
+  messages: ChatRequest['messages'];
+} {
+  return {
+    model: request.model,
+    temperature: request.temperature,
+    maxTokens: request.maxTokens,
+    responseFormat: request.responseFormat,
+    messages: request.messages.map((message) => ({ role: message.role, content: message.content })),
+  };
+}
+
+/** Request originals for one business input. Responses are null until a live call stores them. */
+export function wholeBusinessCompareEvidence() {
+  const quality2 = buildQuality2CompareRequest();
+  const quality15 = buildQuality15CompareRequest();
+  return {
+    kind: 'request_only' as const,
+    businessInput: COMPARE_BUSINESS_INPUT,
+    sameInput: quality2.messages.some((message) => message.content.includes('전통주(양조장)')) &&
+      quality15.messages.some((message) => message.content.includes('전통주(양조장)')),
+    productPromptVersion: AI_PM_FIRST_PROMPT_VERSION,
+    draftPromptVersion: QUALITY15_PROMPT_VERSION,
+    quality15InstalledInProduct: false,
+    callCount: 0,
+    promptTokens: null,
+    completionTokens: null,
+    totalTokens: null,
+    calls: [
+      {
+        promptVersion: AI_PM_FIRST_PROMPT_VERSION,
+        status: 'NOT RUN' as const,
+        raw: null,
+        request: storedCompareRequest(quality2),
+      },
+      {
+        promptVersion: QUALITY15_PROMPT_VERSION,
+        status: 'NOT RUN' as const,
+        raw: null,
+        request: storedCompareRequest(quality15),
+      },
+    ],
+    usefulness: scoreWholeBusinessUsefulness(null),
+    criteria: WHOLE_BUSINESS_USEFULNESS_CRITERIA,
+    questionPurpose: gradeQuestionPurposeQuality([], 'model_response'),
+    paraphraseFailExample: {
+      provenance: 'evaluation_example' as const,
+      grade: gradeQuestionPurposeQuality([...QUESTION_PARAPHRASE_FAIL_EXAMPLE], 'evaluation_example'),
+    },
+    liveCall: {
+      status: 'NOT RUN' as const,
+      reason: 'GPT_API_KEY missing',
+      requiredEnvironment:
+        'GPT_API_KEY가 있는 비프로덕션 실행에서 executeWholeBusinessCompare를 한 번 호출한다. 응답 원문과 토큰을 저장한다. Founder 프로젝트에 행을 넣지 않는다. 수리 호출을 하지 않는다.',
+    },
+  };
+}
+
+/**
  * Structure gate only. Not the product follow-up route and not a quality verdict.
  * The founder choice and supplement are synthetic test data.
  */
@@ -1578,6 +1784,42 @@ export async function executeQualityCompare(env: Record<string, string | undefin
     calls: [
       await oneCall(chat, AI_PM_FIRST_PROMPT_VERSION, quality2),
       await oneCall(chat, QUALITY3_PROMPT_VERSION, quality3),
+    ],
+  };
+}
+
+/** quality-2 and quality-15 on the same input. Does not call the product follow-up. A missing key stores no response. */
+export async function executeWholeBusinessCompare(
+  env: Record<string, string | undefined> = process.env,
+): Promise<CompareReport> {
+  const quality2 = buildQuality2CompareRequest();
+  const quality15 = buildQuality15CompareRequest();
+  const base = {
+    model: AI_PM_REVIEW_MODEL as typeof AI_PM_REVIEW_MODEL,
+    temperature: 0.2 as const,
+    maxTokens: AI_PM_REVIEW_FIRST_MAX_TOKENS as typeof AI_PM_REVIEW_FIRST_MAX_TOKENS,
+    responseFormat: 'json_object' as const,
+    businessInput: COMPARE_BUSINESS_INPUT,
+    confounders: compareConfounders(),
+    productFollowUpInvoked: false as const,
+  };
+  const apiKey = readGptApiKey(env);
+  if (!apiKey) {
+    return {
+      ...base,
+      status: 'NOT RUN',
+      reason: 'GPT_API_KEY missing',
+      calls: [notRunCall(AI_PM_FIRST_PROMPT_VERSION, quality2), notRunCall(QUALITY15_PROMPT_VERSION, quality15)],
+    };
+  }
+  const chat = (request: ChatRequest) => new OpenAIProviderAdapter({ apiKey }).chat(request);
+  return {
+    ...base,
+    status: 'RECORDED',
+    reason: null,
+    calls: [
+      await oneCall(chat, AI_PM_FIRST_PROMPT_VERSION, quality2),
+      await oneCall(chat, QUALITY15_PROMPT_VERSION, quality15),
     ],
   };
 }
