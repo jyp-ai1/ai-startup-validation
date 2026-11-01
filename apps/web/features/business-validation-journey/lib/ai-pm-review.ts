@@ -1843,7 +1843,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
             judgmentEffect: {
               ...filled,
               description:
-                '이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유. 라벨 반복은 영향이 아니다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 긍정적인 전망이라고 쓰지 않는다.',
+                '이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유. 라벨 반복은 영향이 아니다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 긍정적인 전망이라고 쓰지 않는다. verifiedFacts가 비어 있으면 성공 가능성은 높아지지 않았다라고 적는다.',
             },
             openRisk: {
               ...filled,
@@ -1920,7 +1920,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
       updatedJudgment: {
         ...filled,
         description:
-          'priorJudgmentText와 다른 현재 판단. 유지 또는 변경, 이번 답의 정보가 사실인지 주장인지, 남은 위험, 새 위험 또는 새 위험이 없음을 적는다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 파트너 확보와 실행은 검증되지 않았다고 적는다. unverifiedClaims로 성공 가능성을 높이지 않는다. 의향은 해결이 아니다. priorJudgmentText와 같거나 그 문장을 포함하면 실패다.',
+          'priorJudgmentText와 다른 현재 판단. 유지, 이번 답, 변경, 남은 위험을 모두 적는다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 파트너 확보와 실행은 검증되지 않았다고 적고 성공 가능성은 높아지지 않았다라고 적는다. unverifiedClaims로 성공 가능성을 높이지 않는다. 의향은 해결이 아니다. priorJudgmentText와 같거나 그 문장을 포함하면 실패다.',
       },
       judgmentReason: {
         ...filled,
@@ -1973,10 +1973,11 @@ function stageReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다.',
     '이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
+    '판단 예시는 다른 사업이다. 그 문장을 출력에 복사하지 말고 이번 사업으로 다시 쓴다. 이전 판단이 점포는 확인되지 않았다는 것이고 이번 답이 상권이 좋을 것 같다이면, verifiedFacts는 빈 배열이고 그 말은 unverifiedClaims다. judgmentEffect에는 성공 가능성은 높아지지 않았다라고 적는다. updatedJudgment에는 유지, 이번 답, 변경, 남은 위험을 모두 적는다. 유지에는 점포가 확인되지 않았다는 기존 판단을 남긴다. 이번 답에는 상권이 좋다는 말이 주장이고 확인된 사실이 아니라고 적는다. 변경에는 없다라고 적거나 실제로 바꾼 내용만 적는다. 남은 위험에는 점포와 조건이 없다고 적는다. unresolvedIssues에는 점포 후보가 없다는 현재 빈칸을 새로 적는다. 다음 질문은 상권 전략을 어떻게 구체화할 것인가가 아니라 볼 점포 후보가 있는가이다.',
     '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 새로 준 정보와 그 정보가 사실인지 주장인지 적는다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 긍정적인 전망이라고 쓰지 않는다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다.',
     '2. 확인된 사실, 주장, 가설을 가른다. Founder의 가능성 판단, 선호, 기대는 unverifiedClaims로 남긴다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 접촉, 협력 의사, 합의, 공급 조건이 없으면 그 기대를 사업 성과나 성공 가능성의 근거로 쓰지 않는다. 긍정적 사업 판단은 verifiedFacts의 별도 근거가 있을 때만 적는다. 근거가 없으면 그 문장은 창업자의 기대이고 파트너 확보와 실행은 검증되지 않았다고 적는다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다.',
     '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 정보가 부족한 칸은 부족하다고 적는다. supply와 marketing은 supplyState, marketingState와 함께 적는다. state는 confirmed, unconfirmed, not_analyzed다. not_analyzed의 문장은 아직 분석되지 않았다. unconfirmed의 문장은 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 빈 문자열과 공백은 실패다. value와 product도 빈 문자열이면 실패다. 요청에 문장이 있으면 지우지 말고 이번 답에 맞게 다시 쓴다. 요청에 아직 분석되지 않았다만 있으면 그 상태를 유지하거나 이번 답으로 알게 된 범위만 적는다. 부모의 빈 문자열은 요청에 없고 state는 not_analyzed다. 입력에도 없으면 unconfirmed로 둔다. 입력에 없는 공급 계약, 마케팅 성과, 수익, 상품을 만들어 내지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다.',
-    '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 새 문장으로 적는다. 유지인지 변경인지, 이번 답이 새로 준 정보가 사실인지 주장인지, 그 답이 판단에 준 영향, 아직 남은 위험, 새로 보인 위험 또는 새 위험이 없음을 적는다. 이번 답이 그 위험을 해소하지 않으면 위험을 빼지 않는다. updatedJudgment가 priorJudgmentText와 같거나 그 문장을 포함하면 실패다. 미확인 주장을 긍정적인 전망으로 쓰지 않는다. 코드는 결론을 정하지 않는다.',
+    '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 새 문장으로 적는다. updatedJudgment에는 유지, 이번 답, 변경, 남은 위험을 모두 적는다. 유지에는 기존 판단에서 아직 유효한 부분을 남긴다. 이번 답에는 새로 안 내용이 사실인지 주장인지 적는다. 변경에는 바꾼 판단 또는 바꾸지 않은 이유를 적는다. 남은 위험에는 해소되지 않은 위험과 새로 보인 위험을 적는다. 이번 답이 그 위험을 해소하지 않으면 위험을 빼지 않는다. updatedJudgment가 priorJudgmentText와 같거나 그 문장을 포함하면 실패다. verifiedFacts가 비어 있으면 성공 가능성은 높아지지 않았다라고 적는다. 미확인 주장을 긍정적인 전망으로 쓰지 않는다. 코드는 결론을 정하지 않는다.',
     '5. 다음 검증 질문은 당신이 고른다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 이번 답이 기대나 선호이면 그 기대가 의존하는 다음 확인 하나만 묻는다. 순서는 대상이 있는지, 접촉했는지, 상대의 의사가 있는지, 조건이 무엇인지다. 이미 답이 지난 단계는 건너뛴다. 네 개를 한 질문에 넣지 않고 이 순서 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. priorHypotheses와 doNotCopy.priorUnresolvedIssues는 가설이거나 이전 목록이다. unresolvedIssues는 그 목록을 그대로 복사하지 않고 이번 답이 남긴 빈칸과 새로 보인 빈칸만 적는다. 근거가 없으면 미해결로 남긴다.',
@@ -2157,10 +2158,11 @@ export function buildProductReanalysisRequest(input: {
         ? {
             revisionTask: {
               updatedJudgment:
-                'priorJudgmentText와 다른 새 문장으로 적는다. 유지 또는 변경, 이번 답이 준 정보가 사실인지 주장인지, 남은 위험, 새 위험을 포함한다.',
+                '유지, 이번 답, 변경, 남은 위험을 모두 적은 새 문장이다. priorJudgmentText를 포함하면 실패다. verifiedFacts가 비어 있으면 성공 가능성은 높아지지 않았다라고 적는다.',
               unresolvedIssues:
-                'priorHypotheses와 priorUnresolvedIssues를 복사하지 않는다. 이번 답이 남긴 빈칸을 새 문장으로 적는다.',
-              nextQuestion: 'priorQuestionText와 같은 목적을 묻지 않는다. 이번 답이 기대나 선호이면 다음 확인 하나만 묻는다.',
+                '이번 답이 실제로 닫은 것만 resolvedIssues에 둔다. 닫지 못한 빈칸은 unresolvedIssues에 새 문장으로 남긴다. 둘 다 비우면 실패다. priorHypotheses를 복사하지 않는다.',
+              nextQuestion:
+                'priorQuestionText와 같은 목적을 다른 말로 묻지 않는다. 이번 답이 기대나 선호이면 그 기대가 의존하는 다음 확인 하나만 묻는다. 순서 문장을 질문으로 복사하지 않는다.',
             },
             stagePairs: stagePairs.map(stagePairPayload),
             priorStagePairs: (input.priorStagePairs ?? []).map(stagePairPayload),
@@ -3054,6 +3056,9 @@ function judgeStageContract(
   if (resolvedIssues && unresolvedIssues && resolvedIssues.length === 0 && unresolvedIssues.length === 0 && (contract.priorUnresolved?.length ?? 0) > 0) {
     issues.push('stage_issues_dropped');
   }
+  if (updatedJudgment && ['유지', '이번 답', '변경', '남은 위험'].some((mark) => !updatedJudgment.includes(mark))) {
+    issues.push('stage_reassessment_missing');
+  }
   const answerInterpretation: StageReading['answerInterpretation'] = [];
   if (interpretations) {
     for (const item of interpretations) {
@@ -3088,6 +3093,13 @@ function judgeStageContract(
         openRisk,
       });
     }
+  }
+  if (
+    verifiedFacts &&
+    verifiedFacts.length === 0 &&
+    answerInterpretation.some((item) => item.judgmentEffect && !item.judgmentEffect.includes('성공 가능성은 높아지지 않았다'))
+  ) {
+    issues.push('stage_claim_as_positive');
   }
   const nextQuestions: StageReading['nextQuestions'] = [];
   if (nextQuestionItems) {

@@ -81,11 +81,11 @@ function contractReply(request: ChatRequest, judgment: string, questions: string
       meaning: `${pair.questionId} 답은 계획을 구체화하고 확인된 사실은 늘리지 않는다`,
       founderBasis: `${pair.questionId}에서 이렇게 말한 이유는 입력에 적힌 계획이다`,
       observedEvidence: `${pair.questionId}에서 확인된 접촉이나 합의는 없다`,
-      judgmentEffect: `${pair.questionId} 답으로 이전 판단은 유지되고 검증된 사실은 늘지 않는다`,
+      judgmentEffect: `${pair.questionId} 답은 확인된 사실이 아니다. 성공 가능성은 높아지지 않았다. 이전 판단은 유지되고 검증된 사실은 늘지 않는다.`,
       openRisk: `${pair.questionId}의 지불은 아직 검증되지 않았다`,
     })),
     impactOnPreviousJudgment: '이번 답이 기존 판단에 준 영향이다.',
-    updatedJudgment: judgment,
+    updatedJudgment: `유지: 확인 전 위험은 남는다. 이번 답: ${judgment} 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.`,
     judgmentReason: '지불 확인이 없어 판단을 유지한다.',
     verifiedFacts: [],
     unverifiedClaims: [],
@@ -354,6 +354,10 @@ describe('consulting stage batch', () => {
     expect(system).toContain('사업 전체를 다시 적는다');
     expect(system).toContain('nextQuestions는 서로 다른 질문 1개 이상이다');
     expect(system).toContain('성공 가능성을 높이지 않는다');
+    expect(system).toContain('성공 가능성은 높아지지 않았다');
+    expect(system).toContain('이번 답');
+    expect(system).toContain('남은 위험');
+    expect(system).not.toContain('후보 양조장');
     expect(system).toContain('아직 확인되지 않았다');
     expect(system).toContain('위험을 빼지 않는다');
     expect(system).toContain('그대로 복사하지 않고');
@@ -550,9 +554,10 @@ describe('consulting stage batch', () => {
       },
     ]);
     expect(integrated.record.stagePartial).toBeUndefined();
-    expect(integrated.record.stageReading?.updatedJudgment).toBe(secondJudgment);
+    expect(integrated.record.stageReading?.updatedJudgment).toContain(secondJudgment);
+    expect(integrated.record.stageReading?.updatedJudgment).toContain('남은 위험');
     expect(consultingQuestions(integrated.record.sections).map((item) => item.text)).toEqual(SECOND_QUESTIONS);
-    expect(integrated.record.sections?.analysis?.judgmentDetail).toBe(secondJudgment);
+    expect(integrated.record.sections?.analysis?.judgmentDetail).toContain(secondJudgment);
     const firstPayload = userPayload(calls[1]!);
     expect(firstPayload.originalInput).toBe(IDEA);
     expect(JSON.stringify(firstPayload)).toContain(firstJudgment);
