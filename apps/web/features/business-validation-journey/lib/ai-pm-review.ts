@@ -2833,7 +2833,9 @@ function compactQuestion(text: string): string {
 }
 
 function questionPurposeKey(text: string): string {
-  return compactQuestion(text).replace(/구체적으로|구체적|정확히|실제로|어떻게|할계획인가|할것인가|계획인가|것인가/g, '');
+  return compactQuestion(text)
+    .replace(/[?？!！。]/g, '')
+    .replace(/구체적으로|구체적|정확히|실제로|어떻게|할계획인가|할것인가|계획인가|것인가/g, '');
 }
 
 /** Same purpose after a wording change. It does not write a replacement question. */
