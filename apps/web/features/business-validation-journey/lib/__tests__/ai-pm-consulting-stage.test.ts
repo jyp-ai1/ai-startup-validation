@@ -362,6 +362,9 @@ describe('consulting stage batch', () => {
     expect(system).toContain('미확인 주장');
     expect(system).toContain('실행 가능성');
     expect(system).toContain('priorJudgmentText를 출력하지 않는');
+    expect(system).toContain('전략 컨설턴트');
+    expect(system).toContain('고정된 순서를 강제하지 않는다');
+    expect(system).not.toContain('순서는 대상이 있는지');
     expect(system).toContain('존재 여부에 이미 답이 있으면');
     expect(system).toContain('answerSource.source가 simulation');
     expect(system).toContain('이는 사실이다라고 쓰지 않는다');
@@ -573,7 +576,7 @@ describe('consulting stage batch', () => {
     expect(integrated.record.sections?.analysis?.judgmentDetail).toContain(secondJudgment);
     const firstPayload = userPayload(calls[1]!);
     expect(firstPayload.originalInput).toBe(IDEA);
-    expect(JSON.stringify(firstPayload)).not.toContain(firstJudgment);
+    expect(JSON.stringify(firstPayload)).toContain(firstJudgment);
     expect(JSON.stringify(firstPayload)).toContain('가격은 미확인이라 판단을 유지한다.');
     expect(firstPayload.thisAnswer).toBeUndefined();
     expect(firstPayload.stagePartial).toBe(false);
@@ -626,8 +629,8 @@ describe('consulting stage batch', () => {
     expect(second.record.stageAnswers).toHaveLength(2);
     const secondPayload = userPayload(calls[2]!);
     expect(secondPayload.originalInput).toBe(IDEA);
-    expect(JSON.stringify(secondPayload)).not.toContain(firstJudgment);
-    expect(JSON.stringify(secondPayload)).not.toContain(secondJudgment);
+    expect(JSON.stringify(secondPayload)).toContain(firstJudgment);
+    expect(JSON.stringify(secondPayload)).toContain(secondJudgment);
     expect(JSON.stringify(secondPayload)).toContain('이번 답이 기존 판단에 준 영향이다.');
     expect(secondPayload.priorStagePairs).toEqual(integrated.record.stageAnswers);
     expect(secondPayload.stagePairs).toEqual(second.record.stageAnswers);
@@ -665,6 +668,10 @@ describe('consulting stage batch', () => {
     expect(calls).toHaveLength(4);
     expect(third.record.callCount).toBe(1);
     const thirdPayload = userPayload(calls[3]!);
+    expect(thirdPayload.originalInput).toBe(IDEA);
+    expect(JSON.stringify(thirdPayload)).toContain(firstJudgment);
+    expect(JSON.stringify(thirdPayload)).toContain('직장인을 고객으로 본다');
+    expect(JSON.stringify(thirdPayload)).toContain('도서관 회의실을 장소로 본다');
     expect(thirdPayload.priorStagePairs).toHaveLength(5);
     expect(thirdPayload.stagePairs).toHaveLength(2);
     expect((await store.readReview('user-stage', first.record.reviewId))?.finishedAt).toBe(parentFinishedAt);
@@ -1154,7 +1161,7 @@ describe('consulting stage batch', () => {
     expect(payload.originalInput).toBe(IDEA);
     expect(payload.firstAnalysis).toBeTruthy();
     expect(payload.evidenceLedger).toBeTruthy();
-    expect(JSON.stringify(payload)).not.toContain(firstJudgment);
+    expect(JSON.stringify(payload)).toContain(firstJudgment);
     expect(JSON.stringify(payload)).toContain('가격은 미확인이라 판단을 유지한다.');
     expect(payload.thisAnswer).toBeUndefined();
     expect(payload.stagePairs).toEqual(integrated.record.stageAnswers);
@@ -1628,14 +1635,16 @@ describe('consulting stage batch', () => {
     const task = payload.revisionTask as { nextQuestion?: string };
     expect(system).toContain('존재 여부에 이미 답이 있으면');
     expect(system).toContain('코드는 질문 문장을 정하지 않는다');
-    expect(task.nextQuestion).toContain('접촉');
+    expect(system).toContain('고정된 질문 순서는 없다');
+    expect(task.nextQuestion).toContain('미확인 영역');
+    expect(task.nextQuestion).not.toContain('접촉');
     expect(task.nextQuestion).not.toContain('볼 대상이 있는가');
     expect(JSON.stringify(payload.stagePairs)).toContain('SIMULATION 대상은 아직 없다');
     expect(payload.answerSource).toEqual([{ questionId: 'q1', source: 'simulation' }]);
     expect(JSON.stringify(payload)).not.toContain('양조장 후보가 있는가');
   });
 
-  it('withholds the prior judgment sentence and splits the current answer into statements', () => {
+  it('passes the prior judgment sentence and splits the current answer into statements', () => {
     const prior = '이전판단고유문장잠재력은남고협력은불확실하다추가검증이필요하다';
     const stored: ReviewSections = {
       customer: '방문객',
@@ -1707,8 +1716,8 @@ describe('consulting stage batch', () => {
       }
     };
     walk(payload);
-    expect(names).not.toContain('priorJudgmentText');
-    expect(JSON.stringify(payload)).not.toContain(prior);
+    expect(names).toContain('priorJudgmentText');
+    expect(JSON.stringify(payload)).toContain(prior);
     expect(payload.currentAnswerStatements).toEqual([
       { questionId: 'q1', source: 'simulation', index: 0, statement: '한 양조장에 문의했다고 말한다.' },
       { questionId: 'q1', source: 'simulation', index: 1, statement: '상대의 반응은 아직 없다.' },
