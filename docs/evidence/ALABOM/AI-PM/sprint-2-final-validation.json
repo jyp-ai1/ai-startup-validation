@@ -1,0 +1,23 @@
+{
+  "kind": "sprint2_final_validation",
+  "status": "NOT RUN",
+  "reason": "GPT_API_KEY absent. VERCEL_ENV absent. This process is not Preview. Production was not contacted.",
+  "gitSha": "a74b5fc3f5021b98847e8acdd262d6543c8d54f8",
+  "modelRequested": "gpt-4o",
+  "modelSent": null,
+  "startedAt": null,
+  "finishedAt": null,
+  "callCount": 0,
+  "failedCallCount": 0,
+  "rounds": [
+    { "round": 1, "status": "NOT RUN", "request": null, "response": null, "contract": null },
+    { "round": 2, "status": "NOT RUN", "request": null, "response": null, "contract": null },
+    { "round": 3, "status": "NOT RUN", "request": null, "response": null, "contract": null },
+    { "round": 4, "status": "NOT RUN", "request": null, "response": null, "contract": null }
+  ],
+  "simulationIdentified": true,
+  "simulationSent": false,
+  "founderProjectTouched": false,
+  "productionCalled": false,
+  "promptEdited": false
+}
