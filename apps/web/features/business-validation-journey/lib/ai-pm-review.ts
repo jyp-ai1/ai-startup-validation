@@ -1837,7 +1837,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
             meaning: {
               ...filled,
               description:
-                '이 답이 사업에 의미하는 바. choiceLabel이나 supplement와 같은 문장이면 실패다. 선택지를 새로 만들지 않는다.',
+                '이 답이 사업에 의미하는 바. choiceLabel이나 supplement와 같은 문장이면 실패다. 선택지를 새로 만들지 않는다. source가 simulation이면 사실, 사실을 제공한다, 이는 사실이다라고 쓰지 않는다. 그 문장은 주장이나 미확인이다.',
             },
             founderBasis: {
               ...filled,
@@ -1851,11 +1851,12 @@ function stageReanalysisSchema(): Record<string, unknown> {
             judgmentEffect: {
               ...filled,
               description:
-                '이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유. 라벨 반복은 영향이 아니다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 긍정적인 전망이라고 쓰지 않는다. verifiedFacts가 비어 있으면 성공 가능성은 높아지지 않았다라고 적는다.',
+                'updatedJudgment와 같은 판단이다. 유지된 전제, 이번 답으로 바뀐 실행 판단, 그 근거를 같이 적는다. 라벨 반복은 영향이 아니다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 긍정적인 전망이라고 쓰지 않는다. verifiedFacts가 비어 있으면 성공 가능성은 높아지지 않았다라고 적는다. 그 문장을 updatedJudgment에만 두지 않는다.',
             },
             openRisk: {
               ...filled,
-              description: '이 답이 남긴 미검증 위험. 없으면 없다고 적는다. 빈 문자열은 실패다.',
+              description:
+                '이 답이 남긴 미검증 위험. statementReadings의 openGap과 같은 위험이다. 이전 미해결 문장을 그대로 쓰지 않는다. 없으면 없다고 적는다. 빈 문자열은 실패다.',
             },
           },
         },
@@ -1867,24 +1868,32 @@ function stageReanalysisSchema(): Record<string, unknown> {
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['questionId', 'index', 'statement', 'kind', 'certainty', 'openGap'],
+          required: ['questionId', 'index', 'statement', 'source', 'kind', 'certainty', 'openGap'],
           properties: {
             questionId: filled,
             index: { type: 'integer' },
             statement: { ...filled, description: 'currentAnswerStatements의 그 문장.' },
+            source: {
+              type: 'string',
+              enum: ['simulation', 'founder'],
+              description: 'currentAnswerStatements의 그 문장과 같은 출처. 한 답의 문장은 모두 같은 출처다. simulation을 founder나 observed로 올리지 않는다.',
+            },
             kind: {
               type: 'string',
               enum: ['stated_action', 'counterparty_response', 'participation_intent', 'agreed_terms', 'other'],
-              description: '이 문장이 말하는 구분. 코드가 고르지 않는다.',
+              description:
+                '한 문장에 하나. stated_action은 했다고 말한 행동이다. counterparty_response는 상대의 회신이나 그 부재다. participation_intent는 참여 의향이 확인됐는지다. agreed_terms는 조건이 합의됐는지다. 이 넷에 해당하면 other를 쓰지 않는다. 코드가 고르지 않는다.',
             },
             certainty: {
               type: 'string',
               enum: ['claim_only', 'unconfirmed', 'observed'],
-              description: '별도 증거가 없으면 observed가 아니다.',
+              description:
+                '별도 증거가 없으면 observed가 아니다. simulation은 observed가 아니다. 했다고 말한 행동은 claim_only다. 반응이 없다, 확인하지 못했다, 합의되지 않았다는 문장은 unconfirmed다.',
             },
             openGap: {
               ...filled,
-              description: '이 문장이 남긴 빈칸. 다른 문장의 빈칸과 합치지 않는다. 빈칸이 없으면 없다고 적는다.',
+              description:
+                '이 문장 자체가 남긴 위험이다. 다음 문장을 빈칸으로 옮기지 않는다. 회신, 의향, 조건이 없다는 문장은 그 부재가 빈칸이다. 없다고 적는 것은 이 문장이 위험을 닫았을 때만이다.',
             },
           },
         },
@@ -1912,7 +1921,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
       unresolvedIssues: {
         ...list,
         description:
-          '이번 답으로 다시 적은 미해결. 이전 가설이나 이전 unresolvedIssues를 그대로 복사하지 않는다. statementReadings의 openGap을 서로 다른 항목으로 적는다. 확인된 것과 아직 없는 것을 나눈다.',
+          'currentAnswerStatements와 같은 개수의 새 문장. 각 openGap이 한 항목이다. 이전 unresolvedIssues와 같은 문장만 두지 않는다. 행동 주장, 회신 부재, 의향 미확인, 조건 미합의는 서로 다른 항목이다.',
       },
       customer: { ...filled, description: '핵심 고객. 입력과 답에 없으면 없다고 적는다. 빈 문자열은 실패다.' },
       problem: { ...filled, description: '해결하려는 문제. 입력과 답에 없으면 없다고 적는다. 빈 문자열은 실패다.' },
@@ -1970,7 +1979,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
       judgmentReason: {
         ...filled,
         description:
-          'updatedJudgment를 유지하거나 바꾼 이유. verifiedFacts, unverifiedClaims, resolvedIssues, unresolvedIssues와 같은 방향이다. priorJudgmentText를 그대로 붙이지 않는다.',
+          'updatedJudgment와 judgmentEffect와 같은 판단의 이유. 유지된 전제와 이번 답의 근거를 같이 적는다. 세 칸을 같은 문장으로 복사하지 않는다. verifiedFacts가 비어 있으면 성공 가능성은 높아지지 않았다와 같은 방향이다. priorJudgmentText를 그대로 붙이지 않는다.',
       },
       nextVerification: {
         ...filled,
@@ -2019,10 +2028,10 @@ function stageReanalysisSystemPrompt(): string {
     '당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다.',
     '이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
     '판단 예시는 다른 사업이다. 그 문장을 출력에 복사하지 말고 이번 사업으로 다시 쓴다. 이전 판단이 점포는 없으나 좋은 기회라는 문장이면 그 문장을 다시 쓰지 않는다. 사업 모델의 잠재력은 고객에게 가치를 줄 여지로 남을 수 있다. 이번 답이 상권이 좋을 것 같다이면 그 말은 미확인 주장이고 unverifiedClaims다. verifiedFacts는 빈 배열이다. 확인된 협력이나 점포는 없다. 실행 가능성은 검증되지 않았다. judgmentEffect에는 잠재력은 남을 수 있으나 상권 주장은 유지하지 않으며 성공 가능성은 높아지지 않았다라고 적는다. updatedJudgment는 새 문장으로 유지할 잠재력, 근거가 부족한 주장, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. 남은 위험은 점포와 조건이 없다는 현재 빈칸이다. unresolvedIssues에는 점포가 없다는 현재 빈칸을 새로 적는다. 다음 질문은 상권 전략을 어떻게 구체화할 것인가가 아니라 볼 점포가 있는가이다. 그 존재 질문에 이미 답이 있으면 같은 질문을 반복하지 않고 접촉했는지, 상대의 의사가 있는지, 조건이 무엇인지 중 아직 없는 하나만 묻는다.',
-    '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 새로 준 정보와 그 정보가 사실인지 주장인지 적는다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. answerSource.source가 simulation이거나 답이 SIMULATION으로 시작하면 연습 입력이고 실제 Founder 답변과 구분한다. 그 문장에 이는 사실이다라고 쓰지 않는다. Founder가 문의하거나 접촉했다고 말해도 그 말은 주장이다. 상대의 기록, 회신, 합의가 없으면 답 문장을 observedEvidence로 옮기지 않는다. 한 답 안의 주장, 없는 반응, 없는 참여 의향, 없는 조건은 서로 다른 정보다. 하나를 사실로 나머지를 덮지 않는다. 문의 주장만으로 협력 가능성을 높이지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 사업 모델의 잠재력을 유지하는 것과 미확인 주장을 유지하는 것을 가른다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 긍정적인 전망이라고 쓰지 않는다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다.',
+    '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 새로 준 정보와 그 정보가 주장인지 미확인인지 적는다. 연습 입력을 사실로 부르지 않는다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. answerSource.source가 simulation이거나 답이 SIMULATION으로 시작하면 연습 입력이고 실제 Founder 답변과 구분한다. 그 문장에 이는 사실이다라고 쓰지 않는다. 사실을 제공한다라고도 쓰지 않는다. Founder가 문의하거나 접촉했다고 말해도 그 말은 주장이다. 상대의 기록, 회신, 합의가 없으면 답 문장을 observedEvidence로 옮기지 않는다. 한 답 안의 주장, 없는 반응, 없는 참여 의향, 없는 조건은 서로 다른 정보다. 하나를 사실로 나머지를 덮지 않는다. 문의 주장만으로 협력 가능성을 높이지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 사업 모델의 잠재력을 유지하는 것과 미확인 주장을 유지하는 것을 가른다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 긍정적인 전망이라고 쓰지 않는다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다.',
     '2. 확인된 사실, 주장, 가설을 가른다. Founder의 가능성 판단, 선호, 기대는 unverifiedClaims로 남긴다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 접촉, 협력 의사, 합의, 공급 조건이 없으면 그 기대를 사업 성과나 성공 가능성의 근거로 쓰지 않는다. 긍정적 사업 판단은 verifiedFacts의 별도 근거가 있을 때만 적는다. 근거가 없으면 그 문장은 창업자의 기대이고 파트너 확보와 실행은 검증되지 않았다고 적는다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다.',
     '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 정보가 부족한 칸은 부족하다고 적는다. supply와 marketing은 supplyState, marketingState와 함께 적는다. state는 confirmed, unconfirmed, not_analyzed다. not_analyzed의 문장은 아직 분석되지 않았다. unconfirmed의 문장은 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 빈 문자열과 공백은 실패다. value와 product도 빈 문자열이면 실패다. 요청에 문장이 있으면 지우지 말고 이번 답에 맞게 다시 쓴다. 요청에 아직 분석되지 않았다만 있으면 그 상태를 유지하거나 이번 답으로 알게 된 범위만 적는다. 부모의 빈 문자열은 요청에 없고 state는 not_analyzed다. 입력에도 없으면 unconfirmed로 둔다. 입력에 없는 공급 계약, 마케팅 성과, 수익, 상품을 만들어 내지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다. 확인된 접촉이 없으면 운영 계획을 실행이 끝난 것처럼 적지 않는다.',
-    '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason은 서로 다른 역할의 새 문장이다. 사업 모델의 잠재력, Founder의 미확인 주장, 실제 확인된 협력, 실행 가능성, 새로 보인 위험을 한 덩어리로 유지하지 않는다. 잠재력은 유지할 수 있다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. impactOnPreviousJudgment는 이번 답이 그 구분 중 어디에 영향을 주는지다. updatedJudgment는 priorJudgmentText를 출력하지 않는 현재 판단이다. 사업 모델의 잠재력은 유지할 수 있다. 협력의 실행 가능성은 그 잠재력과 따로 재평가한다. 새 사실이 없어도 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. judgmentReason은 그 구분의 이유다. 남은 위험은 빼지 말고 unresolvedIssues에 현재 빈칸으로 적는다. unresolvedIssues는 priorUnresolvedIssues와 다른 새 문장이다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건을 한 문장으로 뭉치지 않는다. 새로 보인 위험도 거기 적는다. 세 문장을 한 문장으로 반복하지 않는다. priorJudgmentText를 세 칸에 그대로 붙이지 않는다. updatedJudgment가 priorJudgmentText와 같거나 그 문장을 포함하면 재평가가 아니다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. 미확인 주장을 긍정적인 전망으로 쓰지 않는다. 이번 답이 그 위험을 해소하지 않으면 위험을 빼지 않는다. 코드는 결론을 정하지 않는다.',
+    '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason은 서로 다른 역할의 새 문장이다. 사업 모델의 잠재력, Founder의 미확인 주장, 실제 확인된 협력, 실행 가능성, 새로 보인 위험을 한 덩어리로 유지하지 않는다. 잠재력은 유지할 수 있다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. impactOnPreviousJudgment는 이번 답이 그 구분 중 어디에 영향을 주는지다. updatedJudgment는 priorJudgmentText를 출력하지 않는 현재 판단이다. 사업 모델의 잠재력은 유지할 수 있다. 협력의 실행 가능성은 그 잠재력과 따로 재평가한다. 새 사실이 없어도 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. judgmentReason은 그 구분의 이유다. 남은 위험은 빼지 말고 unresolvedIssues에 현재 빈칸으로 적는다. unresolvedIssues는 priorUnresolvedIssues와 다른 새 문장이다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건을 한 문장으로 뭉치지 않는다. 새로 보인 위험도 거기 적는다. 세 문장을 한 문장으로 반복하지 않는다. priorJudgmentText를 세 칸에 그대로 붙이지 않는다. updatedJudgment가 priorJudgmentText와 같거나 그 문장을 포함하면 재평가가 아니다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다. 미확인 주장을 긍정적인 전망으로 쓰지 않는다. 이번 답이 그 위험을 해소하지 않으면 위험을 빼지 않는다. 코드는 결론을 정하지 않는다.',
     '5. 다음 검증 질문은 당신이 고른다. 코드는 질문 문장을 정하지 않는다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 이번 답이 기대나 선호이고 대상이 있는지를 아직 답하지 않았으면 존재 여부 하나만 묻는다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 순서는 대상이 있는지, 접촉했는지, 상대의 의사가 있는지, 조건이 무엇인지다. 이미 답이 지난 단계는 건너뛴다. 접촉 여부를 이미 물었고 답이 있으면 그 질문을 반복하지 않는다. 다음에 볼 방향은 회신이 있는지, 후속 연락이 가능한지, 참여 의향을 확인할 수 있는지, 조건을 논의할 수 있는지 가운데 이번 답이 남긴 하나다. 네 개를 한 질문에 넣지 않고 이 순서 문장이나 방향 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. priorHypotheses와 doNotCopy.priorUnresolvedIssues는 가설이거나 이전 목록이다. unresolvedIssues는 그 목록을 그대로 복사하지 않고 이번 답이 남긴 빈칸과 새로 보인 빈칸만 적는다. 근거가 없으면 미해결로 남긴다.',
@@ -2205,9 +2214,9 @@ export function buildProductReanalysisRequest(input: {
             closedQuestions: closedQuestionPayload([...(input.priorStagePairs ?? []), ...stagePairs]),
             revisionTask: {
               updatedJudgment:
-                'priorJudgmentText를 출력하지 않는다. 그 문장을 유지라고 다시 적는 것은 재평가가 아니다. 새 문장에서 사업 모델의 잠재력과 미확인 주장을 가른다. 확인된 접촉이 없으면 협력 가능성이 높다는 판단을 유지하지 않는다. 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다.',
+                'priorJudgmentText를 출력하지 않는다. 그 문장을 유지라고 다시 적는 것은 재평가가 아니다. 새 문장에서 사업 모델의 잠재력과 미확인 주장을 가른다. 확인된 접촉이 없으면 협력 가능성이 높다는 판단을 유지하지 않는다. 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다.',
               unresolvedIssues:
-                'priorUnresolvedIssues와 같은 문장을 두지 않는다. 이번 답이 남긴 빈칸을 새 문장으로 나눈다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건이 서로 다르면 한 문장으로 뭉치지 않는다. priorHypotheses를 복사하지 않는다.',
+                'priorUnresolvedIssues와 같은 문장을 두지 않는다. unresolvedIssues의 개수는 currentAnswerStatements와 같다. 각 문장이 남긴 위험을 새 문장으로 하나씩 적는다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건이 서로 다르면 한 문장으로 뭉치지 않는다. priorHypotheses를 복사하지 않는다.',
               nextQuestion:
                 '질문 문장은 당신이 고른다. priorQuestionText와 같은 목적을 다른 말로 묻지 않는다. 방금 답한 질문을 반복하지 않는다. 이번 답이 기대나 선호이고 존재 여부를 아직 답하지 않았으면 존재 여부 하나만 묻는다. 존재 여부에 답이 있으면 접촉, 상대의 의사, 조건 중 아직 없는 하나만 묻는다. 접촉 여부를 이미 물었고 답이 있으면 회신, 후속 연락, 참여 의향, 조건 중 이번 답이 남긴 하나만 묻는다. 그 방향 문장을 질문으로 복사하지 않는다.',
             },

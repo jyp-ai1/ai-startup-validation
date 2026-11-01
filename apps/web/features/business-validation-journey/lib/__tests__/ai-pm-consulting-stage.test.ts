@@ -1717,6 +1717,22 @@ describe('consulting stage batch', () => {
     ]);
     expect(payload.closedQuestions).toEqual([{ questionId: 'q1', text: '양조장과의 접촉이 있었는가?', askAgain: false }]);
     expect(JSON.stringify(payload)).not.toContain('상대의 회신이 있었는가');
+    if (request.responseFormat?.type === 'json_schema') {
+      const properties = request.responseFormat.schema.properties as {
+        answerInterpretation: { items: { properties: { meaning: { description: string }; judgmentEffect: { description: string } } } };
+        statementReadings: {
+          items: { required: string[]; properties: { kind: { description: string }; source: { enum: string[] } } };
+        };
+        unresolvedIssues: { description: string };
+      };
+      expect(properties.answerInterpretation.items.properties.meaning.description).toContain('사실을 제공한다');
+      expect(properties.answerInterpretation.items.properties.judgmentEffect.description).toContain('updatedJudgment와 같은 판단');
+      expect(properties.statementReadings.items.required).toContain('source');
+      expect(properties.statementReadings.items.properties.source.enum).toEqual(['simulation', 'founder']);
+      expect(properties.statementReadings.items.properties.kind.description).toContain('counterparty_response');
+      expect(properties.statementReadings.items.properties.kind.description).toContain('agreed_terms');
+      expect(properties.unresolvedIssues.description).toContain('회신 부재');
+    }
     const plain = buildProductReanalysisRequest({
       originalInput: '양조장 체험',
       firstAnalysis: stored,
