@@ -1794,6 +1794,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
     additionalProperties: false,
     required: [
       'answerInterpretation',
+      'statementReadings',
       'verifiedFacts',
       'unverifiedClaims',
       'assumptions',
@@ -1814,6 +1815,8 @@ function stageReanalysisSchema(): Record<string, unknown> {
       'executionNote',
       'risks',
       'impactOnPreviousJudgment',
+      'keptBusinessPremise',
+      'executionPossibility',
       'updatedJudgment',
       'judgmentReason',
       'nextVerification',
@@ -1857,6 +1860,35 @@ function stageReanalysisSchema(): Record<string, unknown> {
           },
         },
       },
+      statementReadings: {
+        type: 'array',
+        minItems: 1,
+        description: 'currentAnswerStatements의 각 문장마다 하나. 문장을 한 항목으로 합치지 않는다.',
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['questionId', 'index', 'statement', 'kind', 'certainty', 'openGap'],
+          properties: {
+            questionId: filled,
+            index: { type: 'integer' },
+            statement: { ...filled, description: 'currentAnswerStatements의 그 문장.' },
+            kind: {
+              type: 'string',
+              enum: ['stated_action', 'counterparty_response', 'participation_intent', 'agreed_terms', 'other'],
+              description: '이 문장이 말하는 구분. 코드가 고르지 않는다.',
+            },
+            certainty: {
+              type: 'string',
+              enum: ['claim_only', 'unconfirmed', 'observed'],
+              description: '별도 증거가 없으면 observed가 아니다.',
+            },
+            openGap: {
+              ...filled,
+              description: '이 문장이 남긴 빈칸. 다른 문장의 빈칸과 합치지 않는다. 빈칸이 없으면 없다고 적는다.',
+            },
+          },
+        },
+      },
       verifiedFacts: {
         ...list,
         description:
@@ -1880,7 +1912,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
       unresolvedIssues: {
         ...list,
         description:
-          '이번 답으로 다시 적은 미해결. 이전 가설이나 이전 unresolvedIssues를 그대로 복사하지 않는다. 확인된 것과 아직 없는 것을 나눈다.',
+          '이번 답으로 다시 적은 미해결. 이전 가설이나 이전 unresolvedIssues를 그대로 복사하지 않는다. statementReadings의 openGap을 서로 다른 항목으로 적는다. 확인된 것과 아직 없는 것을 나눈다.',
       },
       customer: { ...filled, description: '핵심 고객. 입력과 답에 없으면 없다고 적는다. 빈 문자열은 실패다.' },
       problem: { ...filled, description: '해결하려는 문제. 입력과 답에 없으면 없다고 적는다. 빈 문자열은 실패다.' },
@@ -1922,10 +1954,18 @@ function stageReanalysisSchema(): Record<string, unknown> {
         description:
           '이번 답이 이전 판단에 주는 영향이다. 사업 모델의 잠재력과 미확인 주장을 가른다. 잠재력은 유지할 수 있다. 확인된 접촉이 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. 해소되지 않은 위험은 빼지 않는다. unverifiedClaims는 창업자의 기대로만 인용하고 성공 가능성을 높이지 않는다. priorJudgmentText를 그대로 붙이지 않는다.',
       },
+      keptBusinessPremise: {
+        ...filled,
+        description: '이전 단계에서 유지할 사업 전제 한 문장. 실행 가능성과 같은 문장이면 안 된다.',
+      },
+      executionPossibility: {
+        ...filled,
+        description: '이번 답으로 다시 본 실행 가능성 한 문장. 사업 전제와 같은 문장이면 안 된다.',
+      },
       updatedJudgment: {
         ...filled,
         description:
-          'priorJudgmentText와 다른 현재 판단의 새 문장. 그 문장을 다시 출력하지 않는다. 유지할 잠재력, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 파트너 확보와 실행은 검증되지 않았다고 적고 성공 가능성은 높아지지 않았다라고 적는다. unverifiedClaims로 성공 가능성을 높이지 않는다. 의향은 해결이 아니다. priorJudgmentText와 같거나 그 문장을 포함하면 실패다.',
+          'keptBusinessPremise와 executionPossibility가 둘 다 드러나는 새 문장. priorJudgmentText를 출력하지 않는다. 유지할 잠재력, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 파트너 확보와 실행은 검증되지 않았다고 적고 성공 가능성은 높아지지 않았다라고 적는다. unverifiedClaims로 성공 가능성을 높이지 않는다. 의향은 해결이 아니다. priorJudgmentText와 같거나 그 문장을 포함하면 실패다.',
       },
       judgmentReason: {
         ...filled,
@@ -1987,7 +2027,7 @@ function stageReanalysisSystemPrompt(): string {
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. priorHypotheses와 doNotCopy.priorUnresolvedIssues는 가설이거나 이전 목록이다. unresolvedIssues는 그 목록을 그대로 복사하지 않고 이번 답이 남긴 빈칸과 새로 보인 빈칸만 적는다. 근거가 없으면 미해결로 남긴다.',
     'JSON만 반환한다.',
-    '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
+    '키 순서는 answerInterpretation, statementReadings, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, impactOnPreviousJudgment, keptBusinessPremise, executionPossibility, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
     'answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
     'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. verificationPurpose는 질문 문장과 다른 불확실성이다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
@@ -2157,10 +2197,12 @@ export function buildProductReanalysisRequest(input: {
         founderChoice: input.founderChoice?.label ?? null,
         founderSupplement: input.founderSupplement,
       });
-  const payload = () =>
-    renameEchoKeys({
+  const payload = () => {
+    const renamed = renameEchoKeys({
       ...(stageBatch
         ? {
+            currentAnswerStatements: currentAnswerStatementPayload(stagePairs),
+            closedQuestions: closedQuestionPayload([...(input.priorStagePairs ?? []), ...stagePairs]),
             revisionTask: {
               updatedJudgment:
                 'priorJudgmentText를 출력하지 않는다. 그 문장을 유지라고 다시 적는 것은 재평가가 아니다. 새 문장에서 사업 모델의 잠재력과 미확인 주장을 가른다. 확인된 접촉이 없으면 협력 가능성이 높다는 판단을 유지하지 않는다. 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다.',
@@ -2229,6 +2271,8 @@ export function buildProductReanalysisRequest(input: {
       priorAnalyses: analyses,
       ...(stageBatch ? {} : { priorTurns: turns }),
     }) as Record<string, unknown>;
+    return (stageBatch ? withholdPriorJudgmentSentences(renamed) : renamed) as Record<string, unknown>;
+  };
   const systemTokens = estimateReviewTokens(system);
   const overBudget = () =>
     systemTokens + estimateReviewTokens(JSON.stringify(payload())) > AI_PM_PRODUCT_REANALYSIS_INPUT_TOKEN_BUDGET;
@@ -2838,6 +2882,58 @@ function stageSupplementKey(pairs: StagePair[]): string {
 function answerSource(pair: { choiceLabel: string | null; supplement: string }): 'simulation' | 'founder' {
   const text = `${pair.choiceLabel ?? ''}\n${pair.supplement}`;
   return /^\s*SIMULATION\b/m.test(text) ? 'simulation' : 'founder';
+}
+
+/** Sentence splits of one answer. A simulation label is not a statement. This does not classify the sentences. */
+function answerStatements(text: string): string[] {
+  const stripped = text.replace(/^\s*SIMULATION\b[.:]?\s*/iu, '').trim();
+  const source = stripped.length > 0 ? stripped : text.trim();
+  if (!source) return [];
+  const parts = source
+    .split(/(?<=[.!?。])\s+/u)
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+  return parts.length > 0 ? parts : [source];
+}
+
+function currentAnswerStatementPayload(pairs: StagePair[]): Array<{
+  questionId: string;
+  source: 'simulation' | 'founder';
+  index: number;
+  statement: string;
+}> {
+  return pairs.flatMap((pair) => {
+    const source = answerSource(pair);
+    const statements = [pair.choiceLabel, pair.supplement].flatMap((item) => answerStatements(item ?? ''));
+    return statements.map((statement, index) => ({
+      questionId: pair.questionId,
+      source,
+      index,
+      statement,
+    }));
+  });
+}
+
+function closedQuestionPayload(pairs: StagePair[]): Array<{ questionId: string; text: string; askAgain: false }> {
+  return pairs
+    .filter((pair) => pair.status === 'answered' && pair.question.trim().length > 0)
+    .map((pair) => ({ questionId: pair.questionId, text: pair.question, askAgain: false as const }));
+}
+
+/** The finished prior judgment is a paste target. The stage request keeps the reason and the issues, not that sentence. */
+function withholdPriorJudgmentSentences(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(withholdPriorJudgmentSentences);
+  if (!value || typeof value !== 'object') return value;
+  const out: Record<string, unknown> = {};
+  for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+    if (key === 'revisionTask') {
+      out[key] = child;
+      continue;
+    }
+    if (key === 'priorJudgmentText' || key === 'judgment' || key === 'judgmentDetail') continue;
+    out[key] = withholdPriorJudgmentSentences(child);
+  }
+  return out;
 }
 
 function stagePairPayload(pair: StagePair): {

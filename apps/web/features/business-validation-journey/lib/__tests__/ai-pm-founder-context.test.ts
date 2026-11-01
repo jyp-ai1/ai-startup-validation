@@ -221,9 +221,9 @@ it('keeps the business core when older analysis briefs exceed the token budget',
   };
   const filler = Array.from({ length: 8 }, (_, index) => ({
     reviewId: `drop-${index}`,
-    judgment: `DROP_OLD_${index} ${'과거 세부 문장 '.repeat(4000)}`,
+    judgment: `DROP_OLD_${index}`,
     nextQuestion: `DROP_OLD_Q_${index}`,
-    assumptions: [`DROP_OLD_ASSUMPTION_${index}`],
+    assumptions: [`DROP_OLD_ASSUMPTION_${index} ${'과거 세부 문장 '.repeat(4000)}`],
     risks: [`DROP_OLD_RISK_${index}`],
   }));
   const request = buildProductReanalysisRequest({

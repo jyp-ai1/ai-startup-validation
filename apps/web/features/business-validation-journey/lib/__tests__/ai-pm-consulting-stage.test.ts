@@ -402,6 +402,7 @@ describe('consulting stage batch', () => {
       expect(meaning.nextQuestions.items.required).toEqual(['text', 'choices', 'verificationPurpose']);
       expect(request.responseFormat.schema.required).toEqual([
         'answerInterpretation',
+        'statementReadings',
         'verifiedFacts',
         'unverifiedClaims',
         'assumptions',
@@ -422,6 +423,8 @@ describe('consulting stage batch', () => {
         'executionNote',
         'risks',
         'impactOnPreviousJudgment',
+        'keptBusinessPremise',
+        'executionPossibility',
         'updatedJudgment',
         'judgmentReason',
         'nextVerification',
@@ -570,7 +573,8 @@ describe('consulting stage batch', () => {
     expect(integrated.record.sections?.analysis?.judgmentDetail).toContain(secondJudgment);
     const firstPayload = userPayload(calls[1]!);
     expect(firstPayload.originalInput).toBe(IDEA);
-    expect(JSON.stringify(firstPayload)).toContain(firstJudgment);
+    expect(JSON.stringify(firstPayload)).not.toContain(firstJudgment);
+    expect(JSON.stringify(firstPayload)).toContain('가격은 미확인이라 판단을 유지한다.');
     expect(firstPayload.thisAnswer).toBeUndefined();
     expect(firstPayload.stagePartial).toBe(false);
     expect(firstPayload.priorStagePairs).toEqual([]);
@@ -622,8 +626,9 @@ describe('consulting stage batch', () => {
     expect(second.record.stageAnswers).toHaveLength(2);
     const secondPayload = userPayload(calls[2]!);
     expect(secondPayload.originalInput).toBe(IDEA);
-    expect(JSON.stringify(secondPayload)).toContain(firstJudgment);
-    expect(JSON.stringify(secondPayload)).toContain(secondJudgment);
+    expect(JSON.stringify(secondPayload)).not.toContain(firstJudgment);
+    expect(JSON.stringify(secondPayload)).not.toContain(secondJudgment);
+    expect(JSON.stringify(secondPayload)).toContain('이번 답이 기존 판단에 준 영향이다.');
     expect(secondPayload.priorStagePairs).toEqual(integrated.record.stageAnswers);
     expect(secondPayload.stagePairs).toEqual(second.record.stageAnswers);
     expect((secondPayload.stagePairs as Array<{ questionId: string; supplement: string }>)[0]).toMatchObject({
@@ -1149,7 +1154,8 @@ describe('consulting stage batch', () => {
     expect(payload.originalInput).toBe(IDEA);
     expect(payload.firstAnalysis).toBeTruthy();
     expect(payload.evidenceLedger).toBeTruthy();
-    expect(JSON.stringify(payload)).toContain(firstJudgment);
+    expect(JSON.stringify(payload)).not.toContain(firstJudgment);
+    expect(JSON.stringify(payload)).toContain('가격은 미확인이라 판단을 유지한다.');
     expect(payload.thisAnswer).toBeUndefined();
     expect(payload.stagePairs).toEqual(integrated.record.stageAnswers);
     expect(payload.answerReading).toEqual([
@@ -1627,6 +1633,117 @@ describe('consulting stage batch', () => {
     expect(JSON.stringify(payload.stagePairs)).toContain('SIMULATION 대상은 아직 없다');
     expect(payload.answerSource).toEqual([{ questionId: 'q1', source: 'simulation' }]);
     expect(JSON.stringify(payload)).not.toContain('양조장 후보가 있는가');
+  });
+
+  it('withholds the prior judgment sentence and splits the current answer into statements', () => {
+    const prior = '이전판단고유문장잠재력은남고협력은불확실하다추가검증이필요하다';
+    const stored: ReviewSections = {
+      customer: '방문객',
+      problem: '자리가 없다',
+      market: '수요는 입력에 없다',
+      revenueModel: '가격은 가설이다',
+      execution: '',
+      risks: ['자리가 없다'],
+      uncertain: ['대상이 있는지 모른다'],
+      hypotheses: ['수요가 있다'],
+      judgment: prior,
+      nextQuestion: '양조장과의 접촉이 있었는가?',
+      nextQuestionReason: '접촉이 다음 확인이다',
+      answerHint: '적습니다',
+      claimConfirmation: null,
+      analysis: {
+        summary: '요약',
+        value: '자리',
+        operatingModel: '구상',
+        payer: '미확인',
+        competition: '미확인',
+        operations: '구상',
+        profitability: '미확인',
+        strengths: [],
+        assumptions: ['수요가 있다'],
+        evidenceToChange: [],
+        founderFacts: [],
+        inferences: [],
+        judgmentDetail: prior,
+        choices: [],
+        product: '체험 자리',
+        supply: '아직 분석되지 않았다',
+        marketing: '아직 분석되지 않았다',
+      },
+    };
+    const simulation =
+      'SIMULATION. 한 양조장에 문의했다고 말한다. 상대의 반응은 아직 없다. 참여 의향은 확인하지 못했다. 체험과 운영 조건은 합의되지 않았다.';
+    const request = buildProductReanalysisRequest({
+      originalInput: '양조장 체험',
+      firstAnalysis: stored,
+      priorTurns: [],
+      latestAnalysis: stored,
+      founderChoice: null,
+      founderSupplement: '',
+      founderFeedback: null,
+      stagePairs: [
+        {
+          questionId: 'q1',
+          question: '양조장과의 접촉이 있었는가?',
+          offeredChoices: [],
+          choiceId: null,
+          choiceLabel: null,
+          supplement: simulation,
+          status: 'answered',
+        },
+      ],
+    });
+    const payload = userPayload(request);
+    const names: string[] = [];
+    const walk = (value: unknown) => {
+      if (Array.isArray(value)) {
+        value.forEach(walk);
+        return;
+      }
+      if (!value || typeof value !== 'object') return;
+      for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+        names.push(key);
+        walk(child);
+      }
+    };
+    walk(payload);
+    expect(names).not.toContain('priorJudgmentText');
+    expect(JSON.stringify(payload)).not.toContain(prior);
+    expect(payload.currentAnswerStatements).toEqual([
+      { questionId: 'q1', source: 'simulation', index: 0, statement: '한 양조장에 문의했다고 말한다.' },
+      { questionId: 'q1', source: 'simulation', index: 1, statement: '상대의 반응은 아직 없다.' },
+      { questionId: 'q1', source: 'simulation', index: 2, statement: '참여 의향은 확인하지 못했다.' },
+      { questionId: 'q1', source: 'simulation', index: 3, statement: '체험과 운영 조건은 합의되지 않았다.' },
+    ]);
+    expect(payload.closedQuestions).toEqual([{ questionId: 'q1', text: '양조장과의 접촉이 있었는가?', askAgain: false }]);
+    expect(JSON.stringify(payload)).not.toContain('상대의 회신이 있었는가');
+    const plain = buildProductReanalysisRequest({
+      originalInput: '양조장 체험',
+      firstAnalysis: stored,
+      priorTurns: [],
+      latestAnalysis: stored,
+      founderChoice: null,
+      founderSupplement: '가능성이 높다',
+      founderFeedback: null,
+    });
+    const plainPayload = userPayload(plain);
+    expect(JSON.stringify(plainPayload)).toContain(prior);
+    const plainNames: string[] = [];
+    const walkPlain = (value: unknown) => {
+      if (Array.isArray(value)) {
+        value.forEach(walkPlain);
+        return;
+      }
+      if (!value || typeof value !== 'object') return;
+      for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+        plainNames.push(key);
+        walkPlain(child);
+      }
+    };
+    walkPlain(plainPayload);
+    expect(plainNames).toContain('priorJudgmentText');
+    const system = request.messages.find((message) => message.role === 'system')?.content ?? '';
+    expect(system).not.toContain('상대의 회신이 있었는가');
   });
 
   it('separates a blank supply from a missing supply and rejects a state that does not match the text', async () => {
