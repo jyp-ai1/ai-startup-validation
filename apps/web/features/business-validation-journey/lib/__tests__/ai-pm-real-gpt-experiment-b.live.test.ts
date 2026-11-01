@@ -4,6 +4,8 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
+import { OpenAIProviderAdapter } from '@repo/ai';
+
 import { COMPARE_BUSINESS_BODY } from '../ai-pm-quality-compare';
 import {
   EXPERIMENT_B_MODEL,
@@ -12,7 +14,7 @@ import {
   runExperimentBFollowUp,
   type ExperimentCallLog,
 } from '../ai-pm-experiment-b';
-import { consultingQuestions, openReviewChat, runFirstReview, saveReviewFeedback } from '../ai-pm-review';
+import { consultingQuestions, runFirstReview, saveReviewFeedback, type ReviewChat } from '../ai-pm-review';
 import { openAiPmReviewStore } from '../ai-pm-review-store';
 
 /**
@@ -21,7 +23,7 @@ import { openAiPmReviewStore } from '../ai-pm-review-store';
  */
 const enabled = process.env.AI_PM_REAL_GPT_EXPERIMENT_B === '1';
 const BUCKET = 'ai-pm-quality-compare';
-const OBJECT = 'sprint-2-experiment-b-2026-11-01.json';
+const OBJECT = 'sprint-2-experiment-b-run2-2026-11-01.json';
 const USER_ID = 'gpt-experiment-b-sim';
 const PROJECT_ID = 'gpt-experiment-b-project';
 const SIMULATION_ANSWERS = [
@@ -72,7 +74,7 @@ describe.skipIf(!enabled)('real gpt experiment B', () => {
         });
       };
       try {
-        const firstLive = openReviewChat();
+        const firstLive = experimentChat();
         if (!firstLive) {
           await persist('not_run', 'review_chat_unavailable');
           return;
@@ -101,12 +103,19 @@ describe.skipIf(!enabled)('real gpt experiment B', () => {
         }
         let parent = first.record;
         const priorAnswers: string[] = [];
-        let closedQuestions = consultingQuestions(parent.sections).map((question) => question.text);
-        let priorChoiceLabels = consultingQuestions(parent.sections).map((question) => question.choices?.map((choice) => choice.label) ?? []);
-        let priorJudgment = parent.sections.analysis?.judgmentDetail || parent.sections.judgment;
-        let priorRisks = [...parent.sections.risks];
-        let openUncertainties = [...parent.sections.uncertain];
-        let unresolved = [...parent.sections.uncertain];
+        const initial = parent.sections;
+        if (!initial) {
+          await persist('stored', 'first_review_rejected');
+          return;
+        }
+        let closedQuestions = consultingQuestions(initial).map((question) => question.text);
+        let priorChoiceLabels = consultingQuestions(initial).map((question) =>
+          (question.choices ?? []).map((choice) => choice.label).filter((label) => label.trim().length > 0),
+        );
+        let priorJudgment = initial.analysis?.judgmentDetail || initial.judgment;
+        let priorRisks = [...initial.risks];
+        let openUncertainties = [...initial.uncertain];
+        let unresolved = [...initial.uncertain];
         for (let index = 0; index < SIMULATION_ANSWERS.length; index += 1) {
           const roundNumber = index + 2;
           const answer = SIMULATION_ANSWERS[index] ?? '';
@@ -135,7 +144,7 @@ describe.skipIf(!enabled)('real gpt experiment B', () => {
             rounds.push({ live: false, round: roundNumber, error: 'answer_save_failed', answerSaves, callCount: 0 });
             break;
           }
-          const live = openReviewChat();
+          const live = experimentChat();
           if (!live) {
             rounds.push({ live: false, round: roundNumber, error: 'review_chat_unavailable', answerSaves, callCount: 0 });
             break;
@@ -198,22 +207,27 @@ describe.skipIf(!enabled)('real gpt experiment B', () => {
               }
             : null;
           rounds.push(round);
-          if (!followed.quality.chainContinues || followed.record.status !== 'succeeded' || !followed.record.sections) break;
+          const nextSections = followed.record.sections;
+          if (!followed.quality.chainContinues || followed.record.status !== 'succeeded' || !nextSections) break;
           parent = followed.record;
           priorAnswers.push(answer);
-          const asked = consultingQuestions(parent.sections);
+          const asked = consultingQuestions(nextSections);
           closedQuestions = [...closedQuestions, ...asked.map((question) => question.text)];
-          priorChoiceLabels = [...priorChoiceLabels, ...asked.map((question) => question.choices?.map((choice) => choice.label) ?? [])];
-          priorJudgment = parent.sections.judgment;
-          priorRisks = [...parent.sections.risks];
-          openUncertainties = [...parent.sections.uncertain];
+          priorChoiceLabels = [
+            ...priorChoiceLabels,
+            ...asked.map((question) => (question.choices ?? []).map((choice) => choice.label).filter((label) => label.trim().length > 0)),
+          ];
+          priorJudgment = nextSections.judgment;
+          priorRisks = [...nextSections.risks];
+          openUncertainties = [...nextSections.uncertain];
           unresolved = parent.stageReading?.unresolvedIssues ?? [];
           await persist('started', null);
         }
         await persist('stored', null);
       } catch (error) {
         const message = error instanceof Error ? error.message : 'live_gpt_error';
-        rounds.push({ live: false, error: message.slice(0, 300) });
+        const stack = error instanceof Error ? error.stack?.split('\n').slice(0, 6).join(' | ') : '';
+        rounds.push({ live: false, error: message.slice(0, 500), stack: stack?.slice(0, 500) ?? null });
         await persist('failed', null);
         throw error;
       } finally {
@@ -224,10 +238,13 @@ describe.skipIf(!enabled)('real gpt experiment B', () => {
   );
 });
 
-function watchFirst(
-  live: NonNullable<ReturnType<typeof openReviewChat>>,
-  rounds: Array<Record<string, unknown>>,
-): NonNullable<ReturnType<typeof openReviewChat>> {
+function experimentChat(): ReviewChat | undefined {
+  const apiKey = process.env.GPT_API_KEY?.trim();
+  if (!apiKey) return undefined;
+  return (request) => new OpenAIProviderAdapter({ apiKey }).chat(request);
+}
+
+function watchFirst(live: ReviewChat, rounds: Array<Record<string, unknown>>): ReviewChat {
   return async (request) => {
     const sent = { ...request, model: EXPERIMENT_B_MODEL };
     const response = await live(sent);

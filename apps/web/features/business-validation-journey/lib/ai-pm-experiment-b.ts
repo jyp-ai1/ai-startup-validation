@@ -210,9 +210,10 @@ export function selectionSystemPrompt(): string {
 }
 
 export function presentInAnswers(text: string, answers: string[]): boolean {
+  if (typeof text !== 'string') return false;
   const compact = text.replace(/\s+/g, '');
   if (!compact) return false;
-  return answers.some((answer) => answer.replace(/\s+/g, '').includes(compact));
+  return answers.some((answer) => typeof answer === 'string' && answer.replace(/\s+/g, '').includes(compact));
 }
 
 export function buildStateRequest(input: {
@@ -292,6 +293,7 @@ export function answerContentTokens(answer: string): string[] {
 }
 
 export function experimentPurposeKey(text: string): string {
+  if (typeof text !== 'string') return '';
   return text
     .replace(/\s+/g, '')
     .replace(/[?？!！。.,]/g, '')
@@ -749,6 +751,7 @@ function modelIsGpt4o(model: string): boolean {
 
 function substantive(labels: string[]): string[] {
   return labels
+    .filter((label): label is string => typeof label === 'string')
     .map((label) => label.replace(/\s+/g, ''))
     .filter((label) => label.length > 0 && !/기타|직접입력|아직핵심을정하지못했다/.test(label));
 }
