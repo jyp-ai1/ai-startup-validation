@@ -104,7 +104,11 @@ import {
   QUALITY15_ABSENT,
   QUALITY15_PROMPT_VERSION,
   buildQuality15CompareRequest,
+  gradeQuestionPurposeQuality,
   gradeWholeBusinessDraft,
+  QUESTION_PARAPHRASE_FAIL_EXAMPLE,
+  scoreWholeBusinessUsefulness,
+  wholeBusinessCompareEvidence,
   scoreSprintGates,
   sprintGateSummary,
   compareConfounders,
@@ -1818,5 +1822,43 @@ describe('quality-15 whole business draft', () => {
       'marketing_invented_figure',
     );
     expect(gradeWholeBusinessDraft('{', COMPARE_BUSINESS_INPUT).issues).toEqual(['invalid_json']);
+  });
+
+  it('stores both request originals and does not treat a filled draft as strategy quality', () => {
+    const evidenceUrl = new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-quality-2-15-requests.json', import.meta.url);
+    const fresh = wholeBusinessCompareEvidence();
+    if (process.env.WRITE_WHOLE_BUSINESS_EVIDENCE === '1') writeFileSync(evidenceUrl, `${JSON.stringify(fresh, null, 2)}\n`);
+    expect(JSON.parse(readFileSync(evidenceUrl, 'utf8'))).toEqual(fresh);
+    expect(fresh.sameInput).toBe(true);
+    expect(fresh.quality15InstalledInProduct).toBe(false);
+    expect(fresh.callCount).toBe(0);
+    expect(fresh.calls.map((call) => call.promptVersion)).toEqual([AI_PM_FIRST_PROMPT_VERSION, QUALITY15_PROMPT_VERSION]);
+    expect(fresh.calls.every((call) => call.raw === null && call.status === 'NOT RUN')).toBe(true);
+    expect(fresh.calls[0]?.request.messages[0]?.content).toContain('프롬프트 버전 quality-2');
+    expect(fresh.calls[1]?.request.messages[0]?.content).toContain(QUALITY15_PROMPT_VERSION);
+    expect(fresh.calls[0]?.request.messages[0]?.content).not.toContain(QUALITY15_PROMPT_VERSION);
+    expect(scoreWholeBusinessUsefulness(null).every((item) => item.status === 'not_run')).toBe(true);
+    const filled = JSON.stringify({
+      customer: '관광객',
+      problem: '경로',
+      value: '체험',
+      product: QUALITY15_ABSENT,
+      supply: QUALITY15_ABSENT,
+      marketing: QUALITY15_ABSENT,
+      market: QUALITY15_ABSENT,
+      revenueModel: '가설',
+      operations: QUALITY15_ABSENT,
+      competition: QUALITY15_ABSENT,
+    });
+    expect(gradeWholeBusinessDraft(filled, COMPARE_BUSINESS_INPUT).status).toBe('pass');
+    expect(scoreWholeBusinessUsefulness(filled).some((item) => item.status === 'not_run')).toBe(true);
+    expect(scoreWholeBusinessUsefulness(filled).every((item) => item.status === 'not_run')).toBe(true);
+    expect(gradeQuestionPurposeQuality([], 'model_response')).toEqual({
+      status: 'not_run',
+      provenance: 'model_response',
+      evidence: '유사 반복의 일반 판정은 하지 않는다. 응답 원문이 없으면 NOT RUN이다.',
+    });
+    expect(gradeQuestionPurposeQuality([...QUESTION_PARAPHRASE_FAIL_EXAMPLE], 'evaluation_example').status).toBe('fail');
+    expect(gradeQuestionPurposeQuality([...QUESTION_PARAPHRASE_FAIL_EXAMPLE], 'evaluation_example').evidence).toContain('모델 응답이 아니다');
   });
 });

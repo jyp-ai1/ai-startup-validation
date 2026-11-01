@@ -860,6 +860,143 @@ function fieldHasInventedFigure(field: string, sourceText: string): boolean {
   });
 }
 
+/** Two wordings of one verification. A criterion, not a stored model response. */
+export const QUESTION_PARAPHRASE_FAIL_EXAMPLE = [
+  '체험형 양조장 후보를 어디에서 찾을 계획인가요?',
+  '양조장 파트너를 어떤 경로로 발굴하시겠습니까?',
+] as const;
+
+export const WHOLE_BUSINESS_USEFULNESS_CRITERIA = [
+  {
+    id: 'structure',
+    text: '최초 분석이 고객, 문제, 제품, 공급, 시장, 수익, 운영과 그 연결, 핵심 가설을 설명하는가.',
+  },
+  {
+    id: 'answer_reflection',
+    text: 'Founder 답변 이후 유지되는 판단, 바뀌는 판단, 그 이유가 구분되는가.',
+  },
+  {
+    id: 'resolved_open',
+    text: '이번 답으로 해결된 문제와 아직 열린 문제가 구분되는가.',
+  },
+  {
+    id: 'operating_links',
+    text: '공급자 확보, 상품 구성, 고객 확보, 운영, 수익 구조가 서로 연결되는가.',
+  },
+  {
+    id: 'question_advance',
+    text: '다음 질문이 후보 선정, 실제 접촉, 협력 의사, 공급 조건처럼 이전보다 구체적인 검증으로 나아가는가. 발굴 경로를 다른 말로 다시 묻는 것은 발전이 아니다.',
+  },
+] as const;
+
+export type WholeBusinessUsefulnessId = (typeof WHOLE_BUSINESS_USEFULNESS_CRITERIA)[number]['id'];
+
+/**
+ * Strategy usefulness is not scored from filled fields.
+ * A missing response stays not_run. A present response also stays not_run here.
+ */
+export function scoreWholeBusinessUsefulness(raw: string | null): Array<{
+  id: WholeBusinessUsefulnessId;
+  status: 'not_run';
+  evidence: string;
+}> {
+  const evidence = raw?.trim()
+    ? '응답 원문이 있어도 이 함수는 전략 품질을 통과시키지 않는다.'
+    : '모델 응답 원문 없음';
+  return WHOLE_BUSINESS_USEFULNESS_CRITERIA.map((item) => ({
+    id: item.id,
+    status: 'not_run' as const,
+    evidence,
+  }));
+}
+
+/** Records the known paraphrase as FAIL. Other sets stay not_run. This does not call a model. */
+export function gradeQuestionPurposeQuality(
+  questions: string[],
+  provenance: 'model_response' | 'evaluation_example',
+): { status: 'fail' | 'not_run'; provenance: 'model_response' | 'evaluation_example'; evidence: string } {
+  const compact = (value: string) => value.replace(/\s+/g, '').trim();
+  const present = new Set(questions.map(compact));
+  const repeated = QUESTION_PARAPHRASE_FAIL_EXAMPLE.every((question) => present.has(compact(question)));
+  if (!repeated) {
+    return {
+      status: 'not_run',
+      provenance,
+      evidence: '유사 반복의 일반 판정은 하지 않는다. 응답 원문이 없으면 NOT RUN이다.',
+    };
+  }
+  return {
+    status: 'fail',
+    provenance,
+    evidence:
+      provenance === 'evaluation_example'
+        ? '표현만 바꾼 같은 검증이다. 이 쌍은 평가 기준이며 모델 응답이 아니다.'
+        : '응답에 표현만 바꾼 같은 검증이 있다. 원문을 유지하고 품질 FAIL로 둔다.',
+  };
+}
+
+function storedCompareRequest(request: ChatRequest): {
+  model: ChatRequest['model'];
+  temperature: ChatRequest['temperature'];
+  maxTokens: ChatRequest['maxTokens'];
+  responseFormat: ChatRequest['responseFormat'];
+  messages: ChatRequest['messages'];
+} {
+  return {
+    model: request.model,
+    temperature: request.temperature,
+    maxTokens: request.maxTokens,
+    responseFormat: request.responseFormat,
+    messages: request.messages.map((message) => ({ role: message.role, content: message.content })),
+  };
+}
+
+/** Request originals for one business input. Responses are null until a live call stores them. */
+export function wholeBusinessCompareEvidence() {
+  const quality2 = buildQuality2CompareRequest();
+  const quality15 = buildQuality15CompareRequest();
+  return {
+    kind: 'request_only' as const,
+    businessInput: COMPARE_BUSINESS_INPUT,
+    sameInput: quality2.messages.some((message) => message.content.includes('전통주(양조장)')) &&
+      quality15.messages.some((message) => message.content.includes('전통주(양조장)')),
+    productPromptVersion: AI_PM_FIRST_PROMPT_VERSION,
+    draftPromptVersion: QUALITY15_PROMPT_VERSION,
+    quality15InstalledInProduct: false,
+    callCount: 0,
+    promptTokens: null,
+    completionTokens: null,
+    totalTokens: null,
+    calls: [
+      {
+        promptVersion: AI_PM_FIRST_PROMPT_VERSION,
+        status: 'NOT RUN' as const,
+        raw: null,
+        request: storedCompareRequest(quality2),
+      },
+      {
+        promptVersion: QUALITY15_PROMPT_VERSION,
+        status: 'NOT RUN' as const,
+        raw: null,
+        request: storedCompareRequest(quality15),
+      },
+    ],
+    usefulness: scoreWholeBusinessUsefulness(null),
+    criteria: WHOLE_BUSINESS_USEFULNESS_CRITERIA,
+    questionPurpose: gradeQuestionPurposeQuality([], 'model_response'),
+    paraphraseFailExample: {
+      provenance: 'evaluation_example' as const,
+      grade: gradeQuestionPurposeQuality([...QUESTION_PARAPHRASE_FAIL_EXAMPLE], 'evaluation_example'),
+    },
+    liveCall: {
+      status: 'NOT RUN' as const,
+      reason: 'GPT_API_KEY missing',
+      requiredEnvironment:
+        'GPT_API_KEY가 있는 비프로덕션 실행에서 executeWholeBusinessCompare를 한 번 호출한다. 응답 원문과 토큰을 저장한다. Founder 프로젝트에 행을 넣지 않는다. 수리 호출을 하지 않는다.',
+    },
+  };
+}
+
 /**
  * Structure gate only. Not the product follow-up route and not a quality verdict.
  * The founder choice and supplement are synthetic test data.
