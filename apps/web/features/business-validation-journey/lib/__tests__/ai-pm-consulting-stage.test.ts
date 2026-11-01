@@ -332,6 +332,7 @@ describe('consulting stage batch', () => {
     expect(stageLedger.founderClaims).toEqual(['양조장과의 협력 가능성이 높다.']);
     expect(stageLedger.stillUnknown).toEqual([]);
     expect(stagePayload.answerReading).toEqual([{ questionId: 'hist-1', kinds: ['claim', 'choice'] }]);
+    expect(stagePayload.answerSource).toEqual([{ questionId: 'hist-1', source: 'founder' }]);
     expect(stagePayload.thisAnswer).toBeUndefined();
     expect(stagePayload.verificationStage).toBeUndefined();
     expect(stagePayload.experimentRecords).toBeUndefined();
@@ -362,6 +363,9 @@ describe('consulting stage batch', () => {
     expect(system).toContain('실행 가능성');
     expect(system).toContain('priorJudgmentText를 출력하지 않는');
     expect(system).toContain('존재 여부에 이미 답이 있으면');
+    expect(system).toContain('answerSource.source가 simulation');
+    expect(system).toContain('이는 사실이다라고 쓰지 않는다');
+    expect(system).toContain('그 질문을 반복하지 않는다');
     expect(system).not.toContain('양조장 후보가 있는가');
     expect(system).not.toContain('후보 양조장');
     expect(system).toContain('아직 확인되지 않았다');
@@ -1515,11 +1519,18 @@ describe('consulting stage batch', () => {
     expect(first.priorHypotheses).toEqual(['협력이 원활할 것이다']);
     const blocked = payload.doNotCopy as { priorUnresolvedIssues: string[] };
     expect(blocked.priorUnresolvedIssues).toEqual(['협력이 원활할 것이다']);
-    const task = payload.revisionTask as { updatedJudgment?: string; nextQuestion?: string; priorQuestionText?: string };
+    const task = payload.revisionTask as {
+      updatedJudgment?: string;
+      unresolvedIssues?: string;
+      nextQuestion?: string;
+      priorQuestionText?: string;
+    };
     expect(task.updatedJudgment).toContain('사업 모델의 잠재력');
     expect(task.updatedJudgment).toContain('priorJudgmentText를 출력하지 않는다');
     expect(task.nextQuestion).toContain('같은 목적');
     expect(task.nextQuestion).toContain('존재 여부');
+    expect(task.nextQuestion).toContain('방금 답한 질문을 반복하지 않는다');
+    expect(task.unresolvedIssues).toContain('priorUnresolvedIssues');
     expect(task.priorQuestionText).toBeUndefined();
     expect(serialized).not.toContain('양조장 후보가 있는가');
     const readings = payload.priorReadings as Array<{
@@ -1614,6 +1625,7 @@ describe('consulting stage batch', () => {
     expect(task.nextQuestion).toContain('접촉');
     expect(task.nextQuestion).not.toContain('볼 대상이 있는가');
     expect(JSON.stringify(payload.stagePairs)).toContain('SIMULATION 대상은 아직 없다');
+    expect(payload.answerSource).toEqual([{ questionId: 'q1', source: 'simulation' }]);
     expect(JSON.stringify(payload)).not.toContain('양조장 후보가 있는가');
   });
 
