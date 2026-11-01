@@ -1549,6 +1549,48 @@ function compactConsultingAnalysis(sections: ReviewSections): {
   };
 }
 
+/** Stage requests keep the first business fields that compact analysis drops. */
+function stageFirstAnalysis(sections: ReviewSections) {
+  return {
+    ...compactConsultingAnalysis(sections),
+    customer: sections.customer,
+    problem: sections.problem,
+    market: sections.market,
+    revenueModel: sections.revenueModel,
+    unresolvedIssues: [...sections.uncertain],
+    product: sections.analysis?.product ?? '',
+    supply: sections.analysis?.supply ?? '',
+    marketing: sections.analysis?.marketing ?? '',
+  };
+}
+
+export type StageAnswerLink = {
+  sourceReviewId: string;
+  questionId: string;
+  question: string;
+  choiceId: string | null;
+  choiceLabel: string | null;
+  supplement: string;
+  submittedAt: string | null;
+  status: StagePair['status'];
+};
+
+export type StagePriorReading = {
+  reviewId: string;
+  judgment: string;
+  judgmentReason: string;
+  impactOnPreviousJudgment: string;
+  resolvedIssues: string[];
+  unresolvedIssues: string[];
+  customer: string;
+  problem: string;
+  revenueModel: string;
+  product: string;
+  supply: string;
+  marketing: string;
+  nextQuestion: string;
+};
+
 function productReanalysisSchema(): Record<string, unknown> {
   const text = { type: 'string' };
   const list = { type: 'array', items: { type: 'string' } };
@@ -1874,6 +1916,7 @@ function stageReanalysisSystemPrompt(): string {
     '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 적는다. 판단을 유지했는지 바꿨는지와 그 이유를 이번 답의 judgmentEffect와 연결한다. priorJudgmentText를 이어 쓰지 않는다. 코드는 결론을 정하지 않는다.',
     '5. 다음 검증 질문은 당신이 고른다. priorStagePairs, 이번 답, resolvedIssues, unresolvedIssues를 보고 지금 사업에서 가장 큰 불확실성을 고른다. verificationPurpose에 그 불확실성을 적는다. 이미 한 질문, 선택, 보충, 해결된 문제를 다른 말로 다시 묻지 않는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
+    'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. resolvedIssues는 해결된 채로 남고, unresolvedIssues와 판단 이유는 다음 판단의 입력이다.',
     'JSON만 반환한다.',
     '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
     'answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
@@ -1955,6 +1998,10 @@ export function buildProductReanalysisRequest(input: {
   priorStagePairs?: StagePair[];
   /** True only when the founder asked for analysis before every question was answered. */
   stagePartial?: boolean;
+  /** Question-linked answers, including earlier stages. Absent on the one-answer path. */
+  answerLinks?: StageAnswerLink[];
+  /** Analyses already stored on this business chain, oldest first. */
+  priorReadings?: StagePriorReading[];
 }): ChatRequest {
   const previousQuestions = input.previousQuestions ?? [input.latestAnalysis.nextQuestion];
   const stagePairs = input.stagePairs ?? [];
@@ -1964,9 +2011,11 @@ export function buildProductReanalysisRequest(input: {
   const anchors = stageBatch
     ? {
         originalInput: input.originalInput,
-        firstAnalysis: compactConsultingAnalysis(input.firstAnalysis),
+        firstAnalysis: stageFirstAnalysis(input.firstAnalysis),
         latestAnalysis: followUpPreviousAnalysis(latestForRequest),
         priorQuestionTexts: previousQuestions,
+        answerLinks: input.answerLinks ?? [],
+        priorReadings: input.priorReadings ?? [],
         doNotCopy: {
           priorJudgmentText: latestForRequest.analysis?.judgmentDetail || latestForRequest.judgment,
           priorQuestionText: latestForRequest.nextQuestion,
@@ -3078,6 +3127,49 @@ export async function runStageReanalysis(input: {
     }),
   );
   const previousQuestions = [...priorStagePairs, ...pairs].map((pair) => pair.question);
+  const feedbackByReview = new Map<string, StoredFeedback[]>([[parent.reviewId, feedback]]);
+  for (const record of chain) {
+    const sourceId = record.parentReviewId;
+    if (!sourceId || feedbackByReview.has(sourceId)) continue;
+    feedbackByReview.set(sourceId, await input.store.listFeedback(input.userId, sourceId));
+  }
+  const linkFor = (pair: StagePair, sourceReviewId: string): StageAnswerLink => {
+    const item = [...(feedbackByReview.get(sourceReviewId) ?? [])].reverse().find((row) => row.questionId === pair.questionId);
+    return {
+      sourceReviewId,
+      questionId: pair.questionId,
+      question: pair.question,
+      choiceId: pair.choiceId,
+      choiceLabel: pair.choiceLabel,
+      supplement: pair.supplement,
+      submittedAt: item?.submittedAt ?? null,
+      status: pair.status,
+    };
+  };
+  const answerLinks = [
+    ...chain.flatMap((record) => (record.stageAnswers ?? []).map((pair) => linkFor(pair, record.parentReviewId ?? record.reviewId))),
+    ...pairs.map((pair) => linkFor(pair, parent.reviewId)),
+  ];
+  const priorReadings: StagePriorReading[] = chain
+    .filter((record) => record.sections)
+    .map((record) => ({
+      reviewId: record.reviewId,
+      judgment: record.stageReading?.updatedJudgment || record.sections?.analysis?.judgmentDetail || record.sections?.judgment || '',
+      judgmentReason: record.stageReading?.judgmentReason ?? '',
+      impactOnPreviousJudgment: record.stageReading?.impactOnPreviousJudgment ?? '',
+      resolvedIssues: record.stageReading?.resolvedIssues ?? [],
+      unresolvedIssues:
+        record.stageReading?.unresolvedIssues && record.stageReading.unresolvedIssues.length > 0
+          ? record.stageReading.unresolvedIssues
+          : [...(record.sections?.uncertain ?? [])],
+      customer: record.sections?.customer ?? '',
+      problem: record.sections?.problem ?? '',
+      revenueModel: record.sections?.revenueModel ?? '',
+      product: record.sections?.analysis?.product ?? '',
+      supply: record.sections?.analysis?.supply ?? '',
+      marketing: record.sections?.analysis?.marketing ?? '',
+      nextQuestion: record.sections?.nextQuestion ?? '',
+    }));
   const productRequest = buildProductReanalysisRequest({
     originalInput: root.inputText,
     firstAnalysis: root.sections ?? parent.sections,
@@ -3094,6 +3186,8 @@ export async function runStageReanalysis(input: {
     stagePairs: pairs,
     priorStagePairs,
     stagePartial,
+    answerLinks,
+    priorReadings,
   });
   const finished = await finishCall({
     store: input.store,

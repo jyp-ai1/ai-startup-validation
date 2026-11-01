@@ -1,0 +1,952 @@
+{
+  "kind": "simulation_context_continuity",
+  "provenance": "SIMULATION",
+  "liveCall": {
+    "status": "NOT RUN",
+    "reason": "GPT_API_KEY missing"
+  },
+  "note": "주입 응답이다. 실제 GPT 응답이 아니다. 토큰은 측정값이 아니므로 null이다.",
+  "businessInput": "다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.",
+  "rounds": [
+    {
+      "executionId": "sim-context-1",
+      "reviewId": "6703aa68-16d2-4090-a66f-3eb3e760cf98",
+      "provenance": "SIMULATION",
+      "requestedModel": "gpt-4o-mini",
+      "responseModel": "SIMULATION",
+      "callCount": 1,
+      "promptTokens": null,
+      "completionTokens": null,
+      "totalTokens": null,
+      "request": {
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "responseFormat": {
+          "type": "json_schema",
+          "schema": {
+            "title": "product_reanalysis",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "summary",
+              "customer",
+              "problem",
+              "value",
+              "operatingModel",
+              "alternatives",
+              "differentiation",
+              "payer",
+              "revenueModel",
+              "market",
+              "competition",
+              "operations",
+              "profitability",
+              "strengths",
+              "risks",
+              "assumptions",
+              "evidenceToChange",
+              "founderFacts",
+              "inferences",
+              "judgment",
+              "nextVerification",
+              "nextQuestion",
+              "nextQuestionReason",
+              "choices",
+              "questions"
+            ],
+            "properties": {
+              "summary": {
+                "type": "string",
+                "description": "judgment와 같은 결론. 협력 가능성이 높지만을 넣지 않는다. 협력 가능성이 높다를 쓰려면 검증되지 않은 가설이라고 같은 문장에 적는다."
+              },
+              "customer": {
+                "type": "string"
+              },
+              "problem": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "operatingModel": {
+                "type": "string"
+              },
+              "alternatives": {
+                "type": "string"
+              },
+              "differentiation": {
+                "type": "string"
+              },
+              "payer": {
+                "type": "string"
+              },
+              "revenueModel": {
+                "type": "string"
+              },
+              "market": {
+                "type": "string"
+              },
+              "competition": {
+                "type": "string"
+              },
+              "operations": {
+                "type": "string"
+              },
+              "profitability": {
+                "type": "string"
+              },
+              "strengths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "risks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이번 답의 빈칸을 새 문장으로 적는다. 접촉 여부 문장만 반복하면 실패다. 사업이 불가능하다고 단정하지 않는다."
+              },
+              "assumptions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "가설이 성립하는지도, 그 영향도 확인되지 않았다고 적는다. 긍정적 영향을 미칠 것이다라고 쓰지 않는다. 만약이라는 말로 긍정 효과를 단정하지 않는다."
+              },
+              "evidenceToChange": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이 판단을 바꾸게 될 확인 항목. judgment와 같은 문장이면 실패다."
+              },
+              "founderFacts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "확인된 접촉, 계약, 입금, 예약만. 없으면 빈 배열."
+              },
+              "inferences": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "협력 가능성이 높다를 현재 상태로 반복하지 않는다. 후보 부재와 접촉, 협력 의사, 협력 조건이 확인되지 않은 데서 추론한다. 주장을 적으면 검증되지 않은 가설이라고 적는다."
+              },
+              "judgment": {
+                "type": "string",
+                "description": "founderClaims의 협력 가능성 문장은 검증되지 않은 가설로 judgment 안에 적는다. founderSupplement에 체험 기준이 있으면 그 기준을 계획 또는 선택으로 judgment 안에 적는다. 고르겠다는 계획과 별도로, 후보가 아직 선정되지 않았다는 미해결을 같은 judgment에 적는다. 협력 가능성이 높지만을 현재 상태로 쓰지 않는다. unresolved의 후보 부재를 포함한다. 이전 문장을 복사하지 않는다. 유지, 상향, 하향, 유보 중 하나와 이유를 적는다."
+              },
+              "nextVerification": {
+                "type": "string",
+                "description": "priorGoals 문장을 복사하지 않는다. 이번 답이 이미 기준이면 기준 확인을 다시 적지 않는다. nextQuestion과 같은 대상만 적는다. 접근 경로, 협력 의사, 협력 조건 중 하나다. 기준을 확인하면 협력 가능성이 높아진다고 쓰지 않는다. 그 효과는 확인되지 않았다."
+              },
+              "nextQuestion": {
+                "type": "string",
+                "description": "이미 후보가 없다고 답했다. 정했나요, 한 곳, 이름, 떠오르는, 이름이 있는가, 선정했는지를 묻지 않는다. 이번 답이 기준을 골랐으면 기준을 다시 묻지 않는다. 기준이 구체화되었다만 쓰면 실패다. 접근 경로, 협력 의사, 협력 조건 중 하나만 묻는다."
+              },
+              "nextQuestionReason": {
+                "type": "string",
+                "description": "그 답이 다음 사업성 판단에 왜 필요한지. priorReasonText와 같으면 실패다."
+              },
+              "choices": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이번 질문에 답하는 서로 다른 선택 두 개 이상. priorChoices와 같은 문장을 두지 않는다."
+              },
+              "questions": {
+                "type": "array",
+                "minItems": 1,
+                "description": "다음 상담 단계의 서로 다른 검증 질문 1개 이상. 개수는 모델이 정한다. 첫 질문의 text는 nextQuestion과 같다. 이미 답한 질문 문장을 반복하지 않는다.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "text",
+                    "choices"
+                  ],
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "이 질문의 문장. 다른 질문과 같지 않다."
+                    },
+                    "choices": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "이 질문에만 해당하는 서로 다른 선택 2개 이상."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "messages": [
+          {
+            "role": "system",
+            "content": "프롬프트 버전 quality-2. 당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 말고 성립 조건과 가장 큰 불확실성을 분석한다. 창업자가 아직 고르지 않은 답을 사실로 만들지 않는다. 첫 질문은 정도(높다, 낮다)가 아니라 사업의 갈림길을 가른다. 사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다. 고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다. 가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다. 분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 1개 이상으로 questions에 둔다. 개수는 모델이 정한다. 각 질문은 text와 그 질문의 choices를 가진다. nextQuestion은 첫 text와 같다. 질문이 없거나 배열이 없으면 상담 단계가 아니다. 모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다. 선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다. JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다. 키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다. summary는 원문을 반영한 설명, judgment는 예비 판단과 근거, nextVerification은 적은 비용의 확인 행동이다. assumptions는 1개에서 3개다."
+          },
+          {
+            "role": "user",
+            "content": "사업 입력:\n다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 1개 이상이다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 questions 첫 text와 같다. questions가 없거나 비어 있으면 상담 단계가 아니다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다."
+          }
+        ]
+      }
+    },
+    {
+      "executionId": "sim-context-2",
+      "reviewId": "ba1a178c-4d67-4df7-bff5-d1ee6871b321",
+      "provenance": "SIMULATION",
+      "requestedModel": "gpt-4o-mini",
+      "responseModel": "SIMULATION",
+      "callCount": 1,
+      "promptTokens": null,
+      "completionTokens": null,
+      "totalTokens": null,
+      "request": {
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "responseFormat": {
+          "type": "json_schema",
+          "schema": {
+            "title": "stage_reanalysis",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "answerInterpretation",
+              "verifiedFacts",
+              "unverifiedClaims",
+              "assumptions",
+              "resolvedIssues",
+              "unresolvedIssues",
+              "customer",
+              "problem",
+              "value",
+              "product",
+              "market",
+              "revenueModel",
+              "operations",
+              "supply",
+              "marketing",
+              "competition",
+              "executionNote",
+              "risks",
+              "impactOnPreviousJudgment",
+              "updatedJudgment",
+              "judgmentReason",
+              "nextVerification",
+              "nextQuestions",
+              "nextQuestionChoices"
+            ],
+            "properties": {
+              "answerInterpretation": {
+                "type": "array",
+                "description": "이번 stagePairs의 답만 담는다. priorStagePairs의 questionId는 넣지 않는다. 질문, 보존된 선택지, 실제 선택, 보충 설명을 한 답으로 해석한다.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "questionId",
+                    "choiceId",
+                    "meaning",
+                    "founderBasis",
+                    "observedEvidence",
+                    "judgmentEffect",
+                    "openRisk"
+                  ],
+                  "properties": {
+                    "questionId": {
+                      "type": "string"
+                    },
+                    "choiceId": {
+                      "type": "string"
+                    },
+                    "meaning": {
+                      "type": "string",
+                      "description": "이 답이 사업에 의미하는 바. choiceLabel이나 supplement와 같은 문장이면 실패다. 선택지를 새로 만들지 않는다."
+                    },
+                    "founderBasis": {
+                      "type": "string",
+                      "description": "Founder가 이렇게 말한 이유. 라벨 반복은 이유가 아니다. 입력에 이유가 없으면 이유가 없다고 적는다."
+                    },
+                    "observedEvidence": {
+                      "type": "string",
+                      "description": "접촉, 합의, 입금, 예약처럼 실제로 확인된 것. 없으면 확인된 접촉이나 합의가 없다고 적는다. 주장을 확인된 사실로 올리지 않는다."
+                    },
+                    "judgmentEffect": {
+                      "type": "string",
+                      "description": "이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유. 라벨 반복은 영향이 아니다."
+                    },
+                    "openRisk": {
+                      "type": "string",
+                      "description": "이 답이 남긴 미검증 위험. 없으면 없다고 적는다. 빈 문자열은 실패다."
+                    }
+                  }
+                }
+              },
+              "verifiedFacts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "접촉, 계약, 입금, 예약처럼 별도 증거가 있는 사실만. 주장과 계획은 넣지 않는다. 없으면 빈 배열. 실행 가능성의 긍정 근거는 이 목록뿐이다."
+              },
+              "unverifiedClaims": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Founder의 주장이나 기대. 가능성이 높다는 문장은 여기에 둔다. 잠재력은 있을 수 있으나 현재 확인된 실행 가능성은 아니다. verifiedFacts와 같은 문장을 두지 않는다."
+              },
+              "assumptions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "아직 검증되지 않은 가설, 그 가설이 맞을 때의 잠재력, 판단이 바뀔 추가 증거. 가설의 긍정적 결과를 확인된 실행으로 쓰지 않는다."
+              },
+              "resolvedIssues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이번 답이 구체화한 계획. choiceLabel만 반복하면 진전이 아니다. 확인되지 않은 주장은 넣지 않는다. 이 목록은 다음 질문에서 다시 묻지 않는다."
+              },
+              "unresolvedIssues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "아직 남은 실행 문제. 기준이 생겼다고 이 목록에서 지우지 않는다. 주장이 확인된 것은 아니다."
+              },
+              "customer": {
+                "type": "string",
+                "description": "핵심 고객. 입력과 답에 없으면 없다고 적는다. 빈 문자열은 실패다."
+              },
+              "problem": {
+                "type": "string",
+                "description": "해결하려는 문제. 입력과 답에 없으면 없다고 적는다."
+              },
+              "value": {
+                "type": "string",
+                "description": "제공하는 가치. 입력과 답에 없으면 없다고 적는다."
+              },
+              "product": {
+                "type": "string",
+                "description": "상품 또는 경험. 입력과 답에 없으면 없다고 적는다."
+              },
+              "market": {
+                "type": "string",
+                "description": "시장. 입력에 없는 규모 숫자는 만들지 않는다."
+              },
+              "revenueModel": {
+                "type": "string",
+                "description": "수익 구조. 입력에 없으면 가설이라고 적고 확정 수익으로 쓰지 않는다."
+              },
+              "operations": {
+                "type": "string",
+                "description": "운영 방식. 점수가 아니다."
+              },
+              "supply": {
+                "type": "string",
+                "description": "공급. 입력과 답에 없으면 없다고 적는다."
+              },
+              "marketing": {
+                "type": "string",
+                "description": "알리는 방법. 입력과 답에 없으면 없다고 적는다."
+              },
+              "competition": {
+                "type": "string",
+                "description": "경쟁. 입력과 답에 없으면 없다고 적는다."
+              },
+              "executionNote": {
+                "type": "string",
+                "description": "실행이 확인됐는지를 문장으로 적는다. 점수, 높다, 낮다로 단정하지 않는다. 증거가 없으면 아직 확인되지 않았다고 적는다."
+              },
+              "risks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "사업 위험. 없으면 빈 배열. 만들어 내지 않는다."
+              },
+              "impactOnPreviousJudgment": {
+                "type": "string",
+                "description": "앞의 목록이 이전 판단을 어떻게 바꾸는지. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 잠재력, 현재 확보된 근거, 실행 가능성, 실행상 위험을 나눈다. 증거가 없으면 아직 확인되지 않은 상태다. 낮다고 단정하지 않는다. unverifiedClaims는 아직 검증되지 않은 기회로만 인용한다. priorJudgmentText를 이어 쓰지 않는다."
+              },
+              "updatedJudgment": {
+                "type": "string",
+                "description": "앞의 목록으로 다시 쓴 현재 판단. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 실행 가능성은 아직 확인되지 않은 상태다. 낮다고 단정하지 않는다. unverifiedClaims는 잠재적 기회로만 남긴다. 계획의 구체화는 진전으로 적고 가설의 확인으로 쓰지 않는다."
+              },
+              "judgmentReason": {
+                "type": "string",
+                "description": "updatedJudgment를 유지하거나 바꾼 이유. verifiedFacts, unverifiedClaims, resolvedIssues, unresolvedIssues와 같은 방향이다."
+              },
+              "nextVerification": {
+                "type": "string",
+                "description": "unresolvedIssues 중 다음에 확인할 하나. 이미 답한 질문, choiceLabel, supplement와 같은 문장을 다시 확인 대상으로 쓰지 않는다."
+              },
+              "nextQuestions": {
+                "type": "array",
+                "minItems": 1,
+                "description": "unresolvedIssues만 묻는 서로 다른 질문 1개 이상. 개수는 모델이 정한다. resolvedIssues와 supplement에 이미 있는 문장을 다시 묻지 않는다.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "text",
+                    "choices",
+                    "verificationPurpose"
+                  ],
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "unresolvedIssues 중 다음 판단을 가장 크게 바꾸는 하나만 묻는다. 이미 제출된 질문, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다. 표현만 바꾼 같은 검증도 다시 묻지 않는다."
+                    },
+                    "verificationPurpose": {
+                      "type": "string",
+                      "description": "이 질문이 확인하려는 불확실성. 질문 문장, 이전 질문, 선택, 보충, 이미 해결된 문제와 같으면 실패다. 같은 검증을 다른 말로 적은 목적은 실패다."
+                    },
+                    "choices": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "새 검증의 갈림길. 이미 제출한 supplement 문장을 다시 고르는 항목으로 넣지 않는다."
+                    }
+                  }
+                }
+              },
+              "nextQuestionChoices": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "messages": [
+          {
+            "role": "system",
+            "content": "당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다. 이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다. 1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 사업에 의미하는 바다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다. 2. 확인된 사실, 주장, 가설을 가른다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다. 3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 입력과 답에 없으면 없다고 적는다. 빈 문자열로 두지 않는다. 부모 문장을 베끼지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다. 4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 적는다. 판단을 유지했는지 바꿨는지와 그 이유를 이번 답의 judgmentEffect와 연결한다. priorJudgmentText를 이어 쓰지 않는다. 코드는 결론을 정하지 않는다. 5. 다음 검증 질문은 당신이 고른다. priorStagePairs, 이번 답, resolvedIssues, unresolvedIssues를 보고 지금 사업에서 가장 큰 불확실성을 고른다. verificationPurpose에 그 불확실성을 적는다. 이미 한 질문, 선택, 보충, 해결된 문제를 다른 말로 다시 묻지 않는다. consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다. originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. resolvedIssues는 해결된 채로 남고, unresolvedIssues와 판단 이유는 다음 판단의 입력이다. JSON만 반환한다. 키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다. answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다. nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. verificationPurpose는 질문 문장과 다른 불확실성이다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다. nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다."
+          },
+          {
+            "role": "user",
+            "content": "{\"stagePairs\":[{\"questionId\":\"q1\",\"question\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"offeredChoices\":[],\"choiceId\":\"c1\",\"choiceLabel\":\"협력 가능성 주장\",\"supplement\":\"양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.\",\"status\":\"answered\"}],\"priorStagePairs\":[],\"stagePartial\":false,\"answerReading\":[{\"questionId\":\"q1\",\"kinds\":[\"claim\",\"choice\"]}],\"evidenceLedger\":{\"newFounderInformation\":true,\"unresolvedStillApplies\":false,\"verifiedFacts\":[],\"founderClaims\":[\"양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.\"],\"unresolved\":[],\"priorGoals\":[],\"stillUnknown\":[]},\"originalInput\":\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\",\"firstAnalysis\":{\"summary\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"priorJudgmentText\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"priorAssumptions\":[\"공급 양조장과 체험 상품의 연결은 확인되지 않았다\"],\"priorVerificationText\":\"공급 양조장과 체험 상품의 연결을 확인한다\",\"priorQuestionText\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"customer\":\"전통주를 좋아하는 내국인과 외국인 관광객\",\"problem\":\"개인별 체험을 안내할 양조장 연결이 확인되지 않았다\",\"market\":\"관광 수요의 크기는 입력에 없다\",\"revenueModel\":\"수익 구조는 가설이며 원문에 없다\",\"unresolvedIssues\":[\"공급 양조장과 체험 상품의 연결은 확인되지 않았다\"],\"product\":\"\",\"supply\":\"\",\"marketing\":\"\"},\"latestAnalysis\":{\"customer\":\"전통주를 좋아하는 내국인과 외국인 관광객\",\"problem\":\"개인별 체험을 안내할 양조장 연결이 확인되지 않았다\",\"market\":\"관광 수요의 크기는 입력에 없다\",\"revenueModel\":\"수익 구조는 가설이며 원문에 없다\",\"execution\":\"양조장 마케팅 지원을 구상 중이다\",\"priorRisks\":[\"공급 양조장이 없다\"],\"uncertain\":[\"공급 양조장과 체험 상품의 연결은 확인되지 않았다\"],\"hypotheses\":[\"공급 양조장과 체험 상품의 연결은 확인되지 않았다\"],\"priorJudgmentText\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"priorQuestionText\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"priorReasonText\":\"연결이 없으면 체험 상품을 실행할 수 없다\",\"answerHint\":\"선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.\",\"claimConfirmation\":null,\"analysis\":{\"summary\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"value\":\"양조장 체험과 주변 경험을 안내한다\",\"operatingModel\":\"양조장 마케팅 지원을 구상 중이다\",\"payer\":\"지불자는 확인되지 않았다\",\"competition\":\"경쟁은 확인되지 않았다\",\"operations\":\"운영은 아직 구상이다\",\"profitability\":\"수익성은 확인되지 않았다\",\"strengths\":[\"체험과 마케팅 지원을 함께 구상한다\"],\"priorAssumptions\":[\"공급 양조장과 체험 상품의 연결은 확인되지 않았다\"],\"priorEvidenceNotes\":[\"양조장 접촉\"],\"founderFacts\":[],\"priorInferences\":[\"체험 수요는 아직 가설이다\"],\"priorJudgmentText\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"priorChoices\":[{\"id\":\"c1\",\"label\":\"협력을 가정으로 남긴다\"},{\"id\":\"c2\",\"label\":\"아직 가정하지 않는다\"},{\"id\":\"other\",\"label\":\"기타 / 직접 입력\"}],\"alternatives\":\"입력에 없다\",\"differentiation\":\"입력에 없다\",\"priorVerificationText\":\"공급 양조장과 체험 상품의 연결을 확인한다\"}},\"priorQuestionTexts\":[\"양조장 협력에 대해 지금 무엇을 가정하나요?\"],\"answerLinks\":[{\"sourceReviewId\":\"6703aa68-16d2-4090-a66f-3eb3e760cf98\",\"questionId\":\"q1\",\"question\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"choiceId\":\"c1\",\"choiceLabel\":\"협력 가능성 주장\",\"supplement\":\"양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.\",\"submittedAt\":\"2026-11-01T01:00:00.000Z\",\"status\":\"answered\"}],\"priorReadings\":[{\"reviewId\":\"6703aa68-16d2-4090-a66f-3eb3e760cf98\",\"priorJudgmentText\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"judgmentReason\":\"\",\"impactOnPreviousJudgment\":\"\",\"resolvedIssues\":[],\"unresolvedIssues\":[\"공급 양조장과 체험 상품의 연결은 확인되지 않았다\"],\"customer\":\"전통주를 좋아하는 내국인과 외국인 관광객\",\"problem\":\"개인별 체험을 안내할 양조장 연결이 확인되지 않았다\",\"revenueModel\":\"수익 구조는 가설이며 원문에 없다\",\"product\":\"\",\"supply\":\"\",\"marketing\":\"\",\"priorQuestionText\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\"}],\"doNotCopy\":{\"priorJudgmentText\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"priorQuestionText\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\"},\"consultingPath\":[],\"priorAnalyses\":[]}"
+          }
+        ]
+      }
+    },
+    {
+      "executionId": "sim-context-3",
+      "reviewId": "28deb079-f5fc-4656-bc18-68e59791f3ae",
+      "provenance": "SIMULATION",
+      "requestedModel": "gpt-4o-mini",
+      "responseModel": "SIMULATION",
+      "callCount": 1,
+      "promptTokens": null,
+      "completionTokens": null,
+      "totalTokens": null,
+      "request": {
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "responseFormat": {
+          "type": "json_schema",
+          "schema": {
+            "title": "stage_reanalysis",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "answerInterpretation",
+              "verifiedFacts",
+              "unverifiedClaims",
+              "assumptions",
+              "resolvedIssues",
+              "unresolvedIssues",
+              "customer",
+              "problem",
+              "value",
+              "product",
+              "market",
+              "revenueModel",
+              "operations",
+              "supply",
+              "marketing",
+              "competition",
+              "executionNote",
+              "risks",
+              "impactOnPreviousJudgment",
+              "updatedJudgment",
+              "judgmentReason",
+              "nextVerification",
+              "nextQuestions",
+              "nextQuestionChoices"
+            ],
+            "properties": {
+              "answerInterpretation": {
+                "type": "array",
+                "description": "이번 stagePairs의 답만 담는다. priorStagePairs의 questionId는 넣지 않는다. 질문, 보존된 선택지, 실제 선택, 보충 설명을 한 답으로 해석한다.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "questionId",
+                    "choiceId",
+                    "meaning",
+                    "founderBasis",
+                    "observedEvidence",
+                    "judgmentEffect",
+                    "openRisk"
+                  ],
+                  "properties": {
+                    "questionId": {
+                      "type": "string"
+                    },
+                    "choiceId": {
+                      "type": "string"
+                    },
+                    "meaning": {
+                      "type": "string",
+                      "description": "이 답이 사업에 의미하는 바. choiceLabel이나 supplement와 같은 문장이면 실패다. 선택지를 새로 만들지 않는다."
+                    },
+                    "founderBasis": {
+                      "type": "string",
+                      "description": "Founder가 이렇게 말한 이유. 라벨 반복은 이유가 아니다. 입력에 이유가 없으면 이유가 없다고 적는다."
+                    },
+                    "observedEvidence": {
+                      "type": "string",
+                      "description": "접촉, 합의, 입금, 예약처럼 실제로 확인된 것. 없으면 확인된 접촉이나 합의가 없다고 적는다. 주장을 확인된 사실로 올리지 않는다."
+                    },
+                    "judgmentEffect": {
+                      "type": "string",
+                      "description": "이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유. 라벨 반복은 영향이 아니다."
+                    },
+                    "openRisk": {
+                      "type": "string",
+                      "description": "이 답이 남긴 미검증 위험. 없으면 없다고 적는다. 빈 문자열은 실패다."
+                    }
+                  }
+                }
+              },
+              "verifiedFacts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "접촉, 계약, 입금, 예약처럼 별도 증거가 있는 사실만. 주장과 계획은 넣지 않는다. 없으면 빈 배열. 실행 가능성의 긍정 근거는 이 목록뿐이다."
+              },
+              "unverifiedClaims": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Founder의 주장이나 기대. 가능성이 높다는 문장은 여기에 둔다. 잠재력은 있을 수 있으나 현재 확인된 실행 가능성은 아니다. verifiedFacts와 같은 문장을 두지 않는다."
+              },
+              "assumptions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "아직 검증되지 않은 가설, 그 가설이 맞을 때의 잠재력, 판단이 바뀔 추가 증거. 가설의 긍정적 결과를 확인된 실행으로 쓰지 않는다."
+              },
+              "resolvedIssues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이번 답이 구체화한 계획. choiceLabel만 반복하면 진전이 아니다. 확인되지 않은 주장은 넣지 않는다. 이 목록은 다음 질문에서 다시 묻지 않는다."
+              },
+              "unresolvedIssues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "아직 남은 실행 문제. 기준이 생겼다고 이 목록에서 지우지 않는다. 주장이 확인된 것은 아니다."
+              },
+              "customer": {
+                "type": "string",
+                "description": "핵심 고객. 입력과 답에 없으면 없다고 적는다. 빈 문자열은 실패다."
+              },
+              "problem": {
+                "type": "string",
+                "description": "해결하려는 문제. 입력과 답에 없으면 없다고 적는다."
+              },
+              "value": {
+                "type": "string",
+                "description": "제공하는 가치. 입력과 답에 없으면 없다고 적는다."
+              },
+              "product": {
+                "type": "string",
+                "description": "상품 또는 경험. 입력과 답에 없으면 없다고 적는다."
+              },
+              "market": {
+                "type": "string",
+                "description": "시장. 입력에 없는 규모 숫자는 만들지 않는다."
+              },
+              "revenueModel": {
+                "type": "string",
+                "description": "수익 구조. 입력에 없으면 가설이라고 적고 확정 수익으로 쓰지 않는다."
+              },
+              "operations": {
+                "type": "string",
+                "description": "운영 방식. 점수가 아니다."
+              },
+              "supply": {
+                "type": "string",
+                "description": "공급. 입력과 답에 없으면 없다고 적는다."
+              },
+              "marketing": {
+                "type": "string",
+                "description": "알리는 방법. 입력과 답에 없으면 없다고 적는다."
+              },
+              "competition": {
+                "type": "string",
+                "description": "경쟁. 입력과 답에 없으면 없다고 적는다."
+              },
+              "executionNote": {
+                "type": "string",
+                "description": "실행이 확인됐는지를 문장으로 적는다. 점수, 높다, 낮다로 단정하지 않는다. 증거가 없으면 아직 확인되지 않았다고 적는다."
+              },
+              "risks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "사업 위험. 없으면 빈 배열. 만들어 내지 않는다."
+              },
+              "impactOnPreviousJudgment": {
+                "type": "string",
+                "description": "앞의 목록이 이전 판단을 어떻게 바꾸는지. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 잠재력, 현재 확보된 근거, 실행 가능성, 실행상 위험을 나눈다. 증거가 없으면 아직 확인되지 않은 상태다. 낮다고 단정하지 않는다. unverifiedClaims는 아직 검증되지 않은 기회로만 인용한다. priorJudgmentText를 이어 쓰지 않는다."
+              },
+              "updatedJudgment": {
+                "type": "string",
+                "description": "앞의 목록으로 다시 쓴 현재 판단. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 실행 가능성은 아직 확인되지 않은 상태다. 낮다고 단정하지 않는다. unverifiedClaims는 잠재적 기회로만 남긴다. 계획의 구체화는 진전으로 적고 가설의 확인으로 쓰지 않는다."
+              },
+              "judgmentReason": {
+                "type": "string",
+                "description": "updatedJudgment를 유지하거나 바꾼 이유. verifiedFacts, unverifiedClaims, resolvedIssues, unresolvedIssues와 같은 방향이다."
+              },
+              "nextVerification": {
+                "type": "string",
+                "description": "unresolvedIssues 중 다음에 확인할 하나. 이미 답한 질문, choiceLabel, supplement와 같은 문장을 다시 확인 대상으로 쓰지 않는다."
+              },
+              "nextQuestions": {
+                "type": "array",
+                "minItems": 1,
+                "description": "unresolvedIssues만 묻는 서로 다른 질문 1개 이상. 개수는 모델이 정한다. resolvedIssues와 supplement에 이미 있는 문장을 다시 묻지 않는다.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "text",
+                    "choices",
+                    "verificationPurpose"
+                  ],
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "unresolvedIssues 중 다음 판단을 가장 크게 바꾸는 하나만 묻는다. 이미 제출된 질문, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다. 표현만 바꾼 같은 검증도 다시 묻지 않는다."
+                    },
+                    "verificationPurpose": {
+                      "type": "string",
+                      "description": "이 질문이 확인하려는 불확실성. 질문 문장, 이전 질문, 선택, 보충, 이미 해결된 문제와 같으면 실패다. 같은 검증을 다른 말로 적은 목적은 실패다."
+                    },
+                    "choices": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "새 검증의 갈림길. 이미 제출한 supplement 문장을 다시 고르는 항목으로 넣지 않는다."
+                    }
+                  }
+                }
+              },
+              "nextQuestionChoices": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "messages": [
+          {
+            "role": "system",
+            "content": "당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다. 이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다. 1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 사업에 의미하는 바다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다. 2. 확인된 사실, 주장, 가설을 가른다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다. 3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 입력과 답에 없으면 없다고 적는다. 빈 문자열로 두지 않는다. 부모 문장을 베끼지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다. 4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 적는다. 판단을 유지했는지 바꿨는지와 그 이유를 이번 답의 judgmentEffect와 연결한다. priorJudgmentText를 이어 쓰지 않는다. 코드는 결론을 정하지 않는다. 5. 다음 검증 질문은 당신이 고른다. priorStagePairs, 이번 답, resolvedIssues, unresolvedIssues를 보고 지금 사업에서 가장 큰 불확실성을 고른다. verificationPurpose에 그 불확실성을 적는다. 이미 한 질문, 선택, 보충, 해결된 문제를 다른 말로 다시 묻지 않는다. consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다. originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. resolvedIssues는 해결된 채로 남고, unresolvedIssues와 판단 이유는 다음 판단의 입력이다. JSON만 반환한다. 키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다. answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다. nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. verificationPurpose는 질문 문장과 다른 불확실성이다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다. nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다."
+          },
+          {
+            "role": "user",
+            "content": "{\"stagePairs\":[{\"questionId\":\"q1\",\"question\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\",\"offeredChoices\":[{\"choiceId\":\"c1\",\"label\":\"그 확인을 다음 행동으로 둔다\"},{\"choiceId\":\"c2\",\"label\":\"아직 그 확인을 시작하지 않는다\"}],\"choiceId\":null,\"choiceLabel\":null,\"supplement\":\"구체적인 양조장 후보는 아직 선정하지 않았다. 실제 협의도 아직 진행하지 않았다.\",\"status\":\"answered\"}],\"priorStagePairs\":[{\"questionId\":\"q1\",\"question\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"offeredChoices\":[],\"choiceId\":\"c1\",\"choiceLabel\":\"협력 가능성 주장\",\"supplement\":\"양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.\",\"status\":\"answered\"}],\"stagePartial\":false,\"answerReading\":[{\"questionId\":\"q1\",\"kinds\":[\"claim\",\"choice\"]},{\"questionId\":\"q1\",\"kinds\":[]}],\"evidenceLedger\":{\"newFounderInformation\":true,\"unresolvedStillApplies\":false,\"verifiedFacts\":[],\"founderClaims\":[\"양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.\"],\"unresolved\":[],\"priorGoals\":[],\"stillUnknown\":[]},\"originalInput\":\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\",\"firstAnalysis\":{\"summary\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"priorJudgmentText\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"priorAssumptions\":[\"공급 양조장과 체험 상품의 연결은 확인되지 않았다\"],\"priorVerificationText\":\"공급 양조장과 체험 상품의 연결을 확인한다\",\"priorQuestionText\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"customer\":\"전통주를 좋아하는 내국인과 외국인 관광객\",\"problem\":\"개인별 체험을 안내할 양조장 연결이 확인되지 않았다\",\"market\":\"관광 수요의 크기는 입력에 없다\",\"revenueModel\":\"수익 구조는 가설이며 원문에 없다\",\"unresolvedIssues\":[\"공급 양조장과 체험 상품의 연결은 확인되지 않았다\"],\"product\":\"\",\"supply\":\"\",\"marketing\":\"\"},\"latestAnalysis\":{\"customer\":\"전통주를 좋아하는 관광객\",\"problem\":\"체험을 제공할 양조장 연결이 확인되지 않았다\",\"market\":\"시장 크기는 입력에 없다\",\"revenueModel\":\"수익 구조는 아직 가설이다\",\"execution\":\"\",\"priorRisks\":[\"공급 계약이 없다\"],\"uncertain\":[\"공급 계약은 확인되지 않았다\"],\"hypotheses\":[\"공급 계약은 아직 없다\"],\"priorJudgmentText\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다\",\"priorQuestionText\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\",\"priorReasonText\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다의 이유다. 확인된 협력은 없다\",\"answerHint\":\"선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.\",\"claimConfirmation\":null,\"analysis\":{\"summary\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다에 이르는 변화다\",\"value\":\"만들고 마시는 체험을 안내한다\",\"operatingModel\":\"운영 절차는 아직 없다\",\"payer\":\"\",\"competition\":\"경쟁은 확인되지 않았다\",\"operations\":\"실행은 아직 확인되지 않았다\",\"profitability\":\"\",\"strengths\":[],\"product\":\"양조장 체험 안내\",\"supply\":\"공급 양조장은 아직 없다\",\"marketing\":\"양조장 온라인 마케팅 지원은 구상이다\",\"priorAssumptions\":[\"공급 계약은 아직 없다\"],\"priorEvidenceNotes\":[],\"founderFacts\":[],\"priorInferences\":[\"협력 가능성은 주장이다\"],\"priorJudgmentText\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다\",\"priorChoices\":[{\"id\":\"c1\",\"label\":\"그 확인을 다음 행동으로 둔다\"},{\"id\":\"c2\",\"label\":\"아직 그 확인을 시작하지 않는다\"}],\"priorVerificationText\":\"공급 계약은 확인되지 않았다\"}},\"priorQuestionTexts\":[\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\"],\"answerLinks\":[{\"sourceReviewId\":\"6703aa68-16d2-4090-a66f-3eb3e760cf98\",\"questionId\":\"q1\",\"question\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"choiceId\":\"c1\",\"choiceLabel\":\"협력 가능성 주장\",\"supplement\":\"양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.\",\"submittedAt\":\"2026-11-01T01:00:00.000Z\",\"status\":\"answered\"},{\"sourceReviewId\":\"ba1a178c-4d67-4df7-bff5-d1ee6871b321\",\"questionId\":\"q1\",\"question\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\",\"choiceId\":null,\"choiceLabel\":null,\"supplement\":\"구체적인 양조장 후보는 아직 선정하지 않았다. 실제 협의도 아직 진행하지 않았다.\",\"submittedAt\":\"2026-11-01T01:10:00.000Z\",\"status\":\"answered\"}],\"priorReadings\":[{\"reviewId\":\"6703aa68-16d2-4090-a66f-3eb3e760cf98\",\"priorJudgmentText\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"judgmentReason\":\"\",\"impactOnPreviousJudgment\":\"\",\"resolvedIssues\":[],\"unresolvedIssues\":[\"공급 양조장과 체험 상품의 연결은 확인되지 않았다\"],\"customer\":\"전통주를 좋아하는 내국인과 외국인 관광객\",\"problem\":\"개인별 체험을 안내할 양조장 연결이 확인되지 않았다\",\"revenueModel\":\"수익 구조는 가설이며 원문에 없다\",\"product\":\"\",\"supply\":\"\",\"marketing\":\"\",\"priorQuestionText\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\"},{\"reviewId\":\"ba1a178c-4d67-4df7-bff5-d1ee6871b321\",\"priorJudgmentText\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다\",\"judgmentReason\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다의 이유다. 확인된 협력은 없다\",\"impactOnPreviousJudgment\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다에 이르는 변화다\",\"resolvedIssues\":[\"체험 선호는 계획으로 접수했다\"],\"unresolvedIssues\":[\"공급 계약은 확인되지 않았다\"],\"customer\":\"전통주를 좋아하는 관광객\",\"problem\":\"체험을 제공할 양조장 연결이 확인되지 않았다\",\"revenueModel\":\"수익 구조는 아직 가설이다\",\"product\":\"양조장 체험 안내\",\"supply\":\"공급 양조장은 아직 없다\",\"marketing\":\"양조장 온라인 마케팅 지원은 구상이다\",\"priorQuestionText\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\"}],\"doNotCopy\":{\"priorJudgmentText\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다\",\"priorQuestionText\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\"},\"consultingPath\":[{\"order\":1,\"reviewId\":\"ba1a178c-4d67-4df7-bff5-d1ee6871b321\",\"choice\":\"협력 가능성 주장\",\"supplement\":\"양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.\",\"answeredQuestion\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"priorJudgmentText\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다\",\"priorQuestionText\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\",\"priorAssumptions\":[\"공급 계약은 아직 없다\"],\"priorRisks\":[\"공급 계약이 없다\"],\"judgmentStatus\":\"adopted\"}],\"priorAnalyses\":[{\"reviewId\":\"ba1a178c-4d67-4df7-bff5-d1ee6871b321\",\"priorJudgmentText\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다\",\"priorQuestionText\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\",\"priorAssumptions\":[\"공급 계약은 아직 없다\"],\"priorRisks\":[\"공급 계약이 없다\"]}]}"
+          }
+        ]
+      }
+    },
+    {
+      "executionId": "sim-context-4",
+      "reviewId": "9ab233d7-dd9c-4489-ba53-307a2b496947",
+      "provenance": "SIMULATION",
+      "requestedModel": "gpt-4o-mini",
+      "responseModel": "SIMULATION",
+      "callCount": 1,
+      "promptTokens": null,
+      "completionTokens": null,
+      "totalTokens": null,
+      "request": {
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "responseFormat": {
+          "type": "json_schema",
+          "schema": {
+            "title": "stage_reanalysis",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "answerInterpretation",
+              "verifiedFacts",
+              "unverifiedClaims",
+              "assumptions",
+              "resolvedIssues",
+              "unresolvedIssues",
+              "customer",
+              "problem",
+              "value",
+              "product",
+              "market",
+              "revenueModel",
+              "operations",
+              "supply",
+              "marketing",
+              "competition",
+              "executionNote",
+              "risks",
+              "impactOnPreviousJudgment",
+              "updatedJudgment",
+              "judgmentReason",
+              "nextVerification",
+              "nextQuestions",
+              "nextQuestionChoices"
+            ],
+            "properties": {
+              "answerInterpretation": {
+                "type": "array",
+                "description": "이번 stagePairs의 답만 담는다. priorStagePairs의 questionId는 넣지 않는다. 질문, 보존된 선택지, 실제 선택, 보충 설명을 한 답으로 해석한다.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "questionId",
+                    "choiceId",
+                    "meaning",
+                    "founderBasis",
+                    "observedEvidence",
+                    "judgmentEffect",
+                    "openRisk"
+                  ],
+                  "properties": {
+                    "questionId": {
+                      "type": "string"
+                    },
+                    "choiceId": {
+                      "type": "string"
+                    },
+                    "meaning": {
+                      "type": "string",
+                      "description": "이 답이 사업에 의미하는 바. choiceLabel이나 supplement와 같은 문장이면 실패다. 선택지를 새로 만들지 않는다."
+                    },
+                    "founderBasis": {
+                      "type": "string",
+                      "description": "Founder가 이렇게 말한 이유. 라벨 반복은 이유가 아니다. 입력에 이유가 없으면 이유가 없다고 적는다."
+                    },
+                    "observedEvidence": {
+                      "type": "string",
+                      "description": "접촉, 합의, 입금, 예약처럼 실제로 확인된 것. 없으면 확인된 접촉이나 합의가 없다고 적는다. 주장을 확인된 사실로 올리지 않는다."
+                    },
+                    "judgmentEffect": {
+                      "type": "string",
+                      "description": "이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유. 라벨 반복은 영향이 아니다."
+                    },
+                    "openRisk": {
+                      "type": "string",
+                      "description": "이 답이 남긴 미검증 위험. 없으면 없다고 적는다. 빈 문자열은 실패다."
+                    }
+                  }
+                }
+              },
+              "verifiedFacts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "접촉, 계약, 입금, 예약처럼 별도 증거가 있는 사실만. 주장과 계획은 넣지 않는다. 없으면 빈 배열. 실행 가능성의 긍정 근거는 이 목록뿐이다."
+              },
+              "unverifiedClaims": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Founder의 주장이나 기대. 가능성이 높다는 문장은 여기에 둔다. 잠재력은 있을 수 있으나 현재 확인된 실행 가능성은 아니다. verifiedFacts와 같은 문장을 두지 않는다."
+              },
+              "assumptions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "아직 검증되지 않은 가설, 그 가설이 맞을 때의 잠재력, 판단이 바뀔 추가 증거. 가설의 긍정적 결과를 확인된 실행으로 쓰지 않는다."
+              },
+              "resolvedIssues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "이번 답이 구체화한 계획. choiceLabel만 반복하면 진전이 아니다. 확인되지 않은 주장은 넣지 않는다. 이 목록은 다음 질문에서 다시 묻지 않는다."
+              },
+              "unresolvedIssues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "아직 남은 실행 문제. 기준이 생겼다고 이 목록에서 지우지 않는다. 주장이 확인된 것은 아니다."
+              },
+              "customer": {
+                "type": "string",
+                "description": "핵심 고객. 입력과 답에 없으면 없다고 적는다. 빈 문자열은 실패다."
+              },
+              "problem": {
+                "type": "string",
+                "description": "해결하려는 문제. 입력과 답에 없으면 없다고 적는다."
+              },
+              "value": {
+                "type": "string",
+                "description": "제공하는 가치. 입력과 답에 없으면 없다고 적는다."
+              },
+              "product": {
+                "type": "string",
+                "description": "상품 또는 경험. 입력과 답에 없으면 없다고 적는다."
+              },
+              "market": {
+                "type": "string",
+                "description": "시장. 입력에 없는 규모 숫자는 만들지 않는다."
+              },
+              "revenueModel": {
+                "type": "string",
+                "description": "수익 구조. 입력에 없으면 가설이라고 적고 확정 수익으로 쓰지 않는다."
+              },
+              "operations": {
+                "type": "string",
+                "description": "운영 방식. 점수가 아니다."
+              },
+              "supply": {
+                "type": "string",
+                "description": "공급. 입력과 답에 없으면 없다고 적는다."
+              },
+              "marketing": {
+                "type": "string",
+                "description": "알리는 방법. 입력과 답에 없으면 없다고 적는다."
+              },
+              "competition": {
+                "type": "string",
+                "description": "경쟁. 입력과 답에 없으면 없다고 적는다."
+              },
+              "executionNote": {
+                "type": "string",
+                "description": "실행이 확인됐는지를 문장으로 적는다. 점수, 높다, 낮다로 단정하지 않는다. 증거가 없으면 아직 확인되지 않았다고 적는다."
+              },
+              "risks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "사업 위험. 없으면 빈 배열. 만들어 내지 않는다."
+              },
+              "impactOnPreviousJudgment": {
+                "type": "string",
+                "description": "앞의 목록이 이전 판단을 어떻게 바꾸는지. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 잠재력, 현재 확보된 근거, 실행 가능성, 실행상 위험을 나눈다. 증거가 없으면 아직 확인되지 않은 상태다. 낮다고 단정하지 않는다. unverifiedClaims는 아직 검증되지 않은 기회로만 인용한다. priorJudgmentText를 이어 쓰지 않는다."
+              },
+              "updatedJudgment": {
+                "type": "string",
+                "description": "앞의 목록으로 다시 쓴 현재 판단. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 실행 가능성은 아직 확인되지 않은 상태다. 낮다고 단정하지 않는다. unverifiedClaims는 잠재적 기회로만 남긴다. 계획의 구체화는 진전으로 적고 가설의 확인으로 쓰지 않는다."
+              },
+              "judgmentReason": {
+                "type": "string",
+                "description": "updatedJudgment를 유지하거나 바꾼 이유. verifiedFacts, unverifiedClaims, resolvedIssues, unresolvedIssues와 같은 방향이다."
+              },
+              "nextVerification": {
+                "type": "string",
+                "description": "unresolvedIssues 중 다음에 확인할 하나. 이미 답한 질문, choiceLabel, supplement와 같은 문장을 다시 확인 대상으로 쓰지 않는다."
+              },
+              "nextQuestions": {
+                "type": "array",
+                "minItems": 1,
+                "description": "unresolvedIssues만 묻는 서로 다른 질문 1개 이상. 개수는 모델이 정한다. resolvedIssues와 supplement에 이미 있는 문장을 다시 묻지 않는다.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "text",
+                    "choices",
+                    "verificationPurpose"
+                  ],
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "unresolvedIssues 중 다음 판단을 가장 크게 바꾸는 하나만 묻는다. 이미 제출된 질문, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다. 표현만 바꾼 같은 검증도 다시 묻지 않는다."
+                    },
+                    "verificationPurpose": {
+                      "type": "string",
+                      "description": "이 질문이 확인하려는 불확실성. 질문 문장, 이전 질문, 선택, 보충, 이미 해결된 문제와 같으면 실패다. 같은 검증을 다른 말로 적은 목적은 실패다."
+                    },
+                    "choices": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "새 검증의 갈림길. 이미 제출한 supplement 문장을 다시 고르는 항목으로 넣지 않는다."
+                    }
+                  }
+                }
+              },
+              "nextQuestionChoices": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "messages": [
+          {
+            "role": "system",
+            "content": "당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다. 이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다. 1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 사업에 의미하는 바다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다. 2. 확인된 사실, 주장, 가설을 가른다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다. 3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 입력과 답에 없으면 없다고 적는다. 빈 문자열로 두지 않는다. 부모 문장을 베끼지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다. 4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 적는다. 판단을 유지했는지 바꿨는지와 그 이유를 이번 답의 judgmentEffect와 연결한다. priorJudgmentText를 이어 쓰지 않는다. 코드는 결론을 정하지 않는다. 5. 다음 검증 질문은 당신이 고른다. priorStagePairs, 이번 답, resolvedIssues, unresolvedIssues를 보고 지금 사업에서 가장 큰 불확실성을 고른다. verificationPurpose에 그 불확실성을 적는다. 이미 한 질문, 선택, 보충, 해결된 문제를 다른 말로 다시 묻지 않는다. consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다. originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. resolvedIssues는 해결된 채로 남고, unresolvedIssues와 판단 이유는 다음 판단의 입력이다. JSON만 반환한다. 키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다. answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다. nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. verificationPurpose는 질문 문장과 다른 불확실성이다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다. nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다."
+          },
+          {
+            "role": "user",
+            "content": "{\"stagePairs\":[{\"questionId\":\"q1\",\"question\":\"다음에 직접 확인할 행동은 무엇인가요?\",\"offeredChoices\":[{\"choiceId\":\"c1\",\"label\":\"그 확인을 다음 행동으로 둔다\"},{\"choiceId\":\"c2\",\"label\":\"아직 그 확인을 시작하지 않는다\"}],\"choiceId\":null,\"choiceLabel\":null,\"supplement\":\"특정 지역에서 체험형 양조장 후보를 조사하겠다. 후보를 선정한 후 실제 협의 여부를 확인하겠다.\",\"status\":\"answered\"}],\"priorStagePairs\":[{\"questionId\":\"q1\",\"question\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"offeredChoices\":[],\"choiceId\":\"c1\",\"choiceLabel\":\"협력 가능성 주장\",\"supplement\":\"양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.\",\"status\":\"answered\"},{\"questionId\":\"q1\",\"question\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\",\"offeredChoices\":[{\"choiceId\":\"c1\",\"label\":\"그 확인을 다음 행동으로 둔다\"},{\"choiceId\":\"c2\",\"label\":\"아직 그 확인을 시작하지 않는다\"}],\"choiceId\":null,\"choiceLabel\":null,\"supplement\":\"구체적인 양조장 후보는 아직 선정하지 않았다. 실제 협의도 아직 진행하지 않았다.\",\"status\":\"answered\"}],\"stagePartial\":false,\"answerReading\":[{\"questionId\":\"q1\",\"kinds\":[\"claim\",\"choice\"]},{\"questionId\":\"q1\",\"kinds\":[]},{\"questionId\":\"q1\",\"kinds\":[]}],\"evidenceLedger\":{\"newFounderInformation\":true,\"unresolvedStillApplies\":false,\"verifiedFacts\":[],\"founderClaims\":[\"양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.\"],\"unresolved\":[],\"priorGoals\":[],\"stillUnknown\":[]},\"originalInput\":\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\",\"firstAnalysis\":{\"summary\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"priorJudgmentText\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"priorAssumptions\":[\"공급 양조장과 체험 상품의 연결은 확인되지 않았다\"],\"priorVerificationText\":\"공급 양조장과 체험 상품의 연결을 확인한다\",\"priorQuestionText\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"customer\":\"전통주를 좋아하는 내국인과 외국인 관광객\",\"problem\":\"개인별 체험을 안내할 양조장 연결이 확인되지 않았다\",\"market\":\"관광 수요의 크기는 입력에 없다\",\"revenueModel\":\"수익 구조는 가설이며 원문에 없다\",\"unresolvedIssues\":[\"공급 양조장과 체험 상품의 연결은 확인되지 않았다\"],\"product\":\"\",\"supply\":\"\",\"marketing\":\"\"},\"latestAnalysis\":{\"customer\":\"전통주를 좋아하는 관광객\",\"problem\":\"체험을 제공할 양조장 연결이 확인되지 않았다\",\"market\":\"시장 크기는 입력에 없다\",\"revenueModel\":\"수익 구조는 아직 가설이다\",\"execution\":\"\",\"priorRisks\":[\"공급 계약이 없다\"],\"uncertain\":[\"실제 협의는 아직 없다\"],\"hypotheses\":[\"공급 계약은 아직 없다\"],\"priorJudgmentText\":\"2차 갱신: 후보 미선정이 미해결로 남았다\",\"priorQuestionText\":\"다음에 직접 확인할 행동은 무엇인가요?\",\"priorReasonText\":\"2차 갱신: 후보 미선정이 미해결로 남았다의 이유다. 확인된 협력은 없다\",\"answerHint\":\"선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.\",\"claimConfirmation\":null,\"analysis\":{\"summary\":\"2차 갱신: 후보 미선정이 미해결로 남았다에 이르는 변화다\",\"value\":\"만들고 마시는 체험을 안내한다\",\"operatingModel\":\"운영 절차는 아직 없다\",\"payer\":\"\",\"competition\":\"경쟁은 확인되지 않았다\",\"operations\":\"실행은 아직 확인되지 않았다\",\"profitability\":\"\",\"strengths\":[],\"product\":\"양조장 체험 안내\",\"supply\":\"공급 양조장은 아직 없다\",\"marketing\":\"양조장 온라인 마케팅 지원은 구상이다\",\"priorAssumptions\":[\"공급 계약은 아직 없다\"],\"priorEvidenceNotes\":[],\"founderFacts\":[],\"priorInferences\":[\"협력 가능성은 주장이다\"],\"priorJudgmentText\":\"2차 갱신: 후보 미선정이 미해결로 남았다\",\"priorChoices\":[{\"id\":\"c1\",\"label\":\"그 확인을 다음 행동으로 둔다\"},{\"id\":\"c2\",\"label\":\"아직 그 확인을 시작하지 않는다\"}],\"priorVerificationText\":\"실제 협의는 아직 없다\"}},\"priorQuestionTexts\":[\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\",\"다음에 직접 확인할 행동은 무엇인가요?\"],\"answerLinks\":[{\"sourceReviewId\":\"6703aa68-16d2-4090-a66f-3eb3e760cf98\",\"questionId\":\"q1\",\"question\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"choiceId\":\"c1\",\"choiceLabel\":\"협력 가능성 주장\",\"supplement\":\"양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.\",\"submittedAt\":\"2026-11-01T01:00:00.000Z\",\"status\":\"answered\"},{\"sourceReviewId\":\"ba1a178c-4d67-4df7-bff5-d1ee6871b321\",\"questionId\":\"q1\",\"question\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\",\"choiceId\":null,\"choiceLabel\":null,\"supplement\":\"구체적인 양조장 후보는 아직 선정하지 않았다. 실제 협의도 아직 진행하지 않았다.\",\"submittedAt\":\"2026-11-01T01:10:00.000Z\",\"status\":\"answered\"},{\"sourceReviewId\":\"28deb079-f5fc-4656-bc18-68e59791f3ae\",\"questionId\":\"q1\",\"question\":\"다음에 직접 확인할 행동은 무엇인가요?\",\"choiceId\":null,\"choiceLabel\":null,\"supplement\":\"특정 지역에서 체험형 양조장 후보를 조사하겠다. 후보를 선정한 후 실제 협의 여부를 확인하겠다.\",\"submittedAt\":\"2026-11-01T01:20:00.000Z\",\"status\":\"answered\"}],\"priorReadings\":[{\"reviewId\":\"6703aa68-16d2-4090-a66f-3eb3e760cf98\",\"priorJudgmentText\":\"최초 판단: 체험 상품과 공급 양조장이 아직 연결되지 않았다\",\"judgmentReason\":\"\",\"impactOnPreviousJudgment\":\"\",\"resolvedIssues\":[],\"unresolvedIssues\":[\"공급 양조장과 체험 상품의 연결은 확인되지 않았다\"],\"customer\":\"전통주를 좋아하는 내국인과 외국인 관광객\",\"problem\":\"개인별 체험을 안내할 양조장 연결이 확인되지 않았다\",\"revenueModel\":\"수익 구조는 가설이며 원문에 없다\",\"product\":\"\",\"supply\":\"\",\"marketing\":\"\",\"priorQuestionText\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\"},{\"reviewId\":\"ba1a178c-4d67-4df7-bff5-d1ee6871b321\",\"priorJudgmentText\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다\",\"judgmentReason\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다의 이유다. 확인된 협력은 없다\",\"impactOnPreviousJudgment\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다에 이르는 변화다\",\"resolvedIssues\":[\"체험 선호는 계획으로 접수했다\"],\"unresolvedIssues\":[\"공급 계약은 확인되지 않았다\"],\"customer\":\"전통주를 좋아하는 관광객\",\"problem\":\"체험을 제공할 양조장 연결이 확인되지 않았다\",\"revenueModel\":\"수익 구조는 아직 가설이다\",\"product\":\"양조장 체험 안내\",\"supply\":\"공급 양조장은 아직 없다\",\"marketing\":\"양조장 온라인 마케팅 지원은 구상이다\",\"priorQuestionText\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\"},{\"reviewId\":\"28deb079-f5fc-4656-bc18-68e59791f3ae\",\"priorJudgmentText\":\"2차 갱신: 후보 미선정이 미해결로 남았다\",\"judgmentReason\":\"2차 갱신: 후보 미선정이 미해결로 남았다의 이유다. 확인된 협력은 없다\",\"impactOnPreviousJudgment\":\"2차 갱신: 후보 미선정이 미해결로 남았다에 이르는 변화다\",\"resolvedIssues\":[\"후보가 없다는 현재 상태를 확인했다\"],\"unresolvedIssues\":[\"실제 협의는 아직 없다\"],\"customer\":\"전통주를 좋아하는 관광객\",\"problem\":\"체험을 제공할 양조장 연결이 확인되지 않았다\",\"revenueModel\":\"수익 구조는 아직 가설이다\",\"product\":\"양조장 체험 안내\",\"supply\":\"공급 양조장은 아직 없다\",\"marketing\":\"양조장 온라인 마케팅 지원은 구상이다\",\"priorQuestionText\":\"다음에 직접 확인할 행동은 무엇인가요?\"}],\"doNotCopy\":{\"priorJudgmentText\":\"2차 갱신: 후보 미선정이 미해결로 남았다\",\"priorQuestionText\":\"다음에 직접 확인할 행동은 무엇인가요?\"},\"consultingPath\":[{\"order\":1,\"reviewId\":\"ba1a178c-4d67-4df7-bff5-d1ee6871b321\",\"choice\":\"협력 가능성 주장\",\"supplement\":\"양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.\",\"answeredQuestion\":\"양조장 협력에 대해 지금 무엇을 가정하나요?\",\"priorJudgmentText\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다\",\"priorQuestionText\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\",\"priorAssumptions\":[\"공급 계약은 아직 없다\"],\"priorRisks\":[\"공급 계약이 없다\"],\"judgmentStatus\":\"adopted\"},{\"order\":2,\"reviewId\":\"28deb079-f5fc-4656-bc18-68e59791f3ae\",\"choice\":null,\"supplement\":\"구체적인 양조장 후보는 아직 선정하지 않았다. 실제 협의도 아직 진행하지 않았다.\",\"answeredQuestion\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\",\"priorJudgmentText\":\"2차 갱신: 후보 미선정이 미해결로 남았다\",\"priorQuestionText\":\"다음에 직접 확인할 행동은 무엇인가요?\",\"priorAssumptions\":[\"공급 계약은 아직 없다\"],\"priorRisks\":[\"공급 계약이 없다\"],\"judgmentStatus\":\"adopted\"}],\"priorAnalyses\":[{\"reviewId\":\"ba1a178c-4d67-4df7-bff5-d1ee6871b321\",\"priorJudgmentText\":\"1차 갱신: 협력 가능성은 주장이며 확인된 협력이 아니다\",\"priorQuestionText\":\"체험 후보를 고를 때 아직 비어 있는 사실은 무엇인가요?\",\"priorAssumptions\":[\"공급 계약은 아직 없다\"],\"priorRisks\":[\"공급 계약이 없다\"]},{\"reviewId\":\"28deb079-f5fc-4656-bc18-68e59791f3ae\",\"priorJudgmentText\":\"2차 갱신: 후보 미선정이 미해결로 남았다\",\"priorQuestionText\":\"다음에 직접 확인할 행동은 무엇인가요?\",\"priorAssumptions\":[\"공급 계약은 아직 없다\"],\"priorRisks\":[\"공급 계약이 없다\"]}]}"
+          }
+        ]
+      }
+    }
+  ]
+}
