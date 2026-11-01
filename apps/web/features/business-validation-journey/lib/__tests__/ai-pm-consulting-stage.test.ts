@@ -430,8 +430,9 @@ describe('consulting stage batch', () => {
         'competition',
         'executionNote',
         'risks',
-        'businessReconstruction',
-        'nextReviewObjective',
+        'objectiveCandidates',
+        'selectedCandidateId',
+        'selectionReason',
         'nextVerification',
         'nextQuestions',
         'nextQuestionChoices',
@@ -1733,11 +1734,48 @@ describe('consulting stage batch', () => {
     ]);
     expect(payload.closedQuestions).toEqual([{ questionId: 'q1', text: '양조장과의 접촉이 있었는가?', askAgain: false }]);
     expect(Object.keys(payload)[0]).toBe('businessState');
-    const businessState = payload.businessState as { useForNextObjective: boolean; reviewedObjectives: string[]; unresolved: string[] };
-    expect(businessState.useForNextObjective).toBe(true);
-    expect(businessState.reviewedObjectives).toEqual(['양조장과의 접촉이 있었는가?']);
-    expect(JSON.stringify(businessState)).not.toContain(prior);
-    expect(businessState.unresolved).toEqual(['대상이 있는지 모른다']);
+    const businessState = payload.businessState as {
+      areaOrderIsNotPriority: boolean;
+      statedRecord: { originalIdea: string; confirmed: string[] };
+      areaStatus: Array<{ areaId: string; status: string }>;
+      priorReview: { judgment: string; reviewedObjectives: string[]; hypotheses: string[]; unresolved: string[]; resolved: string[]; operations: string };
+    };
+    expect(businessState.areaOrderIsNotPriority).toBe(true);
+    expect(businessState.statedRecord.originalIdea).toBe('양조장 체험');
+    expect(businessState.statedRecord.confirmed).toEqual([]);
+    expect(businessState.priorReview.reviewedObjectives).toEqual(['양조장과의 접촉이 있었는가?']);
+    expect(businessState.priorReview.judgment).toBe(prior);
+    expect(businessState.priorReview.hypotheses).toEqual(['대상이 있는지 모른다']);
+    expect(businessState.priorReview.unresolved).toEqual([]);
+    expect(businessState.priorReview.resolved).toEqual([]);
+    expect(businessState.priorReview.operations).toBe('구상');
+    expect(JSON.stringify(businessState.areaStatus)).not.toContain(prior);
+    expect(JSON.stringify(businessState.areaStatus)).not.toContain('구상');
+    expect(businessState.areaStatus.find((item) => item.areaId === 'supply')?.status).toBe('not_analyzed');
+    expect(businessState.areaStatus.find((item) => item.areaId === 'product')?.status).toBe('not_analyzed');
+    const priced = buildProductReanalysisRequest({
+      originalInput: '양조장 체험',
+      firstAnalysis: stored,
+      priorTurns: [],
+      latestAnalysis: stored,
+      founderChoice: null,
+      founderSupplement: '',
+      founderFeedback: null,
+      stagePairs: [
+        {
+          questionId: 'q1',
+          question: '양조장과의 접촉이 있었는가?',
+          offeredChoices: [],
+          choiceId: null,
+          choiceLabel: null,
+          supplement: 'SIMULATION. 공급 계약과 가격은 없다.',
+          status: 'answered',
+        },
+      ],
+    });
+    const pricedStatus = (userPayload(priced).businessState as { areaStatus: Array<{ areaId: string; status: string }> }).areaStatus;
+    expect(pricedStatus.find((item) => item.areaId === 'price')?.status).toBe('claim');
+    expect(pricedStatus.find((item) => item.areaId === 'supply')?.status).toBe('not_analyzed');
     expect(JSON.stringify(payload)).not.toContain('상대의 회신이 있었는가');
     if (request.responseFormat?.type === 'json_schema') {
       const properties = request.responseFormat.schema.properties as {

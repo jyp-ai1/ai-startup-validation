@@ -1814,8 +1814,9 @@ function stageReanalysisSchema(): Record<string, unknown> {
       'competition',
       'executionNote',
       'risks',
-      'businessReconstruction',
-      'nextReviewObjective',
+      'objectiveCandidates',
+      'selectedCandidateId',
+      'selectionReason',
       'nextVerification',
       'nextQuestions',
       'nextQuestionChoices',
@@ -1960,34 +1961,50 @@ function stageReanalysisSchema(): Record<string, unknown> {
         description: '실행이 확인됐는지를 문장으로 적는다. 점수, 높다, 낮다로 단정하지 않는다. 증거가 없으면 아직 확인되지 않았다고 적는다. 운영 계획을 실행이 끝난 것처럼 적지 않는다. 빈 문자열은 실패다.',
       },
       risks: { ...list, description: '사업 위험. 없으면 빈 배열. 만들어 내지 않는다.' },
-      businessReconstruction: {
-        type: 'object',
-        additionalProperties: false,
-        description: '질문을 고르기 전에 사업 전체를 다시 적는다. priorJudgmentText는 여기 넣지 않는다.',
-        required: ['originalIdea', 'confirmed', 'claims', 'reviewedObjectives', 'openGaps'],
-        properties: {
-          originalIdea: { ...filled, description: '최초 사업 아이디어를 한 문장으로 다시 적는다.' },
-          confirmed: { ...list, description: '별도 증거가 있는 사실만. 없으면 빈 배열.' },
-          claims: { ...list, description: '파운더가 주장한 내용. 확인된 사실이 아니다.' },
-          reviewedObjectives: { ...list, description: '이미 한 질문의 사업 목적. 다음 목적으로 다시 쓰지 않는다.' },
-          openGaps: { ...list, description: '사업 전체에서 아직 판단할 수 없는 빈칸. 직전 판단의 주제만 적지 않는다.' },
+      objectiveCandidates: {
+        type: 'array',
+        minItems: 2,
+        description:
+          '서로 다른 검토 목적 2개 이상. areaStatus를 읽고 고른다. 배열 순서는 우선순위가 아니다. priorReview의 문장을 목적으로 복사하지 않는다. 코드가 후보를 고르지 않는다.',
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['candidateId', 'areaId', 'objective', 'importance', 'uncertainty', 'prerequisite', 'overlapsReviewedObjective'],
+          properties: {
+            candidateId: { ...filled, description: '이 후보의 식별자. selectedCandidateId가 이 값을 가리킨다.' },
+            areaId: { ...filled, description: 'areaStatus의 areaId 하나. 코드가 정하지 않는다.' },
+            objective: {
+              ...filled,
+              description: '이번에 새로 할 사업 판단. 질문 문장이 아니다. reviewedObjectives와 같은 목적이면 overlapsReviewedObjective는 true다.',
+            },
+            importance: { ...filled, description: '이 판단이 다음 사업 판단에 필요한 이유.' },
+            uncertainty: { ...filled, description: '지금 모르는 것.' },
+            prerequisite: { ...filled, description: '먼저 알아야 하는 것. 없으면 없다고 적는다.' },
+            overlapsReviewedObjective: {
+              type: 'boolean',
+              description: '이미 검토한 목적과 같으면 true. 표현만 바꾼 목적도 true다.',
+            },
+          },
         },
       },
-      nextReviewObjective: {
+      selectedCandidateId: {
         ...filled,
-        description:
-          'businessReconstruction.openGaps에서 고른 다음 판단. reviewedObjectives와 priorJudgmentText의 주제를 다시 고르지 않는다. 질문 문장이 아니다. nextQuestions는 이 목적만 묻는다.',
+        description: 'overlapsReviewedObjective가 false인 후보의 candidateId. 코드가 고르지 않는다. nextQuestions는 그 후보의 objective만 묻는다.',
+      },
+      selectionReason: {
+        ...filled,
+        description: '선택한 후보의 중요성, 불확실성, 선행조건. 후보 문장을 질문으로 복사하지 않는다.',
       },
       nextVerification: {
         ...filled,
         description:
-          'nextReviewObjective가 확인하려는 불확실성. 이미 답한 질문, choiceLabel, supplement와 같은 문장을 다시 확인 대상으로 쓰지 않는다.',
+          '선택된 후보가 확인하려는 불확실성. 이미 답한 질문, choiceLabel, supplement와 같은 문장을 다시 확인 대상으로 쓰지 않는다.',
       },
       nextQuestions: {
         type: 'array',
         minItems: 1,
         description:
-          'nextReviewObjective 하나를 묻는 질문 1개 이상. 개수는 모델이 정한다. closedQuestions와 같은 목적은 묻지 않는다. resolvedIssues와 supplement에 이미 있는 문장을 다시 묻지 않는다.',
+          'selectedCandidateId 후보의 objective만 묻는 질문 1개 이상. 개수는 모델이 정한다. closedQuestions와 같은 목적은 묻지 않는다. resolvedIssues와 supplement에 이미 있는 문장을 다시 묻지 않는다.',
         items: {
           type: 'object',
           additionalProperties: false,
@@ -1996,7 +2013,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
             text: {
               ...filled,
               description:
-                'nextReviewObjective를 묻는다. closedQuestions와 다른 사업 목적을 묻는다. 이미 제출된 질문, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. businessReconstruction.openGaps에서 고른 목적이다. priorJudgmentText의 주제를 질문으로 고정하지 않는다. 영역 목록을 순서대로 따르지 않는다.',
+                '선택된 후보의 objective를 묻는다. closedQuestions와 다른 사업 목적을 묻는다. 이미 제출된 질문, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. priorReview의 주제를 질문으로 고정하지 않는다. 영역 목록을 순서대로 따르지 않는다.',
             },
             verificationPurpose: {
               ...filled,
@@ -2007,7 +2024,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
               type: 'array',
               minItems: 2,
               items: filled,
-              description: 'nextReviewObjective의 갈림길. 이미 제출한 supplement 문장을 다시 고르는 항목으로 넣지 않는다.',
+              description: '선택된 후보의 갈림길. 이미 제출한 supplement 문장을 다시 고르는 항목으로 넣지 않는다.',
             },
           },
         },
@@ -2053,11 +2070,11 @@ function stageReanalysisSystemPrompt(): string {
     '2. 확인된 사실, 주장, 가설을 가른다. Founder의 가능성 판단, 선호, 기대는 unverifiedClaims로 남긴다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 접촉, 협력 의사, 합의, 공급 조건이 없으면 그 기대를 사업 성과나 성공 가능성의 근거로 쓰지 않는다. 긍정적 사업 판단은 verifiedFacts의 별도 근거가 있을 때만 적는다. 근거가 없으면 그 문장은 창업자의 기대이고 파트너 확보와 실행은 검증되지 않았다고 적는다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다.',
     '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 정보가 부족한 칸은 부족하다고 적는다. supply와 marketing은 supplyState, marketingState와 함께 적는다. state는 confirmed, unconfirmed, not_analyzed다. not_analyzed의 문장은 아직 분석되지 않았다. unconfirmed의 문장은 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 빈 문자열과 공백은 실패다. value와 product도 빈 문자열이면 실패다. 요청에 문장이 있으면 지우지 말고 이번 답에 맞게 다시 쓴다. 요청에 아직 분석되지 않았다만 있으면 그 상태를 유지하거나 이번 답으로 알게 된 범위만 적는다. 부모의 빈 문자열은 요청에 없고 state는 not_analyzed다. 입력에도 없으면 unconfirmed로 둔다. 입력에 없는 공급 계약, 마케팅 성과, 수익, 상품을 만들어 내지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다. 확인된 접촉이 없으면 운영 계획을 실행이 끝난 것처럼 적지 않는다.',
     '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason은 서로 다른 역할의 새 문장이다. 사업 모델의 잠재력, Founder의 미확인 주장, 실제 확인된 협력, 실행 가능성, 새로 보인 위험을 한 덩어리로 유지하지 않는다. 잠재력은 유지할 수 있다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. impactOnPreviousJudgment는 이번 답이 그 구분 중 어디에 영향을 주는지다. updatedJudgment는 priorJudgmentText를 출력하지 않는 현재 판단이다. 사업 모델의 잠재력은 유지할 수 있다. 협력의 실행 가능성은 그 잠재력과 따로 재평가한다. 새 사실이 없어도 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. judgmentReason은 그 구분의 이유다. 남은 위험은 빼지 말고 unresolvedIssues에 현재 빈칸으로 적는다. unresolvedIssues는 priorUnresolvedIssues와 다른 새 문장이다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건을 한 문장으로 뭉치지 않는다. 새로 보인 위험도 거기 적는다. 세 문장을 한 문장으로 반복하지 않는다. priorJudgmentText를 세 칸에 그대로 붙이지 않는다. updatedJudgment가 priorJudgmentText와 같거나 그 문장을 포함하면 재평가가 아니다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다. 미확인 주장을 긍정적인 전망으로 쓰지 않는다. 이번 답이 그 위험을 해소하지 않으면 위험을 빼지 않는다. 코드는 결론을 정하지 않는다.',
-    '5. 다음 검증 질문은 businessState를 다시 읽은 뒤 nextReviewObjective로 고른 목적만 묻는다. 코드는 질문 문장을 정하지 않는다. 질문 개수도 당신이 정한다. priorJudgmentText는 판단을 갱신할 때만 쓰고 다음 질문의 주제로 고정하지 않는다. closedQuestions의 사업 목적은 끝난 목적이다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 이미 답한 질문은 표현만 바꾸어 다시 묻지 않는다. 다음 질문의 사업 목적은 방금 답한 질문의 목적과 달라야 한다. 고정된 질문 순서는 없다. 고객, 문제, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 해결된 내용은 근거와 함께 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다.',
+    '5. 다음 검증은 statedRecord와 areaStatus를 읽고 objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId로 하나 고른다. 코드는 질문 문장을 정하지 않는다. 코드는 후보도 고르지 않는다. 질문 개수도 당신이 정한다. priorReview는 판단을 갱신할 때 읽고 질문의 주제로 고정하지 않는다. overlapsReviewedObjective가 true인 후보는 고르지 않는다. closedQuestions의 사업 목적은 끝난 목적이다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 이미 답한 질문은 표현만 바꾸어 다시 묻지 않는다. 다음 질문의 사업 목적은 방금 답한 질문의 목적과 달라야 한다. 고정된 질문 순서는 없다. areaStatus의 배열 순서는 우선순위가 아니다. 고객, 문제, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 해결된 내용은 근거와 함께 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. priorHypotheses와 doNotCopy.priorUnresolvedIssues는 가설이거나 이전 목록이다. unresolvedIssues는 그 목록을 그대로 복사하지 않고 이번 답이 남긴 빈칸과 새로 보인 빈칸만 적는다. 근거가 없으면 미해결로 남긴다.',
     'JSON만 반환한다.',
-    '키 순서는 answerInterpretation, statementReadings, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, businessReconstruction, nextReviewObjective, nextVerification, nextQuestions, nextQuestionChoices, impactOnPreviousJudgment, keptBusinessPremise, executionPossibility, updatedJudgment, judgmentReason 이다.',
+    '키 순서는 answerInterpretation, statementReadings, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, objectiveCandidates, selectedCandidateId, selectionReason, nextVerification, nextQuestions, nextQuestionChoices, impactOnPreviousJudgment, keptBusinessPremise, executionPossibility, updatedJudgment, judgmentReason 이다.',
     'answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
     'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. verificationPurpose는 질문 문장과 다른 불확실성이다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
@@ -2236,6 +2253,7 @@ export function buildProductReanalysisRequest(input: {
               latest: latestForRequest,
               pairs: [...(input.priorStagePairs ?? []), ...stagePairs],
               ledger: evidenceLedger as EvidenceLedger,
+              reading: (input.priorReadings ?? []).at(-1),
             }),
             currentAnswerStatements: currentAnswerStatementPayload(stagePairs),
             closedQuestions: closedQuestionPayload([...(input.priorStagePairs ?? []), ...stagePairs]),
@@ -2245,7 +2263,7 @@ export function buildProductReanalysisRequest(input: {
               unresolvedIssues:
                 'priorUnresolvedIssues와 같은 문장을 두지 않는다. unresolvedIssues의 개수는 currentAnswerStatements와 같다. 각 문장이 남긴 위험을 새 문장으로 하나씩 적는다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건이 서로 다르면 한 문장으로 뭉치지 않는다. priorHypotheses를 복사하지 않는다.',
               nextQuestion:
-                '질문 문장은 당신이 고른다. 질문 개수도 당신이 정한다. businessState를 다시 읽고 nextReviewObjective를 고른 뒤 그 목적만 묻는다. priorJudgmentText는 판단 갱신에만 쓰고 질문의 주제로 고정하지 않는다. priorQuestionText와 같은 목적을 다른 말로 묻지 않는다. 방금 답한 질문을 반복하지 않는다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 단어만 바꾼 질문은 같은 목적이다. 미확인 영역은 businessState의 빈칸에서 고른다. 고정된 질문 순서는 없다. 영역 목록은 순서가 아니다. 해결된 내용은 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다.',
+                '질문 문장은 당신이 고른다. 질문 개수도 당신이 정한다. objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId의 목적만 묻는다. priorReview는 판단 갱신에만 쓰고 질문의 주제로 고정하지 않는다. priorQuestionText와 같은 목적을 다른 말로 묻지 않는다. 방금 답한 질문을 반복하지 않는다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 단어만 바꾼 질문은 같은 목적이다. 미확인 영역은 areaStatus에서 고른다. 고정된 질문 순서는 없다. 영역 목록은 순서가 아니다. 해결된 내용은 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다.',
             },
             stagePairs: stagePairs.map(stagePairPayload),
             priorStagePairs: (input.priorStagePairs ?? []).map(stagePairPayload),
@@ -2984,36 +3002,83 @@ function analysisForStageContext(sections: ReviewSections): ReviewSections {
   return { ...sections, analysis };
 }
 
-/** Whole-business snapshot for the next objective. The prior judgment stays outside this object. */
+const AREA_STATUS_IDS = ['customer', 'problem', 'product', 'supply', 'price', 'revenue', 'market', 'marketing', 'operations', 'risk'] as const;
+
+const AREA_CLAIM_MARKERS: Record<(typeof AREA_STATUS_IDS)[number], RegExp> = {
+  customer: /고객/,
+  problem: /문제/,
+  product: /상품/,
+  supply: /공급|계약/,
+  price: /가격/,
+  revenue: /수익|참가비/,
+  market: /시장/,
+  marketing: /마케팅/,
+  operations: /운영비|운영 비용|책임/,
+  risk: /위험/,
+};
+
+function profileTextForArea(latest: ReviewSections, areaId: (typeof AREA_STATUS_IDS)[number]): string | undefined {
+  const analysis = latest.analysis;
+  if (areaId === 'customer') return latest.customer;
+  if (areaId === 'problem') return latest.problem;
+  if (areaId === 'product') return analysis?.product;
+  if (areaId === 'supply') return analysis?.supply;
+  if (areaId === 'market') return latest.market;
+  if (areaId === 'revenue') return latest.revenueModel;
+  if (areaId === 'marketing') return analysis?.marketing;
+  if (areaId === 'operations') return analysis?.operations || latest.execution;
+  return undefined;
+}
+
+/** Status from sentinels and answer text. Prior prose does not become a status, and nothing here ranks the next area. */
+function mechanicalAreaStatus(
+  latest: ReviewSections,
+  claims: string[],
+): Array<{ areaId: (typeof AREA_STATUS_IDS)[number]; status: 'not_analyzed' | 'unconfirmed' | 'claim'; basis: 'field' | 'answer' | 'no_evidence' }> {
+  return AREA_STATUS_IDS.map((areaId) => {
+    const raw = profileTextForArea(latest, areaId);
+    const hasField = areaId !== 'price' && areaId !== 'risk';
+    if (hasField) {
+      const text = raw?.trim() ?? '';
+      if (!text || text === STAGE_FIELD_NOT_ANALYZED) return { areaId, status: 'not_analyzed' as const, basis: 'field' as const };
+      if (text === STAGE_FIELD_UNCONFIRMED) return { areaId, status: 'unconfirmed' as const, basis: 'field' as const };
+    }
+    if (claims.some((claim) => AREA_CLAIM_MARKERS[areaId].test(claim))) return { areaId, status: 'claim' as const, basis: 'answer' as const };
+    return { areaId, status: 'not_analyzed' as const, basis: 'no_evidence' as const };
+  });
+}
+
+/** Three records. Prior judgment and prior prose stay in priorReview. */
 function stageBusinessState(input: {
   originalInput: string;
   latest: ReviewSections;
   pairs: StagePair[];
   ledger: EvidenceLedger;
+  reading?: StagePriorReading;
 }): Record<string, unknown> {
   const analysis = input.latest.analysis;
-  const textOrUnanalyzed = (value: string | undefined) => (value?.trim() ? value : STAGE_FIELD_NOT_ANALYZED);
+  const claims = currentAnswerStatementPayload(input.pairs).map((item) => item.statement);
+  const tracked = input.reading ? input.reading.judgmentReason.trim().length > 0 || input.reading.impactOnPreviousJudgment.trim().length > 0 : false;
+  const hypotheses = input.reading ? (tracked ? [...(input.reading.priorHypotheses ?? [])] : [...input.reading.unresolvedIssues]) : [...input.latest.uncertain];
+  const unresolved = input.reading && tracked ? [...input.reading.unresolvedIssues] : [];
+  const resolved = input.reading ? [...input.reading.resolvedIssues] : [];
   return {
-    useForNextObjective: true,
-    originalIdea: input.originalInput,
-    model: {
-      customer: textOrUnanalyzed(input.latest.customer),
-      problem: textOrUnanalyzed(input.latest.problem),
-      value: textOrUnanalyzed(analysis?.value),
-      product: stageTextForRequest(analysis?.product),
-      supply: stageFieldForRequest(analysis?.supply),
-      marketing: stageFieldForRequest(analysis?.marketing),
-      market: textOrUnanalyzed(input.latest.market),
-      revenue: textOrUnanalyzed(input.latest.revenueModel),
-      operations: textOrUnanalyzed(analysis?.operations || input.latest.execution),
-      competition: textOrUnanalyzed(analysis?.competition),
+    areaOrderIsNotPriority: true,
+    statedRecord: {
+      originalIdea: input.originalInput,
+      answers: currentAnswerStatementPayload(input.pairs),
+      confirmed: input.ledger.verifiedFacts,
+    },
+    areaStatus: mechanicalAreaStatus(input.latest, claims),
+    priorReview: {
+      judgment: analysis?.judgmentDetail || input.latest.judgment,
+      reviewedObjectives: closedQuestionPayload(input.pairs).map((item) => item.text),
+      hypotheses,
+      unresolved,
+      resolved,
+      operations: analysis?.operations?.trim() || input.latest.execution,
       risks: input.latest.risks,
     },
-    confirmed: input.ledger.verifiedFacts,
-    claims: currentAnswerStatementPayload(input.pairs).map((item) => item.statement),
-    reviewedObjectives: closedQuestionPayload(input.pairs).map((item) => item.text),
-    resolved: [] as string[],
-    unresolved: [...input.latest.uncertain],
   };
 }
 
