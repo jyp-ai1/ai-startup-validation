@@ -119,7 +119,7 @@
 | `reviewId` | 질문을 만든 부모 리뷰 |
 | 제공 선택지 | 부모 `analysis.questions[].choices`. 답 행이 라벨을 다시 쓰지 않음 |
 | `choiceId` | 창업자가 고른 id. 비어 있거나 제공 선택지에 없으면 ChoiceAnswer를 만들지 않음. `c1`으로 채우지 않음 |
-| 선택 라벨 | id가 있을 때만 choiceAnswer에 남음. id 없는 라벨은 본문으로만 남음 |
+| 선택 라벨 | id가 제공 선택지에 있으면 그 메뉴의 라벨을 저장. 요청 라벨이 달라도 메뉴 라벨을 씀. id가 없으면 본문만 남음 |
 | 직접 입력 | `otherText` 또는 comment. `other`가 아닐 때도 보충으로 남김 |
 | `provenance` | `FOUNDER_INPUT`, `SIMULATION`, `EXTERNAL_EVIDENCE`, `AI_INFERENCE`. 본문이 `SIMULATION`으로 시작하면 `SIMULATION` |
 | `epistemicStatus` | 기본 `FOUNDER_CLAIM`. `VERIFIED_FACT`는 `EXTERNAL_EVIDENCE`와 `evidenceId`가 있을 때만 |

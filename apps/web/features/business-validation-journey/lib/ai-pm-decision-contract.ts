@@ -108,7 +108,6 @@ const GROUNDING = new Set([
   'positive_without_span',
   'invented_shop_or_contact',
   'duplicate_id',
-  'answer_not_recorded',
 ]);
 
 const UNKNOWN = new Set([
@@ -133,7 +132,6 @@ const DELTA = new Set([
 export function evaluateDecisionContract(context: ContractContext, ledger: DecisionLedger | null): ContractVerdict {
   if (!ledger) return verdict(['ledger_format'], [], []);
   const failures: string[] = [];
-  if (context.currentAnswer.trim().length > 0 && ledger.changes.length === 0) failures.push('answer_not_recorded');
   const grounded = new Set<string>();
   const seenIds = new Set<string>();
   for (const change of ledger.changes) {

@@ -27,7 +27,7 @@
 
 | 파일 | 변경 |
 | --- | --- |
-| `apps/web/features/business-validation-journey/lib/ai-pm-decision-contract.ts` | `epistemicStatus` 4종과 `provenance` 4종. `answer_not_recorded`. 구간은 검증이 아님. 기존 `STATE_SYSTEM`, `SELECTION_SYSTEM` 문자열은 유지 |
+| `apps/web/features/business-validation-journey/lib/ai-pm-decision-contract.ts` | `epistemicStatus` 4종과 `provenance` 4종. 구간은 검증이 아님. 빈 변화 목록만으로 실패시키지 않음. 기존 `STATE_SYSTEM`, `SELECTION_SYSTEM` 문자열은 유지 |
 | `apps/web/features/business-validation-journey/lib/ai-pm-review.ts` | 빈 `choiceId`를 `c1`로 넣지 않음. 미연결 저장과 `unlinkedStatements` 전달. 기존 단계 파서는 유지. 시스템 문장은 유지 |
 | `apps/web/features/business-validation-journey/lib/ai-pm-review-store.ts` | 피드백 JSON에 `unlinked`, `provenance`, `epistemicStatus`, `evidenceId`. SQL 없음 |
 | `apps/web/features/business-validation-journey/lib/__tests__/ai-pm-decision-contract.test.ts` | 기존 9건 유지. 빈 변화와 1차 추정 승격 사례 추가 |

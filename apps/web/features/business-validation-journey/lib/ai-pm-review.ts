@@ -2163,7 +2163,8 @@ export type ContinuityStatement = {
 export function continuityStatements(rows: StoredFeedback[]): { unlinked: ContinuityStatement[]; linked: ContinuityStatement[] } {
   const unlinked: ContinuityStatement[] = [];
   const linked: ContinuityStatement[] = [];
-  for (const row of rows) {
+  const ordered = [...rows].sort((left, right) => left.submittedAt.localeCompare(right.submittedAt) || left.feedbackId.localeCompare(right.feedbackId));
+  for (const row of ordered) {
     const text = row.comment.trim();
     if (!text || !row.provenance || !row.epistemicStatus) continue;
     const record: ContinuityStatement = {
@@ -3809,6 +3810,13 @@ export async function submitConsultingStage(input: {
   const questions = consultingQuestions(parent.sections);
   const known = new Set(questions.map((question) => question.questionId));
   let existing = await input.store.listFeedback(input.userId, parent.reviewId);
+  const records = await input.store.listReviews(input.userId, input.projectId);
+  const priorRows: StoredFeedback[] = [];
+  for (const record of reviewChain(records, parent)) {
+    if (record.reviewId === parent.reviewId) continue;
+    priorRows.push(...(await input.store.listFeedback(input.userId, record.reviewId)));
+  }
+  const seenAt = [...priorRows, ...existing].map((item) => item.submittedAt);
   for (const answer of input.answers ?? []) {
     const questionId = (answer.questionId ?? '').trim();
     const comment = (answer.comment ?? '').trim();
@@ -3817,10 +3825,10 @@ export async function submitConsultingStage(input: {
     if (!comment && !choiceLabel && !otherText) continue;
     const supplement = [otherText, comment].filter((part, index, list) => part.length > 0 && list.indexOf(part) === index).join('\n');
     const bodyText = supplement || choiceLabel;
-    const savedAt = nextFeedbackInstant(input.now, existing.map((item) => item.submittedAt));
+    const savedAt = nextFeedbackInstant(input.now, seenAt);
     const unlinked = answer.unlinked === true || !known.has(questionId);
     if (unlinked) {
-      const duplicate = [...existing].reverse().find((item) => item.unlinked === true && compact(item.comment) === compact(bodyText));
+      const duplicate = [...priorRows, ...existing].reverse().find((item) => item.unlinked === true && compact(item.comment) === compact(bodyText));
       if (duplicate) continue;
       const saved = await saveReviewFeedback({
         store: input.store,
@@ -3838,13 +3846,16 @@ export async function submitConsultingStage(input: {
       });
       if (!saved.ok) return saved;
       existing = await input.store.listFeedback(input.userId, parent.reviewId);
+      seenAt.push(saved.feedback.submittedAt);
       continue;
     }
     const offered = questions.find((question) => question.questionId === questionId)?.choices ?? [];
     const requestedId = (answer.choiceId ?? '').trim();
-    const choiceId = offered.length > 0 ? (offered.some((choice) => choice.id === requestedId) ? requestedId : '') : requestedId;
+    const offeredChoice = offered.find((choice) => choice.id === requestedId);
+    const choiceId = offered.length > 0 ? (offeredChoice ? requestedId : '') : requestedId;
+    const resolvedLabel = offeredChoice?.label || choiceLabel;
     const latest = [...existing].reverse().find((item) => item.questionId === questionId);
-    const sameChoice = (latest?.choiceAnswer?.label ?? '') === (choiceId ? choiceLabel : '') && (latest?.choiceAnswer?.otherText ?? '') === (choiceId && choiceLabel ? supplement : '');
+    const sameChoice = (latest?.choiceAnswer?.label ?? '') === (choiceId ? resolvedLabel : '') && (latest?.choiceAnswer?.otherText ?? '') === (choiceId && resolvedLabel ? supplement : '');
     const sameComment = (latest?.comment ?? '') === bodyText;
     if (latest && sameChoice && sameComment) continue;
     const saved = await saveReviewFeedback({
@@ -3859,11 +3870,12 @@ export async function submitConsultingStage(input: {
         provenance: answer.provenance ?? (bodyText.startsWith('SIMULATION') ? 'SIMULATION' : 'FOUNDER_INPUT'),
         epistemicStatus: answer.epistemicStatus ?? 'FOUNDER_CLAIM',
         evidenceId: answer.evidenceId,
-        ...(choiceLabel && choiceId ? { choiceId, choiceLabel, otherText: supplement } : {}),
+        ...(resolvedLabel && choiceId ? { choiceId, choiceLabel: resolvedLabel, otherText: supplement } : {}),
       },
     });
     if (!saved.ok) return saved;
     existing = await input.store.listFeedback(input.userId, parent.reviewId);
+    seenAt.push(saved.feedback.submittedAt);
   }
   const result = await runStageReanalysis({
     store: input.store,
