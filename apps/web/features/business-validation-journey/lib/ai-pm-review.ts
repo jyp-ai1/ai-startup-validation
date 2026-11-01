@@ -1800,7 +1800,8 @@ function stageReanalysisSchema(): Record<string, unknown> {
             },
             judgmentEffect: {
               type: 'string',
-              description: '이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유. 라벨 반복은 영향이 아니다.',
+              description:
+                '이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유. 라벨 반복은 영향이 아니다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다.',
             },
             openRisk: {
               type: 'string',
@@ -1812,12 +1813,12 @@ function stageReanalysisSchema(): Record<string, unknown> {
       verifiedFacts: {
         ...list,
         description:
-          '접촉, 계약, 입금, 예약처럼 별도 증거가 있는 사실만. 주장과 계획은 넣지 않는다. 없으면 빈 배열. 실행 가능성의 긍정 근거는 이 목록뿐이다.',
+          '접촉, 계약, 입금, 예약처럼 별도 증거가 있는 사실만. Founder의 주장, 선호, 기대, 계획은 넣지 않는다. 없으면 빈 배열. 실행 가능성의 긍정 근거는 이 목록뿐이다.',
       },
       unverifiedClaims: {
         ...list,
         description:
-          'Founder의 주장이나 기대. 가능성이 높다는 문장은 여기에 둔다. 잠재력은 있을 수 있으나 현재 확인된 실행 가능성은 아니다. verifiedFacts와 같은 문장을 두지 않는다.',
+          'Founder의 주장, 선호, 기대. 가능성이 높다는 문장은 여기에 둔다. 접촉, 협력 의사, 합의, 공급 조건이 없으면 사업 성과의 근거가 아니다. verifiedFacts와 같은 문장을 두지 않는다.',
       },
       assumptions: {
         ...list,
@@ -1827,12 +1828,12 @@ function stageReanalysisSchema(): Record<string, unknown> {
       resolvedIssues: {
         ...list,
         description:
-          '이번 답이 구체화한 계획. choiceLabel만 반복하면 진전이 아니다. 확인되지 않은 주장은 넣지 않는다. 이 목록은 다음 질문에서 다시 묻지 않는다.',
+          '실제로 해결된 항목만. 의향, 선호, 기대는 해결이 아니다. 확인되지 않은 주장은 넣지 않는다. 이 목록은 다음 질문에서 다시 묻지 않는다.',
       },
       unresolvedIssues: {
         ...list,
         description:
-          '아직 남은 실행 문제. 기준이 생겼다고 이 목록에서 지우지 않는다. 주장이 확인된 것은 아니다.',
+          '이번 답으로 다시 적은 미해결. 이전 가설이나 이전 unresolvedIssues를 그대로 복사하지 않는다. 확인된 것과 아직 없는 것을 나눈다.',
       },
       customer: { ...text, description: '핵심 고객. 입력과 답에 없으면 없다고 적는다. 빈 문자열은 실패다.' },
       problem: { ...text, description: '해결하려는 문제. 입력과 답에 없으면 없다고 적는다.' },
@@ -1841,8 +1842,16 @@ function stageReanalysisSchema(): Record<string, unknown> {
       market: { ...text, description: '시장. 입력에 없는 규모 숫자는 만들지 않는다.' },
       revenueModel: { ...text, description: '수익 구조. 입력에 없으면 가설이라고 적고 확정 수익으로 쓰지 않는다.' },
       operations: { ...text, description: '운영 방식. 점수가 아니다.' },
-      supply: { ...text, description: '공급. 입력과 답에 없으면 없다고 적는다.' },
-      marketing: { ...text, description: '알리는 방법. 입력과 답에 없으면 없다고 적는다.' },
+      supply: {
+        ...text,
+        description:
+          '공급. 빈 문자열은 실패다. 입력과 답에 없으면 아직 확인되지 않았다라고 적는다. 부모의 빈 문자열을 복사하지 않는다. 확인되지 않은 계약을 만들지 않는다.',
+      },
+      marketing: {
+        ...text,
+        description:
+          '알리는 방법. 빈 문자열은 실패다. 입력과 답에 없으면 아직 확인되지 않았다라고 적는다. 부모의 빈 문자열을 복사하지 않는다. 확인되지 않은 성과를 만들지 않는다.',
+      },
       competition: { ...text, description: '경쟁. 입력과 답에 없으면 없다고 적는다.' },
       executionNote: {
         ...text,
@@ -1852,12 +1861,12 @@ function stageReanalysisSchema(): Record<string, unknown> {
       impactOnPreviousJudgment: {
         type: 'string',
         description:
-          '앞의 목록이 이전 판단을 어떻게 바꾸는지. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 잠재력, 현재 확보된 근거, 실행 가능성, 실행상 위험을 나눈다. 증거가 없으면 아직 확인되지 않은 상태다. 낮다고 단정하지 않는다. unverifiedClaims는 아직 검증되지 않은 기회로만 인용한다. priorJudgmentText를 이어 쓰지 않는다.',
+          '이전 판단의 핵심과 아직 유효한 위험을 남기고, 이번 답이 유지하는지 바꾸는지와 그 이유를 적는다. 해소되지 않은 위험은 빼지 않는다. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 증거가 없으면 아직 확인되지 않은 상태다. unverifiedClaims는 창업자의 기대로만 인용하고 성공 가능성을 높이지 않는다. 이전 문장 전체를 그대로 붙여 새 판단인 척하지 않는다.',
       },
       updatedJudgment: {
         type: 'string',
         description:
-          '앞의 목록으로 다시 쓴 현재 판단. resolvedIssues와 unresolvedIssues를 각각 문장 안에 남긴다. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 실행 가능성은 아직 확인되지 않은 상태다. 낮다고 단정하지 않는다. unverifiedClaims는 잠재적 기회로만 남긴다. 계획의 구체화는 진전으로 적고 가설의 확인으로 쓰지 않는다.',
+          '이전 판단의 핵심과 아직 유효한 위험을 포함한 현재 판단. 실행 가능성의 긍정 근거는 verifiedFacts뿐이다. verifiedFacts가 비어 있으면 파트너 확보와 실행은 검증되지 않았다고 적는다. unverifiedClaims로 성공 가능성을 높이지 않는다. 의향은 해결이 아니다.',
       },
       judgmentReason: {
         type: 'string',
@@ -1882,7 +1891,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
             text: {
               type: 'string',
               description:
-                'unresolvedIssues 중 다음 판단을 가장 크게 바꾸는 하나만 묻는다. 이미 제출된 질문, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다. 표현만 바꾼 같은 검증도 다시 묻지 않는다.',
+                '아직 없는 사실의 다음 단계만 묻는다. 이미 제출된 질문, choiceLabel, supplement와 같은 문장을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 답이 기대나 선호이면 후보, 접촉, 상대의 의사, 조건 중 아직 없는 것을 묻는다.',
             },
             verificationPurpose: {
               type: 'string',
@@ -1910,13 +1919,13 @@ function stageReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다.',
     '이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
-    '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 사업에 의미하는 바다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다.',
-    '2. 확인된 사실, 주장, 가설을 가른다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다.',
-    '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 입력과 답에 없으면 없다고 적는다. 빈 문자열로 두지 않는다. 부모 문장을 베끼지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다.',
-    '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 적는다. 판단을 유지했는지 바꿨는지와 그 이유를 이번 답의 judgmentEffect와 연결한다. priorJudgmentText를 이어 쓰지 않는다. 코드는 결론을 정하지 않는다.',
-    '5. 다음 검증 질문은 당신이 고른다. priorStagePairs, 이번 답, resolvedIssues, unresolvedIssues를 보고 지금 사업에서 가장 큰 불확실성을 고른다. verificationPurpose에 그 불확실성을 적는다. 이미 한 질문, 선택, 보충, 해결된 문제를 다른 말로 다시 묻지 않는다.',
+    '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 사업에 의미하는 바다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다.',
+    '2. 확인된 사실, 주장, 가설을 가른다. Founder의 가능성 판단, 선호, 기대는 unverifiedClaims로 남긴다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 접촉, 협력 의사, 합의, 공급 조건이 없으면 그 기대를 사업 성과나 성공 가능성의 근거로 쓰지 않는다. 긍정적 사업 판단은 verifiedFacts의 별도 근거가 있을 때만 적는다. 근거가 없으면 그 문장은 창업자의 기대이고 파트너 확보와 실행은 검증되지 않았다고 적는다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다.',
+    '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 각 문장이 빈 문자열이면 실패다. 입력과 답에 없으면 아직 확인되지 않았다라고 적는다. 부모 Payload의 빈 문자열을 복사하지 않는다. 확인되지 않은 공급 계약, 마케팅 성과, 수익을 만들어 내지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다.',
+    '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason을 적는다. priorReadings의 priorJudgmentText에서 핵심 판단과 아직 유효한 위험을 남긴다. 이번 답이 그 위험을 해소하지 않으면 위험을 빼지 않는다. 유지인지 변경인지, Founder 답이 준 영향, 바꾼다면 그 근거를 적는다. 이전 문장 전체를 그대로 붙여 새 판단인 척하지 않는다. 코드는 결론을 정하지 않는다.',
+    '5. 다음 검증 질문은 당신이 고른다. priorStagePairs, 이번 답, resolvedIssues, unresolvedIssues를 보고 지금 없는 사실의 다음 단계를 고른다. verificationPurpose에 그 불확실성을 적는다. 이미 한 질문, 선택, 보충, 해결된 문제를 다른 말로 다시 묻지 않는다. 구체적으로만 더한 문장은 같은 질문이다. 답이 기대나 선호뿐이면 후보가 있는지, 접촉했는지, 상대의 의사가 확인됐는지, 조건이 무엇인지를 묻는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
-    'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. resolvedIssues는 해결된 채로 남고, unresolvedIssues와 판단 이유는 다음 판단의 입력이다.',
+    'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. unresolvedIssues는 이전 목록을 그대로 복사하지 않고 이번 답으로 확인된 것과 아직 없는 것을 다시 적는다.',
     'JSON만 반환한다.',
     '키 순서는 answerInterpretation, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks, impactOnPreviousJudgment, updatedJudgment, judgmentReason, nextVerification, nextQuestions, nextQuestionChoices 이다.',
     'answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
@@ -2775,6 +2784,25 @@ function compactQuestion(text: string): string {
   return text.replace(/\s+/g, '').trim();
 }
 
+function questionPurposeKey(text: string): string {
+  return compactQuestion(text).replace(/구체적으로|구체적|정확히|실제로/g, '');
+}
+
+/** Same purpose after a wording change. It does not write a replacement question. */
+function repeatsAskedQuestion(text: string, asked: Set<string>): boolean {
+  const purpose = questionPurposeKey(text);
+  if (!purpose) return false;
+  for (const prior of asked) {
+    const priorPurpose = questionPurposeKey(prior);
+    if (!priorPurpose) continue;
+    if (purpose === priorPurpose) return true;
+    const shorter = purpose.length < priorPurpose.length ? purpose : priorPurpose;
+    const longer = purpose.length < priorPurpose.length ? priorPurpose : purpose;
+    if (shorter.length >= 12 && longer.includes(shorter)) return true;
+  }
+  return false;
+}
+
 function sameCompact(left: string, right: string): boolean {
   const a = compactQuestion(left);
   const b = compactQuestion(right);
@@ -2966,15 +2994,13 @@ function judgeStageContract(
     }) &&
     reading.answerInterpretation.every((item) => answered.some((pair) => pair.questionId === item.questionId));
   if (reading && !linked) issues.push('choice_link_mismatch');
-  const texts = reading?.nextQuestions.map((item) => item.text) ?? [];
-  if (!reading || texts.length < 1 || new Set(texts.map(compactQuestion)).size !== texts.length) issues.push('stage_questions_missing');
-  const menus = reading?.nextQuestions ?? [];
-  const matrix = reading?.nextQuestionChoices ?? [];
+  const texts = nextQuestions.map((item) => item.text);
+  if (texts.length < 1 || new Set(texts.map(compactQuestion)).size !== texts.length) issues.push('stage_questions_missing');
   const menusMissing =
-    !reading ||
-    menus.some((item) => item.choices.length < 2) ||
-    matrix.length !== menus.length ||
-    menus.some((item, index) => !sameLabels(item.choices, matrix[index] ?? []));
+    nextQuestions.length < 1 ||
+    nextQuestions.some((item) => item.choices.length < 2) ||
+    nextQuestionChoices.length !== nextQuestions.length ||
+    nextQuestions.some((item, index) => !sameLabels(item.choices, nextQuestionChoices[index] ?? []));
   if (menusMissing) issues.push('stage_choices_missing');
   const asked = new Set(contract.askedQuestions.map(compactQuestion).filter((text) => text.length > 0));
   const closed = new Set(
@@ -2982,15 +3008,16 @@ function judgeStageContract(
       .map(compactQuestion)
       .filter((text) => text.length > 0),
   );
-  const purposes = reading?.nextQuestions.map((item) => compactQuestion(item.verificationPurpose ?? '')) ?? [];
+  const purposes = nextQuestions.map((item) => compactQuestion(item.verificationPurpose ?? ''));
   const purposeRepeats =
-    Boolean(reading) &&
+    nextQuestions.length > 0 &&
     (purposes.some((purpose) => purpose.length === 0 || closed.has(purpose)) ||
       new Set(purposes).size !== purposes.length ||
-      reading?.nextQuestions.some((item) => compactQuestion(item.verificationPurpose ?? '') === compactQuestion(item.text)));
-  if (reading && (texts.some((text) => asked.has(compactQuestion(text)) || closed.has(compactQuestion(text))) || purposeRepeats)) {
-    issues.push('stage_questions_repeated');
-  }
+      nextQuestions.some((item) => compactQuestion(item.verificationPurpose ?? '') === compactQuestion(item.text)));
+  const questionRepeats = texts.some(
+    (text) => asked.has(compactQuestion(text)) || closed.has(compactQuestion(text)) || repeatsAskedQuestion(text, asked),
+  );
+  if (questionRepeats || purposeRepeats) issues.push('stage_questions_repeated');
   const uniqueIssues = [...new Set(issues)];
   if (uniqueIssues.length > 0 || !reading || !businessProfile) return { sections: null, issues: uniqueIssues.length > 0 ? uniqueIssues : ['stage_fields_missing'], reading };
   const firstChoices = choicesFromLabels(reading.nextQuestions[0]?.choices ?? []);

@@ -350,6 +350,12 @@ describe('consulting stage batch', () => {
     expect(system).toContain('코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다');
     expect(system).toContain('사업 전체를 다시 적는다');
     expect(system).toContain('nextQuestions는 서로 다른 질문 1개 이상이다');
+    expect(system).toContain('성공 가능성을 높이지 않는다');
+    expect(system).toContain('아직 확인되지 않았다');
+    expect(system).toContain('위험을 빼지 않는다');
+    expect(system).toContain('그대로 복사하지 않고');
+    expect(system).toContain('구체적으로만 더한');
+    expect(system).not.toContain('priorJudgmentText를 이어 쓰지 않는다');
     expect(system).not.toContain('verificationStage');
     if (request.responseFormat?.type === 'json_schema') {
       const meaning = request.responseFormat.schema.properties as {
@@ -371,6 +377,10 @@ describe('consulting stage batch', () => {
       expect(meaning.updatedJudgment.description).toContain('unverifiedClaims');
       expect(meaning.verifiedFacts.description).toContain('주장');
       expect(meaning.nextQuestions.items.properties.text.description).toContain('이미 제출된 질문');
+      expect(meaning.nextQuestions.items.properties.text.description).toContain('구체적으로만 더한');
+      const supply = request.responseFormat.schema.properties as { supply: { description: string }; marketing: { description: string } };
+      expect(supply.supply.description).toContain('아직 확인되지 않았다');
+      expect(supply.marketing.description).toContain('빈 문자열은 실패다');
       expect(meaning.nextQuestions.items.properties.verificationPurpose.description).toContain('불확실성');
       expect(meaning.nextQuestions.items.required).toEqual(['text', 'choices', 'verificationPurpose']);
       expect(request.responseFormat.schema.required).toEqual([
@@ -1259,6 +1269,97 @@ describe('consulting stage batch', () => {
     expect(failed.record.sections).toBeNull();
     expect(failed.record.error).toContain('stage_questions_repeated');
     expect(failed.record.rawContent).toContain(FIRST_QUESTIONS[0]);
+  });
+
+  it('fails a wording-only repeat of an answered question after one call', async () => {
+    const store = openAiPmReviewStore(storePath());
+    const calls: ChatRequest[] = [];
+    const chat = async (request: ChatRequest) => {
+      calls.push(request);
+      const payload = requestPayload(request);
+      if (!payload || !Array.isArray(payload.stagePairs)) {
+        return reply(contractReply(request, '가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS));
+      }
+      const paraphrased = contractReply(request, '가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', [
+        '누구를 고객으로 구체적으로 하는가?',
+      ]);
+      return reply(paraphrased);
+    };
+    const base = {
+      store,
+      userId: 'user-paraphrase',
+      projectId: 'project-paraphrase',
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const first = await runFirstReview({ ...base, text: `${IDEA} 표현만 변경.`, origin: 'typed', fileName: null });
+    const failed = await submitConsultingStage({
+      ...base,
+      reviewId: first.record.reviewId,
+      answers: [
+        { questionId: 'q1', comment: '직장인을 고객으로 본다' },
+        { questionId: 'q2', comment: '가격은 정하지 않았다' },
+        { questionId: 'q3', comment: '온라인 게시로 알린다' },
+      ],
+    });
+    expect(failed.ok).toBe(true);
+    if (!failed.ok) return;
+    expect(calls).toHaveLength(2);
+    expect(failed.record.callCount).toBe(1);
+    expect(failed.record.status).toBe('failed');
+    expect(failed.record.sections).toBeNull();
+    expect(failed.record.error).toContain('stage_questions_repeated');
+    expect(failed.record.error).not.toContain('stage_fields_missing');
+    expect(failed.record.rawContent).toContain('구체적으로');
+  });
+
+  it('keeps the stored empty supply failure and also marks the repeated cooperation question', async () => {
+    const stored = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-real-gpt-continuity.json', import.meta.url), 'utf8'),
+    ) as { rounds: Array<{ raw: string }> };
+    const store = openAiPmReviewStore(storePath());
+    const calls: ChatRequest[] = [];
+    const chat = async (request: ChatRequest) => {
+      calls.push(request);
+      const payload = requestPayload(request);
+      return reply(payload && Array.isArray(payload.stagePairs) ? stored.rounds[1]?.raw ?? '' : stored.rounds[0]?.raw ?? '');
+    };
+    const base = {
+      store,
+      userId: 'user-stored-fail',
+      projectId: 'project-stored-fail',
+      now: NOW,
+      chat,
+      evidence: 'injected_http' as const,
+    };
+    const first = await runFirstReview({
+      ...base,
+      text: '다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.',
+      origin: 'typed',
+      fileName: null,
+    });
+    expect(first.record.status).toBe('succeeded');
+    const questions = consultingQuestions(first.record.sections);
+    expect(questions.map((question) => question.text)).toContain('양조장과의 협력 관계를 어떻게 구축할 것인가?');
+    const failed = await submitConsultingStage({
+      ...base,
+      reviewId: first.record.reviewId,
+      answers: questions.map((question, index) => ({
+        questionId: question.questionId,
+        comment: index === 0 ? '양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.' : '추가 사실은 없다.',
+      })),
+    });
+    expect(failed.ok).toBe(true);
+    if (!failed.ok) return;
+    expect(calls).toHaveLength(2);
+    expect(failed.record.callCount).toBe(1);
+    expect(failed.record.status).toBe('failed');
+    expect(failed.record.error).toContain('stage_fields_missing');
+    expect(failed.record.error).toContain('stage_questions_repeated');
+    expect(failed.record.error).not.toContain('stage_choices_missing');
+    expect(failed.record.rawContent).toContain('"supply": ""');
+    expect(failed.record.sections).toBeNull();
   });
 
   it('renders one answer field per question and does not reuse one shared choice list', () => {
