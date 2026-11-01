@@ -1486,18 +1486,36 @@ describe('consulting stage batch', () => {
     });
     expect(stored.analysis?.supply).toBe('');
     expect(stored.analysis?.marketing).toBe('   ');
+    expect(stored.analysis?.product).toBe('');
     expect(reading.supply).toBe('');
+    expect(reading.unresolvedIssues).toEqual(['협력이 원활할 것이다']);
     const payload = userPayload(request);
     const serialized = JSON.stringify(payload);
     expect(serialized).not.toContain('"supply":""');
     expect(serialized).not.toContain('"marketing":""');
+    expect(serialized).not.toContain('"product":""');
     expect((payload.firstAnalysis as { supply: { state: string; text: string } }).supply).toEqual({
       state: 'not_analyzed',
       text: '아직 분석되지 않았다',
     });
-    const readings = payload.priorReadings as Array<{ supply: { state: string }; marketing: { state: string } }>;
+    const first = payload.firstAnalysis as { product: string; unresolvedIssues: string[]; priorHypotheses: string[] };
+    expect(first.product).toBe('아직 분석되지 않았다');
+    expect(first.unresolvedIssues).toEqual([]);
+    expect(first.priorHypotheses).toEqual(['협력이 원활할 것이다']);
+    const blocked = payload.doNotCopy as { priorUnresolvedIssues: string[] };
+    expect(blocked.priorUnresolvedIssues).toEqual(['협력이 원활할 것이다']);
+    const readings = payload.priorReadings as Array<{
+      supply: { state: string };
+      marketing: { state: string };
+      product: string;
+      unresolvedIssues: string[];
+      priorHypotheses: string[];
+    }>;
     expect(readings[0]?.supply).toEqual({ state: 'not_analyzed', text: '아직 분석되지 않았다' });
     expect(readings[0]?.marketing.state).toBe('not_analyzed');
+    expect(readings[0]?.product).toBe('아직 분석되지 않았다');
+    expect(readings[0]?.unresolvedIssues).toEqual([]);
+    expect(readings[0]?.priorHypotheses).toEqual(['협력이 원활할 것이다']);
     const latest = payload.latestAnalysis as { analysis: { supply: { state: string }; marketing: { state: string } } };
     expect(latest.analysis.marketing.state).toBe('not_analyzed');
     expect(stageFieldForRequest('공급 계약이 있다')).toEqual({ state: 'confirmed', text: '공급 계약이 있다' });
@@ -1509,6 +1527,9 @@ describe('consulting stage batch', () => {
       };
       expect(supply.supply.pattern).toBe('^.+$');
       expect(supply.supplyState.enum).toEqual(['confirmed', 'unconfirmed', 'not_analyzed']);
+      const profile = request.responseFormat.schema.properties as { value: { pattern?: string }; product: { pattern?: string } };
+      expect(profile.value.pattern).toBe('^.+$');
+      expect(profile.product.pattern).toBe('^.+$');
     }
   });
 
@@ -1536,6 +1557,11 @@ describe('consulting stage batch', () => {
       if (supplement.includes('상태 불일치')) {
         parsed.supply = '독점 공급 계약을 체결했다';
         parsed.supplyState = 'not_analyzed';
+        return reply(JSON.stringify(parsed));
+      }
+      if (supplement.includes('판단 문장 포함')) {
+        parsed.updatedJudgment =
+          '가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다. 이번 답은 확인된 사실이 아니다.';
         return reply(JSON.stringify(parsed));
       }
       parsed.updatedJudgment = '가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.';
@@ -1613,7 +1639,24 @@ describe('consulting stage batch', () => {
     if (!copied.ok) return;
     expect(copied.record.error).toContain('stage_judgment_copied');
     expect(copied.record.sections).toBeNull();
-    expect(calls.filter((request) => Array.isArray(requestPayload(request)?.stagePairs))).toHaveLength(4);
+    const wrappedParent = await runFirstReview({
+      ...base,
+      userId: 'user-wrapped-judgment',
+      projectId: 'project-wrapped-judgment',
+      text: `${IDEA} 판단 포함.`,
+    });
+    const wrapped = await submitConsultingStage({
+      ...base,
+      userId: 'user-wrapped-judgment',
+      projectId: 'project-wrapped-judgment',
+      reviewId: wrappedParent.record.reviewId,
+      answers: answersFor('판단 문장 포함'),
+    });
+    expect(wrapped.ok).toBe(true);
+    if (!wrapped.ok) return;
+    expect(wrapped.record.error).toContain('stage_judgment_copied');
+    expect(wrapped.record.sections).toBeNull();
+    expect(calls.filter((request) => Array.isArray(requestPayload(request)?.stagePairs))).toHaveLength(5);
   });
 
   it('marks the live quality-fix-2 cooperation-plan question as repeated after punctuation is ignored', async () => {
