@@ -768,6 +768,7 @@
     "rateLabel": "repository rate, not an invoice"
   },
   "executionCommit": "a4da4c063aa40ab670c104ce0dfccfc332093fad",
+  "evidenceCommit": "8afa04b394a93ae8c0539a793e93db8a62efac38",
   "chainVerdict": "FAIL",
   "sprint2": "FAIL",
   "passDeclared": false,

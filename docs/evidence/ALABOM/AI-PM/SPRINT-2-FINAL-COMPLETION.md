@@ -1,6 +1,6 @@
 # Sprint 2 최종 완료 체인
 
-2026-11-01 22:48 KST. 실행 기준 커밋 `a4da4c063aa40ab670c104ce0dfccfc332093fad`. 이 문서를 담는 커밋은 같은 브랜치 `cursor/sprint2-final-completion-4b88`의 HEAD다.
+2026-11-01 22:48 KST. 실행 기준 커밋 `a4da4c063aa40ab670c104ce0dfccfc332093fad`. 체인 기록 커밋 `8afa04b394a93ae8c0539a793e93db8a62efac38`. 브랜치 `cursor/sprint2-final-completion-4b88`.
 
 이번 체인 판정은 **FAIL**이다. Sprint 2 PASS는 선언하지 않는다. 2차가 승인된 판단 계약에서 실패했고, 선택 호출과 3·4차는 NOT RUN이다. 프롬프트는 실패를 본 뒤 수정하지 않았다. 실패 라운드는 재호출하지 않았다.
 
