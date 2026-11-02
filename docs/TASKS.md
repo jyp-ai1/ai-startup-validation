@@ -4,6 +4,12 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint 2 GPT 비밀 주입 경로
+
+**상태:** 2026-11-03 08:58 KST 같은 환경 `316b619d-a743-11f1-a7d1-d6b4613131ce` 버전 `3184f0c9-a743-11f1-a7d1-d6b4613131ce`에서 이번 프로세스 `bc-e981acef`의 시작 스냅샷에는 `GPT_API_KEY`가 없고, 2026-11-02 19:13 KST 프로세스 `bc-089fd7eb`의 스냅샷에는 있었다. 사용자 비밀은 에이전트 시작 때 붙고 실행 중에는 갱신되지 않는다. 이번 턴 GPT 호출은 0회다. 3차는 BLOCKED, 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 실패 증거 해시는 유지됐다. 보고서는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-GPT-SECRET-INJECTION.md`다.
+
+---
+
 ## Sprint 2 대화 연속성 구현
 
 **상태:** 2026-11-03 08:42 KST stage 요청에 `previousAnswers`, `unresolvedGaps`, `currentStage`를 넣었다. 실행 보고도 `FOUNDER_CLAIM`으로 남는다. 관련 테스트 56 passed. 이 프로세스 비밀 목록에 `GPT_API_KEY`가 없어 3차와 4차 호출은 BLOCKED다. Sprint 2는 PARTIAL이다. 실패 증거 해시는 유지됐다. 보고서는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-CONVERSATION-CONTINUITY-FINAL.md`다.
