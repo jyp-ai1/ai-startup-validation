@@ -1,0 +1,21 @@
+{
+  "kind": "sprint2_followup_live_gpt",
+  "status": "NOT_RUN",
+  "reason": "GPT_API_KEY missing",
+  "checkedAtKst": "2026-11-02 18:55 KST",
+  "gitSha": "267d23b2",
+  "parentReviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+  "failedRound3ReviewId": "0e75ff46-88fd-4ce2-b567-bdc3f3048531",
+  "failedRound3Preserved": true,
+  "priorEvidenceSha256": "6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd",
+  "callCount": 0,
+  "retryCount": 0,
+  "round4": "NOT RUN",
+  "request": null,
+  "response": null,
+  "parserIssues": null,
+  "storedStatus": null,
+  "productionDeployed": false,
+  "supabaseCalled": false,
+  "founderProjectTouched": false
+}

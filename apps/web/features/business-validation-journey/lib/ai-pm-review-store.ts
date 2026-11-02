@@ -192,7 +192,7 @@ export type StageReading = {
   resolvedIssues: string[];
   unresolvedIssues: string[];
   nextVerification: string;
-  nextQuestions: { text: string; choices: string[]; verificationPurpose?: string }[];
+  nextQuestions: { text: string; choices: string[]; verificationPurpose?: string; reaskReason?: string }[];
   nextQuestionChoices: string[][];
   /** Present when the stage response included a whole-business rewrite. */
   businessProfile?: StageBusinessProfile;
@@ -363,6 +363,11 @@ export type StoredFeedback = {
   choiceAnswer?: ChoiceAnswer | null;
   /** Links this answer to one question of the parent stage. Absent on older rows. */
   questionId?: string | null;
+  /** True when the text is business information that does not answer a question. */
+  unlinked?: boolean;
+  provenance?: 'FOUNDER_INPUT' | 'SIMULATION' | 'EXTERNAL_EVIDENCE' | 'AI_INFERENCE';
+  epistemicStatus?: 'VERIFIED_FACT' | 'FOUNDER_CLAIM' | 'ASSUMPTION' | 'UNKNOWN';
+  evidenceId?: string | null;
   submittedAt: string;
   modelCalls: 0;
 };
@@ -526,11 +531,11 @@ function listFeedback(db: Sql, userId: string, reviewId?: string): StoredFeedbac
     reviewId
       ? db
           .prepare(
-            'SELECT record_json FROM ai_pm_feedback WHERE user_id = ? AND review_id = ? ORDER BY submitted_at ASC',
+            'SELECT record_json FROM ai_pm_feedback WHERE user_id = ? AND review_id = ? ORDER BY submitted_at ASC, rowid ASC',
           )
           .all(userId, reviewId)
       : db
-          .prepare('SELECT record_json FROM ai_pm_feedback WHERE user_id = ? ORDER BY submitted_at ASC')
+          .prepare('SELECT record_json FROM ai_pm_feedback WHERE user_id = ? ORDER BY submitted_at ASC, rowid ASC')
           .all(userId)
   ) as Array<{ record_json: string }>;
   return rows.map((row) => JSON.parse(row.record_json) as StoredFeedback);

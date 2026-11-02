@@ -592,3 +592,82 @@ function stringList(value: unknown): string[] | null {
   if (!Array.isArray(value) || !value.every((item) => typeof item === 'string')) return null;
   return value.map((item) => item.trim()).filter((item) => item.length > 0);
 }
+
+export type EpistemicStatus = 'VERIFIED_FACT' | 'FOUNDER_CLAIM' | 'ASSUMPTION' | 'UNKNOWN';
+export type StatementProvenance = 'FOUNDER_INPUT' | 'SIMULATION' | 'EXTERNAL_EVIDENCE' | 'AI_INFERENCE';
+
+const EPISTEMIC_STATUS = new Set<EpistemicStatus>(['VERIFIED_FACT', 'FOUNDER_CLAIM', 'ASSUMPTION', 'UNKNOWN']);
+const PROVENANCE = new Set<StatementProvenance>(['FOUNDER_INPUT', 'SIMULATION', 'EXTERNAL_EVIDENCE', 'AI_INFERENCE']);
+
+export type SourcedStatement = {
+  text: string;
+  epistemicStatus: EpistemicStatus;
+  provenance: StatementProvenance;
+  spanText?: string | null;
+  sourceText?: string | null;
+  evidenceId?: string | null;
+};
+
+function isEpistemicStatus(value: unknown): value is EpistemicStatus {
+  return typeof value === 'string' && EPISTEMIC_STATUS.has(value as EpistemicStatus);
+}
+
+function isProvenance(value: unknown): value is StatementProvenance {
+  return typeof value === 'string' && PROVENANCE.has(value as StatementProvenance);
+}
+
+function simulationText(text: string): boolean {
+  return /^\s*SIMULATION\b/u.test(text);
+}
+
+/**
+ * Separates what the words claim from where the words came from.
+ * A span shows the quote exists. It does not verify the business fact.
+ * SIMULATION text cannot be relabeled as founder input.
+ */
+export function settleSavedStatement(input: {
+  text: string;
+  provenance?: unknown;
+  epistemicStatus?: unknown;
+  evidenceId?: string | null;
+}): { provenance: StatementProvenance; epistemicStatus: EpistemicStatus; evidenceId: string | null } {
+  const evidenceId = input.evidenceId?.trim() || null;
+  const provenance: StatementProvenance = simulationText(input.text)
+    ? 'SIMULATION'
+    : isProvenance(input.provenance)
+      ? input.provenance
+      : 'FOUNDER_INPUT';
+  let epistemicStatus: EpistemicStatus = isEpistemicStatus(input.epistemicStatus) ? input.epistemicStatus : 'FOUNDER_CLAIM';
+  if (epistemicStatus === 'VERIFIED_FACT' && (provenance !== 'EXTERNAL_EVIDENCE' || !evidenceId)) {
+    epistemicStatus = provenance === 'AI_INFERENCE' ? 'ASSUMPTION' : 'FOUNDER_CLAIM';
+  }
+  return { provenance, epistemicStatus, evidenceId };
+}
+
+/** A quote in the source identifies the words. Verification is a separate evidence id. */
+export function evaluateSourcedStatement(statement: SourcedStatement): string[] {
+  const failures: string[] = [];
+  if (statement.spanText && statement.sourceText && !statement.sourceText.includes(statement.spanText)) {
+    failures.push('span_not_in_source');
+  }
+  if (statement.epistemicStatus === 'VERIFIED_FACT') {
+    if (statement.provenance !== 'EXTERNAL_EVIDENCE' || !statement.evidenceId) failures.push('span_is_not_verification');
+    if (statement.provenance === 'SIMULATION' || statement.provenance === 'FOUNDER_INPUT' || statement.provenance === 'AI_INFERENCE') {
+      failures.push('claim_promoted_to_fact');
+    }
+  }
+  if (statement.provenance === 'SIMULATION' && statement.epistemicStatus === 'VERIFIED_FACT') failures.push('simulation_promoted');
+  return [...new Set(failures)];
+}
+
+export function collapseDuplicateStatements<T extends { text: string }>(items: T[]): T[] {
+  const seen = new Set<string>();
+  const kept: T[] = [];
+  for (const item of items) {
+    const key = item.text.replace(/\s+/g, '').trim();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    kept.push(item);
+  }
+  return kept;
+}
