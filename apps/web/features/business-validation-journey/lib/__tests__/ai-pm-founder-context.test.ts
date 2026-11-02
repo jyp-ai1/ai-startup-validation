@@ -8,6 +8,7 @@ import { expect, it } from 'vitest';
 import { COMPARE_BUSINESS_BODY } from '../ai-pm-quality-compare';
 import {
   buildProductReanalysisRequest,
+  judgeStageContract,
   runFirstReview,
   runStageReanalysis,
   saveReviewFeedback,
@@ -466,4 +467,84 @@ it('keeps one brewery business in every follow-up payload', async () => {
       `${JSON.stringify(record, null, 2)}\n`,
     );
   }
+});
+
+it('puts gap, stage, and founder-claim level on the integrated request', () => {
+  const reported: StagePair = {
+    questionId: 'q1',
+    question: '안내 이후 무엇을 확인했는가?',
+    offeredChoices: [],
+    choiceId: null,
+    choiceLabel: null,
+    supplement: '안내를 실시했고 응답을 받았다',
+    status: 'answered',
+  };
+  const planned: StagePair = {
+    questionId: 'q2',
+    question: '모집 규모를 어떻게 둘 것인가?',
+    offeredChoices: [],
+    choiceId: null,
+    choiceLabel: null,
+    supplement: '100명 대상으로 할 예정',
+    status: 'answered',
+  };
+  const request = buildProductReanalysisRequest({
+    originalInput: '격리된 최초 아이디어다.',
+    firstAnalysis: sections('최초 판단이다'),
+    priorTurns: [],
+    priorAnalyses: [{ reviewId: 'prior-1', judgment: '이전 판단이다', nextQuestion: '이전 질문이다' }],
+    previousQuestions: [reported.question, planned.question],
+    latestAnalysis: sections('이전 판단이다'),
+    founderChoice: null,
+    founderSupplement: '',
+    founderFeedback: null,
+    stagePairs: [reported, planned],
+    answerLinks: [
+      {
+        sourceReviewId: 'parent-review',
+        questionId: 'q1',
+        question: reported.question,
+        choiceId: null,
+        choiceLabel: null,
+        supplement: reported.supplement,
+        submittedAt: '2026-11-03T00:00:00.000Z',
+        status: 'answered',
+      },
+      {
+        sourceReviewId: 'parent-review',
+        questionId: 'q2',
+        question: planned.question,
+        choiceId: null,
+        choiceLabel: null,
+        supplement: planned.supplement,
+        submittedAt: '2026-11-03T00:00:00.000Z',
+        status: 'answered',
+      },
+    ],
+    unlinkedStatements: [],
+  });
+  const payload = userPayload(request);
+  const answers = payload.previousAnswers as Array<{ questionKey: string; answerLevel: string; epistemicStatus: string; provenance: string }>;
+  const gaps = payload.unresolvedGaps as Array<{ questionKey: string; epistemicStatus: string; gap: string }>;
+  const stage = payload.currentStage as { phase: string; answeredCount: number };
+  expect(payload.originalInput).toBe('격리된 최초 아이디어다.');
+  expect(answers.map((row) => row.questionKey)).toEqual(['parent-review:q1', 'parent-review:q2']);
+  expect(answers.map((row) => row.answerLevel)).toEqual(['reported_result', 'planned_action']);
+  expect(answers.every((row) => row.epistemicStatus === 'FOUNDER_CLAIM' && row.provenance === 'FOUNDER_INPUT')).toBe(true);
+  expect(gaps).toHaveLength(2);
+  expect(gaps.every((row) => row.epistemicStatus === 'FOUNDER_CLAIM' && row.gap.length > 0)).toBe(true);
+  expect(stage).toEqual({ phase: 'integrated_reanalysis', priorReadingCount: 0, answeredCount: 2 });
+  const repeated = judgeStageContract(
+    JSON.stringify({
+      answerInterpretation: [],
+      nextQuestions: [{ text: reported.question, choices: ['다시 본다', '보류한다'], verificationPurpose: reported.question, reaskReason: null }],
+    }),
+    {
+      askedQuestions: [reported.question, planned.question],
+      pairs: [reported, planned],
+      closedSentences: [reported.question, reported.supplement, planned.question, planned.supplement],
+    },
+  );
+  expect(repeated.sections).toBeNull();
+  expect(repeated.issues).toContain('stage_questions_repeated');
 });

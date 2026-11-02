@@ -2291,6 +2291,9 @@ export function buildProductReanalysisRequest(input: {
         founderSupplement: input.founderSupplement,
       });
   const payload = () => {
+    const answeredQuestionState = stageBatch
+      ? buildAnsweredQuestionState([...(input.priorStagePairs ?? []), ...stagePairs], input.answerLinks ?? [])
+      : [];
     const renamed = renameEchoKeys({
       ...(stageBatch
         ? {
@@ -2303,7 +2306,33 @@ export function buildProductReanalysisRequest(input: {
               reading: (input.priorReadings ?? []).at(-1),
             }),
             currentAnswerStatements: currentAnswerStatementPayload(stagePairs, input.answerLinks ?? []),
-            answeredQuestionState: buildAnsweredQuestionState([...(input.priorStagePairs ?? []), ...stagePairs], input.answerLinks ?? []),
+            answeredQuestionState,
+            previousAnswers: answeredQuestionState.map((row) => ({
+              questionKey: row.questionKey,
+              sourceReviewId: row.sourceReviewId,
+              questionId: row.questionId,
+              question: row.question,
+              answerText: row.answer.supplement ?? row.answer.choiceLabel,
+              answerLevel: row.answerLevel,
+              provenance: row.answer.provenance,
+              epistemicStatus: row.answer.epistemicStatus,
+            })),
+            unresolvedGaps: answeredQuestionState
+              .filter((row) => row.verified === false)
+              .map((row) => ({
+                questionKey: row.questionKey,
+                sourceReviewId: row.sourceReviewId,
+                questionId: row.questionId,
+                answerLevel: row.answerLevel,
+                provenance: row.answer.provenance,
+                epistemicStatus: row.answer.epistemicStatus,
+                gap: row.unconfirmedAfterAnswer,
+              })),
+            currentStage: {
+              phase: input.stagePartial === true ? 'answers_incomplete' : 'integrated_reanalysis',
+              priorReadingCount: (input.priorReadings ?? []).length,
+              answeredCount: answeredQuestionState.length,
+            },
             closedQuestions: closedQuestionPayload([...(input.priorStagePairs ?? []), ...stagePairs], input.answerLinks ?? []),
             revisionTask: {
               updatedJudgment:
