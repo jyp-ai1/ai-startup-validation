@@ -1,0 +1,129 @@
+{
+  "kind": "sprint2-remaining-acceptance",
+  "at": "2026-11-02T15:03:59.688Z",
+  "sprint2": "PARTIAL",
+  "productionDeploy": false,
+  "sprint3Started": false,
+  "gptHttpCalls": 0,
+  "passAreasChanged": false,
+  "evidenceHash": "6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd",
+  "sessionFiles": {
+    "qaAuth": false,
+    "chromeProfile": false,
+    "storageState": false
+  },
+  "googleEnvPresent": false,
+  "gptEnvPresent": false,
+  "isolatedUser": {
+    "id": "c0ffee00-1111-4000-8000-0000000002a2",
+    "found": true,
+    "providers": [
+      "email"
+    ],
+    "appProvider": "email",
+    "lookupError": null
+  },
+  "oauth": {
+    "host": "zeccoskqmzedbmmrpmks.supabase.co",
+    "error": null,
+    "cookieNames": [
+      "sb-zeccoskqmzedbmmrpmks-auth-token-code-verifier"
+    ]
+  },
+  "storage": {
+    "durable": true,
+    "productionDatabase": true
+  },
+  "counts": {
+    "founderReviews": 70,
+    "founderProjectReviews": 68,
+    "founderProjects": 172,
+    "failedReview": 0,
+    "isolatedReviews": 4,
+    "isolatedFeedback": 9
+  },
+  "reviews": [
+    {
+      "reviewId": "c7681fa3-410e-4eab-bdef-069bcaf8be6d",
+      "parentReviewId": null,
+      "status": "failed"
+    },
+    {
+      "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+      "parentReviewId": null,
+      "status": "succeeded"
+    },
+    {
+      "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+      "parentReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+      "status": "succeeded"
+    },
+    {
+      "reviewId": "818cc1e2-3324-43dc-a548-e2c01b72e1db",
+      "parentReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+      "status": "succeeded"
+    }
+  ],
+  "feedback": [
+    {
+      "feedbackId": "b6834bdc-2060-4207-95e7-544ee51acc1c",
+      "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+      "questionId": "q1",
+      "unlinked": false
+    },
+    {
+      "feedbackId": "084969b5-5015-4ab9-9cb5-5b79c0799dde",
+      "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+      "questionId": "q2",
+      "unlinked": false
+    },
+    {
+      "feedbackId": "e7866ee3-2182-4d17-b743-42250ebcf057",
+      "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+      "questionId": "q3",
+      "unlinked": false
+    },
+    {
+      "feedbackId": "5b287941-7710-4c21-a649-3608ddc3fef1",
+      "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+      "questionId": "q4",
+      "unlinked": false
+    },
+    {
+      "feedbackId": "d0b1e51d-7aec-42da-97f6-94910cb5d6fe",
+      "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+      "questionId": "q5",
+      "unlinked": false
+    },
+    {
+      "feedbackId": "63770084-963d-46f7-9ebc-da4131afd564",
+      "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+      "questionId": null,
+      "unlinked": true
+    },
+    {
+      "feedbackId": "7501d005-7423-4103-902b-dee5b4519588",
+      "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+      "questionId": "q1",
+      "unlinked": false
+    },
+    {
+      "feedbackId": "609020fa-808a-404c-929a-edcc0d98df59",
+      "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+      "questionId": "q2",
+      "unlinked": false
+    },
+    {
+      "feedbackId": "630b43b2-0936-4a7e-a5aa-d7b179844de7",
+      "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+      "questionId": null,
+      "unlinked": true
+    }
+  ],
+  "priorReviewIdsPresent": true,
+  "priorFeedbackIdsPresent": true,
+  "payloadStillCarriesContext": true,
+  "founderScreen": "BLOCKED",
+  "gptContinuity": "NOT RUN",
+  "e2e": "PARTIAL"
+}
