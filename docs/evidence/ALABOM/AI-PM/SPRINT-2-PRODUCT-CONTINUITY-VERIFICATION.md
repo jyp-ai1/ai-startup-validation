@@ -160,7 +160,7 @@ Supabase는 읽기만 했다. `ai_pm_reviews`와 `ai_pm_feedback`에 `select('*'
 | `docs/evidence/ALABOM/AI-PM/SPRINT-2-PRODUCT-CONTINUITY-VERIFICATION.md` | 이 보고서 |
 | `docs/TASKS.md` | 상태 한 줄 |
 
-커밋 SHA는 이 파일과 같은 커밋이다.
+검증 커밋은 `1204a8c23ae05792fe06741a20e8e8e5175f8d99`다.
 
 ## Production과 Supabase
 
