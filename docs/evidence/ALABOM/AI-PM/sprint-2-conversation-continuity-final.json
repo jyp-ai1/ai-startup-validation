@@ -1,0 +1,172 @@
+{
+  "kind": "sprint2-conversation-continuity-final",
+  "at": "2026-11-02T23:22:10.461Z",
+  "sprint2": "PARTIAL",
+  "gptHttpCalls": 0,
+  "productionDeploy": false,
+  "sprint3Started": false,
+  "screenWork": false,
+  "evidenceHash": "6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd",
+  "parentReviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+  "failedReviewId": "0e75ff46-88fd-4ce2-b567-bdc3f3048531",
+  "firstReviewId": "48d06eaa-ad74-4851-a919-fbd8ecefdc1a",
+  "rounds": [
+    {
+      "round": 1,
+      "reviewId": "48d06eaa-ad74-4851-a919-fbd8ecefdc1a",
+      "parentReviewId": null,
+      "status": "succeeded",
+      "error": null,
+      "model": "gpt-4o-mini-2024-07-18",
+      "promptTokens": 3692,
+      "completionTokens": 820,
+      "totalTokens": 4512
+    },
+    {
+      "round": 2,
+      "reviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+      "parentReviewId": "48d06eaa-ad74-4851-a919-fbd8ecefdc1a",
+      "status": "succeeded",
+      "error": null,
+      "model": "gpt-4o-mini-2024-07-18",
+      "promptTokens": 15761,
+      "completionTokens": 1121,
+      "totalTokens": 16882
+    },
+    {
+      "round": 3,
+      "reviewId": "0e75ff46-88fd-4ce2-b567-bdc3f3048531",
+      "parentReviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+      "status": "failed",
+      "error": "stage_judgment_copied,stage_questions_repeated",
+      "model": "gpt-4o-mini-2024-07-18",
+      "promptTokens": 16807,
+      "completionTokens": 1473,
+      "totalTokens": 18280
+    },
+    {
+      "round": 4,
+      "reviewId": null,
+      "parentReviewId": null,
+      "status": "NOT RUN",
+      "error": null,
+      "model": null,
+      "promptTokens": null,
+      "completionTokens": null,
+      "totalTokens": null
+    }
+  ],
+  "calls": [
+    {
+      "index": 1,
+      "round": 1,
+      "sent": true,
+      "model": "gpt-4o-mini",
+      "responseFormatStored": false,
+      "responseId": "chatcmpl-EfbcrQpUVxRPscMIoGFW8XSp23wkN",
+      "responseModel": "gpt-4o-mini-2024-07-18",
+      "inventory": {
+        "json": false
+      }
+    },
+    {
+      "index": 2,
+      "round": 2,
+      "sent": true,
+      "model": "gpt-4o-mini",
+      "responseFormatStored": false,
+      "responseId": "chatcmpl-Efbcz1CJivX9bOCzdUXBBezft1rG2",
+      "responseModel": "gpt-4o-mini-2024-07-18",
+      "inventory": {
+        "json": true,
+        "originalInputChars": 186,
+        "priorAnalyses": 0,
+        "hasFirstAnalysis": true,
+        "hasLatestAnalysis": true,
+        "closedQuestions": 1,
+        "priorQuestionTexts": 1,
+        "stagePairs": 1,
+        "priorStagePairs": 0,
+        "supplements": 1,
+        "unlinked": 1,
+        "questionKeyField": false,
+        "composedKeys": [
+          "48d06eaa-ad74-4851-a919-fbd8ecefdc1a:q1"
+        ],
+        "epistemicStatus": [
+          "FOUNDER_CLAIM"
+        ],
+        "answerLevels": []
+      }
+    },
+    {
+      "index": 3,
+      "round": 3,
+      "sent": true,
+      "model": "gpt-4o-mini",
+      "responseFormatStored": false,
+      "responseId": "chatcmpl-Efbd9RroEWRZwQtaeBwxSkYw9Vm74",
+      "responseModel": "gpt-4o-mini-2024-07-18",
+      "inventory": {
+        "json": true,
+        "originalInputChars": 186,
+        "priorAnalyses": 1,
+        "hasFirstAnalysis": true,
+        "hasLatestAnalysis": true,
+        "closedQuestions": 3,
+        "priorQuestionTexts": 3,
+        "stagePairs": 2,
+        "priorStagePairs": 1,
+        "supplements": 3,
+        "unlinked": 1,
+        "questionKeyField": false,
+        "composedKeys": [
+          "48d06eaa-ad74-4851-a919-fbd8ecefdc1a:q1",
+          "5f6d705d-fe2a-468f-97be-da16482abd32:q1",
+          "5f6d705d-fe2a-468f-97be-da16482abd32:q2"
+        ],
+        "epistemicStatus": [
+          "FOUNDER_CLAIM",
+          "FOUNDER_CLAIM",
+          "FOUNDER_CLAIM"
+        ],
+        "answerLevels": []
+      }
+    }
+  ],
+  "currentContract": {
+    "model": "gpt-4o-mini",
+    "maxOutputTokens": 2400,
+    "inputTokenBudget": 24000,
+    "schemaTitle": "stage_reanalysis",
+    "schemaIssues": 0,
+    "nextQuestionRequired": [
+      "text",
+      "choices",
+      "verificationPurpose",
+      "reaskReason"
+    ]
+  },
+  "failedResponseRejudge": {
+    "issues": [
+      "stage_questions_repeated",
+      "stage_objective_overlap"
+    ],
+    "sectionsNull": true
+  },
+  "grades": {
+    "originalIdea": "PASS",
+    "analysisHistory": "PASS",
+    "answerLinks": "PARTIAL",
+    "extraComments": "PASS",
+    "answerState": "PARTIAL",
+    "integratedReanalysis": "PARTIAL",
+    "repeatBlock": "PARTIAL",
+    "followUpQuestion": "PARTIAL",
+    "judgmentUpdate": "PARTIAL",
+    "callControl": "PASS",
+    "fourRounds": "NOT RUN",
+    "durableReread": "PARTIAL",
+    "failureIntegrity": "PASS"
+  }
+}
