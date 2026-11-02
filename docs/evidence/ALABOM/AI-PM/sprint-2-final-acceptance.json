@@ -1,0 +1,2542 @@
+{
+  "kind": "sprint2-final-acceptance",
+  "at": "2026-11-02T14:52:34.682Z",
+  "sprint2": "PARTIAL",
+  "productionDeploy": false,
+  "sprint3Started": false,
+  "gptHttpCalls": 0,
+  "sqliteUsedAsPass": false,
+  "preservedCommit": "1204a8c23ae05792fe06741a20e8e8e5175f8d99",
+  "adminConfigured": true,
+  "gptApiKeyPresent": false,
+  "countsBefore": {
+    "reviews": {
+      "count": 71,
+      "code": null,
+      "message": null
+    },
+    "feedback": {
+      "count": 32,
+      "code": null,
+      "message": null
+    },
+    "founderReviews": {
+      "count": 70,
+      "code": null,
+      "message": null
+    },
+    "founderProjectReviews": {
+      "count": 68,
+      "code": null,
+      "message": null
+    },
+    "founderProjects": {
+      "count": 172,
+      "code": null,
+      "message": null
+    },
+    "failedReview": {
+      "count": 0,
+      "code": null,
+      "message": null
+    }
+  },
+  "isolatedUser": {
+    "id": "c0ffee00-1111-4000-8000-0000000002a2",
+    "email": "sprint2-final-acceptance@example.invalid",
+    "created": false
+  },
+  "isolatedProject": {
+    "id": "bc12a6f4-45b7-47b2-b266-ef61cd4013d9",
+    "created": false,
+    "title": "SPRINT2 ISOLATED ACCEPTANCE"
+  },
+  "storage": {
+    "durable": true,
+    "productionDatabase": true,
+    "filePathNull": true
+  },
+  "isolatedUserPasswordStored": false,
+  "countsAfter": {
+    "reviews": {
+      "count": 74,
+      "code": null,
+      "message": null
+    },
+    "feedback": {
+      "count": 40,
+      "code": null,
+      "message": null
+    },
+    "founderReviews": {
+      "count": 70,
+      "code": null,
+      "message": null
+    },
+    "founderProjectReviews": {
+      "count": 68,
+      "code": null,
+      "message": null
+    },
+    "founderProjects": {
+      "count": 172,
+      "code": null,
+      "message": null
+    },
+    "failedReview": {
+      "count": 0,
+      "code": null,
+      "message": null
+    }
+  },
+  "founderUntouched": true,
+  "reviews": {
+    "first": {
+      "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+      "parentReviewId": null,
+      "status": "succeeded",
+      "evidence": "injected_http",
+      "model": "local-parser-fixture",
+      "callCount": 1,
+      "error": null,
+      "inputText": "격리 검증용 문장이다. 실내 작업 공간을 직장인에게 시간 단위로 제안하는 구상이다. 아직 운영 전이다.",
+      "finishedAt": "2026-11-02T14:40:00.000Z",
+      "questionTexts": [
+        "누가 이 공간을 쓰는가?",
+        "모집 규모를 어떻게 둘 것인가?",
+        "안내 이후 무엇을 확인했는가?",
+        "공간은 어떤 형태인가?",
+        "운영 요일은 정했는가?"
+      ],
+      "judgment": "수요가 확인되지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다."
+    },
+    "child": {
+      "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+      "parentReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+      "status": "succeeded",
+      "evidence": "injected_http",
+      "model": "local-parser-fixture",
+      "callCount": 1,
+      "error": null,
+      "inputText": "격리 검증용 문장이다. 실내 작업 공간을 직장인에게 시간 단위로 제안하는 구상이다. 아직 운영 전이다.",
+      "finishedAt": "2026-11-02T14:42:00.000Z",
+      "questionTexts": [
+        "공급 장소를 어디서 구할 계획인가?",
+        "알릴 채널을 무엇으로 두는가?"
+      ],
+      "judgment": "유지: 확인 전 위험은 남는다. 이번 답: 공급과 알림은 아직 확인되지 않았다 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다."
+    }
+  },
+  "feedback": {
+    "before": [],
+    "final": [
+      {
+        "feedbackId": "b6834bdc-2060-4207-95e7-544ee51acc1c",
+        "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+        "questionId": "q1",
+        "unlinked": false,
+        "comment": "직장인",
+        "choiceLabel": "직장인",
+        "provenance": "FOUNDER_INPUT",
+        "epistemicStatus": "FOUNDER_CLAIM",
+        "modelCalls": 0
+      },
+      {
+        "feedbackId": "084969b5-5015-4ab9-9cb5-5b79c0799dde",
+        "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+        "questionId": "q2",
+        "unlinked": false,
+        "comment": "100명 대상으로 할 예정",
+        "choiceLabel": null,
+        "provenance": "FOUNDER_INPUT",
+        "epistemicStatus": "FOUNDER_CLAIM",
+        "modelCalls": 0
+      },
+      {
+        "feedbackId": "e7866ee3-2182-4d17-b743-42250ebcf057",
+        "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+        "questionId": "q3",
+        "unlinked": false,
+        "comment": "안내를 실시했고 응답을 받았다",
+        "choiceLabel": null,
+        "provenance": "FOUNDER_INPUT",
+        "epistemicStatus": "FOUNDER_CLAIM",
+        "modelCalls": 0
+      },
+      {
+        "feedbackId": "5b287941-7710-4c21-a649-3608ddc3fef1",
+        "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+        "questionId": "q4",
+        "unlinked": false,
+        "comment": "실내에서 진행하는 구상이다",
+        "choiceLabel": null,
+        "provenance": "FOUNDER_INPUT",
+        "epistemicStatus": "FOUNDER_CLAIM",
+        "modelCalls": 0
+      },
+      {
+        "feedbackId": "d0b1e51d-7aec-42da-97f6-94910cb5d6fe",
+        "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+        "questionId": "q5",
+        "unlinked": false,
+        "comment": "아직 정하지 못했다",
+        "choiceLabel": null,
+        "provenance": "FOUNDER_INPUT",
+        "epistemicStatus": "FOUNDER_CLAIM",
+        "modelCalls": 0
+      },
+      {
+        "feedbackId": "63770084-963d-46f7-9ebc-da4131afd564",
+        "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+        "questionId": null,
+        "unlinked": true,
+        "comment": "질문과 연결되지 않은 추가 의견이다. 주말에는 열지 않는다.",
+        "choiceLabel": null,
+        "provenance": "FOUNDER_INPUT",
+        "epistemicStatus": "FOUNDER_CLAIM",
+        "modelCalls": 0
+      }
+    ],
+    "child": [
+      {
+        "feedbackId": "7501d005-7423-4103-902b-dee5b4519588",
+        "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+        "questionId": "q1",
+        "unlinked": false,
+        "comment": "지역 한 곳을 먼저 볼 계획이다",
+        "choiceLabel": null,
+        "provenance": "FOUNDER_INPUT",
+        "epistemicStatus": "FOUNDER_CLAIM",
+        "modelCalls": 0
+      },
+      {
+        "feedbackId": "609020fa-808a-404c-929a-edcc0d98df59",
+        "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+        "questionId": "q2",
+        "unlinked": false,
+        "comment": "채널은 게시판을 염두에 두고 있다",
+        "choiceLabel": null,
+        "provenance": "FOUNDER_INPUT",
+        "epistemicStatus": "FOUNDER_CLAIM",
+        "modelCalls": 0
+      }
+    ]
+  },
+  "calls": {
+    "chatInvocations": 3,
+    "openaiHttpCalls": 0,
+    "chatAtStart": 1,
+    "chatAfterOne": 1,
+    "chatAfterRest": 2,
+    "chatAfterDuplicate": 2,
+    "chatAfterPartial": 2,
+    "chatAfterChild": 3,
+    "one": {
+      "called": false,
+      "pending": true
+    },
+    "rest": {
+      "called": true,
+      "pending": false,
+      "status": "succeeded",
+      "error": null,
+      "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302"
+    },
+    "duplicate": {
+      "called": false,
+      "pending": false,
+      "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302"
+    },
+    "partialChild": {
+      "called": false,
+      "pending": true
+    },
+    "childRest": {
+      "called": true,
+      "pending": false,
+      "status": "succeeded",
+      "reviewId": "818cc1e2-3324-43dc-a548-e2c01b72e1db"
+    },
+    "childDuplicate": {
+      "called": false,
+      "pending": false,
+      "reviewId": "818cc1e2-3324-43dc-a548-e2c01b72e1db"
+    }
+  },
+  "payload": {
+    "originalInput": "격리 검증용 문장이다. 실내 작업 공간을 직장인에게 시간 단위로 제안하는 구상이다. 아직 운영 전이다.",
+    "unlinked": [
+      {
+        "feedbackId": "63770084-963d-46f7-9ebc-da4131afd564",
+        "questionId": null,
+        "choiceId": null,
+        "text": "질문과 연결되지 않은 추가 의견이다. 주말에는 열지 않는다.",
+        "submittedAt": "2026-11-02T14:42:00.004Z",
+        "provenance": "FOUNDER_INPUT",
+        "epistemicStatus": "FOUNDER_CLAIM",
+        "evidenceId": null
+      }
+    ],
+    "levels": [
+      {
+        "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+        "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+        "questionId": "q1",
+        "question": "누가 이 공간을 쓰는가?",
+        "answerLevel": "menu_choice",
+        "resolution": "method_selected",
+        "verified": false
+      },
+      {
+        "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+        "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+        "questionId": "q2",
+        "question": "모집 규모를 어떻게 둘 것인가?",
+        "answerLevel": "planned_action",
+        "resolution": "plan_stated",
+        "verified": false
+      },
+      {
+        "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+        "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+        "questionId": "q3",
+        "question": "안내 이후 무엇을 확인했는가?",
+        "answerLevel": "reported_result",
+        "resolution": "result_reported",
+        "verified": false
+      },
+      {
+        "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+        "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+        "questionId": "q4",
+        "question": "공간은 어떤 형태인가?",
+        "answerLevel": "stated_without_result",
+        "resolution": "gap_named",
+        "verified": false
+      },
+      {
+        "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+        "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+        "questionId": "q5",
+        "question": "운영 요일은 정했는가?",
+        "answerLevel": "unresolved_gap",
+        "resolution": "still_open",
+        "verified": false
+      },
+      {
+        "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q1",
+        "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+        "questionId": "q1",
+        "question": "공급 장소를 어디서 구할 계획인가?",
+        "answerLevel": "planned_action",
+        "resolution": "plan_stated",
+        "verified": false
+      },
+      {
+        "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q2",
+        "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+        "questionId": "q2",
+        "question": "알릴 채널을 무엇으로 두는가?",
+        "answerLevel": "stated_without_result",
+        "resolution": "gap_named",
+        "verified": false
+      }
+    ]
+  },
+  "requests": [
+    {
+      "model": "gpt-4o-mini",
+      "schemaTitle": "product_reanalysis",
+      "reaskReasonRequired": null,
+      "system": {
+        "redacted": true,
+        "sha256": "2e25a917a346602c2c71163a86de3408c2cc5458fc7b5bf6361cf10b2b472792",
+        "chars": 1093
+      },
+      "user": {
+        "json": false,
+        "sha256": "9d93acb0d248653ad426c2832c41e4adfd9340c144bdff7d478f1f71582e33bf",
+        "chars": 547
+      }
+    },
+    {
+      "model": "gpt-4o-mini",
+      "schemaTitle": "stage_reanalysis",
+      "reaskReasonRequired": true,
+      "system": {
+        "redacted": true,
+        "sha256": "c5cf649f2a4fdc8fee7206af011e7ac47730ba1f975194587bc1cab556f2e522",
+        "chars": 7921
+      },
+      "user": {
+        "businessState": {
+          "areaOrderIsNotPriority": true,
+          "statedRecord": {
+            "originalIdea": "격리 검증용 문장이다. 실내 작업 공간을 직장인에게 시간 단위로 제안하는 구상이다. 아직 운영 전이다.",
+            "answers": [
+              {
+                "questionId": "q1",
+                "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+                "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+                "source": "founder",
+                "index": 0,
+                "statement": "직장인"
+              },
+              {
+                "questionId": "q2",
+                "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+                "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+                "source": "founder",
+                "index": 0,
+                "statement": "100명 대상으로 할 예정"
+              },
+              {
+                "questionId": "q3",
+                "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+                "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+                "source": "founder",
+                "index": 0,
+                "statement": "안내를 실시했고 응답을 받았다"
+              },
+              {
+                "questionId": "q4",
+                "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+                "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+                "source": "founder",
+                "index": 0,
+                "statement": "실내에서 진행하는 구상이다"
+              },
+              {
+                "questionId": "q5",
+                "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+                "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+                "source": "founder",
+                "index": 0,
+                "statement": "아직 정하지 못했다"
+              }
+            ],
+            "confirmed": []
+          },
+          "areaStatus": [
+            {
+              "areaId": "customer",
+              "status": "founder_claim",
+              "epistemicStatus": "FOUNDER_CLAIM",
+              "provenance": "AI_INFERENCE",
+              "basis": "field",
+              "text": "직장인",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "problem",
+              "status": "unconfirmed",
+              "epistemicStatus": "UNKNOWN",
+              "provenance": "AI_INFERENCE",
+              "basis": "field",
+              "text": "작업 공간 수요가 확인되지 않았다.",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "product",
+              "status": "not_analyzed",
+              "epistemicStatus": "UNKNOWN",
+              "provenance": null,
+              "basis": "field",
+              "text": null,
+              "informationPresent": false,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "supply",
+              "status": "not_analyzed",
+              "epistemicStatus": "UNKNOWN",
+              "provenance": null,
+              "basis": "field",
+              "text": null,
+              "informationPresent": false,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "price",
+              "status": "not_analyzed",
+              "epistemicStatus": "UNKNOWN",
+              "provenance": null,
+              "basis": "no_evidence",
+              "text": null,
+              "informationPresent": false,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "revenue",
+              "status": "assumption",
+              "epistemicStatus": "ASSUMPTION",
+              "provenance": "AI_INFERENCE",
+              "basis": "field",
+              "text": "수익 구조는 가설이며 원문에 없다.",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "market",
+              "status": "founder_claim",
+              "epistemicStatus": "FOUNDER_CLAIM",
+              "provenance": "AI_INFERENCE",
+              "basis": "field",
+              "text": "수요 조사는 입력에 없다.",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "marketing",
+              "status": "not_analyzed",
+              "epistemicStatus": "UNKNOWN",
+              "provenance": null,
+              "basis": "field",
+              "text": null,
+              "informationPresent": false,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "operations",
+              "status": "founder_claim",
+              "epistemicStatus": "FOUNDER_CLAIM",
+              "provenance": "FOUNDER_INPUT",
+              "basis": "field",
+              "text": "운영은 아직 구상이다.",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "risk",
+              "status": "not_analyzed",
+              "epistemicStatus": "UNKNOWN",
+              "provenance": null,
+              "basis": "no_evidence",
+              "text": null,
+              "informationPresent": false,
+              "verified": false,
+              "analysisComplete": false
+            }
+          ],
+          "priorReview": {
+            "judgment": "수요가 확인되지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.",
+            "reviewedObjectives": [
+              "누가 이 공간을 쓰는가?",
+              "모집 규모를 어떻게 둘 것인가?",
+              "안내 이후 무엇을 확인했는가?",
+              "공간은 어떤 형태인가?",
+              "운영 요일은 정했는가?"
+            ],
+            "hypotheses": [
+              "지불은 확인되지 않았다"
+            ],
+            "unresolved": [],
+            "resolved": [],
+            "operations": "운영은 아직 구상이다.",
+            "risks": [
+              "수요가 확인되지 않았다"
+            ]
+          }
+        },
+        "currentAnswerStatements": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+            "source": "founder",
+            "index": 0,
+            "statement": "직장인"
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+            "source": "founder",
+            "index": 0,
+            "statement": "100명 대상으로 할 예정"
+          },
+          {
+            "questionId": "q3",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+            "source": "founder",
+            "index": 0,
+            "statement": "안내를 실시했고 응답을 받았다"
+          },
+          {
+            "questionId": "q4",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+            "source": "founder",
+            "index": 0,
+            "statement": "실내에서 진행하는 구상이다"
+          },
+          {
+            "questionId": "q5",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+            "source": "founder",
+            "index": 0,
+            "statement": "아직 정하지 못했다"
+          }
+        ],
+        "answeredQuestionState": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+            "question": "누가 이 공간을 쓰는가?",
+            "answer": {
+              "choiceId": "c1",
+              "choiceLabel": "직장인",
+              "supplement": null,
+              "provenance": "FOUNDER_INPUT",
+              "epistemicStatus": "FOUNDER_CLAIM"
+            },
+            "answerLevel": "menu_choice",
+            "confirmedByAnswer": "방법으로 선택함: 직장인",
+            "unconfirmedAfterAnswer": "실행 대상, 실행 여부, 응답 결과는 이 답에 없다.",
+            "resolution": "method_selected",
+            "verified": false,
+            "analysisComplete": false
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+            "question": "모집 규모를 어떻게 둘 것인가?",
+            "answer": {
+              "choiceId": null,
+              "choiceLabel": null,
+              "supplement": "100명 대상으로 할 예정",
+              "provenance": "FOUNDER_INPUT",
+              "epistemicStatus": "FOUNDER_CLAIM"
+            },
+            "answerLevel": "planned_action",
+            "confirmedByAnswer": "계획으로 적음: 100명 대상으로 할 예정",
+            "unconfirmedAfterAnswer": "실행 여부와 실제 결과는 이 답에 없다. 숫자는 계획의 대상이지 실행 결과가 아니다.",
+            "resolution": "plan_stated",
+            "verified": false,
+            "analysisComplete": false
+          },
+          {
+            "questionId": "q3",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+            "question": "안내 이후 무엇을 확인했는가?",
+            "answer": {
+              "choiceId": null,
+              "choiceLabel": null,
+              "supplement": "안내를 실시했고 응답을 받았다",
+              "provenance": "FOUNDER_INPUT",
+              "epistemicStatus": "FOUNDER_CLAIM"
+            },
+            "answerLevel": "reported_result",
+            "confirmedByAnswer": "Founder가 보고한 실행 결과: 안내를 실시했고 응답을 받았다",
+            "unconfirmedAfterAnswer": "외부 검증 기록은 없다. 보고의 신뢰성과 사업적 의미는 아직 검증되지 않았다.",
+            "resolution": "result_reported",
+            "verified": false,
+            "analysisComplete": false
+          },
+          {
+            "questionId": "q4",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+            "question": "공간은 어떤 형태인가?",
+            "answer": {
+              "choiceId": null,
+              "choiceLabel": null,
+              "supplement": "실내에서 진행하는 구상이다",
+              "provenance": "FOUNDER_INPUT",
+              "epistemicStatus": "FOUNDER_CLAIM"
+            },
+            "answerLevel": "stated_without_result",
+            "confirmedByAnswer": "추가 설명: 실내에서 진행하는 구상이다",
+            "unconfirmedAfterAnswer": "실행 결과와 수치는 이 답에 없다.",
+            "resolution": "gap_named",
+            "verified": false,
+            "analysisComplete": false
+          },
+          {
+            "questionId": "q5",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+            "question": "운영 요일은 정했는가?",
+            "answer": {
+              "choiceId": null,
+              "choiceLabel": null,
+              "supplement": "아직 정하지 못했다",
+              "provenance": "FOUNDER_INPUT",
+              "epistemicStatus": "FOUNDER_CLAIM"
+            },
+            "answerLevel": "unresolved_gap",
+            "confirmedByAnswer": "확인된 결과 없음",
+            "unconfirmedAfterAnswer": "Founder가 아직 확인하지 못했다고 적었다. 없는 결과를 있는 것처럼 두지 않는다.",
+            "resolution": "still_open",
+            "verified": false,
+            "analysisComplete": false
+          }
+        ],
+        "closedQuestions": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+            "text": "누가 이 공간을 쓰는가?",
+            "askAgain": false
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+            "text": "모집 규모를 어떻게 둘 것인가?",
+            "askAgain": false
+          },
+          {
+            "questionId": "q3",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+            "text": "안내 이후 무엇을 확인했는가?",
+            "askAgain": false
+          },
+          {
+            "questionId": "q4",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+            "text": "공간은 어떤 형태인가?",
+            "askAgain": false
+          },
+          {
+            "questionId": "q5",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+            "text": "운영 요일은 정했는가?",
+            "askAgain": false
+          }
+        ],
+        "revisionTask": {
+          "updatedJudgment": "누적된 Founder 답변을 검토한 현재 판단이다. 문장이 priorJudgmentText와 같아도 그 검토가 있으면 재평가다. 문장이 같다는 이유만으로 실패가 아니다. 이전 판단을 초기화하고 처음부터 분석하지 않는다. 사업 모델의 잠재력과 미확인 주장을 가른다. 확인된 접촉이 없으면 협력 가능성이 높다는 판단을 유지하지 않는다. 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다.",
+          "unresolvedIssues": "priorUnresolvedIssues와 같은 문장을 두지 않는다. unresolvedIssues의 개수는 currentAnswerStatements와 같다. 각 문장이 남긴 위험을 새 문장으로 하나씩 적는다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건이 서로 다르면 한 문장으로 뭉치지 않는다. priorHypotheses를 복사하지 않는다.",
+          "nextQuestion": "질문 문장은 당신이 고른다. 질문 개수도 당신이 정한다. 코드는 특정 사업 질문을 정하지 않는다. objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId의 목적만 묻는다. 서버는 그 objective를 questionKey로 구분된 기존 질문의 목적과 비교한다. overlapsReviewedObjective가 false여도 목적이 같으면 그 후보는 실패다. priorReview는 판단 갱신에만 쓰고 질문의 주제로 고정하지 않는다. 방금 답한 질문을 반복하지 않는다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 단어만 바꾼 질문은 같은 목적이다. 선택 라벨도 다시 내지 않는다. reaskReason은 같은 문장을 통과시키지 않는다. 답이 불충분하면 새 질문으로 answeredQuestionState의 미확인 정보를 묻는다. 불확실하다만 적은 목적은 사유가 아니다. menu_choice의 해결 상태는 method_selected이고 검증 완료가 아니다. planned_action의 숫자는 실행 결과가 아니다. reported_result도 외부 증거가 없으면 VERIFIED_FACT가 아니다. 미확인 영역은 그 기록에서 결과가 없는 질문이다. areaStatus의 not_analyzed는 전달된 문장이 없다는 뜻이다. founder_claim, assumption, unconfirmed, claim은 이미 전달된 정보다. informationPresent는 문장이 있다는 뜻이다. verified가 false면 검증된 사실이 아니다. analysisComplete가 false면 그 영역 분석이 끝난 것이 아니다. FOUNDER_CLAIM을 VERIFIED_FACT로 올리지 않는다. questionKey가 다른 회차의 같은 questionId를 가른다."
+        },
+        "stagePairs": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+            "question": "누가 이 공간을 쓰는가?",
+            "offeredChoices": [
+              {
+                "choiceId": "c1",
+                "label": "직장인"
+              },
+              {
+                "choiceId": "c2",
+                "label": "학생"
+              },
+              {
+                "choiceId": "c3",
+                "label": "아직 핵심을 정하지 못했다"
+              },
+              {
+                "choiceId": "other",
+                "label": "기타 / 직접 입력"
+              }
+            ],
+            "choiceId": "c1",
+            "choiceLabel": "직장인",
+            "supplement": "직장인",
+            "status": "answered"
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+            "question": "모집 규모를 어떻게 둘 것인가?",
+            "offeredChoices": [
+              {
+                "choiceId": "c1",
+                "label": "규모를 적는다"
+              },
+              {
+                "choiceId": "c2",
+                "label": "규모는 정하지 않았다"
+              },
+              {
+                "choiceId": "c3",
+                "label": "아직 핵심을 정하지 못했다"
+              },
+              {
+                "choiceId": "other",
+                "label": "기타 / 직접 입력"
+              }
+            ],
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "100명 대상으로 할 예정",
+            "status": "answered"
+          },
+          {
+            "questionId": "q3",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+            "question": "안내 이후 무엇을 확인했는가?",
+            "offeredChoices": [
+              {
+                "choiceId": "c1",
+                "label": "안내 결과를 적는다"
+              },
+              {
+                "choiceId": "c2",
+                "label": "안내 결과는 없다"
+              },
+              {
+                "choiceId": "c3",
+                "label": "아직 핵심을 정하지 못했다"
+              },
+              {
+                "choiceId": "other",
+                "label": "기타 / 직접 입력"
+              }
+            ],
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "안내를 실시했고 응답을 받았다",
+            "status": "answered"
+          },
+          {
+            "questionId": "q4",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+            "question": "공간은 어떤 형태인가?",
+            "offeredChoices": [
+              {
+                "choiceId": "c1",
+                "label": "실내"
+              },
+              {
+                "choiceId": "c2",
+                "label": "실외"
+              },
+              {
+                "choiceId": "c3",
+                "label": "아직 핵심을 정하지 못했다"
+              },
+              {
+                "choiceId": "other",
+                "label": "기타 / 직접 입력"
+              }
+            ],
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "실내에서 진행하는 구상이다",
+            "status": "answered"
+          },
+          {
+            "questionId": "q5",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+            "question": "운영 요일은 정했는가?",
+            "offeredChoices": [
+              {
+                "choiceId": "c1",
+                "label": "요일을 적는다"
+              },
+              {
+                "choiceId": "c2",
+                "label": "요일은 정하지 않았다"
+              },
+              {
+                "choiceId": "c3",
+                "label": "아직 핵심을 정하지 못했다"
+              },
+              {
+                "choiceId": "other",
+                "label": "기타 / 직접 입력"
+              }
+            ],
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "아직 정하지 못했다",
+            "status": "answered"
+          }
+        ],
+        "priorStagePairs": [],
+        "unlinkedStatements": [
+          {
+            "feedbackId": "63770084-963d-46f7-9ebc-da4131afd564",
+            "questionId": null,
+            "choiceId": null,
+            "text": "질문과 연결되지 않은 추가 의견이다. 주말에는 열지 않는다.",
+            "submittedAt": "2026-11-02T14:42:00.004Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          }
+        ],
+        "answerRecords": [
+          {
+            "feedbackId": "b6834bdc-2060-4207-95e7-544ee51acc1c",
+            "questionId": "q1",
+            "choiceId": "c1",
+            "text": "직장인",
+            "submittedAt": "2026-11-02T14:41:00.000Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          },
+          {
+            "feedbackId": "084969b5-5015-4ab9-9cb5-5b79c0799dde",
+            "questionId": "q2",
+            "choiceId": null,
+            "text": "100명 대상으로 할 예정",
+            "submittedAt": "2026-11-02T14:42:00.000Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          },
+          {
+            "feedbackId": "e7866ee3-2182-4d17-b743-42250ebcf057",
+            "questionId": "q3",
+            "choiceId": null,
+            "text": "안내를 실시했고 응답을 받았다",
+            "submittedAt": "2026-11-02T14:42:00.001Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          },
+          {
+            "feedbackId": "5b287941-7710-4c21-a649-3608ddc3fef1",
+            "questionId": "q4",
+            "choiceId": null,
+            "text": "실내에서 진행하는 구상이다",
+            "submittedAt": "2026-11-02T14:42:00.002Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          },
+          {
+            "feedbackId": "d0b1e51d-7aec-42da-97f6-94910cb5d6fe",
+            "questionId": "q5",
+            "choiceId": null,
+            "text": "아직 정하지 못했다",
+            "submittedAt": "2026-11-02T14:42:00.003Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          }
+        ],
+        "stagePartial": false,
+        "answerReading": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+            "kinds": [
+              "choice"
+            ]
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+            "kinds": []
+          },
+          {
+            "questionId": "q3",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+            "kinds": []
+          },
+          {
+            "questionId": "q4",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+            "kinds": []
+          },
+          {
+            "questionId": "q5",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+            "kinds": [
+              "fact"
+            ]
+          }
+        ],
+        "answerSource": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+            "source": "founder"
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+            "source": "founder"
+          },
+          {
+            "questionId": "q3",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+            "source": "founder"
+          },
+          {
+            "questionId": "q4",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+            "source": "founder"
+          },
+          {
+            "questionId": "q5",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+            "source": "founder"
+          }
+        ],
+        "evidenceLedger": {
+          "newFounderInformation": true,
+          "unresolvedStillApplies": false,
+          "verifiedFacts": [],
+          "founderClaims": [],
+          "unresolved": [],
+          "priorGoals": [],
+          "stillUnknown": []
+        },
+        "originalInput": "격리 검증용 문장이다. 실내 작업 공간을 직장인에게 시간 단위로 제안하는 구상이다. 아직 운영 전이다.",
+        "firstAnalysis": {
+          "summary": "실내 작업 공간 구상이다. 운영 전이라 수요는 확인되지 않았다.",
+          "priorJudgmentText": "수요가 확인되지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.",
+          "priorAssumptions": [
+            "지불은 확인되지 않았다"
+          ],
+          "priorVerificationText": "지불 의사를 확인한다.",
+          "priorQuestionText": "누가 이 공간을 쓰는가?",
+          "customer": "직장인",
+          "problem": "작업 공간 수요가 확인되지 않았다.",
+          "market": "수요 조사는 입력에 없다.",
+          "revenueModel": "수익 구조는 가설이며 원문에 없다.",
+          "unresolvedIssues": [],
+          "product": "아직 분석되지 않았다",
+          "supply": {
+            "state": "not_analyzed",
+            "text": "아직 분석되지 않았다"
+          },
+          "marketing": {
+            "state": "not_analyzed",
+            "text": "아직 분석되지 않았다"
+          },
+          "priorHypotheses": [
+            "지불은 확인되지 않았다"
+          ]
+        },
+        "latestAnalysis": {
+          "customer": "직장인",
+          "problem": "작업 공간 수요가 확인되지 않았다.",
+          "market": "수요 조사는 입력에 없다.",
+          "revenueModel": "수익 구조는 가설이며 원문에 없다.",
+          "execution": "아직 운영 전인 구상",
+          "priorRisks": [
+            "수요가 확인되지 않았다"
+          ],
+          "uncertain": [
+            "지불은 확인되지 않았다"
+          ],
+          "hypotheses": [
+            "지불은 확인되지 않았다"
+          ],
+          "priorJudgmentText": "실내 작업 공간 구상이다. 운영 전이라 수요는 확인되지 않았다.",
+          "priorQuestionText": "누가 이 공간을 쓰는가?",
+          "priorReasonText": "누가 쓰는지가 다음 판단에 필요하다.",
+          "answerHint": "선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.",
+          "claimConfirmation": null,
+          "analysis": {
+            "payer": "지불자는 확인되지 않았다.",
+            "value": "시간 단위로 쓰는 실내 작업 공간",
+            "priorChoices": [
+              {
+                "id": "c1",
+                "label": "지불 의사를 먼저 확인한다"
+              },
+              {
+                "id": "c2",
+                "label": "장소를 먼저 확인한다"
+              },
+              {
+                "id": "c3",
+                "label": "아직 핵심을 정하지 못했다"
+              },
+              {
+                "id": "other",
+                "label": "기타 / 직접 입력"
+              }
+            ],
+            "summary": "실내 작업 공간 구상이다. 운영 전이라 수요는 확인되지 않았다.",
+            "strengths": [
+              "공간 구상이 있다"
+            ],
+            "priorInferences": [
+              "추론: 지불자는 미확인"
+            ],
+            "operations": "운영은 아직 구상이다.",
+            "priorAssumptions": [
+              "지불은 확인되지 않았다"
+            ],
+            "competition": "경쟁은 확인되지 않았다.",
+            "alternatives": "다른 작업 공간",
+            "founderFacts": [],
+            "profitability": "수익성은 확인되지 않았다.",
+            "priorJudgmentText": "수요가 확인되지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.",
+            "operatingModel": "아직 운영 전인 구상",
+            "differentiation": "차별화는 확인되지 않았다",
+            "priorEvidenceNotes": [
+              "지불 의사"
+            ],
+            "priorVerificationText": "지불 의사를 확인한다.",
+            "supply": {
+              "state": "not_analyzed",
+              "text": "아직 분석되지 않았다"
+            },
+            "marketing": {
+              "state": "not_analyzed",
+              "text": "아직 분석되지 않았다"
+            },
+            "product": "아직 분석되지 않았다"
+          }
+        },
+        "priorQuestionTexts": [
+          "누가 이 공간을 쓰는가?",
+          "모집 규모를 어떻게 둘 것인가?",
+          "안내 이후 무엇을 확인했는가?",
+          "공간은 어떤 형태인가?",
+          "운영 요일은 정했는가?"
+        ],
+        "answerLinks": [
+          {
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionId": "q1",
+            "question": "누가 이 공간을 쓰는가?",
+            "choiceId": "c1",
+            "choiceLabel": "직장인",
+            "supplement": "직장인",
+            "submittedAt": "2026-11-02T14:41:00.000Z",
+            "status": "answered",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1"
+          },
+          {
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionId": "q2",
+            "question": "모집 규모를 어떻게 둘 것인가?",
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "100명 대상으로 할 예정",
+            "submittedAt": "2026-11-02T14:42:00.000Z",
+            "status": "answered",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2"
+          },
+          {
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionId": "q3",
+            "question": "안내 이후 무엇을 확인했는가?",
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "안내를 실시했고 응답을 받았다",
+            "submittedAt": "2026-11-02T14:42:00.001Z",
+            "status": "answered",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3"
+          },
+          {
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionId": "q4",
+            "question": "공간은 어떤 형태인가?",
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "실내에서 진행하는 구상이다",
+            "submittedAt": "2026-11-02T14:42:00.002Z",
+            "status": "answered",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4"
+          },
+          {
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionId": "q5",
+            "question": "운영 요일은 정했는가?",
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "아직 정하지 못했다",
+            "submittedAt": "2026-11-02T14:42:00.003Z",
+            "status": "answered",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5"
+          }
+        ],
+        "priorReadings": [
+          {
+            "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "priorJudgmentText": "수요가 확인되지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.",
+            "judgmentReason": "",
+            "impactOnPreviousJudgment": "",
+            "resolvedIssues": [],
+            "unresolvedIssues": [],
+            "customer": "직장인",
+            "problem": "작업 공간 수요가 확인되지 않았다.",
+            "revenueModel": "수익 구조는 가설이며 원문에 없다.",
+            "product": "아직 분석되지 않았다",
+            "supply": {
+              "state": "not_analyzed",
+              "text": "아직 분석되지 않았다"
+            },
+            "marketing": {
+              "state": "not_analyzed",
+              "text": "아직 분석되지 않았다"
+            },
+            "priorQuestionText": "누가 이 공간을 쓰는가?",
+            "priorHypotheses": [
+              "지불은 확인되지 않았다"
+            ]
+          }
+        ],
+        "doNotCopy": {
+          "priorJudgmentText": "수요가 확인되지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.",
+          "priorQuestionText": "누가 이 공간을 쓰는가?",
+          "priorUnresolvedIssues": [
+            "지불은 확인되지 않았다"
+          ]
+        },
+        "consultingPath": [],
+        "priorAnalyses": []
+      }
+    },
+    {
+      "model": "gpt-4o-mini",
+      "schemaTitle": "stage_reanalysis",
+      "reaskReasonRequired": true,
+      "system": {
+        "redacted": true,
+        "sha256": "c5cf649f2a4fdc8fee7206af011e7ac47730ba1f975194587bc1cab556f2e522",
+        "chars": 7921
+      },
+      "user": {
+        "businessState": {
+          "areaOrderIsNotPriority": true,
+          "statedRecord": {
+            "originalIdea": "격리 검증용 문장이다. 실내 작업 공간을 직장인에게 시간 단위로 제안하는 구상이다. 아직 운영 전이다.",
+            "answers": [
+              {
+                "questionId": "q1",
+                "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+                "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+                "source": "founder",
+                "index": 0,
+                "statement": "직장인"
+              },
+              {
+                "questionId": "q2",
+                "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+                "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+                "source": "founder",
+                "index": 0,
+                "statement": "100명 대상으로 할 예정"
+              },
+              {
+                "questionId": "q3",
+                "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+                "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+                "source": "founder",
+                "index": 0,
+                "statement": "안내를 실시했고 응답을 받았다"
+              },
+              {
+                "questionId": "q4",
+                "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+                "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+                "source": "founder",
+                "index": 0,
+                "statement": "실내에서 진행하는 구상이다"
+              },
+              {
+                "questionId": "q5",
+                "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+                "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+                "source": "founder",
+                "index": 0,
+                "statement": "아직 정하지 못했다"
+              },
+              {
+                "questionId": "q1",
+                "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+                "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q1",
+                "source": "founder",
+                "index": 0,
+                "statement": "지역 한 곳을 먼저 볼 계획이다"
+              },
+              {
+                "questionId": "q2",
+                "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+                "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q2",
+                "source": "founder",
+                "index": 0,
+                "statement": "채널은 게시판을 염두에 두고 있다"
+              }
+            ],
+            "confirmed": []
+          },
+          "areaStatus": [
+            {
+              "areaId": "customer",
+              "status": "founder_claim",
+              "epistemicStatus": "FOUNDER_CLAIM",
+              "provenance": "AI_INFERENCE",
+              "basis": "field",
+              "text": "직장인",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "problem",
+              "status": "unconfirmed",
+              "epistemicStatus": "UNKNOWN",
+              "provenance": "AI_INFERENCE",
+              "basis": "field",
+              "text": "수요가 확인되지 않았다",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "product",
+              "status": "founder_claim",
+              "epistemicStatus": "FOUNDER_CLAIM",
+              "provenance": "FOUNDER_INPUT",
+              "basis": "field",
+              "text": "시간 단위 작업 공간",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "supply",
+              "status": "founder_claim",
+              "epistemicStatus": "FOUNDER_CLAIM",
+              "provenance": "AI_INFERENCE",
+              "basis": "field",
+              "text": "장소 공급은 입력에 없다",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "price",
+              "status": "not_analyzed",
+              "epistemicStatus": "UNKNOWN",
+              "provenance": null,
+              "basis": "no_evidence",
+              "text": null,
+              "informationPresent": false,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "revenue",
+              "status": "assumption",
+              "epistemicStatus": "ASSUMPTION",
+              "provenance": "AI_INFERENCE",
+              "basis": "field",
+              "text": "수익 구조는 가설이며 원문에 없다",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "market",
+              "status": "founder_claim",
+              "epistemicStatus": "FOUNDER_CLAIM",
+              "provenance": "AI_INFERENCE",
+              "basis": "field",
+              "text": "수요는 입력에 없다",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "marketing",
+              "status": "unconfirmed",
+              "epistemicStatus": "UNKNOWN",
+              "provenance": "AI_INFERENCE",
+              "basis": "field",
+              "text": "알림 방법은 아직 확인되지 않았다",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "operations",
+              "status": "unconfirmed",
+              "epistemicStatus": "UNKNOWN",
+              "provenance": "AI_INFERENCE",
+              "basis": "field",
+              "text": "실행은 아직 확인되지 않았다",
+              "informationPresent": true,
+              "verified": false,
+              "analysisComplete": false
+            },
+            {
+              "areaId": "risk",
+              "status": "not_analyzed",
+              "epistemicStatus": "UNKNOWN",
+              "provenance": null,
+              "basis": "no_evidence",
+              "text": null,
+              "informationPresent": false,
+              "verified": false,
+              "analysisComplete": false
+            }
+          ],
+          "priorReview": {
+            "judgment": "유지: 확인 전 위험은 남는다. 이번 답: 공급과 알림은 아직 확인되지 않았다 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.",
+            "reviewedObjectives": [
+              "누가 이 공간을 쓰는가?",
+              "모집 규모를 어떻게 둘 것인가?",
+              "안내 이후 무엇을 확인했는가?",
+              "공간은 어떤 형태인가?",
+              "운영 요일은 정했는가?",
+              "공급 장소를 어디서 구할 계획인가?",
+              "알릴 채널을 무엇으로 두는가?"
+            ],
+            "hypotheses": [],
+            "unresolved": [
+              "공급 장소를 어디서 구할 계획인가?는 아직 확인되지 않았다"
+            ],
+            "resolved": [],
+            "operations": "실행은 아직 확인되지 않았다",
+            "risks": [
+              "수요가 확인되지 않았다"
+            ]
+          }
+        },
+        "currentAnswerStatements": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q1",
+            "source": "founder",
+            "index": 0,
+            "statement": "지역 한 곳을 먼저 볼 계획이다"
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q2",
+            "source": "founder",
+            "index": 0,
+            "statement": "채널은 게시판을 염두에 두고 있다"
+          }
+        ],
+        "answeredQuestionState": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+            "question": "누가 이 공간을 쓰는가?",
+            "answer": {
+              "choiceId": "c1",
+              "choiceLabel": "직장인",
+              "supplement": null,
+              "provenance": "FOUNDER_INPUT",
+              "epistemicStatus": "FOUNDER_CLAIM"
+            },
+            "answerLevel": "menu_choice",
+            "confirmedByAnswer": "방법으로 선택함: 직장인",
+            "unconfirmedAfterAnswer": "실행 대상, 실행 여부, 응답 결과는 이 답에 없다.",
+            "resolution": "method_selected",
+            "verified": false,
+            "analysisComplete": false
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+            "question": "모집 규모를 어떻게 둘 것인가?",
+            "answer": {
+              "choiceId": null,
+              "choiceLabel": null,
+              "supplement": "100명 대상으로 할 예정",
+              "provenance": "FOUNDER_INPUT",
+              "epistemicStatus": "FOUNDER_CLAIM"
+            },
+            "answerLevel": "planned_action",
+            "confirmedByAnswer": "계획으로 적음: 100명 대상으로 할 예정",
+            "unconfirmedAfterAnswer": "실행 여부와 실제 결과는 이 답에 없다. 숫자는 계획의 대상이지 실행 결과가 아니다.",
+            "resolution": "plan_stated",
+            "verified": false,
+            "analysisComplete": false
+          },
+          {
+            "questionId": "q3",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+            "question": "안내 이후 무엇을 확인했는가?",
+            "answer": {
+              "choiceId": null,
+              "choiceLabel": null,
+              "supplement": "안내를 실시했고 응답을 받았다",
+              "provenance": "FOUNDER_INPUT",
+              "epistemicStatus": "FOUNDER_CLAIM"
+            },
+            "answerLevel": "reported_result",
+            "confirmedByAnswer": "Founder가 보고한 실행 결과: 안내를 실시했고 응답을 받았다",
+            "unconfirmedAfterAnswer": "외부 검증 기록은 없다. 보고의 신뢰성과 사업적 의미는 아직 검증되지 않았다.",
+            "resolution": "result_reported",
+            "verified": false,
+            "analysisComplete": false
+          },
+          {
+            "questionId": "q4",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+            "question": "공간은 어떤 형태인가?",
+            "answer": {
+              "choiceId": null,
+              "choiceLabel": null,
+              "supplement": "실내에서 진행하는 구상이다",
+              "provenance": "FOUNDER_INPUT",
+              "epistemicStatus": "FOUNDER_CLAIM"
+            },
+            "answerLevel": "stated_without_result",
+            "confirmedByAnswer": "추가 설명: 실내에서 진행하는 구상이다",
+            "unconfirmedAfterAnswer": "실행 결과와 수치는 이 답에 없다.",
+            "resolution": "gap_named",
+            "verified": false,
+            "analysisComplete": false
+          },
+          {
+            "questionId": "q5",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+            "question": "운영 요일은 정했는가?",
+            "answer": {
+              "choiceId": null,
+              "choiceLabel": null,
+              "supplement": "아직 정하지 못했다",
+              "provenance": "FOUNDER_INPUT",
+              "epistemicStatus": "FOUNDER_CLAIM"
+            },
+            "answerLevel": "unresolved_gap",
+            "confirmedByAnswer": "확인된 결과 없음",
+            "unconfirmedAfterAnswer": "Founder가 아직 확인하지 못했다고 적었다. 없는 결과를 있는 것처럼 두지 않는다.",
+            "resolution": "still_open",
+            "verified": false,
+            "analysisComplete": false
+          },
+          {
+            "questionId": "q1",
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q1",
+            "question": "공급 장소를 어디서 구할 계획인가?",
+            "answer": {
+              "choiceId": null,
+              "choiceLabel": null,
+              "supplement": "지역 한 곳을 먼저 볼 계획이다",
+              "provenance": "FOUNDER_INPUT",
+              "epistemicStatus": "FOUNDER_CLAIM"
+            },
+            "answerLevel": "planned_action",
+            "confirmedByAnswer": "계획으로 적음: 지역 한 곳을 먼저 볼 계획이다",
+            "unconfirmedAfterAnswer": "실행 여부와 실제 결과는 이 답에 없다. 숫자는 계획의 대상이지 실행 결과가 아니다.",
+            "resolution": "plan_stated",
+            "verified": false,
+            "analysisComplete": false
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q2",
+            "question": "알릴 채널을 무엇으로 두는가?",
+            "answer": {
+              "choiceId": null,
+              "choiceLabel": null,
+              "supplement": "채널은 게시판을 염두에 두고 있다",
+              "provenance": "FOUNDER_INPUT",
+              "epistemicStatus": "FOUNDER_CLAIM"
+            },
+            "answerLevel": "stated_without_result",
+            "confirmedByAnswer": "추가 설명: 채널은 게시판을 염두에 두고 있다",
+            "unconfirmedAfterAnswer": "실행 결과와 수치는 이 답에 없다.",
+            "resolution": "gap_named",
+            "verified": false,
+            "analysisComplete": false
+          }
+        ],
+        "closedQuestions": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+            "text": "누가 이 공간을 쓰는가?",
+            "askAgain": false
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+            "text": "모집 규모를 어떻게 둘 것인가?",
+            "askAgain": false
+          },
+          {
+            "questionId": "q3",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+            "text": "안내 이후 무엇을 확인했는가?",
+            "askAgain": false
+          },
+          {
+            "questionId": "q4",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+            "text": "공간은 어떤 형태인가?",
+            "askAgain": false
+          },
+          {
+            "questionId": "q5",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+            "text": "운영 요일은 정했는가?",
+            "askAgain": false
+          },
+          {
+            "questionId": "q1",
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q1",
+            "text": "공급 장소를 어디서 구할 계획인가?",
+            "askAgain": false
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q2",
+            "text": "알릴 채널을 무엇으로 두는가?",
+            "askAgain": false
+          }
+        ],
+        "revisionTask": {
+          "updatedJudgment": "누적된 Founder 답변을 검토한 현재 판단이다. 문장이 priorJudgmentText와 같아도 그 검토가 있으면 재평가다. 문장이 같다는 이유만으로 실패가 아니다. 이전 판단을 초기화하고 처음부터 분석하지 않는다. 사업 모델의 잠재력과 미확인 주장을 가른다. 확인된 접촉이 없으면 협력 가능성이 높다는 판단을 유지하지 않는다. 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다.",
+          "unresolvedIssues": "priorUnresolvedIssues와 같은 문장을 두지 않는다. unresolvedIssues의 개수는 currentAnswerStatements와 같다. 각 문장이 남긴 위험을 새 문장으로 하나씩 적는다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건이 서로 다르면 한 문장으로 뭉치지 않는다. priorHypotheses를 복사하지 않는다.",
+          "nextQuestion": "질문 문장은 당신이 고른다. 질문 개수도 당신이 정한다. 코드는 특정 사업 질문을 정하지 않는다. objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId의 목적만 묻는다. 서버는 그 objective를 questionKey로 구분된 기존 질문의 목적과 비교한다. overlapsReviewedObjective가 false여도 목적이 같으면 그 후보는 실패다. priorReview는 판단 갱신에만 쓰고 질문의 주제로 고정하지 않는다. 방금 답한 질문을 반복하지 않는다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 단어만 바꾼 질문은 같은 목적이다. 선택 라벨도 다시 내지 않는다. reaskReason은 같은 문장을 통과시키지 않는다. 답이 불충분하면 새 질문으로 answeredQuestionState의 미확인 정보를 묻는다. 불확실하다만 적은 목적은 사유가 아니다. menu_choice의 해결 상태는 method_selected이고 검증 완료가 아니다. planned_action의 숫자는 실행 결과가 아니다. reported_result도 외부 증거가 없으면 VERIFIED_FACT가 아니다. 미확인 영역은 그 기록에서 결과가 없는 질문이다. areaStatus의 not_analyzed는 전달된 문장이 없다는 뜻이다. founder_claim, assumption, unconfirmed, claim은 이미 전달된 정보다. informationPresent는 문장이 있다는 뜻이다. verified가 false면 검증된 사실이 아니다. analysisComplete가 false면 그 영역 분석이 끝난 것이 아니다. FOUNDER_CLAIM을 VERIFIED_FACT로 올리지 않는다. questionKey가 다른 회차의 같은 questionId를 가른다."
+        },
+        "stagePairs": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q1",
+            "question": "공급 장소를 어디서 구할 계획인가?",
+            "offeredChoices": [
+              {
+                "choiceId": "c1",
+                "label": "공급 장소를 어디서 구할 계획인가? 쪽을 먼저 본다"
+              },
+              {
+                "choiceId": "c2",
+                "label": "공급 장소를 어디서 구할 계획인가? 쪽은 보류한다"
+              }
+            ],
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "지역 한 곳을 먼저 볼 계획이다",
+            "status": "answered"
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q2",
+            "question": "알릴 채널을 무엇으로 두는가?",
+            "offeredChoices": [
+              {
+                "choiceId": "c1",
+                "label": "알릴 채널을 무엇으로 두는가? 쪽을 먼저 본다"
+              },
+              {
+                "choiceId": "c2",
+                "label": "알릴 채널을 무엇으로 두는가? 쪽은 보류한다"
+              }
+            ],
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "채널은 게시판을 염두에 두고 있다",
+            "status": "answered"
+          }
+        ],
+        "priorStagePairs": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+            "question": "누가 이 공간을 쓰는가?",
+            "offeredChoices": [
+              {
+                "label": "직장인",
+                "choiceId": "c1"
+              },
+              {
+                "label": "학생",
+                "choiceId": "c2"
+              },
+              {
+                "label": "아직 핵심을 정하지 못했다",
+                "choiceId": "c3"
+              },
+              {
+                "label": "기타 / 직접 입력",
+                "choiceId": "other"
+              }
+            ],
+            "choiceId": "c1",
+            "choiceLabel": "직장인",
+            "supplement": "직장인",
+            "status": "answered"
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+            "question": "모집 규모를 어떻게 둘 것인가?",
+            "offeredChoices": [
+              {
+                "label": "규모를 적는다",
+                "choiceId": "c1"
+              },
+              {
+                "label": "규모는 정하지 않았다",
+                "choiceId": "c2"
+              },
+              {
+                "label": "아직 핵심을 정하지 못했다",
+                "choiceId": "c3"
+              },
+              {
+                "label": "기타 / 직접 입력",
+                "choiceId": "other"
+              }
+            ],
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "100명 대상으로 할 예정",
+            "status": "answered"
+          },
+          {
+            "questionId": "q3",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+            "question": "안내 이후 무엇을 확인했는가?",
+            "offeredChoices": [
+              {
+                "label": "안내 결과를 적는다",
+                "choiceId": "c1"
+              },
+              {
+                "label": "안내 결과는 없다",
+                "choiceId": "c2"
+              },
+              {
+                "label": "아직 핵심을 정하지 못했다",
+                "choiceId": "c3"
+              },
+              {
+                "label": "기타 / 직접 입력",
+                "choiceId": "other"
+              }
+            ],
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "안내를 실시했고 응답을 받았다",
+            "status": "answered"
+          },
+          {
+            "questionId": "q4",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+            "question": "공간은 어떤 형태인가?",
+            "offeredChoices": [
+              {
+                "label": "실내",
+                "choiceId": "c1"
+              },
+              {
+                "label": "실외",
+                "choiceId": "c2"
+              },
+              {
+                "label": "아직 핵심을 정하지 못했다",
+                "choiceId": "c3"
+              },
+              {
+                "label": "기타 / 직접 입력",
+                "choiceId": "other"
+              }
+            ],
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "실내에서 진행하는 구상이다",
+            "status": "answered"
+          },
+          {
+            "questionId": "q5",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+            "question": "운영 요일은 정했는가?",
+            "offeredChoices": [
+              {
+                "label": "요일을 적는다",
+                "choiceId": "c1"
+              },
+              {
+                "label": "요일은 정하지 않았다",
+                "choiceId": "c2"
+              },
+              {
+                "label": "아직 핵심을 정하지 못했다",
+                "choiceId": "c3"
+              },
+              {
+                "label": "기타 / 직접 입력",
+                "choiceId": "other"
+              }
+            ],
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "아직 정하지 못했다",
+            "status": "answered"
+          }
+        ],
+        "unlinkedStatements": [
+          {
+            "feedbackId": "63770084-963d-46f7-9ebc-da4131afd564",
+            "questionId": null,
+            "choiceId": null,
+            "text": "질문과 연결되지 않은 추가 의견이다. 주말에는 열지 않는다.",
+            "submittedAt": "2026-11-02T14:42:00.004Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          }
+        ],
+        "answerRecords": [
+          {
+            "feedbackId": "b6834bdc-2060-4207-95e7-544ee51acc1c",
+            "questionId": "q1",
+            "choiceId": "c1",
+            "text": "직장인",
+            "submittedAt": "2026-11-02T14:41:00.000Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          },
+          {
+            "feedbackId": "084969b5-5015-4ab9-9cb5-5b79c0799dde",
+            "questionId": "q2",
+            "choiceId": null,
+            "text": "100명 대상으로 할 예정",
+            "submittedAt": "2026-11-02T14:42:00.000Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          },
+          {
+            "feedbackId": "e7866ee3-2182-4d17-b743-42250ebcf057",
+            "questionId": "q3",
+            "choiceId": null,
+            "text": "안내를 실시했고 응답을 받았다",
+            "submittedAt": "2026-11-02T14:42:00.001Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          },
+          {
+            "feedbackId": "5b287941-7710-4c21-a649-3608ddc3fef1",
+            "questionId": "q4",
+            "choiceId": null,
+            "text": "실내에서 진행하는 구상이다",
+            "submittedAt": "2026-11-02T14:42:00.002Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          },
+          {
+            "feedbackId": "d0b1e51d-7aec-42da-97f6-94910cb5d6fe",
+            "questionId": "q5",
+            "choiceId": null,
+            "text": "아직 정하지 못했다",
+            "submittedAt": "2026-11-02T14:42:00.003Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          },
+          {
+            "feedbackId": "7501d005-7423-4103-902b-dee5b4519588",
+            "questionId": "q1",
+            "choiceId": null,
+            "text": "지역 한 곳을 먼저 볼 계획이다",
+            "submittedAt": "2026-11-02T14:45:00.000Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          },
+          {
+            "feedbackId": "609020fa-808a-404c-929a-edcc0d98df59",
+            "questionId": "q2",
+            "choiceId": null,
+            "text": "채널은 게시판을 염두에 두고 있다",
+            "submittedAt": "2026-11-02T14:46:00.000Z",
+            "provenance": "FOUNDER_INPUT",
+            "epistemicStatus": "FOUNDER_CLAIM",
+            "evidenceId": null
+          }
+        ],
+        "stagePartial": false,
+        "answerReading": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+            "kinds": [
+              "choice"
+            ]
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+            "kinds": []
+          },
+          {
+            "questionId": "q3",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+            "kinds": []
+          },
+          {
+            "questionId": "q4",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+            "kinds": []
+          },
+          {
+            "questionId": "q5",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+            "kinds": [
+              "fact"
+            ]
+          },
+          {
+            "questionId": "q1",
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q1",
+            "kinds": [
+              "plan"
+            ]
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q2",
+            "kinds": []
+          }
+        ],
+        "answerSource": [
+          {
+            "questionId": "q1",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1",
+            "source": "founder"
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2",
+            "source": "founder"
+          },
+          {
+            "questionId": "q3",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3",
+            "source": "founder"
+          },
+          {
+            "questionId": "q4",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4",
+            "source": "founder"
+          },
+          {
+            "questionId": "q5",
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5",
+            "source": "founder"
+          },
+          {
+            "questionId": "q1",
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q1",
+            "source": "founder"
+          },
+          {
+            "questionId": "q2",
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q2",
+            "source": "founder"
+          }
+        ],
+        "evidenceLedger": {
+          "newFounderInformation": true,
+          "unresolvedStillApplies": false,
+          "verifiedFacts": [],
+          "founderClaims": [],
+          "unresolved": [],
+          "priorGoals": [],
+          "stillUnknown": []
+        },
+        "originalInput": "격리 검증용 문장이다. 실내 작업 공간을 직장인에게 시간 단위로 제안하는 구상이다. 아직 운영 전이다.",
+        "firstAnalysis": {
+          "summary": "실내 작업 공간 구상이다. 운영 전이라 수요는 확인되지 않았다.",
+          "priorJudgmentText": "수요가 확인되지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.",
+          "priorAssumptions": [
+            "지불은 확인되지 않았다"
+          ],
+          "priorVerificationText": "지불 의사를 확인한다.",
+          "priorQuestionText": "누가 이 공간을 쓰는가?",
+          "customer": "직장인",
+          "problem": "작업 공간 수요가 확인되지 않았다.",
+          "market": "수요 조사는 입력에 없다.",
+          "revenueModel": "수익 구조는 가설이며 원문에 없다.",
+          "unresolvedIssues": [],
+          "product": "아직 분석되지 않았다",
+          "supply": {
+            "state": "not_analyzed",
+            "text": "아직 분석되지 않았다"
+          },
+          "marketing": {
+            "state": "not_analyzed",
+            "text": "아직 분석되지 않았다"
+          },
+          "priorHypotheses": [
+            "지불은 확인되지 않았다"
+          ]
+        },
+        "latestAnalysis": {
+          "customer": "직장인",
+          "problem": "수요가 확인되지 않았다",
+          "market": "수요는 입력에 없다",
+          "revenueModel": "수익 구조는 가설이며 원문에 없다",
+          "execution": "",
+          "priorRisks": [
+            "수요가 확인되지 않았다"
+          ],
+          "uncertain": [
+            "공급 장소를 어디서 구할 계획인가?는 아직 확인되지 않았다"
+          ],
+          "hypotheses": [
+            "지불은 아직 가설이다"
+          ],
+          "priorJudgmentText": "유지: 확인 전 위험은 남는다. 이번 답: 공급과 알림은 아직 확인되지 않았다 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.",
+          "priorQuestionText": "공급 장소를 어디서 구할 계획인가?",
+          "priorReasonText": "지불 확인이 없어 판단을 유지한다.",
+          "answerHint": "선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.",
+          "claimConfirmation": null,
+          "analysis": {
+            "payer": "",
+            "value": "실내 작업 공간",
+            "supply": {
+              "state": "confirmed",
+              "text": "장소 공급은 입력에 없다"
+            },
+            "priorChoices": [
+              {
+                "id": "c1",
+                "label": "공급 장소를 어디서 구할 계획인가? 쪽을 먼저 본다"
+              },
+              {
+                "id": "c2",
+                "label": "공급 장소를 어디서 구할 계획인가? 쪽은 보류한다"
+              }
+            ],
+            "product": "시간 단위 작업 공간",
+            "summary": "이번 답이 기존 판단에 준 영향이다.",
+            "marketing": {
+              "state": "confirmed",
+              "text": "알림 방법은 아직 확인되지 않았다"
+            },
+            "strengths": [],
+            "priorInferences": [
+              "입력된 답은 주장이다"
+            ],
+            "operations": "실행은 아직 확인되지 않았다",
+            "priorAssumptions": [
+              "지불은 아직 가설이다"
+            ],
+            "competition": "경쟁은 확인되지 않았다",
+            "founderFacts": [],
+            "profitability": "",
+            "priorJudgmentText": "유지: 확인 전 위험은 남는다. 이번 답: 공급과 알림은 아직 확인되지 않았다 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.",
+            "operatingModel": "운영은 아직 구상이다",
+            "priorEvidenceNotes": [],
+            "priorVerificationText": "지불 의사를 확인한다."
+          }
+        },
+        "priorQuestionTexts": [
+          "누가 이 공간을 쓰는가?",
+          "모집 규모를 어떻게 둘 것인가?",
+          "안내 이후 무엇을 확인했는가?",
+          "공간은 어떤 형태인가?",
+          "운영 요일은 정했는가?",
+          "공급 장소를 어디서 구할 계획인가?",
+          "알릴 채널을 무엇으로 두는가?"
+        ],
+        "answerLinks": [
+          {
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionId": "q1",
+            "question": "누가 이 공간을 쓰는가?",
+            "choiceId": "c1",
+            "choiceLabel": "직장인",
+            "supplement": "직장인",
+            "submittedAt": "2026-11-02T14:41:00.000Z",
+            "status": "answered",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q1"
+          },
+          {
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionId": "q2",
+            "question": "모집 규모를 어떻게 둘 것인가?",
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "100명 대상으로 할 예정",
+            "submittedAt": "2026-11-02T14:42:00.000Z",
+            "status": "answered",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q2"
+          },
+          {
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionId": "q3",
+            "question": "안내 이후 무엇을 확인했는가?",
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "안내를 실시했고 응답을 받았다",
+            "submittedAt": "2026-11-02T14:42:00.001Z",
+            "status": "answered",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q3"
+          },
+          {
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionId": "q4",
+            "question": "공간은 어떤 형태인가?",
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "실내에서 진행하는 구상이다",
+            "submittedAt": "2026-11-02T14:42:00.002Z",
+            "status": "answered",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q4"
+          },
+          {
+            "sourceReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "questionId": "q5",
+            "question": "운영 요일은 정했는가?",
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "아직 정하지 못했다",
+            "submittedAt": "2026-11-02T14:42:00.003Z",
+            "status": "answered",
+            "questionKey": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9:q5"
+          },
+          {
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionId": "q1",
+            "question": "공급 장소를 어디서 구할 계획인가?",
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "지역 한 곳을 먼저 볼 계획이다",
+            "submittedAt": "2026-11-02T14:45:00.000Z",
+            "status": "answered",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q1"
+          },
+          {
+            "sourceReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "questionId": "q2",
+            "question": "알릴 채널을 무엇으로 두는가?",
+            "choiceId": null,
+            "choiceLabel": null,
+            "supplement": "채널은 게시판을 염두에 두고 있다",
+            "submittedAt": "2026-11-02T14:46:00.000Z",
+            "status": "answered",
+            "questionKey": "69878cc7-05f0-4980-bb37-011c6f7cf302:q2"
+          }
+        ],
+        "priorReadings": [
+          {
+            "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+            "priorJudgmentText": "수요가 확인되지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.",
+            "judgmentReason": "",
+            "impactOnPreviousJudgment": "",
+            "resolvedIssues": [],
+            "unresolvedIssues": [],
+            "customer": "직장인",
+            "problem": "작업 공간 수요가 확인되지 않았다.",
+            "revenueModel": "수익 구조는 가설이며 원문에 없다.",
+            "product": "아직 분석되지 않았다",
+            "supply": {
+              "state": "not_analyzed",
+              "text": "아직 분석되지 않았다"
+            },
+            "marketing": {
+              "state": "not_analyzed",
+              "text": "아직 분석되지 않았다"
+            },
+            "priorQuestionText": "누가 이 공간을 쓰는가?",
+            "priorHypotheses": [
+              "지불은 확인되지 않았다"
+            ]
+          },
+          {
+            "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "priorJudgmentText": "유지: 확인 전 위험은 남는다. 이번 답: 공급과 알림은 아직 확인되지 않았다 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.",
+            "judgmentReason": "지불 확인이 없어 판단을 유지한다.",
+            "impactOnPreviousJudgment": "이번 답이 기존 판단에 준 영향이다.",
+            "resolvedIssues": [],
+            "unresolvedIssues": [
+              "공급 장소를 어디서 구할 계획인가?는 아직 확인되지 않았다"
+            ],
+            "customer": "직장인",
+            "problem": "수요가 확인되지 않았다",
+            "revenueModel": "수익 구조는 가설이며 원문에 없다",
+            "product": "시간 단위 작업 공간",
+            "supply": {
+              "state": "confirmed",
+              "text": "장소 공급은 입력에 없다"
+            },
+            "marketing": {
+              "state": "confirmed",
+              "text": "알림 방법은 아직 확인되지 않았다"
+            },
+            "priorQuestionText": "공급 장소를 어디서 구할 계획인가?",
+            "priorHypotheses": []
+          }
+        ],
+        "doNotCopy": {
+          "priorJudgmentText": "유지: 확인 전 위험은 남는다. 이번 답: 공급과 알림은 아직 확인되지 않았다 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.",
+          "priorQuestionText": "공급 장소를 어디서 구할 계획인가?",
+          "priorUnresolvedIssues": [
+            "공급 장소를 어디서 구할 계획인가?는 아직 확인되지 않았다"
+          ]
+        },
+        "consultingPath": [
+          {
+            "order": 1,
+            "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "choice": "직장인",
+            "supplement": "직장인",
+            "answeredQuestion": "누가 이 공간을 쓰는가?",
+            "priorJudgmentText": "유지: 확인 전 위험은 남는다. 이번 답: 공급과 알림은 아직 확인되지 않았다 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.",
+            "priorQuestionText": "공급 장소를 어디서 구할 계획인가?",
+            "priorAssumptions": [
+              "지불은 아직 가설이다"
+            ],
+            "priorRisks": [
+              "수요가 확인되지 않았다"
+            ],
+            "judgmentStatus": "adopted"
+          },
+          {
+            "order": 2,
+            "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "choice": null,
+            "supplement": "100명 대상으로 할 예정",
+            "answeredQuestion": "모집 규모를 어떻게 둘 것인가?",
+            "priorJudgmentText": "유지: 확인 전 위험은 남는다. 이번 답: 공급과 알림은 아직 확인되지 않았다 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.",
+            "priorQuestionText": "공급 장소를 어디서 구할 계획인가?",
+            "priorAssumptions": [
+              "지불은 아직 가설이다"
+            ],
+            "priorRisks": [
+              "수요가 확인되지 않았다"
+            ],
+            "judgmentStatus": "adopted"
+          },
+          {
+            "order": 3,
+            "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "choice": null,
+            "supplement": "안내를 실시했고 응답을 받았다",
+            "answeredQuestion": "안내 이후 무엇을 확인했는가?",
+            "priorJudgmentText": "유지: 확인 전 위험은 남는다. 이번 답: 공급과 알림은 아직 확인되지 않았다 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.",
+            "priorQuestionText": "공급 장소를 어디서 구할 계획인가?",
+            "priorAssumptions": [
+              "지불은 아직 가설이다"
+            ],
+            "priorRisks": [
+              "수요가 확인되지 않았다"
+            ],
+            "judgmentStatus": "adopted"
+          },
+          {
+            "order": 4,
+            "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "choice": null,
+            "supplement": "실내에서 진행하는 구상이다",
+            "answeredQuestion": "공간은 어떤 형태인가?",
+            "priorJudgmentText": "유지: 확인 전 위험은 남는다. 이번 답: 공급과 알림은 아직 확인되지 않았다 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.",
+            "priorQuestionText": "공급 장소를 어디서 구할 계획인가?",
+            "priorAssumptions": [
+              "지불은 아직 가설이다"
+            ],
+            "priorRisks": [
+              "수요가 확인되지 않았다"
+            ],
+            "judgmentStatus": "adopted"
+          },
+          {
+            "order": 5,
+            "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "choice": null,
+            "supplement": "아직 정하지 못했다",
+            "answeredQuestion": "운영 요일은 정했는가?",
+            "priorJudgmentText": "유지: 확인 전 위험은 남는다. 이번 답: 공급과 알림은 아직 확인되지 않았다 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.",
+            "priorQuestionText": "공급 장소를 어디서 구할 계획인가?",
+            "priorAssumptions": [
+              "지불은 아직 가설이다"
+            ],
+            "priorRisks": [
+              "수요가 확인되지 않았다"
+            ],
+            "judgmentStatus": "adopted"
+          }
+        ],
+        "priorAnalyses": [
+          {
+            "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+            "priorJudgmentText": "유지: 확인 전 위험은 남는다. 이번 답: 공급과 알림은 아직 확인되지 않았다 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.",
+            "priorQuestionText": "공급 장소를 어디서 구할 계획인가?",
+            "priorAssumptions": [
+              "지불은 아직 가설이다"
+            ],
+            "priorRisks": [
+              "수요가 확인되지 않았다"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "repeat": {
+    "issues": [
+      "choice_link_mismatch",
+      "stage_questions_repeated"
+    ],
+    "sectionsNull": true
+  },
+  "reread": {
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdoutTail": "\n RUN  v3.2.7 /workspace/apps/web\n\n ✓ scripts/[redacted].test.ts (1 test) 2223ms\n   ✓ sprint 2 final acceptance store > rereads the isolated supabase rows in a second process  2223ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   S",
+    "stderrTail": "(node:518719) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+    "body": {
+      "durable": true,
+      "productionDatabase": true,
+      "inputText": "격리 검증용 문장이다. 실내 작업 공간을 직장인에게 시간 단위로 제안하는 구상이다. 아직 운영 전이다.",
+      "finishedAt": "2026-11-02T14:40:00.000Z",
+      "status": "succeeded",
+      "feedback": [
+        {
+          "feedbackId": "b6834bdc-2060-4207-95e7-544ee51acc1c",
+          "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+          "questionId": "q1",
+          "unlinked": false,
+          "comment": "직장인",
+          "choiceLabel": "직장인",
+          "provenance": "FOUNDER_INPUT",
+          "epistemicStatus": "FOUNDER_CLAIM",
+          "modelCalls": 0
+        },
+        {
+          "feedbackId": "084969b5-5015-4ab9-9cb5-5b79c0799dde",
+          "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+          "questionId": "q2",
+          "unlinked": false,
+          "comment": "100명 대상으로 할 예정",
+          "choiceLabel": null,
+          "provenance": "FOUNDER_INPUT",
+          "epistemicStatus": "FOUNDER_CLAIM",
+          "modelCalls": 0
+        },
+        {
+          "feedbackId": "e7866ee3-2182-4d17-b743-42250ebcf057",
+          "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+          "questionId": "q3",
+          "unlinked": false,
+          "comment": "안내를 실시했고 응답을 받았다",
+          "choiceLabel": null,
+          "provenance": "FOUNDER_INPUT",
+          "epistemicStatus": "FOUNDER_CLAIM",
+          "modelCalls": 0
+        },
+        {
+          "feedbackId": "5b287941-7710-4c21-a649-3608ddc3fef1",
+          "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+          "questionId": "q4",
+          "unlinked": false,
+          "comment": "실내에서 진행하는 구상이다",
+          "choiceLabel": null,
+          "provenance": "FOUNDER_INPUT",
+          "epistemicStatus": "FOUNDER_CLAIM",
+          "modelCalls": 0
+        },
+        {
+          "feedbackId": "d0b1e51d-7aec-42da-97f6-94910cb5d6fe",
+          "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+          "questionId": "q5",
+          "unlinked": false,
+          "comment": "아직 정하지 못했다",
+          "choiceLabel": null,
+          "provenance": "FOUNDER_INPUT",
+          "epistemicStatus": "FOUNDER_CLAIM",
+          "modelCalls": 0
+        },
+        {
+          "feedbackId": "63770084-963d-46f7-9ebc-da4131afd564",
+          "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+          "questionId": null,
+          "unlinked": true,
+          "comment": "질문과 연결되지 않은 추가 의견이다. 주말에는 열지 않는다.",
+          "choiceLabel": null,
+          "provenance": "FOUNDER_INPUT",
+          "epistemicStatus": "FOUNDER_CLAIM",
+          "modelCalls": 0
+        }
+      ],
+      "reviewIds": [
+        {
+          "reviewId": "c7681fa3-410e-4eab-bdef-069bcaf8be6d",
+          "parentReviewId": null,
+          "status": "failed",
+          "inputText": "격리 검증용 문장이다. 실내 작업 공간을 직장인에게 시간 단위로 제안하는 구상이다. 아직 운영 전이다."
+        },
+        {
+          "reviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+          "parentReviewId": null,
+          "status": "succeeded",
+          "inputText": "격리 검증용 문장이다. 실내 작업 공간을 직장인에게 시간 단위로 제안하는 구상이다. 아직 운영 전이다."
+        },
+        {
+          "reviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+          "parentReviewId": "9d49d73d-1bdb-43f8-aa5f-22f0138813d9",
+          "status": "succeeded",
+          "inputText": "격리 검증용 문장이다. 실내 작업 공간을 직장인에게 시간 단위로 제안하는 구상이다. 아직 운영 전이다."
+        },
+        {
+          "reviewId": "818cc1e2-3324-43dc-a548-e2c01b72e1db",
+          "parentReviewId": "69878cc7-05f0-4980-bb37-011c6f7cf302",
+          "status": "succeeded",
+          "inputText": "격리 검증용 문장이다. 실내 작업 공간을 직장인에게 시간 단위로 제안하는 구상이다. 아직 운영 전이다."
+        }
+      ],
+      "founderCounts": {
+        "reviews": {
+          "count": 74,
+          "code": null,
+          "message": null
+        },
+        "feedback": {
+          "count": 40,
+          "code": null,
+          "message": null
+        },
+        "founderReviews": {
+          "count": 70,
+          "code": null,
+          "message": null
+        },
+        "founderProjectReviews": {
+          "count": 68,
+          "code": null,
+          "message": null
+        },
+        "founderProjects": {
+          "count": 172,
+          "code": null,
+          "message": null
+        },
+        "failedReview": {
+          "count": 0,
+          "code": null,
+          "message": null
+        }
+      }
+    }
+  },
+  "fetchHosts": [
+    "zeccoskqmzedbmmrpmks.supabase.co"
+  ],
+  "evidenceHashAfter": "6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd",
+  "http": {
+    "signInUser": "c0ffee00-1111-4000-8000-0000000002a2",
+    "cookieCount": 1,
+    "listStatus": 200,
+    "listError": null,
+    "listCount": 4,
+    "listStorage": {
+      "kind": "supabase",
+      "durable": true,
+      "productionDatabase": true,
+      "migration": "023_ai_pm_reviews.sql"
+    },
+    "followStatus": 200,
+    "follow": {
+      "error": null,
+      "called": false,
+      "pending": false,
+      "reused": true,
+      "storage": {
+        "kind": "supabase",
+        "durable": true,
+        "productionDatabase": true,
+        "migration": "023_ai_pm_reviews.sql"
+      }
+    },
+    "extraStatus": 400,
+    "extra": {
+      "error": "gpt_api_key_missing",
+      "called": null,
+      "pending": null
+    },
+    "extraStored": true,
+    "againStatus": 200,
+    "againCount": 4,
+    "isolatedFeedbackBefore": 8,
+    "isolatedFeedbackAfter": 9,
+    "founderUntouched": true,
+    "gptKeyInThisProcess": false
+  },
+  "repeatGateOnStoredRequest": {
+    "repeatedIssues": [
+      "stage_questions_repeated"
+    ],
+    "repeatedSectionsNull": true,
+    "freshIssues": [],
+    "freshSectionsNull": false
+  },
+  "founderScreen": {
+    "grade": "BLOCKED",
+    "reason": "Login renders GoogleSignInButton only. No isolated Google session was available. The founder session was not used."
+  },
+  "gptFollowUp": "NOT RUN"
+}
