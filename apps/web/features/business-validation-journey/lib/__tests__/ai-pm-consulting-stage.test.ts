@@ -399,7 +399,12 @@ describe('consulting stage batch', () => {
         answerInterpretation: { items: { required: string[]; properties: { meaning: { description: string } } } };
         updatedJudgment: { description: string };
         verifiedFacts: { description: string };
-        nextQuestions: { items: { required: string[]; properties: { text: { description: string }; verificationPurpose: { description: string } } } };
+        nextQuestions: {
+          items: {
+            required: string[];
+            properties: { text: { description: string }; verificationPurpose: { description: string }; reaskReason: { type: unknown } };
+          };
+        };
       };
       expect(meaning.answerInterpretation.items.properties.meaning.description).toContain('choiceLabel');
       expect(meaning.answerInterpretation.items.required).toEqual([
@@ -421,7 +426,8 @@ describe('consulting stage batch', () => {
       expect(supply.supply.description).toContain('아직 확인되지 않았다');
       expect(supply.marketing.description).toContain('빈 문자열은 실패다');
       expect(meaning.nextQuestions.items.properties.verificationPurpose.description).toContain('불확실성');
-      expect(meaning.nextQuestions.items.required).toEqual(['text', 'choices', 'verificationPurpose']);
+      expect(meaning.nextQuestions.items.required).toEqual(['text', 'choices', 'verificationPurpose', 'reaskReason']);
+      expect(meaning.nextQuestions.items.properties.reaskReason.type).toEqual(['string', 'null']);
       expect(request.responseFormat.schema.required).toEqual([
         'answerInterpretation',
         'statementReadings',

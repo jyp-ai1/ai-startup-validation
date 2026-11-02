@@ -1,0 +1,50 @@
+{
+  "kind": "sprint2_structured_output",
+  "status": "SCHEMA_ALIGNED",
+  "checkedAtKst": "2026-11-02 19:46 KST",
+  "sprint2": "PARTIAL",
+  "gptCallCount": 0,
+  "retryCount": 0,
+  "round4": "NOT RUN",
+  "parentReviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+  "failedRound3ReviewId": "0e75ff46-88fd-4ce2-b567-bdc3f3048531",
+  "failedRound3Preserved": true,
+  "priorEvidenceSha256": "6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd",
+  "blockedRequestId": "req_5aed082a7254480388018108f03395f1",
+  "schema": {
+    "name": "stage_reanalysis",
+    "path": "properties.nextQuestions.items",
+    "required": ["text", "choices", "verificationPurpose", "reaskReason"],
+    "reaskReasonType": ["string", "null"],
+    "strictIssues": []
+  },
+  "otherStrictSchemas": [
+    { "name": "product_reanalysis", "changed": false, "strictIssues": [] },
+    { "name": "reflection_output_11", "changed": false, "strictIssues": [] },
+    { "name": "experiment_b_state", "changed": false, "strictIssues": [] },
+    { "name": "experiment_b_selection", "changed": false, "strictIssues": [] },
+    { "name": "decision_contract_state", "changed": false, "strictIssues": [] },
+    { "name": "decision_contract_selection", "changed": false, "strictIssues": [] }
+  ],
+  "tests": {
+    "passed": 150,
+    "failed": 0,
+    "liveTestsRun": false,
+    "files": {
+      "ai-pm-strict-schema.test.ts": 4,
+      "ai-pm-consulting-stage.test.ts": 42,
+      "ai-pm-founder-context.test.ts": 2,
+      "ai-pm-e2e-continuity.test.ts": 2,
+      "ai-pm-continuity-contract.test.ts": 5,
+      "ai-pm-review.test.ts": 77,
+      "ai-pm-decision-contract.test.ts": 9,
+      "ai-pm-experiment-b.test.ts": 9
+    }
+  },
+  "openAiHttpRecheck": "NOT RUN",
+  "productStore": "NOT RUN",
+  "ui": "NOT RUN",
+  "supabaseCalled": false,
+  "founderProjectTouched": false,
+  "productionDeployed": false
+}
