@@ -1983,7 +1983,8 @@ function stageReanalysisSchema(): Record<string, unknown> {
             prerequisite: { ...filled, description: '먼저 알아야 하는 것. 없으면 없다고 적는다.' },
             overlapsReviewedObjective: {
               type: 'boolean',
-              description: '이미 검토한 목적과 같으면 true. 표현만 바꾼 목적도 true다.',
+              description:
+                '이미 검토한 목적과 같으면 true. 표현만 바꾼 목적도 true다. 서버가 questionKey로 구분된 기존 질문의 목적과 비교한다. false라고 적어도 목적이 같으면 새 질문이 아니다.',
             },
           },
         },
@@ -2024,7 +2025,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
             reaskReason: {
               type: 'string',
               description:
-                '이미 답한 질문과 같은 문장이나 같은 목적을 다시 물을 때만 적는다. 기존 답변으로 확인되지 않은 이유를 적는다. 새 질문이면 생략한다. 질문 문장과 같으면 사유가 아니다. 불확실하다만 적으면 사유가 아니다.',
+                '같은 질문 문장을 통과시키는 필드가 아니다. 새 질문이 기존 답으로 확인되지 않은 정보를 물을 때 그 빈칸과 이유를 적는다. 새 질문이면 생략할 수 있다. 질문 문장과 같으면 사유가 아니다. 불확실하다만 적으면 사유가 아니다.',
             },
             choices: {
               type: 'array',
@@ -2069,20 +2070,21 @@ function stageReanalysisSchema(): Record<string, unknown> {
 function stageReanalysisSystemPrompt(): string {
   return [
     '당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다.',
-    '당신은 단순한 사업 아이디어 평가자가 아니라 지속적으로 사업을 발전시키는 전략 컨설턴트다. 이전 사업성 판단을 초기화하지 말고, 최초 사업 아이디어와 모든 이전 분석, 질문, Founder 답변을 종합하여 현재 시점의 사업성을 다시 판단하라. 최초 사업 아이디어와 상담 이력은 유지한다. 파운더의 답변을 단순 요약하지 말고 사업 모델에 미치는 영향을 판단한다. 다음 질문은 이전 질문의 후속이 아니다. 확인된 것, 아직 중요한 미확인, 다음 판단을 가장 크게 바꾸는 영역을 가른 뒤 그 영역의 사업 목적을 고른다. 고객, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 질문은 현재 사업 상황에 맞춰 고르며 고정된 순서를 강제하지 않는다. 이미 답변된 질문을 이유 없이 반복하지 않는다. 다시 묻는다면 reaskReason에 기존 답변으로 확인되지 않은 이유를 적는다. 질문의 표현이 아니라 질문이 해결하려는 사업 목적이 이전 질문과 달라야 한다. 기존 판단을 유지할 수 있다. 유지하더라도 누적된 Founder 답변을 검토한 현재 판단이다. 판단 문장이 이전과 같아도 그 검토가 있으면 재평가다. 확인되지 않은 주장은 검증된 사실로 취급하지 않는다. 사업의 잠재력과 실제 실행 가능성을 구분한다. 해결된 영역과 미해결 영역을 구분하고, 이미 해결된 영역은 근거와 함께 해결 상태로 남긴다.',
+    '당신은 단순한 사업 아이디어 평가자가 아니라 지속적으로 사업을 발전시키는 전략 컨설턴트다. 이전 사업성 판단을 초기화하지 말고, 최초 사업 아이디어와 모든 이전 분석, 질문, Founder 답변을 종합하여 현재 시점의 사업성을 다시 판단하라. 최초 사업 아이디어와 상담 이력은 유지한다. 파운더의 답변을 단순 요약하지 말고 사업 모델에 미치는 영향을 판단한다. 다음 질문은 이전 질문의 후속이 아니다. 확인된 것, 아직 중요한 미확인, 다음 판단을 가장 크게 바꾸는 영역을 가른 뒤 그 영역의 사업 목적을 고른다. 고객, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 질문은 현재 사업 상황에 맞춰 고르며 고정된 순서를 강제하지 않는다. 이미 답변된 질문 문장을 다시 내지 않는다. reaskReason을 적어도 같은 문장은 실패다. 답이 불충분하면 새 질문을 쓴다. 새 질문은 answeredQuestionState에서 아직 확인되지 않은 정보만 묻는다. 질문 문장은 당신이 쓴다. 서버 문장을 질문으로 복사하지 않는다. 질문의 표현이 아니라 질문이 해결하려는 사업 목적이 이전 질문과 달라야 한다. 기존 판단을 유지할 수 있다. 유지하더라도 누적된 Founder 답변을 검토한 현재 판단이다. 판단 문장이 이전과 같아도 그 검토가 있으면 재평가다. 확인되지 않은 주장은 검증된 사실로 취급하지 않는다. 사업의 잠재력과 실제 실행 가능성을 구분한다. 해결된 영역과 미해결 영역을 구분하고, 이미 해결된 영역은 근거와 함께 해결 상태로 남긴다.',
     '이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다.',
     '판단 예시는 다른 사업이다. 그 문장을 출력에 복사하지 말고 이번 사업으로 다시 쓴다. 이전 판단이 점포는 없으나 좋은 기회라는 문장이면 그 문장을 다시 쓰지 않는다. 사업 모델의 잠재력은 고객에게 가치를 줄 여지로 남을 수 있다. 이번 답이 상권이 좋을 것 같다이면 그 말은 미확인 주장이고 unverifiedClaims다. verifiedFacts는 빈 배열이다. 확인된 협력이나 점포는 없다. 실행 가능성은 검증되지 않았다. judgmentEffect에는 잠재력은 남을 수 있으나 상권 주장은 유지하지 않으며 성공 가능성은 높아지지 않았다라고 적는다. updatedJudgment는 새 문장으로 유지할 잠재력, 근거가 부족한 주장, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. 남은 위험은 점포와 조건이 없다는 현재 빈칸이다. unresolvedIssues에는 점포가 없다는 현재 빈칸을 새로 적는다. 다음 질문은 방금 물은 문장의 단어를 바꾼 질문이 아니다. 방금 답한 목적과 다른 미확인 영역이다. 그 존재 질문에 이미 답이 있으면 같은 질문을 반복하지 않고 아직 확인되지 않은 다른 영역을 고른다.',
     '1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 새로 준 정보와 그 정보가 주장인지 미확인인지 적는다. 연습 입력을 사실로 부르지 않는다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. answerSource.source가 simulation이거나 답이 SIMULATION으로 시작하면 연습 입력이고 실제 Founder 답변과 구분한다. 그 문장에 이는 사실이다라고 쓰지 않는다. 사실을 제공한다라고도 쓰지 않는다. Founder가 문의하거나 접촉했다고 말해도 그 말은 주장이다. 상대의 기록, 회신, 합의가 없으면 답 문장을 observedEvidence로 옮기지 않는다. 한 답 안의 주장, 없는 반응, 없는 참여 의향, 없는 조건은 서로 다른 정보다. 하나를 사실로 나머지를 덮지 않는다. 문의 주장만으로 협력 가능성을 높이지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 사업 모델의 잠재력을 유지하는 것과 미확인 주장을 유지하는 것을 가른다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 긍정적인 전망이라고 쓰지 않는다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다.',
     '2. 확인된 사실, 주장, 가설을 가른다. Founder의 가능성 판단, 선호, 기대는 unverifiedClaims로 남긴다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 접촉, 협력 의사, 합의, 공급 조건이 없으면 그 기대를 사업 성과나 성공 가능성의 근거로 쓰지 않는다. 긍정적 사업 판단은 verifiedFacts의 별도 근거가 있을 때만 적는다. 근거가 없으면 그 문장은 창업자의 기대이고 파트너 확보와 실행은 검증되지 않았다고 적는다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다.',
     '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 정보가 부족한 칸은 부족하다고 적는다. supply와 marketing은 supplyState, marketingState와 함께 적는다. state는 confirmed, unconfirmed, not_analyzed다. not_analyzed의 문장은 아직 분석되지 않았다. unconfirmed의 문장은 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 빈 문자열과 공백은 실패다. value와 product도 빈 문자열이면 실패다. 요청에 문장이 있으면 지우지 말고 이번 답에 맞게 다시 쓴다. 요청에 아직 분석되지 않았다만 있으면 그 상태를 유지하거나 이번 답으로 알게 된 범위만 적는다. 부모의 빈 문자열은 요청에 없고 state는 not_analyzed다. 입력에도 없으면 unconfirmed로 둔다. 입력에 없는 공급 계약, 마케팅 성과, 수익, 상품을 만들어 내지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다. 확인된 접촉이 없으면 운영 계획을 실행이 끝난 것처럼 적지 않는다.',
     '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason은 서로 다른 역할의 문장이다. 사업 모델의 잠재력, Founder의 미확인 주장, 실제 확인된 협력, 실행 가능성, 새로 보인 위험을 한 덩어리로 유지하지 않는다. 잠재력은 유지할 수 있다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. impactOnPreviousJudgment는 이번 답이 그 구분 중 어디에 영향을 주는지다. updatedJudgment는 누적된 Founder 답변을 검토한 현재 판단이다. 문장이 priorJudgmentText와 같아도 그 검토의 결과라면 재평가다. 사업 모델의 잠재력은 유지할 수 있다. 협력의 실행 가능성은 그 잠재력과 따로 재평가한다. 새 사실이 없어도 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. judgmentReason은 그 구분의 이유다. 남은 위험은 빼지 말고 unresolvedIssues에 현재 빈칸으로 적는다. unresolvedIssues는 priorUnresolvedIssues와 다른 새 문장이다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건을 한 문장으로 뭉치지 않는다. 새로 보인 위험도 거기 적는다. 세 문장을 한 문장으로 반복하지 않는다. priorJudgmentText를 impactOnPreviousJudgment와 judgmentReason에 그대로 붙이지 않는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다. 미확인 주장을 긍정적인 전망으로 쓰지 않는다. 이번 답이 그 위험을 해소하지 않으면 위험을 빼지 않는다. 코드는 결론을 정하지 않는다.',
-    '5. 다음 검증은 statedRecord와 areaStatus를 읽고 objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId로 하나 고른다. 코드는 질문 문장을 정하지 않는다. 코드는 후보도 고르지 않는다. 질문 개수도 당신이 정한다. priorReview는 판단을 갱신할 때 읽고 질문의 주제로 고정하지 않는다. overlapsReviewedObjective가 true인 후보는 고르지 않는다. closedQuestions의 사업 목적은 끝난 목적이다. questionId는 회차 안에서 q1부터 다시 매긴다. 질문을 구분할 때는 questionKey를 쓴다. questionKey는 sourceReviewId와 questionId를 잇는다. 이전 회차의 q1과 이번 회차의 q1은 다른 질문이다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 이미 답한 질문은 표현만 바꾸어 다시 묻지 않는다. 같은 질문을 다시 물으려면 reaskReason에 기존 답변으로 확인되지 않은 이유를 적는다. 불확실하다만 적은 verificationPurpose는 그 사유가 아니다. 다음 질문의 사업 목적은 방금 답한 질문의 목적과 달라야 한다. 고정된 질문 순서는 없다. areaStatus의 배열 순서는 우선순위가 아니다. status가 not_analyzed인 영역만 전달된 문장이 없다. founder_claim, assumption, unconfirmed, claim은 이미 전달된 정보다. informationPresent는 문장이 있다는 뜻이다. verified가 false면 검증된 사실이 아니다. analysisComplete가 false면 그 영역 분석이 끝난 것이 아니다. FOUNDER_CLAIM을 VERIFIED_FACT로 올리지 않는다. provenance가 FOUNDER_INPUT이면 Founder 원문에서 온 주장이다. AI_INFERENCE는 원문에 없는 추론이다. 그 문장을 없는 정보처럼 다시 묻지 않는다. 검증이 필요하면 그 문장과 다른 질문을 할 수 있다. 고객, 문제, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 해결된 내용은 근거와 함께 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다.',
+    '5. 다음 검증은 statedRecord와 areaStatus를 읽고 objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId로 하나 고른다. 코드는 질문 문장을 정하지 않는다. 코드는 후보도 고르지 않는다. 질문 개수도 당신이 정한다. priorReview는 판단을 갱신할 때 읽고 질문의 주제로 고정하지 않는다. overlapsReviewedObjective가 true인 후보는 고르지 않는다. closedQuestions의 사업 목적은 끝난 목적이다. questionId는 회차 안에서 q1부터 다시 매긴다. 질문을 구분할 때는 questionKey를 쓴다. questionKey는 sourceReviewId와 questionId를 잇는다. 이전 회차의 q1과 이번 회차의 q1은 다른 질문이다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 이미 답한 질문은 표현만 바꾸어 다시 묻지 않는다. 같은 질문 문장은 reaskReason이 있어도 실패다. 불충분하면 새 질문으로 확인되지 않은 정보를 묻는다. 불확실하다만 적은 verificationPurpose는 그 사유가 아니다. 다음 질문의 사업 목적은 방금 답한 질문의 목적과 달라야 한다. 서버는 선택한 objective를 기존 질문 목적과 비교한다. overlapsReviewedObjective가 false여도 목적이 같으면 그 후보는 새 질문이 아니다. 고정된 질문 순서는 없다. areaStatus의 배열 순서는 우선순위가 아니다. status가 not_analyzed인 영역만 전달된 문장이 없다. founder_claim, assumption, unconfirmed, claim은 이미 전달된 정보다. informationPresent는 문장이 있다는 뜻이다. verified가 false면 검증된 사실이 아니다. analysisComplete가 false면 그 영역 분석이 끝난 것이 아니다. FOUNDER_CLAIM을 VERIFIED_FACT로 올리지 않는다. provenance가 FOUNDER_INPUT이면 Founder 원문에서 온 주장이다. AI_INFERENCE는 원문에 없는 추론이다. 그 문장을 없는 정보처럼 다시 묻지 않는다. 검증이 필요하면 그 문장과 다른 질문을 할 수 있다. 고객, 문제, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 해결된 내용은 근거와 함께 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. priorHypotheses와 doNotCopy.priorUnresolvedIssues는 가설이거나 이전 목록이다. unresolvedIssues는 그 목록을 그대로 복사하지 않고 이번 답이 남긴 빈칸과 새로 보인 빈칸만 적는다. 근거가 없으면 미해결로 남긴다.',
     'JSON만 반환한다.',
     '키 순서는 answerInterpretation, statementReadings, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, objectiveCandidates, selectedCandidateId, selectionReason, nextVerification, nextQuestions, nextQuestionChoices, impactOnPreviousJudgment, keptBusinessPremise, executionPossibility, updatedJudgment, judgmentReason 이다.',
     'answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
-    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. 이미 답한 질문을 다시 물을 때만 reaskReason을 더한다. verificationPurpose는 질문 문장과 다른 불확실성이다. 이전 질문이나 답과 같은 목적은 실패다. reaskReason 없이 같은 질문을 반복하면 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
+    'answeredQuestionState는 질문마다 questionKey, 질문 원문, Founder 답, 출처, 확인된 정보, 미확인 정보, 해결 상태를 담는다. menu_choice는 방법 이름만 확인된 것이고 resolution은 method_selected다. 실행 대상, 실행 여부, 응답 결과는 확인되지 않았다. planned_action은 계획이다. 숫자가 있어도 실행 결과가 아니다. reported_result는 보고된 실행 결과이고 외부 증거가 없으면 verified는 false이며 VERIFIED_FACT가 아니다. stated_without_result는 추가 설명이고 실행 결과나 수치가 없다. unresolved_gap은 아직 모른다고 한 답이다. 이 기록의 analysisComplete는 false다. 같은 질문 문장과 선택 라벨을 다시 묻지 않는다. 새 질문은 unconfirmedAfterAnswer가 비어 있다고 적은 정보를 묻는다. 그 문장은 당신이 쓴다.',
+    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. 이미 답한 질문 문장과 같으면 reaskReason이 있어도 실패다. 새 질문이면 reaskReason은 생략할 수 있다. verificationPurpose는 그 새 질문이 확인하려는 미확인 정보다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
   ].join(' ');
 }
@@ -2301,6 +2303,7 @@ export function buildProductReanalysisRequest(input: {
               reading: (input.priorReadings ?? []).at(-1),
             }),
             currentAnswerStatements: currentAnswerStatementPayload(stagePairs, input.answerLinks ?? []),
+            answeredQuestionState: buildAnsweredQuestionState([...(input.priorStagePairs ?? []), ...stagePairs], input.answerLinks ?? []),
             closedQuestions: closedQuestionPayload([...(input.priorStagePairs ?? []), ...stagePairs], input.answerLinks ?? []),
             revisionTask: {
               updatedJudgment:
@@ -2308,7 +2311,7 @@ export function buildProductReanalysisRequest(input: {
               unresolvedIssues:
                 'priorUnresolvedIssues와 같은 문장을 두지 않는다. unresolvedIssues의 개수는 currentAnswerStatements와 같다. 각 문장이 남긴 위험을 새 문장으로 하나씩 적는다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건이 서로 다르면 한 문장으로 뭉치지 않는다. priorHypotheses를 복사하지 않는다.',
               nextQuestion:
-                '질문 문장은 당신이 고른다. 질문 개수도 당신이 정한다. objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId의 목적만 묻는다. priorReview는 판단 갱신에만 쓰고 질문의 주제로 고정하지 않는다. priorQuestionText와 같은 목적을 다른 말로 묻지 않는다. 방금 답한 질문을 반복하지 않는다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 단어만 바꾼 질문은 같은 목적이다. 같은 질문을 다시 물으려면 reaskReason에 기존 답변으로 확인되지 않은 이유를 적는다. 불확실하다만 적은 목적은 사유가 아니다. 미확인 영역은 areaStatus에서 status가 not_analyzed인 항목이다. founder_claim, assumption, unconfirmed, claim은 이미 전달된 정보다. informationPresent는 문장이 있다는 뜻이다. verified가 false면 검증된 사실이 아니다. analysisComplete가 false면 그 영역 분석이 끝난 것이 아니다. FOUNDER_CLAIM을 VERIFIED_FACT로 올리지 않는다. provenance가 FOUNDER_INPUT이면 Founder 원문에서 온 주장이다. AI_INFERENCE는 원문에 없는 추론이다. 고정된 질문 순서는 없다. 영역 목록은 순서가 아니다. 해결된 내용은 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. questionKey가 다른 회차의 같은 questionId를 가른다.',
+                '질문 문장은 당신이 고른다. 질문 개수도 당신이 정한다. 코드는 특정 사업 질문을 정하지 않는다. objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId의 목적만 묻는다. 서버는 그 objective를 questionKey로 구분된 기존 질문의 목적과 비교한다. overlapsReviewedObjective가 false여도 목적이 같으면 그 후보는 실패다. priorReview는 판단 갱신에만 쓰고 질문의 주제로 고정하지 않는다. 방금 답한 질문을 반복하지 않는다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 단어만 바꾼 질문은 같은 목적이다. 선택 라벨도 다시 내지 않는다. reaskReason은 같은 문장을 통과시키지 않는다. 답이 불충분하면 새 질문으로 answeredQuestionState의 미확인 정보를 묻는다. 불확실하다만 적은 목적은 사유가 아니다. menu_choice의 해결 상태는 method_selected이고 검증 완료가 아니다. planned_action의 숫자는 실행 결과가 아니다. reported_result도 외부 증거가 없으면 VERIFIED_FACT가 아니다. 미확인 영역은 그 기록에서 결과가 없는 질문이다. areaStatus의 not_analyzed는 전달된 문장이 없다는 뜻이다. founder_claim, assumption, unconfirmed, claim은 이미 전달된 정보다. informationPresent는 문장이 있다는 뜻이다. verified가 false면 검증된 사실이 아니다. analysisComplete가 false면 그 영역 분석이 끝난 것이 아니다. FOUNDER_CLAIM을 VERIFIED_FACT로 올리지 않는다. questionKey가 다른 회차의 같은 questionId를 가른다.',
             },
             stagePairs: stagePairs.map((pair) => stagePairPayload(pair, input.answerLinks ?? [])),
             priorStagePairs: (input.priorStagePairs ?? []).map((pair) => stagePairPayload(pair, input.answerLinks ?? [])),
@@ -3097,6 +3100,144 @@ function currentAnswerStatementPayload(
   });
 }
 
+export type AnswerInformationLevel =
+  | 'menu_choice'
+  | 'planned_action'
+  | 'reported_result'
+  | 'stated_without_result'
+  | 'unresolved_gap';
+
+export type AnswerResolutionStatus = 'method_selected' | 'plan_stated' | 'result_reported' | 'gap_named' | 'still_open';
+
+export type AnsweredQuestionState = {
+  questionKey: string;
+  sourceReviewId: string | null;
+  questionId: string;
+  question: string;
+  answer: {
+    choiceId: string | null;
+    choiceLabel: string | null;
+    supplement: string | null;
+    provenance: 'FOUNDER_INPUT' | 'SIMULATION';
+    epistemicStatus: 'FOUNDER_CLAIM';
+  };
+  answerLevel: AnswerInformationLevel;
+  confirmedByAnswer: string;
+  unconfirmedAfterAnswer: string;
+  resolution: AnswerResolutionStatus;
+  verified: false;
+  analysisComplete: false;
+};
+
+/** A completed execution. A digit or the word 결과 alone does not match. */
+const EXECUTION_REPORTED =
+  /실시했|실시하였|실시함|응답했|응답하였|응답함|완료했|완료하였|완료함|받았다|받았으며|나왔다|확인됐다|확인되었다|집계됐|집계되었|측정했|측정하였/;
+/** A plan or a scheduled action. Checked before a bare number can look like a result. */
+const ACTION_PLANNED = /예정|할\s*계획|계획이다|계획입니다|하려고|하겠다|진행할|실시할|조사할|대상으로\s*할/;
+const STILL_UNRESOLVED = /아직\s*정하지|정하지\s*못|확인하지\s*못|확인하지\s*않|모른다|모르겠|모름|떠오르지|선정하지\s*못|아직\s*없|아직\s*핵심/;
+
+function stripSimulationMarker(text: string): string {
+  return text.replace(/^\s*SIMULATION\b[.:]?\s*/iu, '').trim();
+}
+
+function answerClassificationText(pair: { choiceLabel: string | null; supplement: string }): string {
+  const label = stripSimulationMarker(pair.choiceLabel ?? '');
+  const supplement = stripSimulationMarker(pair.supplement);
+  if (!label) return supplement;
+  if (!supplement || compactQuestion(label) === compactQuestion(supplement)) return label;
+  return `${label}\n${supplement}`;
+}
+
+function menuChoiceOnly(pair: { choiceLabel: string | null; supplement: string }): boolean {
+  const label = (pair.choiceLabel ?? '').trim();
+  if (!label) return false;
+  const supplement = pair.supplement.trim();
+  return supplement.length === 0 || compactQuestion(label) === compactQuestion(supplement);
+}
+
+function classifyAnswerLevel(body: string, menuOnly: boolean): AnswerInformationLevel {
+  if (!body) return 'unresolved_gap';
+  if (EXECUTION_REPORTED.test(body)) return 'reported_result';
+  if (ACTION_PLANNED.test(body)) return 'planned_action';
+  if (STILL_UNRESOLVED.test(body)) return 'unresolved_gap';
+  if (menuOnly) return 'menu_choice';
+  return 'stated_without_result';
+}
+
+function answerLevelReading(
+  level: AnswerInformationLevel,
+  label: string,
+  body: string,
+  provenance: 'FOUNDER_INPUT' | 'SIMULATION',
+): { confirmedByAnswer: string; unconfirmedAfterAnswer: string; resolution: AnswerResolutionStatus } {
+  if (level === 'menu_choice') {
+    return {
+      confirmedByAnswer: `방법으로 선택함: ${label || body}`,
+      unconfirmedAfterAnswer: '실행 대상, 실행 여부, 응답 결과는 이 답에 없다.',
+      resolution: 'method_selected',
+    };
+  }
+  if (level === 'planned_action') {
+    return {
+      confirmedByAnswer: `계획으로 적음: ${body}`,
+      unconfirmedAfterAnswer: '실행 여부와 실제 결과는 이 답에 없다. 숫자는 계획의 대상이지 실행 결과가 아니다.',
+      resolution: 'plan_stated',
+    };
+  }
+  if (level === 'reported_result') {
+    const speaker = provenance === 'SIMULATION' ? '보고된 실행 결과' : 'Founder가 보고한 실행 결과';
+    return {
+      confirmedByAnswer: `${speaker}: ${body}`,
+      unconfirmedAfterAnswer: '외부 검증 기록은 없다. 보고의 신뢰성과 사업적 의미는 아직 검증되지 않았다.',
+      resolution: 'result_reported',
+    };
+  }
+  if (level === 'unresolved_gap') {
+    return {
+      confirmedByAnswer: '확인된 결과 없음',
+      unconfirmedAfterAnswer: 'Founder가 아직 확인하지 못했다고 적었다. 없는 결과를 있는 것처럼 두지 않는다.',
+      resolution: 'still_open',
+    };
+  }
+  return {
+    confirmedByAnswer: `추가 설명: ${body}`,
+    unconfirmedAfterAnswer: '실행 결과와 수치는 이 답에 없다.',
+    resolution: 'gap_named',
+  };
+}
+
+/** One record per answered question. The next question sentence stays with the model. */
+export function buildAnsweredQuestionState(pairs: StagePair[], links: StageAnswerLink[] = []): AnsweredQuestionState[] {
+  return pairs
+    .filter((pair) => pair.status === 'answered' && pair.question.trim().length > 0)
+    .map((pair) => {
+      const body = answerClassificationText(pair);
+      const label = (pair.choiceLabel ?? '').trim();
+      const supplement = pair.supplement.trim();
+      const same = label.length > 0 && compactQuestion(label) === compactQuestion(supplement);
+      const provenance = answerSource(pair) === 'simulation' ? ('SIMULATION' as const) : ('FOUNDER_INPUT' as const);
+      const answerLevel = classifyAnswerLevel(body, menuChoiceOnly(pair));
+      const reading = answerLevelReading(answerLevel, stripSimulationMarker(label), body, provenance);
+      return {
+        ...questionIdentity(sourceReviewForPair(pair, links), pair.questionId),
+        question: pair.question,
+        answer: {
+          choiceId: pair.choiceId,
+          choiceLabel: label ? stripSimulationMarker(label) : null,
+          supplement: same || supplement.length === 0 ? null : supplement,
+          provenance,
+          epistemicStatus: 'FOUNDER_CLAIM' as const,
+        },
+        answerLevel,
+        confirmedByAnswer: reading.confirmedByAnswer,
+        unconfirmedAfterAnswer: reading.unconfirmedAfterAnswer,
+        resolution: reading.resolution,
+        verified: false as const,
+        analysisComplete: false as const,
+      };
+    });
+}
+
 function closedQuestionPayload(
   pairs: StagePair[],
   links: StageAnswerLink[] = [],
@@ -3422,12 +3563,18 @@ function textStatesUnnegatedPositiveRise(text: string): boolean {
     .some((sentence) => statesUnnegatedPositiveRise(sentence));
 }
 
-/** A repeat of an answered question is allowed only when the reason names what that answer left unconfirmed. */
-function reaskReasonJustifies(text: string, purpose: string, reason: string): boolean {
-  const trimmed = reason.trim();
-  if (trimmed.length < 12) return false;
-  if (sameCompact(trimmed, text) || (purpose.length > 0 && sameCompact(trimmed, purpose))) return false;
-  return /기존 답|이전 답|이미 받은 답|받은 답변|답변으로는|답변으로|그 답변|확인되지 않|확인하지 못|충분하지 않|부족하다|해소되지/.test(trimmed);
+/** The model's false flag does not make a repeated objective a new question. */
+function selectedObjectiveRepeats(parsed: Record<string, unknown>, asked: Set<string>): boolean {
+  const selectedId = typeof parsed.selectedCandidateId === 'string' ? parsed.selectedCandidateId.trim() : '';
+  if (!selectedId || !Array.isArray(parsed.objectiveCandidates)) return false;
+  const selected = parsed.objectiveCandidates.find((item) => {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return false;
+    const id = (item as { candidateId?: unknown }).candidateId;
+    return typeof id === 'string' && id.trim() === selectedId;
+  }) as { objective?: unknown } | undefined;
+  const objective = textField(selected?.objective);
+  if (!objective) return false;
+  return asked.has(compactQuestion(objective)) || repeatsAskedQuestion(objective, asked);
 }
 
 export function judgeStageContract(
@@ -3642,11 +3789,10 @@ export function judgeStageContract(
       new Set(purposes).size !== purposes.length ||
       nextQuestions.some((item) => compactQuestion(item.verificationPurpose ?? '') === compactQuestion(item.text)));
   const questionRepeats = nextQuestions.some((item) => {
-    const repeated = asked.has(compactQuestion(item.text)) || closed.has(compactQuestion(item.text)) || repeatsAskedQuestion(item.text, asked);
-    if (!repeated) return false;
-    return !reaskReasonJustifies(item.text, item.verificationPurpose ?? '', item.reaskReason ?? '');
+    return asked.has(compactQuestion(item.text)) || closed.has(compactQuestion(item.text)) || repeatsAskedQuestion(item.text, asked);
   });
   if (questionRepeats || purposeRepeats) issues.push('stage_questions_repeated');
+  if (selectedObjectiveRepeats(parsed, asked)) issues.push('stage_objective_overlap');
   const uniqueIssues = [...new Set(issues)];
   if (uniqueIssues.length > 0 || !reading || !businessProfile) return { sections: null, issues: uniqueIssues.length > 0 ? uniqueIssues : ['stage_fields_missing'], reading };
   const firstChoices = choicesFromLabels(reading.nextQuestions[0]?.choices ?? []);
