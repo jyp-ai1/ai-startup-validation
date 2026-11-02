@@ -29,6 +29,8 @@ https://cursor.com/agents/bc-089fd7eb-dd2b-5690-b7ba-dd5ccc56854d
 
 OpenAI는 completion 전에 HTTP 400을 반환했다. 응답 id는 null이다. 응답 모델은 null이다. usage는 null이다. 원문 content는 null이다.
 
+거부는 인증이 아니다. strict `json_schema` 이름 `stage_reanalysis`의 `properties.nextQuestions.items`에서 `required`가 properties의 모든 키를 포함하지 않는다고 했다. 그 객체의 `required`는 `text`, `choices`, `verificationPurpose`이고, properties에는 `reaskReason`이 더 있다. 요청 id는 `req_5aed082a7254480388018108f03395f1`이다. 남은 요청 한도는 4999였다. 스키마는 고치지 않았고 다시 호출하지 않았다.
+
 저장 오류:
 
 `OpenAI API error (400) provider_http=400 type=invalid_request_error message=Invalid schema for response_format 'stage_reanalysis': In context=('properties', 'nextQuestions', 'items'), 'required' is required to be supplied and to be an array including every request_id=req_5aed082a7254480388018108f03395f1 x-ratelimit-limit-requests=5000 x-ratelimit-limit-tokens=2000000 x-ratelimit-remaining-requests=4999 x-ratelimit-remaining-tokens=1989705 x-ratelimit-reset-requests=12ms x-ratelimit-reset-tokens=308ms`

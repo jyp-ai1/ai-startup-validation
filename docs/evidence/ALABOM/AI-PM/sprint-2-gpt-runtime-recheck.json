@@ -246,5 +246,22 @@
       }
     ]
   },
-  "response": null
+  "response": null,
+  "schemaCause": {
+    "name": "stage_reanalysis",
+    "path": "properties.nextQuestions.items",
+    "required": [
+      "text",
+      "choices",
+      "verificationPurpose"
+    ],
+    "propertyNotInRequired": "reaskReason",
+    "strict": true,
+    "httpStatus": 400,
+    "requestId": "req_5aed082a7254480388018108f03395f1",
+    "completion": false,
+    "parserApplied": false,
+    "codeChanged": false,
+    "retried": false
+  }
 }
