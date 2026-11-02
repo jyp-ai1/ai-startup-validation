@@ -45,6 +45,8 @@ Sprint 2는 PARTIAL이다. 통합 재분석 요청에 답변 원문, 부족분, 
 
 통합 재분석, 부족분 질문, 분석 갱신, 3차와 4차는 모델 응답이 있어야 PASS다. 이번 호출은 0회다.
 
+구현 커밋은 `2bf059ab0e2139d176e5b932a6f354799afd37d6`다.
+
 ## 2026-11-03 08:22 KST 준비 기록
 
 Sprint 2는 PARTIAL이다. 아래는 그 시점의 저장 요청 점검이다. Founder 화면, Google 로그인, UI는 다루지 않았다. GPT HTTP는 0회다. Production 배포는 하지 않았다. Sprint 3는 시작하지 않았다.
