@@ -125,7 +125,7 @@ Sprint 2는 PARTIAL이다. 이번 결과로 PASS를 주지 않는다. Production
 | `docs/evidence/ALABOM/AI-PM/SPRINT-2-FINAL-ACCEPTANCE-REPORT.md` | 이 보고서 |
 | `docs/TASKS.md` | 상태 한 줄 |
 
-검증 커밋 SHA는 이 보고서를 넣은 커밋과 같다.
+검증 커밋은 `fae7530c36a7de279675aaa83de3ab3bee6ffed8`다.
 
 ## Production
 
