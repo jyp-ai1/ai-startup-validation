@@ -1,8 +1,33 @@
 # Sprint 2 — 최종 수용 검증
 
-확인: 2026-11-02 23:55 KST
+확인: 2026-11-03 00:03 KST
 
-Sprint 2는 PARTIAL이다. 이번 결과로 PASS를 주지 않는다. Production 배포는 하지 않았다. Sprint 3는 시작하지 않았다. GPT HTTP는 0회다.
+Sprint 2는 PARTIAL이다. 아래 12항 판정은 2026-11-02 23:55 KST와 같다. 이번 확인은 남은 두 항목만 다뤘고, PASS 9개 영역의 제품 코드는 바꾸지 않았다. Production 배포는 하지 않았다. Sprint 3는 시작하지 않았다. GPT HTTP는 0회다.
+
+## 2026-11-03 잔여 확인
+
+이전 PASS 증거는 커밋 `fae7530c36a7de279675aaa83de3ab3bee6ffed8`와 그 아래 절에 둔다. 이번 절은 새 증거다.
+
+| 항목 | 판정 | 이번 확인 |
+| --- | --- | --- |
+| 1–9. 저장, 재조회, 연결, 의견, 상태, 중복 질문, 미완료 호출, 중복 분석, HTTP | PASS | 회귀 수정 없음. 격리 검토 4건과 이전 피드백 8건이 같은 id로 남아 있다. Founder 검토 70건, Founder 프로젝트 172건, 실패 행 건수 0 |
+| 10. Founder 화면 | BLOCKED | 격리 Google 세션이 없다 |
+| 11. GPT 실제 연속 분석 | NOT RUN | 호출하지 않았다. 저장된 요청에는 원문과 질문 상태 7건이 있다 |
+| 12. 전체 E2E | PARTIAL | 화면 재접속과 GPT 후속 분석이 빠져 있다 |
+
+세션 파일 `apps/web/.qa-auth`, `apps/web/.qa-chrome-profile`, `storageState.json`은 없다. 환경 변수 이름에 `GOOGLE`이 들어간 값은 없다. 격리 사용자 `c0ffee00-1111-4000-8000-0000000002a2`의 인증 제공자는 `email`이다. Google identity는 없다.
+
+Google 로그인 시작 호출은 오류 없이 프로젝트 호스트 `zeccoskqmzedbmmrpmks.supabase.co`의 주소를 돌려줬다. 브라우저로 이어가지 않았고, 사용자 세션은 생기지 않았다. 남은 쿠키 이름은 PKCE 코드 검증용이다.
+
+화면을 이으려면 Founder 사용자 `37d541c8-fda7-4788-8ac2-1a449b00425c`와 CEO 개인 계정이 아닌 Google 계정이 `/auth/login`을 한 번 마치고, 그 세션만 담긴 `apps/web/.qa-auth/storageState.json`이 이 환경에 있어야 한다. 그 계정은 프로젝트 `bc12a6f4-45b7-47b2-b266-ef61cd4013d9`만 연다. 그 파일이 생기기 전에는 답변 제출, 새로고침, 재접속 조회를 화면에서 실행하지 않는다.
+
+저장된 2차 요청의 `originalInput`과 `answeredQuestionState` 7건은 파일에 그대로 있다. 질문 키는 `sourceReviewId:questionId`다. 이것은 컨텍스트가 요청 안에 있다는 기록이고, GPT가 그 요청을 받아 다음 질문으로 이어간 기록은 아니다.
+
+실패 증거 SHA-256 `6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd`는 유지됐다. 읽기 전용 스크립트는 `apps/web/scripts/sprint2-remaining-acceptance.test.ts`이고, 결과는 `sprint-2-remaining-acceptance.json`이다.
+
+## 2026-11-02 PASS 증거
+
+확인: 2026-11-02 23:55 KST
 
 기준은 PR #228, #229, #230과 검증 커밋 `1204a8c23ae05792fe06741a20e8e8e5175f8d99`다. 제품 모듈 `ai-pm-review.ts`는 바꾸지 않았다.
 
