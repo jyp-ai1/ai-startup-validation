@@ -15,6 +15,7 @@ import {
   buildEvidenceLedger,
   buildFirstReviewRequest,
   buildProductReanalysisRequest,
+  judgeStageContract,
   consultingQuestions,
   founderAnswerKinds,
   pairConsultingStage,
@@ -144,6 +145,18 @@ function stageRaw(judgment: string, questions: string[]): string {
 
 function userPayload(request: ChatRequest): Record<string, unknown> {
   return JSON.parse(request.messages.find((message) => message.role === 'user')?.content ?? '{}') as Record<string, unknown>;
+}
+
+function identified<T extends { questionId: string }>(
+  pairs: T[] | null | undefined,
+  sourceReviewId: string | null | undefined,
+): Array<T & { sourceReviewId: string | null; questionKey: string }> {
+  const source = sourceReviewId ?? null;
+  return (pairs ?? []).map((pair) => ({
+    ...pair,
+    sourceReviewId: source,
+    questionKey: source ? `${source}:${pair.questionId}` : pair.questionId,
+  }));
 }
 
 function feedback(partial: Partial<StoredFeedback> & Pick<StoredFeedback, 'comment'>): StoredFeedback {
@@ -331,8 +344,8 @@ describe('consulting stage batch', () => {
     expect(stageLedger.verifiedFacts).toEqual([]);
     expect(stageLedger.founderClaims).toEqual(['양조장과의 협력 가능성이 높다.']);
     expect(stageLedger.stillUnknown).toEqual([]);
-    expect(stagePayload.answerReading).toEqual([{ questionId: 'hist-1', kinds: ['claim', 'choice'] }]);
-    expect(stagePayload.answerSource).toEqual([{ questionId: 'hist-1', source: 'founder' }]);
+    expect(stagePayload.answerReading).toEqual([{ questionId: 'hist-1', sourceReviewId: null, questionKey: 'hist-1', kinds: ['claim', 'choice'] }]);
+    expect(stagePayload.answerSource).toEqual([{ questionId: 'hist-1', sourceReviewId: null, questionKey: 'hist-1', source: 'founder' }]);
     expect(stagePayload.thisAnswer).toBeUndefined();
     expect(stagePayload.verificationStage).toBeUndefined();
     expect(stagePayload.experimentRecords).toBeUndefined();
@@ -361,7 +374,7 @@ describe('consulting stage batch', () => {
     expect(system).toContain('사업 모델의 잠재력');
     expect(system).toContain('미확인 주장');
     expect(system).toContain('실행 가능성');
-    expect(system).toContain('priorJudgmentText를 출력하지 않는');
+    expect(system).toContain('판단 문장이 이전과 같아도 그 검토가 있으면 재평가다');
     expect(system).toContain('전략 컨설턴트');
     expect(system).toContain('고정된 순서를 강제하지 않는다');
     expect(system).toContain('사업 목적은 방금 답한 질문의 목적과 달라야 한다');
@@ -589,7 +602,7 @@ describe('consulting stage batch', () => {
     expect(firstPayload.thisAnswer).toBeUndefined();
     expect(firstPayload.stagePartial).toBe(false);
     expect(firstPayload.priorStagePairs).toEqual([]);
-    expect(firstPayload.stagePairs).toEqual(integrated.record.stageAnswers);
+    expect(firstPayload.stagePairs).toEqual(identified(integrated.record.stageAnswers, integrated.record.parentReviewId));
     expect(firstPayload.verificationStage).toBeUndefined();
     expect(firstPayload.experimentRecords).toBeUndefined();
     expect(firstPayload.priorTurns).toBeUndefined();
@@ -640,8 +653,8 @@ describe('consulting stage batch', () => {
     expect(JSON.stringify(secondPayload)).toContain(firstJudgment);
     expect(JSON.stringify(secondPayload)).toContain(secondJudgment);
     expect(JSON.stringify(secondPayload)).toContain('이번 답이 기존 판단에 준 영향이다.');
-    expect(secondPayload.priorStagePairs).toEqual(integrated.record.stageAnswers);
-    expect(secondPayload.stagePairs).toEqual(second.record.stageAnswers);
+    expect(secondPayload.priorStagePairs).toEqual(identified(integrated.record.stageAnswers, integrated.record.parentReviewId));
+    expect(secondPayload.stagePairs).toEqual(identified(second.record.stageAnswers, second.record.parentReviewId));
     expect((secondPayload.stagePairs as Array<{ questionId: string; supplement: string }>)[0]).toMatchObject({
       questionId: 'q1',
       question: SECOND_QUESTIONS[0],
@@ -740,35 +753,40 @@ describe('consulting stage batch', () => {
     expect(partial.record.stageAnswers).toHaveLength(1);
     const payload = userPayload(calls[1]!);
     expect(payload.stagePartial).toBe(true);
-    expect(payload.stagePairs).toEqual([
-      {
-        questionId: 'q1',
-        question: FIRST_QUESTIONS[0],
-        offeredChoices: [],
-        choiceId: null,
-        choiceLabel: null,
-        supplement: '직장인을 고객으로 본다',
-        status: 'answered',
-      },
-      {
-        questionId: 'q2',
-        question: FIRST_QUESTIONS[1],
-        offeredChoices: [],
-        choiceId: null,
-        choiceLabel: null,
-        supplement: '',
-        status: 'open',
-      },
-      {
-        questionId: 'q3',
-        question: FIRST_QUESTIONS[2],
-        offeredChoices: [],
-        choiceId: null,
-        choiceLabel: null,
-        supplement: '',
-        status: 'open',
-      },
-    ]);
+    expect(payload.stagePairs).toEqual(
+      identified(
+        [
+          {
+            questionId: 'q1',
+            question: FIRST_QUESTIONS[0],
+            offeredChoices: [],
+            choiceId: null,
+            choiceLabel: null,
+            supplement: '직장인을 고객으로 본다',
+            status: 'answered' as const,
+          },
+          {
+            questionId: 'q2',
+            question: FIRST_QUESTIONS[1],
+            offeredChoices: [],
+            choiceId: null,
+            choiceLabel: null,
+            supplement: '',
+            status: 'open' as const,
+          },
+          {
+            questionId: 'q3',
+            question: FIRST_QUESTIONS[2],
+            offeredChoices: [],
+            choiceId: null,
+            choiceLabel: null,
+            supplement: '',
+            status: 'open' as const,
+          },
+        ],
+        partial.record.parentReviewId,
+      ),
+    );
   });
 
   it('does not treat a missing question list as a consulting stage, and keeps one listed question', async () => {
@@ -884,7 +902,7 @@ describe('consulting stage batch', () => {
     const system = stageRequest.messages.find((message) => message.role === 'system')?.content ?? '';
     expect(system).toContain('nextQuestions는 서로 다른 질문 1개 이상이다');
     const payload = userPayload(stageRequest);
-    expect(payload.stagePairs).toEqual(integrated.record.stageAnswers);
+    expect(payload.stagePairs).toEqual(identified(integrated.record.stageAnswers, integrated.record.parentReviewId));
     expect(JSON.stringify(payload.stagePairs)).toContain('참가자는 직장인이다');
     expect(consultingQuestions(integrated.record.sections).map((item) => item.text)).toEqual(next);
     const duplicate = await submitConsultingStage({
@@ -907,7 +925,7 @@ describe('consulting stage batch', () => {
     expect(second.record.callCount).toBe(1);
     expect(calls).toHaveLength(3);
     const secondPayload = userPayload(calls[2]!);
-    expect(secondPayload.priorStagePairs).toEqual(integrated.record.stageAnswers);
+    expect(secondPayload.priorStagePairs).toEqual(identified(integrated.record.stageAnswers, integrated.record.parentReviewId));
     expect(secondPayload.stagePairs).toHaveLength(1);
     const inputText = composeReviewInput({ text: `${IDEA} 질문 하나 화면.`, purpose: 'overall' });
     const raw = JSON.parse(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', ['지불 의사를 누구에게 확인하는가?'])) as {
@@ -1025,7 +1043,7 @@ describe('consulting stage batch', () => {
     if (!second.ok) return;
     expect(calls).toHaveLength(3);
     const secondPayload = userPayload(calls[2]!);
-    expect(secondPayload.priorStagePairs).toEqual(integrated.record.stageAnswers);
+    expect(secondPayload.priorStagePairs).toEqual(identified(integrated.record.stageAnswers, integrated.record.parentReviewId));
     expect(JSON.stringify(secondPayload.priorStagePairs)).not.toContain('양조장');
   });
 
@@ -1172,12 +1190,17 @@ describe('consulting stage batch', () => {
     expect(JSON.stringify(payload)).toContain(firstJudgment);
     expect(JSON.stringify(payload)).toContain('가격은 미확인이라 판단을 유지한다.');
     expect(payload.thisAnswer).toBeUndefined();
-    expect(payload.stagePairs).toEqual(integrated.record.stageAnswers);
-    expect(payload.answerReading).toEqual([
-      { questionId: 'q1', kinds: [] },
-      { questionId: 'q2', kinds: ['choice'] },
-      { questionId: 'q3', kinds: [] },
-    ]);
+    expect(payload.stagePairs).toEqual(identified(integrated.record.stageAnswers, integrated.record.parentReviewId));
+    expect(payload.answerReading).toEqual(
+      identified(
+        [
+          { questionId: 'q1', kinds: [] },
+          { questionId: 'q2', kinds: ['choice'] },
+          { questionId: 'q3', kinds: [] },
+        ],
+        integrated.record.parentReviewId,
+      ),
+    );
     expect(consultingQuestions(integrated.record.sections).length).toBeGreaterThanOrEqual(2);
 
     const duplicate = await submitConsultingStage({
@@ -1207,7 +1230,7 @@ describe('consulting stage batch', () => {
     expect(second.record.parentReviewId).toBe(integrated.record.reviewId);
     expect(second.record.callCount).toBe(1);
     const secondPayload = userPayload(calls[2]!);
-    expect(secondPayload.priorStagePairs).toEqual(integrated.record.stageAnswers);
+    expect(secondPayload.priorStagePairs).toEqual(identified(integrated.record.stageAnswers, integrated.record.parentReviewId));
     expect(secondPayload.stagePairs).toHaveLength(2);
     expect(consultingQuestions(second.record.sections).map((item) => item.text)).toEqual(THIRD_QUESTIONS);
 
@@ -1547,7 +1570,7 @@ describe('consulting stage batch', () => {
       priorQuestionText?: string;
     };
     expect(task.updatedJudgment).toContain('사업 모델의 잠재력');
-    expect(task.updatedJudgment).toContain('priorJudgmentText를 출력하지 않는다');
+    expect(task.updatedJudgment).toContain('문장이 같다는 이유만으로 실패가 아니다');
     expect(task.nextQuestion).toContain('같은 목적');
     expect(task.nextQuestion).toContain('존재 여부');
     expect(task.nextQuestion).toContain('방금 답한 질문을 반복하지 않는다');
@@ -1648,7 +1671,7 @@ describe('consulting stage batch', () => {
     expect(task.nextQuestion).not.toContain('접촉');
     expect(task.nextQuestion).not.toContain('볼 대상이 있는가');
     expect(JSON.stringify(payload.stagePairs)).toContain('SIMULATION 대상은 아직 없다');
-    expect(payload.answerSource).toEqual([{ questionId: 'q1', source: 'simulation' }]);
+    expect(payload.answerSource).toEqual([{ questionId: 'q1', sourceReviewId: null, questionKey: 'q1', source: 'simulation' }]);
     expect(JSON.stringify(payload)).not.toContain('양조장 후보가 있는가');
   });
 
@@ -1727,12 +1750,14 @@ describe('consulting stage batch', () => {
     expect(names).toContain('priorJudgmentText');
     expect(JSON.stringify(payload)).toContain(prior);
     expect(payload.currentAnswerStatements).toEqual([
-      { questionId: 'q1', source: 'simulation', index: 0, statement: '한 양조장에 문의했다고 말한다.' },
-      { questionId: 'q1', source: 'simulation', index: 1, statement: '상대의 반응은 아직 없다.' },
-      { questionId: 'q1', source: 'simulation', index: 2, statement: '참여 의향은 확인하지 못했다.' },
-      { questionId: 'q1', source: 'simulation', index: 3, statement: '체험과 운영 조건은 합의되지 않았다.' },
+      { questionId: 'q1', sourceReviewId: null, questionKey: 'q1', source: 'simulation', index: 0, statement: '한 양조장에 문의했다고 말한다.' },
+      { questionId: 'q1', sourceReviewId: null, questionKey: 'q1', source: 'simulation', index: 1, statement: '상대의 반응은 아직 없다.' },
+      { questionId: 'q1', sourceReviewId: null, questionKey: 'q1', source: 'simulation', index: 2, statement: '참여 의향은 확인하지 못했다.' },
+      { questionId: 'q1', sourceReviewId: null, questionKey: 'q1', source: 'simulation', index: 3, statement: '체험과 운영 조건은 합의되지 않았다.' },
     ]);
-    expect(payload.closedQuestions).toEqual([{ questionId: 'q1', text: '양조장과의 접촉이 있었는가?', askAgain: false }]);
+    expect(payload.closedQuestions).toEqual([
+      { questionId: 'q1', sourceReviewId: null, questionKey: 'q1', text: '양조장과의 접촉이 있었는가?', askAgain: false },
+    ]);
     expect(Object.keys(payload)[0]).toBe('businessState');
     const businessState = payload.businessState as {
       areaOrderIsNotPriority: boolean;
@@ -1750,9 +1775,15 @@ describe('consulting stage batch', () => {
     expect(businessState.priorReview.resolved).toEqual([]);
     expect(businessState.priorReview.operations).toBe('구상');
     expect(JSON.stringify(businessState.areaStatus)).not.toContain(prior);
-    expect(JSON.stringify(businessState.areaStatus)).not.toContain('구상');
+    expect(businessState.areaStatus.find((item) => item.areaId === 'customer')).toMatchObject({
+      status: 'founder_claim',
+      epistemicStatus: 'FOUNDER_CLAIM',
+      text: '방문객',
+    });
+    expect(businessState.areaStatus.find((item) => item.areaId === 'revenue')?.status).toBe('assumption');
+    expect(businessState.areaStatus.find((item) => item.areaId === 'operations')).toMatchObject({ status: 'founder_claim', text: '구상' });
     expect(businessState.areaStatus.find((item) => item.areaId === 'supply')?.status).toBe('not_analyzed');
-    expect(businessState.areaStatus.find((item) => item.areaId === 'product')?.status).toBe('not_analyzed');
+    expect(businessState.areaStatus.find((item) => item.areaId === 'product')?.status).toBe('founder_claim');
     const priced = buildProductReanalysisRequest({
       originalInput: '양조장 체험',
       firstAnalysis: stored,
@@ -1926,8 +1957,9 @@ describe('consulting stage batch', () => {
     });
     expect(copied.ok).toBe(true);
     if (!copied.ok) return;
-    expect(copied.record.error).toContain('stage_judgment_copied');
-    expect(copied.record.sections).toBeNull();
+    expect(copied.record.status).toBe('succeeded');
+    expect(copied.record.error).toBeNull();
+    expect(copied.record.sections?.judgment).toContain('가격이 정해지지 않아 판단을 유지한다');
     const wrappedParent = await runFirstReview({
       ...base,
       userId: 'user-wrapped-judgment',
@@ -1943,8 +1975,9 @@ describe('consulting stage batch', () => {
     });
     expect(wrapped.ok).toBe(true);
     if (!wrapped.ok) return;
-    expect(wrapped.record.error).toContain('stage_judgment_copied');
-    expect(wrapped.record.sections).toBeNull();
+    expect(wrapped.record.status).toBe('succeeded');
+    expect(wrapped.record.error).toBeNull();
+    expect(wrapped.record.sections?.judgment).toContain('이번 답은 확인된 사실이 아니다');
     expect(calls.filter((request) => Array.isArray(requestPayload(request)?.stagePairs))).toHaveLength(5);
   });
 
@@ -2037,7 +2070,7 @@ describe('consulting stage batch', () => {
     if (!failed.ok) return;
     expect(failed.record.callCount).toBe(1);
     expect(failed.record.error).toContain('stage_questions_repeated');
-    expect(failed.record.error).toContain('stage_judgment_copied');
+    expect(failed.record.error).not.toContain('stage_judgment_copied');
     expect(failed.record.error).toContain('stage_issues_copied');
     expect(failed.record.rawContent).toContain('아직 분석되지 않았다');
   });
@@ -2921,5 +2954,168 @@ describe('consulting stage batch', () => {
     });
     expect(again.ok && !again.called).toBe(true);
     expect(calls).toHaveLength(2);
+  });
+
+  it('rebuilds the stored round 3 request so delivered context selects the next question', () => {
+    const evidence = JSON.parse(
+      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-e2e-live-gpt.json', import.meta.url), 'utf8'),
+    ) as {
+      callCount: number;
+      calls: Array<{ index: number; request: { messages: Array<{ role: string; content: string }> }; response: { content: string } }>;
+    };
+    expect(evidence.callCount).toBe(3);
+    const call = evidence.calls.find((item) => item.index === 3);
+    expect(call).toBeTruthy();
+    if (!call) return;
+    const before = JSON.parse(call.request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      originalInput: string;
+      businessState: { areaStatus: Array<{ areaId: string; status: string }>; statedRecord: { answers: Array<{ statement: string }> } };
+      currentAnswerStatements: Array<{ statement: string }>;
+      closedQuestions: Array<{ questionId: string; text: string }>;
+      stagePairs: StagePair[];
+      priorStagePairs: StagePair[];
+      answerLinks: Array<{ sourceReviewId: string; questionId: string; question: string; choiceId: string | null; choiceLabel: string | null; supplement: string; submittedAt: string | null; status: 'answered' | 'open' }>;
+      unlinkedStatements: Array<{ feedbackId: string; questionId: string | null; choiceId: string | null; text: string; submittedAt: string; provenance: 'FOUNDER_INPUT' | 'SIMULATION' | 'EXTERNAL_EVIDENCE' | 'AI_INFERENCE'; epistemicStatus: 'VERIFIED_FACT' | 'FOUNDER_CLAIM' | 'ASSUMPTION' | 'UNKNOWN'; evidenceId: string | null }>;
+      latestAnalysis: {
+        customer: string;
+        problem: string;
+        market: string;
+        revenueModel: string;
+        execution: string;
+        priorRisks: string[];
+        uncertain: string[];
+        hypotheses: string[];
+        priorJudgmentText: string;
+        priorQuestionText: string;
+        priorReasonText: string;
+        answerHint: string;
+        claimConfirmation: null;
+        analysis: { product: string; supply: { text: string }; marketing: { text: string }; operations: string; value: string };
+      };
+      doNotCopy: { priorJudgmentText: string; priorUnresolvedIssues: string[] };
+      consultingPath: Array<{ answeredQuestion: string }>;
+    };
+    expect(before.businessState.areaStatus.every((item) => item.status === 'not_analyzed')).toBe(true);
+    expect(before.currentAnswerStatements.map((item) => item.statement)).toEqual(['설문조사 실시', '설문조사 실시', '비용 분석', '비용 분석']);
+    expect(before.closedQuestions.filter((item) => item.questionId === 'q1')).toHaveLength(2);
+    const latest = before.latestAnalysis;
+    const stored: ReviewSections = {
+      customer: latest.customer,
+      problem: latest.problem,
+      market: latest.market,
+      revenueModel: latest.revenueModel,
+      execution: latest.execution,
+      risks: latest.priorRisks,
+      uncertain: latest.uncertain,
+      hypotheses: latest.hypotheses,
+      judgment: latest.priorJudgmentText,
+      nextQuestion: latest.priorQuestionText,
+      nextQuestionReason: latest.priorReasonText,
+      answerHint: latest.answerHint,
+      claimConfirmation: null,
+      analysis: {
+        summary: '요약',
+        value: latest.analysis.value,
+        operatingModel: latest.analysis.operations,
+        payer: '미확인',
+        competition: '미확인',
+        operations: latest.analysis.operations,
+        profitability: '미확인',
+        strengths: [],
+        assumptions: [],
+        evidenceToChange: [],
+        founderFacts: [],
+        inferences: [],
+        judgmentDetail: latest.priorJudgmentText,
+        choices: [],
+        product: latest.analysis.product,
+        supply: latest.analysis.supply.text,
+        marketing: latest.analysis.marketing.text,
+      },
+    };
+    const request = buildProductReanalysisRequest({
+      originalInput: before.originalInput,
+      firstAnalysis: stored,
+      priorTurns: [],
+      latestAnalysis: stored,
+      founderChoice: null,
+      founderSupplement: '',
+      founderFeedback: null,
+      stagePairs: before.stagePairs,
+      priorStagePairs: before.priorStagePairs,
+      answerLinks: before.answerLinks,
+      unlinkedStatements: before.unlinkedStatements,
+      consultingPath: before.consultingPath as never,
+    });
+    const payload = userPayload(request);
+    expect(payload.originalInput).toBe(before.originalInput);
+    expect(JSON.stringify(payload.unlinkedStatements)).toContain('양조장 한 곳에 문의했지만');
+    expect(JSON.stringify(payload.consultingPath)).toContain('양조장과의 협업을 위한 초기 미팅');
+    const areaStatus = (payload.businessState as { areaStatus: Array<{ areaId: string; status: string; epistemicStatus: string; text: string | null }> }).areaStatus;
+    expect(areaStatus.find((item) => item.areaId === 'customer')).toMatchObject({
+      status: 'founder_claim',
+      epistemicStatus: 'FOUNDER_CLAIM',
+      text: '전통주를 좋아하는 내국인 및 외국인 관광객',
+    });
+    expect(areaStatus.find((item) => item.areaId === 'problem')?.status).toBe('founder_claim');
+    expect(areaStatus.find((item) => item.areaId === 'market')?.status).toBe('founder_claim');
+    expect(areaStatus.find((item) => item.areaId === 'revenue')?.status).toBe('assumption');
+    expect(areaStatus.find((item) => item.areaId === 'product')?.status).toBe('not_analyzed');
+    expect(areaStatus.some((item) => item.status !== 'not_analyzed')).toBe(true);
+    const statements = payload.currentAnswerStatements as Array<{ questionKey: string; statement: string }>;
+    expect(statements.map((item) => item.statement)).toEqual(['설문조사 실시', '비용 분석']);
+    const closed = payload.closedQuestions as Array<{ questionId: string; sourceReviewId: string; questionKey: string; text: string }>;
+    expect(new Set(closed.map((item) => item.questionKey)).size).toBe(closed.length);
+    expect(closed.filter((item) => item.questionId === 'q1').map((item) => item.questionKey)).toEqual([
+      '48d06eaa-ad74-4851-a919-fbd8ecefdc1a:q1',
+      '5f6d705d-fe2a-468f-97be-da16482abd32:q1',
+    ]);
+    const priorKey = (payload.priorStagePairs as Array<{ questionKey: string }>)[0]?.questionKey;
+    const currentKey = (payload.stagePairs as Array<{ questionKey: string }>)[0]?.questionKey;
+    expect(priorKey).toBe('48d06eaa-ad74-4851-a919-fbd8ecefdc1a:q1');
+    expect(currentKey).toBe('5f6d705d-fe2a-468f-97be-da16482abd32:q1');
+    expect(priorKey).not.toBe(currentKey);
+    const system = call.request.messages.find((message) => message.role === 'system')?.content ?? '';
+    const nextSystem = request.messages.find((message) => message.role === 'system')?.content ?? '';
+    expect(system).toContain('updatedJudgment가 priorJudgmentText와 같거나');
+    expect(nextSystem).not.toContain('updatedJudgment가 priorJudgmentText와 같거나');
+    expect(nextSystem).toContain('이전 사업성 판단을 초기화하지 말고');
+    expect(nextSystem).toContain('현재 시점의 사업성을 다시 판단하라');
+    expect(nextSystem).toContain('reaskReason');
+    expect(nextSystem).toContain('questionKey');
+    const task = payload.revisionTask as { updatedJudgment: string; nextQuestion: string };
+    expect(task.updatedJudgment).not.toContain('재평가가 아니다');
+    expect(task.updatedJudgment).toContain('문장이 같다는 이유만으로 실패가 아니다');
+    expect(task.nextQuestion).toContain('not_analyzed');
+    expect(task.nextQuestion).toContain('reaskReason');
+    const contract = {
+      askedQuestions: [...before.priorStagePairs, ...before.stagePairs].map((pair) => pair.question),
+      pairs: before.stagePairs,
+      closedSentences: [...before.priorStagePairs, ...before.stagePairs].flatMap((pair) => [pair.question, pair.choiceLabel ?? '', pair.supplement]),
+      priorJudgmentText: before.doNotCopy.priorJudgmentText,
+      priorUnresolved: before.doNotCopy.priorUnresolvedIssues,
+    };
+    const repeated = judgeStageContract(call.response.content, contract);
+    expect(repeated.issues).toContain('stage_questions_repeated');
+    expect(repeated.issues).not.toContain('stage_judgment_copied');
+    expect(repeated.sections).toBeNull();
+    const parsed = JSON.parse(call.response.content) as { nextQuestions: Array<{ reaskReason?: string; text: string }>; updatedJudgment: string };
+    parsed.nextQuestions[0]!.reaskReason = '기존 답변인 설문조사 실시로는 고객이 누구인지 확인되지 않았다';
+    parsed.nextQuestions[1]!.reaskReason = '기존 답변인 비용 분석으로는 가격이 확인되지 않았다';
+    const reasoned = judgeStageContract(JSON.stringify(parsed), contract);
+    expect(reasoned.issues).not.toContain('stage_questions_repeated');
+    expect(reasoned.issues).not.toContain('stage_judgment_copied');
+    expect(reasoned.sections).not.toBeNull();
+    parsed.nextQuestions[0]!.reaskReason = '고객층 정의가 불확실하다.';
+    parsed.nextQuestions[1]!.reaskReason = '가격 설정이 불확실하다.';
+    const thinReason = judgeStageContract(JSON.stringify(parsed), contract);
+    expect(thinReason.issues).toContain('stage_questions_repeated');
+    const fresh = JSON.parse(call.response.content) as { nextQuestions: Array<{ text: string }>; updatedJudgment: string };
+    fresh.nextQuestions[0]!.text = '체험 운영 인력은 누가 맡는가?';
+    fresh.nextQuestions[1]!.text = '예약 취소 때의 책임은 어디에 있는가?';
+    const kept = judgeStageContract(JSON.stringify(fresh), contract);
+    expect(kept.issues).not.toContain('stage_judgment_copied');
+    expect(kept.issues).not.toContain('stage_questions_repeated');
+    expect(kept.sections?.judgment).toBe(before.doNotCopy.priorJudgmentText);
   });
 });

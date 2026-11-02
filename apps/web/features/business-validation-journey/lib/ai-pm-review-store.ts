@@ -192,7 +192,7 @@ export type StageReading = {
   resolvedIssues: string[];
   unresolvedIssues: string[];
   nextVerification: string;
-  nextQuestions: { text: string; choices: string[]; verificationPurpose?: string }[];
+  nextQuestions: { text: string; choices: string[]; verificationPurpose?: string; reaskReason?: string }[];
   nextQuestionChoices: string[][];
   /** Present when the stage response included a whole-business rewrite. */
   businessProfile?: StageBusinessProfile;
