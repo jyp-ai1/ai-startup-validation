@@ -4,6 +4,12 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint 2 최종 수용 검증
+
+**상태:** 2026-11-02 23:55 KST 격리 사용자 `c0ffee00-1111-4000-8000-0000000002a2`의 Supabase 저장과 다른 프로세스 재조회, 그리고 로컬 HTTP `follow-up`까지 확인했다. Founder 검토 70건은 유지됐다. Founder 화면은 Google 세션이 없어 BLOCKED다. GPT HTTP는 0회라 NOT RUN이다. Sprint 2는 PARTIAL이고 PASS가 아니다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-FINAL-ACCEPTANCE-REPORT.md`다. Production은 잠금이다. Sprint 3는 시작하지 않는다.
+
+---
+
 ## 제품 경로 연속성 검증
 
 **상태:** 2026-11-02 23:37 KST 격리 데이터로 저장, 재조회, 다음 요청 Payload를 확인했다. 제품 저장소는 Supabase라 내구 저장은 BLOCKED다. sqlite 어댑터 동작은 PARTIAL이고 PASS가 아니다. GPT HTTP는 0회다. 증거 SHA-256은 유지됐다. Supabase 행 수는 70, 32로 같다. 화면과 HTTP와 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-PRODUCT-CONTINUITY-VERIFICATION.md`다. Production은 잠금이다. Sprint 3는 시작하지 않는다.
