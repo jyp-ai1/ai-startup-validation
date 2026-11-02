@@ -28,7 +28,7 @@ import {
   submitConsultingStage,
   type AiPmReviewView,
 } from '../ai-pm-review';
-import { openAiPmReviewStore, type ReviewSections, type StagePair, type StagePriorReading, type StoredFeedback } from '../ai-pm-review-store';
+import { openAiPmReviewStore, type ReviewSections, type StagePair, type StagePriorReading, type StoredFeedback, type StoredReview } from '../ai-pm-review-store';
 
 const NOW = '2026-10-31T07:40:00.000Z';
 const IDEA = '도심 독서 모임. 참가자는 직장인이고 아직 운영 전이다. 가격은 정하지 않았다.';
@@ -1778,6 +1778,10 @@ describe('consulting stage batch', () => {
     expect(businessState.areaStatus.find((item) => item.areaId === 'customer')).toMatchObject({
       status: 'founder_claim',
       epistemicStatus: 'FOUNDER_CLAIM',
+      provenance: 'AI_INFERENCE',
+      informationPresent: true,
+      verified: false,
+      analysisComplete: false,
       text: '방문객',
     });
     expect(businessState.areaStatus.find((item) => item.areaId === 'revenue')?.status).toBe('assumption');
@@ -3055,11 +3059,38 @@ describe('consulting stage batch', () => {
     expect(areaStatus.find((item) => item.areaId === 'customer')).toMatchObject({
       status: 'founder_claim',
       epistemicStatus: 'FOUNDER_CLAIM',
+      provenance: 'FOUNDER_INPUT',
+      informationPresent: true,
+      verified: false,
+      analysisComplete: false,
       text: '전통주를 좋아하는 내국인 및 외국인 관광객',
     });
-    expect(areaStatus.find((item) => item.areaId === 'problem')?.status).toBe('founder_claim');
-    expect(areaStatus.find((item) => item.areaId === 'market')?.status).toBe('founder_claim');
-    expect(areaStatus.find((item) => item.areaId === 'revenue')?.status).toBe('assumption');
+    expect(areaStatus.find((item) => item.areaId === 'problem')).toMatchObject({
+      status: 'founder_claim',
+      provenance: 'FOUNDER_INPUT',
+      verified: false,
+      analysisComplete: false,
+    });
+    expect(areaStatus.find((item) => item.areaId === 'market')).toMatchObject({
+      status: 'founder_claim',
+      provenance: 'FOUNDER_INPUT',
+      verified: false,
+      analysisComplete: false,
+    });
+    expect(areaStatus.find((item) => item.areaId === 'revenue')).toMatchObject({
+      status: 'assumption',
+      epistemicStatus: 'ASSUMPTION',
+      provenance: 'AI_INFERENCE',
+      verified: false,
+      analysisComplete: false,
+    });
+    expect(areaStatus.find((item) => item.areaId === 'operations')).toMatchObject({
+      status: 'founder_claim',
+      provenance: 'AI_INFERENCE',
+      informationPresent: true,
+      verified: false,
+      analysisComplete: false,
+    });
     expect(areaStatus.find((item) => item.areaId === 'product')?.status).toBe('not_analyzed');
     expect(areaStatus.some((item) => item.status !== 'not_analyzed')).toBe(true);
     const statements = payload.currentAnswerStatements as Array<{ questionKey: string; statement: string }>;
@@ -3117,5 +3148,110 @@ describe('consulting stage batch', () => {
     expect(kept.issues).not.toContain('stage_judgment_copied');
     expect(kept.issues).not.toContain('stage_questions_repeated');
     expect(kept.sections?.judgment).toBe(before.doNotCopy.priorJudgmentText);
+  });
+
+  it('keeps the failed round 3 row and stores a separate reprocess that cannot parent round 4', async () => {
+    const evidencePath = new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-e2e-live-gpt.json', import.meta.url);
+    const originalFile = readFileSync(evidencePath, 'utf8');
+    const evidence = JSON.parse(originalFile) as {
+      userId: string;
+      projectId: string;
+      rounds: Array<{ round: number; reviewId: string | null; parentReviewId: string | null; status: string; error: string | null }>;
+      calls: Array<{ index: number; response: { id: string; content: string }; request: { messages: Array<{ role: string; content: string }> } }>;
+    };
+    const call = evidence.calls.find((item) => item.index === 3);
+    const round = evidence.rounds.find((item) => item.round === 3);
+    expect(call?.response.id).toBe('chatcmpl-Efbd9RroEWRZwQtaeBwxSkYw9Vm74');
+    expect(round?.reviewId).toBe('0e75ff46-88fd-4ce2-b567-bdc3f3048531');
+    expect(round?.error).toBe('stage_judgment_copied,stage_questions_repeated');
+    if (!call || !round?.reviewId) return;
+    const user = JSON.parse(call.request.messages.find((message) => message.role === 'user')?.content ?? '{}') as {
+      stagePairs: StagePair[];
+      priorStagePairs: StagePair[];
+      doNotCopy: { priorJudgmentText: string; priorUnresolvedIssues: string[] };
+      unlinkedStatements: unknown[];
+    };
+    const judged = judgeStageContract(call.response.content, {
+      askedQuestions: [...user.priorStagePairs, ...user.stagePairs].map((pair) => pair.question),
+      pairs: user.stagePairs,
+      closedSentences: [...user.priorStagePairs, ...user.stagePairs].flatMap((pair) => [pair.question, pair.choiceLabel ?? '', pair.supplement]),
+      priorJudgmentText: user.doNotCopy.priorJudgmentText,
+      priorUnresolved: user.doNotCopy.priorUnresolvedIssues,
+    });
+    expect(judged.issues).toEqual(['stage_questions_repeated']);
+    expect(judged.sections).toBeNull();
+    const store = openAiPmReviewStore(storePath());
+    expect(store.productionDatabase).toBe(false);
+    expect(store.durable).toBe(false);
+    const base = (reviewId: string, status: StoredReview['status'], error: string | null, sections: StoredReview['sections']): StoredReview => ({
+      reviewId,
+      userId: evidence.userId,
+      version: 3,
+      parentReviewId: round.parentReviewId,
+      sourceFeedbackId: null,
+      supplementSha: 'round3-original',
+      projectId: evidence.projectId,
+      inputSha: 'round3-reprocess',
+      inputText: 'preserved-round3',
+      inputOrigin: 'typed',
+      fileName: null,
+      status,
+      evidence: 'injected_http',
+      provider: 'openai',
+      model: 'gpt-4o-mini-2024-07-18',
+      sections,
+      rawContent: call.response.content,
+      stageAnswers: user.stagePairs,
+      stageReading: judged.reading,
+      promptTokens: null,
+      completionTokens: null,
+      totalTokens: null,
+      usageKnown: false,
+      callCount: 0,
+      latencyMs: null,
+      error,
+      requestedAt: NOW,
+      finishedAt: NOW,
+    });
+    expect((await store.insertReview(base(round.reviewId, 'failed', round.error, null))).wrote).toBe(true);
+    expect((await store.insertReview(base(round.reviewId, 'succeeded', null, judged.sections))).wrote).toBe(false);
+    const preserved = await store.readReview(evidence.userId, round.reviewId);
+    expect(preserved?.status).toBe('failed');
+    expect(preserved?.error).toBe('stage_judgment_copied,stage_questions_repeated');
+    expect(preserved?.sections).toBeNull();
+    expect(preserved?.rawContent).toBe(call.response.content);
+    expect(preserved?.parentReviewId).toBe('5f6d705d-fe2a-468f-97be-da16482abd32');
+    expect(preserved?.stageAnswers?.map((pair) => pair.questionId)).toEqual(['q1', 'q2']);
+    const reprocessId = 'reprocess-round3-local';
+    expect((await store.insertReview(base(reprocessId, 'failed', judged.issues.join(','), judged.sections))).wrote).toBe(true);
+    const loaded = await store.readReview(evidence.userId, reprocessId);
+    expect(loaded?.reviewId).not.toBe(round.reviewId);
+    expect(loaded?.status).toBe('failed');
+    expect(loaded?.error).toBe('stage_questions_repeated');
+    expect(loaded?.sections).toBeNull();
+    expect(loaded?.rawContent).toBe(call.response.content);
+    expect(loaded?.parentReviewId).toBe(preserved?.parentReviewId);
+    expect(JSON.stringify(loaded?.stageAnswers)).toContain('설문조사 실시');
+    let called = false;
+    const follow = await runStageReanalysis({
+      store,
+      userId: evidence.userId,
+      projectId: evidence.projectId,
+      reviewId: reprocessId,
+      now: NOW,
+      evidence: 'injected_http',
+      chat: async () => {
+        called = true;
+        throw new Error('gpt');
+      },
+    });
+    expect(called).toBe(false);
+    expect(follow).toEqual({ ok: false, error: 'review_missing' });
+    const stillThere = await store.readReview(evidence.userId, round.reviewId);
+    expect(stillThere?.error).toBe(round.error);
+    expect(readFileSync(evidencePath, 'utf8')).toBe(originalFile);
+    expect(originalFile).toContain(call.response.id);
+    expect((await store.listReviews(evidence.userId, evidence.projectId)).map((item) => item.reviewId).sort()).toEqual([reprocessId, round.reviewId].sort());
+    store.close();
   });
 });

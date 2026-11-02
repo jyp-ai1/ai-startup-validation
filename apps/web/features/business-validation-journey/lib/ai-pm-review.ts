@@ -2076,7 +2076,7 @@ function stageReanalysisSystemPrompt(): string {
     '2. 확인된 사실, 주장, 가설을 가른다. Founder의 가능성 판단, 선호, 기대는 unverifiedClaims로 남긴다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 접촉, 협력 의사, 합의, 공급 조건이 없으면 그 기대를 사업 성과나 성공 가능성의 근거로 쓰지 않는다. 긍정적 사업 판단은 verifiedFacts의 별도 근거가 있을 때만 적는다. 근거가 없으면 그 문장은 창업자의 기대이고 파트너 확보와 실행은 검증되지 않았다고 적는다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다.',
     '3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 정보가 부족한 칸은 부족하다고 적는다. supply와 marketing은 supplyState, marketingState와 함께 적는다. state는 confirmed, unconfirmed, not_analyzed다. not_analyzed의 문장은 아직 분석되지 않았다. unconfirmed의 문장은 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 빈 문자열과 공백은 실패다. value와 product도 빈 문자열이면 실패다. 요청에 문장이 있으면 지우지 말고 이번 답에 맞게 다시 쓴다. 요청에 아직 분석되지 않았다만 있으면 그 상태를 유지하거나 이번 답으로 알게 된 범위만 적는다. 부모의 빈 문자열은 요청에 없고 state는 not_analyzed다. 입력에도 없으면 unconfirmed로 둔다. 입력에 없는 공급 계약, 마케팅 성과, 수익, 상품을 만들어 내지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다. 확인된 접촉이 없으면 운영 계획을 실행이 끝난 것처럼 적지 않는다.',
     '4. impactOnPreviousJudgment, updatedJudgment, judgmentReason은 서로 다른 역할의 문장이다. 사업 모델의 잠재력, Founder의 미확인 주장, 실제 확인된 협력, 실행 가능성, 새로 보인 위험을 한 덩어리로 유지하지 않는다. 잠재력은 유지할 수 있다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. impactOnPreviousJudgment는 이번 답이 그 구분 중 어디에 영향을 주는지다. updatedJudgment는 누적된 Founder 답변을 검토한 현재 판단이다. 문장이 priorJudgmentText와 같아도 그 검토의 결과라면 재평가다. 사업 모델의 잠재력은 유지할 수 있다. 협력의 실행 가능성은 그 잠재력과 따로 재평가한다. 새 사실이 없어도 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. judgmentReason은 그 구분의 이유다. 남은 위험은 빼지 말고 unresolvedIssues에 현재 빈칸으로 적는다. unresolvedIssues는 priorUnresolvedIssues와 다른 새 문장이다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건을 한 문장으로 뭉치지 않는다. 새로 보인 위험도 거기 적는다. 세 문장을 한 문장으로 반복하지 않는다. priorJudgmentText를 impactOnPreviousJudgment와 judgmentReason에 그대로 붙이지 않는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다. 미확인 주장을 긍정적인 전망으로 쓰지 않는다. 이번 답이 그 위험을 해소하지 않으면 위험을 빼지 않는다. 코드는 결론을 정하지 않는다.',
-    '5. 다음 검증은 statedRecord와 areaStatus를 읽고 objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId로 하나 고른다. 코드는 질문 문장을 정하지 않는다. 코드는 후보도 고르지 않는다. 질문 개수도 당신이 정한다. priorReview는 판단을 갱신할 때 읽고 질문의 주제로 고정하지 않는다. overlapsReviewedObjective가 true인 후보는 고르지 않는다. closedQuestions의 사업 목적은 끝난 목적이다. questionId는 회차 안에서 q1부터 다시 매긴다. 질문을 구분할 때는 questionKey를 쓴다. questionKey는 sourceReviewId와 questionId를 잇는다. 이전 회차의 q1과 이번 회차의 q1은 다른 질문이다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 이미 답한 질문은 표현만 바꾸어 다시 묻지 않는다. 같은 질문을 다시 물으려면 reaskReason에 기존 답변으로 확인되지 않은 이유를 적는다. 불확실하다만 적은 verificationPurpose는 그 사유가 아니다. 다음 질문의 사업 목적은 방금 답한 질문의 목적과 달라야 한다. 고정된 질문 순서는 없다. areaStatus의 배열 순서는 우선순위가 아니다. status가 not_analyzed인 영역만 전달된 문장이 없다. founder_claim, assumption, unconfirmed, claim은 이미 전달된 정보다. 그 문장을 없는 정보처럼 다시 묻지 않는다. 고객, 문제, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 해결된 내용은 근거와 함께 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다.',
+    '5. 다음 검증은 statedRecord와 areaStatus를 읽고 objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId로 하나 고른다. 코드는 질문 문장을 정하지 않는다. 코드는 후보도 고르지 않는다. 질문 개수도 당신이 정한다. priorReview는 판단을 갱신할 때 읽고 질문의 주제로 고정하지 않는다. overlapsReviewedObjective가 true인 후보는 고르지 않는다. closedQuestions의 사업 목적은 끝난 목적이다. questionId는 회차 안에서 q1부터 다시 매긴다. 질문을 구분할 때는 questionKey를 쓴다. questionKey는 sourceReviewId와 questionId를 잇는다. 이전 회차의 q1과 이번 회차의 q1은 다른 질문이다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 이미 답한 질문은 표현만 바꾸어 다시 묻지 않는다. 같은 질문을 다시 물으려면 reaskReason에 기존 답변으로 확인되지 않은 이유를 적는다. 불확실하다만 적은 verificationPurpose는 그 사유가 아니다. 다음 질문의 사업 목적은 방금 답한 질문의 목적과 달라야 한다. 고정된 질문 순서는 없다. areaStatus의 배열 순서는 우선순위가 아니다. status가 not_analyzed인 영역만 전달된 문장이 없다. founder_claim, assumption, unconfirmed, claim은 이미 전달된 정보다. informationPresent는 문장이 있다는 뜻이다. verified가 false면 검증된 사실이 아니다. analysisComplete가 false면 그 영역 분석이 끝난 것이 아니다. FOUNDER_CLAIM을 VERIFIED_FACT로 올리지 않는다. provenance가 FOUNDER_INPUT이면 Founder 원문에서 온 주장이다. AI_INFERENCE는 원문에 없는 추론이다. 그 문장을 없는 정보처럼 다시 묻지 않는다. 검증이 필요하면 그 문장과 다른 질문을 할 수 있다. 고객, 문제, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 해결된 내용은 근거와 함께 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. priorHypotheses와 doNotCopy.priorUnresolvedIssues는 가설이거나 이전 목록이다. unresolvedIssues는 그 목록을 그대로 복사하지 않고 이번 답이 남긴 빈칸과 새로 보인 빈칸만 적는다. 근거가 없으면 미해결로 남긴다.',
     'JSON만 반환한다.',
@@ -2308,7 +2308,7 @@ export function buildProductReanalysisRequest(input: {
               unresolvedIssues:
                 'priorUnresolvedIssues와 같은 문장을 두지 않는다. unresolvedIssues의 개수는 currentAnswerStatements와 같다. 각 문장이 남긴 위험을 새 문장으로 하나씩 적는다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건이 서로 다르면 한 문장으로 뭉치지 않는다. priorHypotheses를 복사하지 않는다.',
               nextQuestion:
-                '질문 문장은 당신이 고른다. 질문 개수도 당신이 정한다. objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId의 목적만 묻는다. priorReview는 판단 갱신에만 쓰고 질문의 주제로 고정하지 않는다. priorQuestionText와 같은 목적을 다른 말로 묻지 않는다. 방금 답한 질문을 반복하지 않는다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 단어만 바꾼 질문은 같은 목적이다. 같은 질문을 다시 물으려면 reaskReason에 기존 답변으로 확인되지 않은 이유를 적는다. 불확실하다만 적은 목적은 사유가 아니다. 미확인 영역은 areaStatus에서 status가 not_analyzed인 항목이다. founder_claim, assumption, unconfirmed, claim은 이미 전달된 정보다. 고정된 질문 순서는 없다. 영역 목록은 순서가 아니다. 해결된 내용은 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. questionKey가 다른 회차의 같은 questionId를 가른다.',
+                '질문 문장은 당신이 고른다. 질문 개수도 당신이 정한다. objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId의 목적만 묻는다. priorReview는 판단 갱신에만 쓰고 질문의 주제로 고정하지 않는다. priorQuestionText와 같은 목적을 다른 말로 묻지 않는다. 방금 답한 질문을 반복하지 않는다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 단어만 바꾼 질문은 같은 목적이다. 같은 질문을 다시 물으려면 reaskReason에 기존 답변으로 확인되지 않은 이유를 적는다. 불확실하다만 적은 목적은 사유가 아니다. 미확인 영역은 areaStatus에서 status가 not_analyzed인 항목이다. founder_claim, assumption, unconfirmed, claim은 이미 전달된 정보다. informationPresent는 문장이 있다는 뜻이다. verified가 false면 검증된 사실이 아니다. analysisComplete가 false면 그 영역 분석이 끝난 것이 아니다. FOUNDER_CLAIM을 VERIFIED_FACT로 올리지 않는다. provenance가 FOUNDER_INPUT이면 Founder 원문에서 온 주장이다. AI_INFERENCE는 원문에 없는 추론이다. 고정된 질문 순서는 없다. 영역 목록은 순서가 아니다. 해결된 내용은 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. questionKey가 다른 회차의 같은 questionId를 가른다.',
             },
             stagePairs: stagePairs.map((pair) => stagePairPayload(pair, input.answerLinks ?? [])),
             priorStagePairs: (input.priorStagePairs ?? []).map((pair) => stagePairPayload(pair, input.answerLinks ?? [])),
@@ -3173,6 +3173,12 @@ function profileTextForArea(latest: ReviewSections, areaId: (typeof AREA_STATUS_
 
 type AreaKnowledge = {
   areaId: (typeof AREA_STATUS_IDS)[number];
+  /** A sentence is on the record. This does not mean the area was verified or its analysis is finished. */
+  informationPresent: boolean;
+  /** True only for an external evidence record. A founder sentence is never verified here. */
+  verified: boolean;
+  /** True only when this builder has a verified external record. A claim does not close the area. */
+  analysisComplete: boolean;
   status: 'not_analyzed' | 'unconfirmed' | 'founder_claim' | 'assumption' | 'claim';
   epistemicStatus: 'VERIFIED_FACT' | 'FOUNDER_CLAIM' | 'ASSUMPTION' | 'UNKNOWN';
   provenance: 'FOUNDER_INPUT' | 'SIMULATION' | 'EXTERNAL_EVIDENCE' | 'AI_INFERENCE' | null;
@@ -3187,7 +3193,29 @@ function classifyProfileProse(text: string): Pick<AreaKnowledge, 'status' | 'epi
   return { status: 'founder_claim', epistemicStatus: 'FOUNDER_CLAIM' };
 }
 
-function mechanicalAreaStatus(latest: ReviewSections, pairs: StagePair[]): AreaKnowledge[] {
+function contentTokens(text: string): string[] {
+  return text
+    .replace(/[()（）/]/g, ' ')
+    .split(/[^\p{L}\p{N}]+/u)
+    .map((token) => token.replace(/(들을|으로|에서|은|는|이|가|을|를|과|와|의|에|도|만)$/u, ''))
+    .filter((token) => token.length >= 2);
+}
+
+/** The sentence restates founder text. A model paraphrase keeps that origin. */
+function founderGrounded(text: string, sources: string[]): boolean {
+  const tokens = contentTokens(text).filter((token) => !/^(그리고|우리는|하는|있는|위한|통해|대한|이다|한다|있다|없다)$/u.test(token));
+  if (tokens.length < 2) return false;
+  const hits = tokens.filter((token) => sources.some((source) => source.includes(token)));
+  return hits.length >= 2 && hits.length / tokens.length >= 0.5;
+}
+
+function areaKnowledge(input: Omit<AreaKnowledge, 'informationPresent' | 'verified' | 'analysisComplete'>): AreaKnowledge {
+  const informationPresent = input.status !== 'not_analyzed' && Boolean(input.text) && input.text !== STAGE_FIELD_NOT_ANALYZED && input.text !== STAGE_FIELD_UNCONFIRMED;
+  const verified = input.epistemicStatus === 'VERIFIED_FACT' && input.provenance === 'EXTERNAL_EVIDENCE';
+  return { ...input, informationPresent, verified, analysisComplete: verified };
+}
+
+function mechanicalAreaStatus(latest: ReviewSections, pairs: StagePair[], founderSources: string[]): AreaKnowledge[] {
   const claimLines = pairs.flatMap((pair) => {
     const provenance = answerSource(pair) === 'simulation' ? ('SIMULATION' as const) : ('FOUNDER_INPUT' as const);
     return [pair.choiceLabel, pair.supplement].flatMap((item) => answerStatements(item ?? '').map((statement) => ({ statement, provenance })));
@@ -3197,27 +3225,28 @@ function mechanicalAreaStatus(latest: ReviewSections, pairs: StagePair[]): AreaK
     const hasField = areaId !== 'price' && areaId !== 'risk';
     const fieldText = typeof raw === 'string' ? raw.trim() : '';
     if (hasField && (!fieldText || fieldText === STAGE_FIELD_NOT_ANALYZED)) {
-      return { areaId, status: 'not_analyzed' as const, epistemicStatus: 'UNKNOWN' as const, provenance: null, basis: 'field' as const, text: fieldText || null };
+      return areaKnowledge({ areaId, status: 'not_analyzed', epistemicStatus: 'UNKNOWN', provenance: null, basis: 'field', text: fieldText || null });
     }
     if (hasField && fieldText === STAGE_FIELD_UNCONFIRMED) {
-      return { areaId, status: 'unconfirmed' as const, epistemicStatus: 'UNKNOWN' as const, provenance: 'AI_INFERENCE' as const, basis: 'field' as const, text: fieldText };
+      return areaKnowledge({ areaId, status: 'unconfirmed', epistemicStatus: 'UNKNOWN', provenance: null, basis: 'field', text: fieldText });
     }
     const matched = claimLines.find((line) => AREA_CLAIM_MARKERS[areaId].test(line.statement));
     if (matched) {
-      return {
+      return areaKnowledge({
         areaId,
-        status: 'claim' as const,
-        epistemicStatus: 'FOUNDER_CLAIM' as const,
+        status: 'claim',
+        epistemicStatus: 'FOUNDER_CLAIM',
         provenance: matched.provenance,
-        basis: 'answer' as const,
+        basis: 'answer',
         text: matched.statement,
-      };
+      });
     }
     if (hasField && fieldText) {
       const classified = classifyProfileProse(fieldText);
-      return { areaId, status: classified.status, epistemicStatus: classified.epistemicStatus, provenance: 'AI_INFERENCE', basis: 'field', text: fieldText };
+      const provenance = founderGrounded(fieldText, founderSources) ? 'FOUNDER_INPUT' : 'AI_INFERENCE';
+      return areaKnowledge({ areaId, status: classified.status, epistemicStatus: classified.epistemicStatus, provenance, basis: 'field', text: fieldText });
     }
-    return { areaId, status: 'not_analyzed' as const, epistemicStatus: 'UNKNOWN' as const, provenance: null, basis: 'no_evidence' as const, text: null };
+    return areaKnowledge({ areaId, status: 'not_analyzed', epistemicStatus: 'UNKNOWN', provenance: null, basis: 'no_evidence', text: null });
   });
 }
 
@@ -3242,7 +3271,7 @@ function stageBusinessState(input: {
       answers: currentAnswerStatementPayload(input.pairs, input.links),
       confirmed: input.ledger.verifiedFacts,
     },
-    areaStatus: mechanicalAreaStatus(input.latest, input.pairs),
+    areaStatus: mechanicalAreaStatus(input.latest, input.pairs, [input.originalInput, ...input.pairs.flatMap((pair) => [pair.choiceLabel ?? '', pair.supplement])]),
     priorReview: {
       judgment: analysis?.judgmentDetail || input.latest.judgment,
       reviewedObjectives: closedQuestionPayload(input.pairs, input.links).map((item) => item.text),
