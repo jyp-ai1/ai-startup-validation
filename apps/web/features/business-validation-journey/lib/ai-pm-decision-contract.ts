@@ -478,6 +478,10 @@ function questionSchema(): Record<string, unknown> {
   };
 }
 
+export function decisionContractStrictSchemas(): Record<string, unknown>[] {
+  return [stateSchema(), selectionSchema()];
+}
+
 function selectionSchema(): Record<string, unknown> {
   const text = { type: 'string' };
   return {

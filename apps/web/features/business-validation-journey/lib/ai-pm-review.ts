@@ -1636,7 +1636,7 @@ export type StagePriorReading = {
   priorHypotheses?: string[];
 };
 
-function productReanalysisSchema(): Record<string, unknown> {
+export function productReanalysisSchema(): Record<string, unknown> {
   const text = { type: 'string' };
   const list = { type: 'array', items: { type: 'string' } };
   return {
@@ -1785,7 +1785,7 @@ function productReanalysisSystemPrompt(): string {
 }
 
 /** Follow-up reanalysis. The first-review business profile is a different contract. */
-function stageReanalysisSchema(): Record<string, unknown> {
+export function stageReanalysisSchema(): Record<string, unknown> {
   const text = { type: 'string' };
   const filled = { type: 'string', pattern: '^.+$' };
   const list = { type: 'array', items: filled };
@@ -2010,7 +2010,7 @@ function stageReanalysisSchema(): Record<string, unknown> {
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['text', 'choices', 'verificationPurpose'],
+          required: ['text', 'choices', 'verificationPurpose', 'reaskReason'],
           properties: {
             text: {
               ...filled,
@@ -2023,9 +2023,9 @@ function stageReanalysisSchema(): Record<string, unknown> {
                 '이 질문이 확인하려는 불확실성. 질문 문장, 이전 질문, 선택, 보충, 이미 해결된 문제와 같으면 실패다. 같은 검증을 다른 말로 적은 목적은 실패다. 불확실하다만 적는 것은 이미 답한 질문을 다시 묻는 사유가 아니다.',
             },
             reaskReason: {
-              type: 'string',
+              type: ['string', 'null'],
               description:
-                '같은 질문 문장을 통과시키는 필드가 아니다. 새 질문이 기존 답으로 확인되지 않은 정보를 물을 때 그 빈칸과 이유를 적는다. 새 질문이면 생략할 수 있다. 질문 문장과 같으면 사유가 아니다. 불확실하다만 적으면 사유가 아니다.',
+                '같은 질문 문장을 통과시키는 필드가 아니다. 새 질문이 기존 답으로 확인되지 않은 정보를 물을 때 그 빈칸과 이유를 적는다. 새 질문이면 null이다. 키를 빼지 않는다. 질문 문장과 같으면 사유가 아니다. 불확실하다만 적으면 사유가 아니다.',
             },
             choices: {
               type: 'array',
@@ -2084,7 +2084,7 @@ function stageReanalysisSystemPrompt(): string {
     '키 순서는 answerInterpretation, statementReadings, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, objectiveCandidates, selectedCandidateId, selectionReason, nextVerification, nextQuestions, nextQuestionChoices, impactOnPreviousJudgment, keptBusinessPremise, executionPossibility, updatedJudgment, judgmentReason 이다.',
     'answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
     'answeredQuestionState는 질문마다 questionKey, 질문 원문, Founder 답, 출처, 확인된 정보, 미확인 정보, 해결 상태를 담는다. menu_choice는 방법 이름만 확인된 것이고 resolution은 method_selected다. 실행 대상, 실행 여부, 응답 결과는 확인되지 않았다. planned_action은 계획이다. 숫자가 있어도 실행 결과가 아니다. reported_result는 보고된 실행 결과이고 외부 증거가 없으면 verified는 false이며 VERIFIED_FACT가 아니다. stated_without_result는 추가 설명이고 실행 결과나 수치가 없다. unresolved_gap은 아직 모른다고 한 답이다. 이 기록의 analysisComplete는 false다. 같은 질문 문장과 선택 라벨을 다시 묻지 않는다. 새 질문은 unconfirmedAfterAnswer가 비어 있다고 적은 정보를 묻는다. 그 문장은 당신이 쓴다.',
-    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. 이미 답한 질문 문장과 같으면 reaskReason이 있어도 실패다. 새 질문이면 reaskReason은 생략할 수 있다. verificationPurpose는 그 새 질문이 확인하려는 미확인 정보다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
+    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. 이미 답한 질문 문장과 같으면 reaskReason이 있어도 실패다. 새 질문이면 reaskReason은 null이다. 키를 빼지 않는다. verificationPurpose는 그 새 질문이 확인하려는 미확인 정보다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
   ].join(' ');
 }
