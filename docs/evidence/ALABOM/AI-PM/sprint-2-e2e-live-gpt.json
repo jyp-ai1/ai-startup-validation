@@ -1,0 +1,35 @@
+{
+  "kind": "sprint2_e2e_live_gpt",
+  "status": "NOT RUN",
+  "reason": "This Cloud Agent process does not list GPT_API_KEY in CLOUD_AGENT_ALL_SECRET_NAMES or CLOUD_AGENT_INJECTED_SECRET_NAMES. The approved four calls were not sent. OPENAI_API_KEY was not used as a substitute.",
+  "checkedAt": "2026-11-02T00:16:48Z",
+  "checkedAtKst": "2026-11-02T09:16:48+09:00",
+  "gitSha": "650521f18410ed27cb3db68a068d3e50f720f355",
+  "gitRef": "cursor/sprint2-continuity-architecture-4b88",
+  "productPath": "submitConsultingStage -> runStageReanalysis",
+  "modelRequested": "gpt-4o-mini",
+  "modelSent": null,
+  "simulationBody": "COMPARE_BUSINESS_BODY",
+  "simulationSent": false,
+  "callCount": 0,
+  "retryCount": 0,
+  "maxCalls": 4,
+  "promptEdited": false,
+  "founderProjectTouched": false,
+  "productionDeployed": false,
+  "supabaseCalled": false,
+  "rounds": [
+    { "round": 1, "role": "first_analysis", "status": "NOT RUN", "request": null, "response": null, "storedReviewId": null },
+    { "round": 2, "role": "first_answer", "status": "NOT RUN", "request": null, "response": null, "storedReviewId": null },
+    { "round": 3, "role": "accumulated_context", "status": "NOT RUN", "request": null, "response": null, "storedReviewId": null },
+    { "round": 4, "role": "long_continuity", "status": "NOT RUN", "request": null, "response": null, "storedReviewId": null }
+  ],
+  "checks": {
+    "priorBusinessDelivered": "NOT RUN",
+    "priorQuestionsAndAnswersDelivered": "NOT RUN",
+    "currentAnswerPresent": "NOT RUN",
+    "feedbackAndNextQuestionReturned": "NOT RUN",
+    "responseStoredAndResent": "NOT RUN",
+    "originalIdeaPresentAtRound4": "NOT RUN"
+  }
+}
