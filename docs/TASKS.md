@@ -4,6 +4,12 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## 제품 경로 연속성 검증
+
+**상태:** 2026-11-02 23:37 KST 격리 데이터로 저장, 재조회, 다음 요청 Payload를 확인했다. 제품 저장소는 Supabase라 내구 저장은 BLOCKED다. sqlite 어댑터 동작은 PARTIAL이고 PASS가 아니다. GPT HTTP는 0회다. 증거 SHA-256은 유지됐다. Supabase 행 수는 70, 32로 같다. 화면과 HTTP와 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-PRODUCT-CONTINUITY-VERIFICATION.md`다. Production은 잠금이다. Sprint 3는 시작하지 않는다.
+
+---
+
 ## Structured Output 복구
 
 **상태:** 2026-11-02 19:46 KST `stage_reanalysis`의 `nextQuestions.items.required`에 `reaskReason`을 넣었다. 타입은 `["string", "null"]`이다. 다른 strict 스키마 6개는 property와 required가 이미 일치했다. 단위 150건은 통과했다. GPT 호출은 0회다. 부모는 `5f6d705d-fe2a-468f-97be-da16482abd32`다. 실패 행 `0e75ff46-88fd-4ce2-b567-bdc3f3048531`은 바꾸지 않았다. 제품 저장소와 화면은 NOT RUN이다. 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-STRUCTURED-OUTPUT.md`다. Production은 잠금이다.
