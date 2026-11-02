@@ -1,35 +1,431 @@
 {
   "kind": "sprint2_e2e_live_gpt",
-  "status": "NOT RUN",
-  "reason": "This Cloud Agent process does not list GPT_API_KEY in CLOUD_AGENT_ALL_SECRET_NAMES or CLOUD_AGENT_INJECTED_SECRET_NAMES. The approved four calls were not sent. OPENAI_API_KEY was not used as a substitute.",
-  "checkedAt": "2026-11-02T00:16:48Z",
-  "checkedAtKst": "2026-11-02T09:16:48+09:00",
-  "gitSha": "650521f18410ed27cb3db68a068d3e50f720f355",
+  "status": "RAN",
+  "checkedAt": "2026-11-02T02:00:21.425Z",
+  "checkedAtKst": "2026-11-02 11:00 KST",
+  "gitSha": "54883d78bbfeb24b7b87af2643f3d2bcba1c7b47",
   "gitRef": "cursor/sprint2-continuity-architecture-4b88",
-  "productPath": "submitConsultingStage -> runStageReanalysis",
+  "productPath": "runFirstReview then submitConsultingStage -> runStageReanalysis",
+  "adapter": "OpenAIProviderAdapter",
+  "openReviewChatUsed": false,
+  "modelConstant": "gpt-4o-mini",
   "modelRequested": "gpt-4o-mini",
-  "modelSent": null,
-  "simulationBody": "COMPARE_BUSINESS_BODY",
-  "simulationSent": false,
-  "callCount": 0,
+  "requestModelOverridden": false,
+  "responseModels": [
+    "gpt-4o-mini-2024-07-18"
+  ],
+  "simulationBodyName": "COMPARE_BUSINESS_BODY",
+  "simulationSent": true,
+  "userId": "e2e-live-user",
+  "projectId": "e2e-live-brewery",
+  "origin": "typed",
+  "evidence": "live_network",
+  "productionDatabase": false,
+  "callCount": 3,
   "retryCount": 0,
   "maxCalls": 4,
   "promptEdited": false,
   "founderProjectTouched": false,
   "productionDeployed": false,
   "supabaseCalled": false,
+  "fatal": null,
+  "blocked": [],
   "rounds": [
-    { "round": 1, "role": "first_analysis", "status": "NOT RUN", "request": null, "response": null, "storedReviewId": null },
-    { "round": 2, "role": "first_answer", "status": "NOT RUN", "request": null, "response": null, "storedReviewId": null },
-    { "round": 3, "role": "accumulated_context", "status": "NOT RUN", "request": null, "response": null, "storedReviewId": null },
-    { "round": 4, "role": "long_continuity", "status": "NOT RUN", "request": null, "response": null, "storedReviewId": null }
+    {
+      "round": 1,
+      "role": "first_analysis",
+      "answers": [],
+      "unlinked": null,
+      "callIndexes": [
+        1
+      ],
+      "status": "succeeded",
+      "called": true,
+      "pending": false,
+      "reviewId": "48d06eaa-ad74-4851-a919-fbd8ecefdc1a",
+      "parentReviewId": null,
+      "error": null,
+      "model": "gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "callCount": 1,
+      "promptTokens": 3692,
+      "completionTokens": 820,
+      "totalTokens": 4512,
+      "usageKnown": true,
+      "latencyMs": 8295,
+      "evidence": "live_network",
+      "nextQuestion": "양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?",
+      "judgment": "전통주 체험 프로그램은 관광객의 수요를 충족시킬 수 있는 가능성이 높으며, 양조장과의 협업이 성공적으로 이루어질 경우 수익성이 있을 것으로 판단된다."
+    },
+    {
+      "round": 2,
+      "role": "first_answer",
+      "answers": [
+        {
+          "questionId": "q1",
+          "choiceId": "c4",
+          "choiceLabel": "아직 핵심을 정하지 못했다"
+        }
+      ],
+      "unlinked": "SIMULATION. 양조장 한 곳에 문의했지만 아직 참여 의향은 확인하지 못했다.",
+      "callIndexes": [
+        2
+      ],
+      "status": "succeeded",
+      "called": true,
+      "pending": false,
+      "reviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+      "parentReviewId": "48d06eaa-ad74-4851-a919-fbd8ecefdc1a",
+      "error": null,
+      "model": "gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "callCount": 1,
+      "promptTokens": 15761,
+      "completionTokens": 1121,
+      "totalTokens": 16882,
+      "usageKnown": true,
+      "latencyMs": 10222,
+      "evidence": "live_network",
+      "nextQuestion": "전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?",
+      "judgment": "사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다."
+    },
+    {
+      "round": 3,
+      "role": "accumulated_context",
+      "answers": [
+        {
+          "questionId": "q1",
+          "choiceId": "c1",
+          "choiceLabel": "설문조사 실시"
+        },
+        {
+          "questionId": "q2",
+          "choiceId": "c1",
+          "choiceLabel": "비용 분석"
+        }
+      ],
+      "unlinked": null,
+      "callIndexes": [
+        3
+      ],
+      "status": "failed",
+      "called": true,
+      "pending": false,
+      "reviewId": "0e75ff46-88fd-4ce2-b567-bdc3f3048531",
+      "parentReviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+      "error": "stage_judgment_copied,stage_questions_repeated",
+      "model": "gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "callCount": 1,
+      "promptTokens": 16807,
+      "completionTokens": 1473,
+      "totalTokens": 18280,
+      "usageKnown": true,
+      "latencyMs": 14435,
+      "evidence": "live_network",
+      "nextQuestion": "전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?",
+      "judgment": "사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다."
+    },
+    {
+      "round": 4,
+      "role": "long_continuity",
+      "answers": [],
+      "unlinked": null,
+      "callIndexes": [],
+      "status": "NOT RUN",
+      "called": false,
+      "pending": false,
+      "reviewId": null,
+      "parentReviewId": null,
+      "error": null,
+      "model": null,
+      "provider": null,
+      "callCount": null,
+      "promptTokens": null,
+      "completionTokens": null,
+      "totalTokens": null,
+      "usageKnown": null,
+      "latencyMs": null,
+      "evidence": null,
+      "nextQuestion": null,
+      "judgment": null
+    }
   ],
-  "checks": {
-    "priorBusinessDelivered": "NOT RUN",
-    "priorQuestionsAndAnswersDelivered": "NOT RUN",
-    "currentAnswerPresent": "NOT RUN",
-    "feedbackAndNextQuestionReturned": "NOT RUN",
-    "responseStoredAndResent": "NOT RUN",
-    "originalIdeaPresentAtRound4": "NOT RUN"
+  "calls": [
+    {
+      "index": 1,
+      "round": 1,
+      "sent": true,
+      "request": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "messages": [
+          {
+            "role": "system",
+            "content": "프롬프트 버전 quality-2. 당신은 초기 창업자의 사업성 검토를 돕는 전략 파트너다. 요약으로 끝내지 말고 성립 조건과 가장 큰 불확실성을 분석한다. 창업자가 아직 고르지 않은 답을 사실로 만들지 않는다. 첫 질문은 정도(높다, 낮다)가 아니라 사업의 갈림길을 가른다. 사실, 추론, 가설을 구분하고 추론과 가설에는 그 말을 붙인다. 정보가 적어도 중단하지 않는다. 고객, 문제, 기존 대안, 가치, 이용자와 지불자, 수익 구조, 운영, 차별화, 경쟁을 검토한다. 가격, 인원, 매출, 시장 규모, 수수료, 참가비, 제휴 확정은 입력에 없으면 사실로 쓰지 않는다. 가능한 수익은 가설이라고 적는다. 분석을 마친 뒤, 불확실성이 가장 많이 줄어드는 미확인 가정을 다음 상담 단계의 서로 다른 검증 질문 1개 이상으로 questions에 둔다. 개수는 모델이 정한다. 각 질문은 text와 그 질문의 choices를 가진다. nextQuestion은 첫 text와 같다. 질문이 없거나 배열이 없으면 상담 단계가 아니다. 모든 사업에 결제 여부를 먼저 묻지 않는다. 높다, 낮다, 미정처럼 정도만 다른 선택지는 만들지 않는다. 선택지는 서로 다른 문제, 고객, 지불자, 운영 방식이어야 한다. 아직 정하지 못한 상태와 기타 / 직접 입력을 포함한다. JSON만 반환한다. 모델 이름이나 공급사 이름은 쓰지 않는다. 키는 summary, customer, problem, value, operatingModel, alternatives, differentiation, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions 이다. summary는 원문을 반영한 설명, judgment는 예비 판단과 근거, nextVerification은 적은 비용의 확인 행동이다. assumptions는 1개에서 3개다."
+          },
+          {
+            "role": "user",
+            "content": "사업 입력:\n다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\n\n키: summary, customer, problem, value, operatingModel, payer, revenueModel, market, competition, operations, profitability, strengths, risks, assumptions, evidenceToChange, founderFacts, inferences, judgment, nextVerification, nextQuestion, nextQuestionReason, choices, questions.\nquestions는 서로 다른 후속 질문 1개 이상이다. 각 원소는 text와 그 질문의 choices다. nextQuestion은 questions 첫 text와 같다. questions가 없거나 비어 있으면 상담 단계가 아니다.\n검토 목적, 현재 단계, 가장 알고 싶은 것이 있으면 질문과 판단을 그 목적에 맞춘다. 원문에 없는 수익 항목은 가설로 적는다."
+          }
+        ]
+      },
+      "response": {
+        "id": "chatcmpl-EfbcrQpUVxRPscMIoGFW8XSp23wkN",
+        "model": "gpt-4o-mini-2024-07-18",
+        "finishReason": "stop",
+        "content": "{\"summary\":\"이 사업은 전통주를 좋아하는 내국인과 외국인을 대상으로 양조장 체험을 제공하고, 이를 통해 개인별 다양한 경험을 중시하는 관광객의 요구를 충족시키려는 것이다. 또한, 양조장의 온라인 마케팅을 지원하여 사업의 성장을 도모하고자 한다.\",\"customer\":\"전통주를 좋아하는 내국인 및 외국인 관광객\",\"problem\":\"관광객들이 개인별 다양한 경험을 원하지만, 전통주 체험을 제공하는 곳이 부족하다.\",\"value\":\"양조장에서 직접 전통주를 만들고 마시는 체험을 통해 관광객들에게 독특한 경험을 제공한다.\",\"operatingModel\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"alternatives\":\"기존의 관광 프로그램이나 일반적인 주류 체험 프로그램이 대안이 될 수 있다.\",\"differentiation\":\"전통주 양조 체험을 통해 관광객에게 직접적인 참여와 경험을 제공함으로써 차별화된다.\",\"payer\":\"체험에 참여하는 관광객\",\"revenueModel\":\"체험 프로그램 참가비 및 양조장에서의 판매 수익을 통해 수익을 창출할 것으로 예상된다.\",\"market\":\"전통주에 관심이 있는 관광객 시장\",\"competition\":\"기존의 주류 체험 프로그램 및 관광 서비스 제공업체와 경쟁할 것이다.\",\"operations\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"profitability\":\"체험 참가비와 양조장에서의 판매 수익으로 인해 수익성이 있을 것으로 예상된다.\",\"strengths\":[\"전통주에 대한 관심 증가\",\"개인별 맞춤형 체험 제공\",\"온라인 마케팅 지원으로 고객 유치 용이\"],\"risks\":[\"양조장과의 협업이 원활하지 않을 경우\",\"관광객 수요 변동성\",\"경쟁업체의 증가\"],\"assumptions\":[\"관광객들이 전통주 체험에 대한 수요가 높을 것이다.\",\"양조장과의 협업이 성공적으로 이루어질 것이다.\",\"온라인 마케팅이 효과적으로 작용할 것이다.\"],\"evidenceToChange\":[\"관광객들의 전통주 체험에 대한 관심 조사 결과\",\"양조장과의 초기 협의 결과\",\"유사한 체험 프로그램의 성공 사례\"],\"founderFacts\":[\"창업자는 관광 및 주류 산업에 대한 경험이 있다.\",\"양조장과의 네트워크가 형성되어 있다.\"],\"inferences\":[\"관광객의 개인화된 경험에 대한 수요가 증가하고 있다.\",\"전통주 체험이 관광객에게 매력적인 요소가 될 것이다.\"],\"judgment\":\"전통주 체험 프로그램은 관광객의 수요를 충족시킬 수 있는 가능성이 높으며, 양조장과의 협업이 성공적으로 이루어질 경우 수익성이 있을 것으로 판단된다.\",\"nextVerification\":\"양조장과의 협업 가능성을 확인하기 위해 초기 미팅을 진행한다.\",\"nextQuestion\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"nextQuestionReason\":\"양조장과의 협업이 사업의 성공에 중요한 요소이므로, 초기 미팅에서 논의할 사항을 명확히 해야 한다.\",\"choices\":[\"양조장의 생산 과정 및 시설에 대한 이해\",\"체험 프로그램의 세부 내용 및 가격 논의\",\"온라인 마케팅 전략에 대한 협의\"],\"questions\":[{\"text\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"choices\":[\"양조장의 생산 과정 및 시설에 대한 이해\",\"체험 프로그램의 세부 내용 및 가격 논의\",\"온라인 마케팅 전략에 대한 협의\"]}]}",
+        "usage": {
+          "inputTokens": 3692,
+          "outputTokens": 820,
+          "totalTokens": 4512
+        },
+        "usageKnown": true,
+        "latencyMs": 8295
+      },
+      "error": null,
+      "sentAnswers": [],
+      "sentUnlinked": null
+    },
+    {
+      "index": 2,
+      "round": 2,
+      "sent": true,
+      "request": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "messages": [
+          {
+            "role": "system",
+            "content": "당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다. 당신은 단순한 사업 아이디어 평가자가 아니라 지속적으로 사업을 발전시키는 전략 컨설턴트다. 최초 사업 아이디어와 모든 이전 검토 및 파운더 답변을 종합해 이해한다. 파운더의 답변을 단순 요약하지 말고 사업 모델에 미치는 영향을 판단한다. 다음 질문은 이전 질문의 후속이 아니다. 확인된 것, 아직 중요한 미확인, 다음 판단을 가장 크게 바꾸는 영역을 가른 뒤 그 영역의 사업 목적을 고른다. 고객, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 질문은 현재 사업 상황에 맞춰 고르며 고정된 순서를 강제하지 않는다. 이전에 답변된 질문을 단순히 반복하지 않는다. 질문의 표현이 아니라 질문이 해결하려는 사업 목적이 이전 질문과 달라야 한다. 기존 판단을 유지하거나 바꿀 수 있으며 그 이유를 사업 맥락에서 적는다. 확인되지 않은 주장은 검증된 사실로 취급하지 않는다. 사업의 잠재력과 실제 실행 가능성을 구분한다. 이미 해결된 영역은 근거와 함께 해결 상태로 남긴다. 이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다. 판단 예시는 다른 사업이다. 그 문장을 출력에 복사하지 말고 이번 사업으로 다시 쓴다. 이전 판단이 점포는 없으나 좋은 기회라는 문장이면 그 문장을 다시 쓰지 않는다. 사업 모델의 잠재력은 고객에게 가치를 줄 여지로 남을 수 있다. 이번 답이 상권이 좋을 것 같다이면 그 말은 미확인 주장이고 unverifiedClaims다. verifiedFacts는 빈 배열이다. 확인된 협력이나 점포는 없다. 실행 가능성은 검증되지 않았다. judgmentEffect에는 잠재력은 남을 수 있으나 상권 주장은 유지하지 않으며 성공 가능성은 높아지지 않았다라고 적는다. updatedJudgment는 새 문장으로 유지할 잠재력, 근거가 부족한 주장, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. 남은 위험은 점포와 조건이 없다는 현재 빈칸이다. unresolvedIssues에는 점포가 없다는 현재 빈칸을 새로 적는다. 다음 질문은 방금 물은 문장의 단어를 바꾼 질문이 아니다. 방금 답한 목적과 다른 미확인 영역이다. 그 존재 질문에 이미 답이 있으면 같은 질문을 반복하지 않고 아직 확인되지 않은 다른 영역을 고른다. 1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 새로 준 정보와 그 정보가 주장인지 미확인인지 적는다. 연습 입력을 사실로 부르지 않는다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. answerSource.source가 simulation이거나 답이 SIMULATION으로 시작하면 연습 입력이고 실제 Founder 답변과 구분한다. 그 문장에 이는 사실이다라고 쓰지 않는다. 사실을 제공한다라고도 쓰지 않는다. Founder가 문의하거나 접촉했다고 말해도 그 말은 주장이다. 상대의 기록, 회신, 합의가 없으면 답 문장을 observedEvidence로 옮기지 않는다. 한 답 안의 주장, 없는 반응, 없는 참여 의향, 없는 조건은 서로 다른 정보다. 하나를 사실로 나머지를 덮지 않는다. 문의 주장만으로 협력 가능성을 높이지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 사업 모델의 잠재력을 유지하는 것과 미확인 주장을 유지하는 것을 가른다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 긍정적인 전망이라고 쓰지 않는다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다. 2. 확인된 사실, 주장, 가설을 가른다. Founder의 가능성 판단, 선호, 기대는 unverifiedClaims로 남긴다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 접촉, 협력 의사, 합의, 공급 조건이 없으면 그 기대를 사업 성과나 성공 가능성의 근거로 쓰지 않는다. 긍정적 사업 판단은 verifiedFacts의 별도 근거가 있을 때만 적는다. 근거가 없으면 그 문장은 창업자의 기대이고 파트너 확보와 실행은 검증되지 않았다고 적는다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다. 3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 정보가 부족한 칸은 부족하다고 적는다. supply와 marketing은 supplyState, marketingState와 함께 적는다. state는 confirmed, unconfirmed, not_analyzed다. not_analyzed의 문장은 아직 분석되지 않았다. unconfirmed의 문장은 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 빈 문자열과 공백은 실패다. value와 product도 빈 문자열이면 실패다. 요청에 문장이 있으면 지우지 말고 이번 답에 맞게 다시 쓴다. 요청에 아직 분석되지 않았다만 있으면 그 상태를 유지하거나 이번 답으로 알게 된 범위만 적는다. 부모의 빈 문자열은 요청에 없고 state는 not_analyzed다. 입력에도 없으면 unconfirmed로 둔다. 입력에 없는 공급 계약, 마케팅 성과, 수익, 상품을 만들어 내지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다. 확인된 접촉이 없으면 운영 계획을 실행이 끝난 것처럼 적지 않는다. 4. impactOnPreviousJudgment, updatedJudgment, judgmentReason은 서로 다른 역할의 새 문장이다. 사업 모델의 잠재력, Founder의 미확인 주장, 실제 확인된 협력, 실행 가능성, 새로 보인 위험을 한 덩어리로 유지하지 않는다. 잠재력은 유지할 수 있다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. impactOnPreviousJudgment는 이번 답이 그 구분 중 어디에 영향을 주는지다. updatedJudgment는 priorJudgmentText를 출력하지 않는 현재 판단이다. 사업 모델의 잠재력은 유지할 수 있다. 협력의 실행 가능성은 그 잠재력과 따로 재평가한다. 새 사실이 없어도 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. judgmentReason은 그 구분의 이유다. 남은 위험은 빼지 말고 unresolvedIssues에 현재 빈칸으로 적는다. unresolvedIssues는 priorUnresolvedIssues와 다른 새 문장이다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건을 한 문장으로 뭉치지 않는다. 새로 보인 위험도 거기 적는다. 세 문장을 한 문장으로 반복하지 않는다. priorJudgmentText를 세 칸에 그대로 붙이지 않는다. updatedJudgment가 priorJudgmentText와 같거나 그 문장을 포함하면 재평가가 아니다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다. 미확인 주장을 긍정적인 전망으로 쓰지 않는다. 이번 답이 그 위험을 해소하지 않으면 위험을 빼지 않는다. 코드는 결론을 정하지 않는다. 5. 다음 검증은 statedRecord와 areaStatus를 읽고 objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId로 하나 고른다. 코드는 질문 문장을 정하지 않는다. 코드는 후보도 고르지 않는다. 질문 개수도 당신이 정한다. priorReview는 판단을 갱신할 때 읽고 질문의 주제로 고정하지 않는다. overlapsReviewedObjective가 true인 후보는 고르지 않는다. closedQuestions의 사업 목적은 끝난 목적이다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 이미 답한 질문은 표현만 바꾸어 다시 묻지 않는다. 다음 질문의 사업 목적은 방금 답한 질문의 목적과 달라야 한다. 고정된 질문 순서는 없다. areaStatus의 배열 순서는 우선순위가 아니다. 고객, 문제, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 해결된 내용은 근거와 함께 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다. consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다. originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. priorHypotheses와 doNotCopy.priorUnresolvedIssues는 가설이거나 이전 목록이다. unresolvedIssues는 그 목록을 그대로 복사하지 않고 이번 답이 남긴 빈칸과 새로 보인 빈칸만 적는다. 근거가 없으면 미해결로 남긴다. JSON만 반환한다. 키 순서는 answerInterpretation, statementReadings, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, objectiveCandidates, selectedCandidateId, selectionReason, nextVerification, nextQuestions, nextQuestionChoices, impactOnPreviousJudgment, keptBusinessPremise, executionPossibility, updatedJudgment, judgmentReason 이다. answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다. nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. verificationPurpose는 질문 문장과 다른 불확실성이다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다. nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다."
+          },
+          {
+            "role": "user",
+            "content": "{\"businessState\":{\"areaOrderIsNotPriority\":true,\"statedRecord\":{\"originalIdea\":\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\",\"answers\":[{\"questionId\":\"q1\",\"source\":\"founder\",\"index\":0,\"statement\":\"아직 핵심을 정하지 못했다\"},{\"questionId\":\"q1\",\"source\":\"founder\",\"index\":1,\"statement\":\"아직 핵심을 정하지 못했다\"}],\"confirmed\":[]},\"areaStatus\":[{\"areaId\":\"customer\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"},{\"areaId\":\"problem\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"},{\"areaId\":\"product\",\"status\":\"not_analyzed\",\"basis\":\"field\"},{\"areaId\":\"supply\",\"status\":\"not_analyzed\",\"basis\":\"field\"},{\"areaId\":\"price\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"},{\"areaId\":\"revenue\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"},{\"areaId\":\"market\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"},{\"areaId\":\"marketing\",\"status\":\"not_analyzed\",\"basis\":\"field\"},{\"areaId\":\"operations\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"},{\"areaId\":\"risk\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"}],\"priorReview\":{\"judgment\":\"전통주 체험 프로그램은 관광객의 수요를 충족시킬 수 있는 가능성이 높으며, 양조장과의 협업이 성공적으로 이루어질 경우 수익성이 있을 것으로 판단된다.\",\"reviewedObjectives\":[\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\"],\"hypotheses\":[\"관광객들이 전통주 체험에 대한 수요가 높을 것이다.\",\"양조장과의 협업이 성공적으로 이루어질 것이다.\",\"온라인 마케팅이 효과적으로 작용할 것이다.\"],\"unresolved\":[],\"resolved\":[],\"operations\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"risks\":[\"양조장과의 협업이 원활하지 않을 경우\",\"관광객 수요 변동성\",\"경쟁업체의 증가\"]}},\"currentAnswerStatements\":[{\"questionId\":\"q1\",\"source\":\"founder\",\"index\":0,\"statement\":\"아직 핵심을 정하지 못했다\"},{\"questionId\":\"q1\",\"source\":\"founder\",\"index\":1,\"statement\":\"아직 핵심을 정하지 못했다\"}],\"closedQuestions\":[{\"questionId\":\"q1\",\"text\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"askAgain\":false}],\"revisionTask\":{\"updatedJudgment\":\"priorJudgmentText를 출력하지 않는다. 그 문장을 유지라고 다시 적는 것은 재평가가 아니다. 새 문장에서 사업 모델의 잠재력과 미확인 주장을 가른다. 확인된 접촉이 없으면 협력 가능성이 높다는 판단을 유지하지 않는다. 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다.\",\"unresolvedIssues\":\"priorUnresolvedIssues와 같은 문장을 두지 않는다. unresolvedIssues의 개수는 currentAnswerStatements와 같다. 각 문장이 남긴 위험을 새 문장으로 하나씩 적는다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건이 서로 다르면 한 문장으로 뭉치지 않는다. priorHypotheses를 복사하지 않는다.\",\"nextQuestion\":\"질문 문장은 당신이 고른다. 질문 개수도 당신이 정한다. objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId의 목적만 묻는다. priorReview는 판단 갱신에만 쓰고 질문의 주제로 고정하지 않는다. priorQuestionText와 같은 목적을 다른 말로 묻지 않는다. 방금 답한 질문을 반복하지 않는다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 단어만 바꾼 질문은 같은 목적이다. 미확인 영역은 areaStatus에서 고른다. 고정된 질문 순서는 없다. 영역 목록은 순서가 아니다. 해결된 내용은 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다.\"},\"stagePairs\":[{\"questionId\":\"q1\",\"question\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"offeredChoices\":[{\"choiceId\":\"c1\",\"label\":\"양조장의 생산 과정 및 시설에 대한 이해\"},{\"choiceId\":\"c2\",\"label\":\"체험 프로그램의 세부 내용 및 가격 논의\"},{\"choiceId\":\"c3\",\"label\":\"온라인 마케팅 전략에 대한 협의\"},{\"choiceId\":\"c4\",\"label\":\"아직 핵심을 정하지 못했다\"},{\"choiceId\":\"other\",\"label\":\"기타 / 직접 입력\"}],\"choiceId\":\"c4\",\"choiceLabel\":\"아직 핵심을 정하지 못했다\",\"supplement\":\"아직 핵심을 정하지 못했다\",\"status\":\"answered\"}],\"priorStagePairs\":[],\"unlinkedStatements\":[{\"feedbackId\":\"5cf0e33d-f772-4e64-8b00-b633251aced5\",\"questionId\":null,\"choiceId\":null,\"text\":\"SIMULATION. 양조장 한 곳에 문의했지만 아직 참여 의향은 확인하지 못했다.\",\"submittedAt\":\"2026-11-02T01:59:56.692Z\",\"provenance\":\"SIMULATION\",\"epistemicStatus\":\"FOUNDER_CLAIM\",\"evidenceId\":null}],\"answerRecords\":[{\"feedbackId\":\"c656bad8-8525-4240-9611-9b3347712d6a\",\"questionId\":\"q1\",\"choiceId\":\"c4\",\"text\":\"아직 핵심을 정하지 못했다\",\"submittedAt\":\"2026-11-02T01:59:56.691Z\",\"provenance\":\"FOUNDER_INPUT\",\"epistemicStatus\":\"FOUNDER_CLAIM\",\"evidenceId\":null}],\"stagePartial\":false,\"answerReading\":[{\"questionId\":\"q1\",\"kinds\":[\"choice\"]}],\"answerSource\":[{\"questionId\":\"q1\",\"source\":\"founder\"}],\"evidenceLedger\":{\"newFounderInformation\":true,\"unresolvedStillApplies\":false,\"verifiedFacts\":[],\"founderClaims\":[],\"unresolved\":[],\"priorGoals\":[],\"stillUnknown\":[]},\"originalInput\":\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\",\"firstAnalysis\":{\"summary\":\"이 사업은 전통주를 좋아하는 내국인과 외국인을 대상으로 양조장 체험을 제공하고, 이를 통해 개인별 다양한 경험을 중시하는 관광객의 요구를 충족시키려는 것이다. 또한, 양조장의 온라인 마케팅을 지원하여 사업의 성장을 도모하고자 한다.\",\"priorJudgmentText\":\"전통주 체험 프로그램은 관광객의 수요를 충족시킬 수 있는 가능성이 높으며, 양조장과의 협업이 성공적으로 이루어질 경우 수익성이 있을 것으로 판단된다.\",\"priorAssumptions\":[\"관광객들이 전통주 체험에 대한 수요가 높을 것이다.\",\"양조장과의 협업이 성공적으로 이루어질 것이다.\",\"온라인 마케팅이 효과적으로 작용할 것이다.\"],\"priorVerificationText\":\"양조장과의 협업 가능성을 확인하기 위해 초기 미팅을 진행한다.\",\"priorQuestionText\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"customer\":\"전통주를 좋아하는 내국인 및 외국인 관광객\",\"problem\":\"관광객들이 개인별 다양한 경험을 원하지만, 전통주 체험을 제공하는 곳이 부족하다.\",\"market\":\"전통주에 관심이 있는 관광객 시장\",\"revenueModel\":\"가설이며 원문에서 확인되지 않았다(참가비). 체험 프로그램 참가비 및 양조장에서의 판매 수익을 통해 수익을 창출할 것으로 예상된다.\",\"unresolvedIssues\":[],\"product\":\"아직 분석되지 않았다\",\"supply\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"marketing\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"priorHypotheses\":[\"관광객들이 전통주 체험에 대한 수요가 높을 것이다.\",\"양조장과의 협업이 성공적으로 이루어질 것이다.\",\"온라인 마케팅이 효과적으로 작용할 것이다.\"]},\"latestAnalysis\":{\"customer\":\"전통주를 좋아하는 내국인 및 외국인 관광객\",\"problem\":\"관광객들이 개인별 다양한 경험을 원하지만, 전통주 체험을 제공하는 곳이 부족하다.\",\"market\":\"전통주에 관심이 있는 관광객 시장\",\"revenueModel\":\"가설이며 원문에서 확인되지 않았다(참가비). 체험 프로그램 참가비 및 양조장에서의 판매 수익을 통해 수익을 창출할 것으로 예상된다.\",\"execution\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"priorRisks\":[\"양조장과의 협업이 원활하지 않을 경우\",\"관광객 수요 변동성\",\"경쟁업체의 증가\"],\"uncertain\":[\"관광객들이 전통주 체험에 대한 수요가 높을 것이다.\",\"양조장과의 협업이 성공적으로 이루어질 것이다.\",\"온라인 마케팅이 효과적으로 작용할 것이다.\"],\"hypotheses\":[\"관광객들이 전통주 체험에 대한 수요가 높을 것이다.\",\"양조장과의 협업이 성공적으로 이루어질 것이다.\",\"온라인 마케팅이 효과적으로 작용할 것이다.\"],\"priorJudgmentText\":\"이 사업은 전통주를 좋아하는 내국인과 외국인을 대상으로 양조장 체험을 제공하고, 이를 통해 개인별 다양한 경험을 중시하는 관광객의 요구를 충족시키려는 것이다. 또한, 양조장의 온라인 마케팅을 지원하여 사업의 성장을 도모하고자 한다.\",\"priorQuestionText\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"priorReasonText\":\"양조장과의 협업이 사업의 성공에 중요한 요소이므로, 초기 미팅에서 논의할 사항을 명확히 해야 한다.\",\"answerHint\":\"선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.\",\"claimConfirmation\":null,\"analysis\":{\"summary\":\"이 사업은 전통주를 좋아하는 내국인과 외국인을 대상으로 양조장 체험을 제공하고, 이를 통해 개인별 다양한 경험을 중시하는 관광객의 요구를 충족시키려는 것이다. 또한, 양조장의 온라인 마케팅을 지원하여 사업의 성장을 도모하고자 한다.\",\"value\":\"양조장에서 직접 전통주를 만들고 마시는 체험을 통해 관광객들에게 독특한 경험을 제공한다.\",\"operatingModel\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"payer\":\"체험에 참여하는 관광객\",\"competition\":\"기존의 주류 체험 프로그램 및 관광 서비스 제공업체와 경쟁할 것이다.\",\"operations\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"profitability\":\"체험 참가비와 양조장에서의 판매 수익으로 인해 수익성이 있을 것으로 예상된다.\",\"strengths\":[\"전통주에 대한 관심 증가\",\"개인별 맞춤형 체험 제공\",\"온라인 마케팅 지원으로 고객 유치 용이\"],\"priorAssumptions\":[\"관광객들이 전통주 체험에 대한 수요가 높을 것이다.\",\"양조장과의 협업이 성공적으로 이루어질 것이다.\",\"온라인 마케팅이 효과적으로 작용할 것이다.\"],\"priorEvidenceNotes\":[\"관광객들의 전통주 체험에 대한 관심 조사 결과\",\"양조장과의 초기 협의 결과\",\"유사한 체험 프로그램의 성공 사례\"],\"founderFacts\":[\"창업자는 관광 및 주류 산업에 대한 경험이 있다.\",\"양조장과의 네트워크가 형성되어 있다.\"],\"priorInferences\":[\"관광객의 개인화된 경험에 대한 수요가 증가하고 있다.\",\"전통주 체험이 관광객에게 매력적인 요소가 될 것이다.\"],\"priorJudgmentText\":\"전통주 체험 프로그램은 관광객의 수요를 충족시킬 수 있는 가능성이 높으며, 양조장과의 협업이 성공적으로 이루어질 경우 수익성이 있을 것으로 판단된다.\",\"priorChoices\":[{\"id\":\"c1\",\"label\":\"양조장의 생산 과정 및 시설에 대한 이해\"},{\"id\":\"c2\",\"label\":\"체험 프로그램의 세부 내용 및 가격 논의\"},{\"id\":\"c3\",\"label\":\"온라인 마케팅 전략에 대한 협의\"},{\"id\":\"c4\",\"label\":\"아직 핵심을 정하지 못했다\"},{\"id\":\"other\",\"label\":\"기타 / 직접 입력\"}],\"alternatives\":\"기존의 관광 프로그램이나 일반적인 주류 체험 프로그램이 대안이 될 수 있다.\",\"differentiation\":\"전통주 양조 체험을 통해 관광객에게 직접적인 참여와 경험을 제공함으로써 차별화된다.\",\"priorVerificationText\":\"양조장과의 협업 가능성을 확인하기 위해 초기 미팅을 진행한다.\",\"supply\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"marketing\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"product\":\"아직 분석되지 않았다\"}},\"priorQuestionTexts\":[\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\"],\"answerLinks\":[{\"sourceReviewId\":\"48d06eaa-ad74-4851-a919-fbd8ecefdc1a\",\"questionId\":\"q1\",\"question\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"choiceId\":\"c4\",\"choiceLabel\":\"아직 핵심을 정하지 못했다\",\"supplement\":\"아직 핵심을 정하지 못했다\",\"submittedAt\":\"2026-11-02T01:59:56.691Z\",\"status\":\"answered\"}],\"priorReadings\":[{\"reviewId\":\"48d06eaa-ad74-4851-a919-fbd8ecefdc1a\",\"priorJudgmentText\":\"전통주 체험 프로그램은 관광객의 수요를 충족시킬 수 있는 가능성이 높으며, 양조장과의 협업이 성공적으로 이루어질 경우 수익성이 있을 것으로 판단된다.\",\"judgmentReason\":\"\",\"impactOnPreviousJudgment\":\"\",\"resolvedIssues\":[],\"unresolvedIssues\":[],\"customer\":\"전통주를 좋아하는 내국인 및 외국인 관광객\",\"problem\":\"관광객들이 개인별 다양한 경험을 원하지만, 전통주 체험을 제공하는 곳이 부족하다.\",\"revenueModel\":\"가설이며 원문에서 확인되지 않았다(참가비). 체험 프로그램 참가비 및 양조장에서의 판매 수익을 통해 수익을 창출할 것으로 예상된다.\",\"product\":\"아직 분석되지 않았다\",\"supply\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"marketing\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"priorQuestionText\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"priorHypotheses\":[\"관광객들이 전통주 체험에 대한 수요가 높을 것이다.\",\"양조장과의 협업이 성공적으로 이루어질 것이다.\",\"온라인 마케팅이 효과적으로 작용할 것이다.\"]}],\"doNotCopy\":{\"priorJudgmentText\":\"전통주 체험 프로그램은 관광객의 수요를 충족시킬 수 있는 가능성이 높으며, 양조장과의 협업이 성공적으로 이루어질 경우 수익성이 있을 것으로 판단된다.\",\"priorQuestionText\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"priorUnresolvedIssues\":[\"관광객들이 전통주 체험에 대한 수요가 높을 것이다.\",\"양조장과의 협업이 성공적으로 이루어질 것이다.\",\"온라인 마케팅이 효과적으로 작용할 것이다.\"]},\"consultingPath\":[],\"priorAnalyses\":[]}"
+          }
+        ]
+      },
+      "response": {
+        "id": "chatcmpl-Efbcz1CJivX9bOCzdUXBBezft1rG2",
+        "model": "gpt-4o-mini-2024-07-18",
+        "finishReason": "stop",
+        "content": "{\"answerInterpretation\":[{\"questionId\":\"q1\",\"choiceId\":\"c4\",\"meaning\":\"Founder가 아직 핵심을 정하지 못했다고 주장하고 있다. 이는 사업 모델의 방향성이 불확실하다는 것을 나타낸다.\",\"founderBasis\":\"사업의 구체적인 방향이나 핵심 요소에 대한 명확한 결정이 이루어지지 않았기 때문이다.\",\"observedEvidence\":\"확인된 접촉이나 합의가 없다.\",\"judgmentEffect\":\"이 사업 모델의 잠재력은 여전히 존재하지만, 핵심이 정해지지 않은 상태에서 성공 가능성은 높아지지 않았다.\",\"openRisk\":\"사업의 핵심 요소가 정해지지 않아 방향성이 불확실하다.\"}],\"statementReadings\":[{\"questionId\":\"q1\",\"index\":0,\"statement\":\"아직 핵심을 정하지 못했다\",\"source\":\"founder\",\"kind\":\"stated_action\",\"certainty\":\"claim_only\",\"openGap\":\"사업의 방향성이 불확실하다.\"},{\"questionId\":\"q1\",\"index\":1,\"statement\":\"아직 핵심을 정하지 못했다\",\"source\":\"founder\",\"kind\":\"stated_action\",\"certainty\":\"claim_only\",\"openGap\":\"사업의 방향성이 불확실하다.\"}],\"verifiedFacts\":[],\"unverifiedClaims\":[\"사업의 핵심 요소가 정해지지 않았다.\"],\"assumptions\":[],\"resolvedIssues\":[],\"unresolvedIssues\":[\"사업의 방향성이 불확실하다.\"],\"customer\":\"전통주를 좋아하는 내국인 및 외국인 관광객\",\"problem\":\"관광객들이 개인별 다양한 경험을 원하지만, 전통주 체험을 제공하는 곳이 부족하다.\",\"value\":\"양조장에서 직접 전통주를 만들고 마시는 체험을 통해 관광객들에게 독특한 경험을 제공한다.\",\"product\":\"아직 분석되지 않았다\",\"market\":\"전통주에 관심이 있는 관광객 시장\",\"revenueModel\":\"가설이며 원문에서 확인되지 않았다(참가비). 체험 프로그램 참가비 및 양조장에서의 판매 수익을 통해 수익을 창출할 것으로 예상된다.\",\"operations\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"supply\":\"아직 분석되지 않았다\",\"supplyState\":\"not_analyzed\",\"marketing\":\"아직 분석되지 않았다\",\"marketingState\":\"not_analyzed\",\"competition\":\"기존의 주류 체험 프로그램 및 관광 서비스 제공업체와 경쟁할 것이다.\",\"executionNote\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"risks\":[\"양조장과의 협업이 원활하지 않을 경우\",\"관광객 수요 변동성\",\"경쟁업체의 증가\"],\"objectiveCandidates\":[{\"candidateId\":\"1\",\"areaId\":\"customer\",\"objective\":\"전통주 체험 프로그램의 고객층을 명확히 정의하기\",\"importance\":\"중요\",\"uncertainty\":\"고객층이 명확하지 않다.\",\"prerequisite\":\"고객 조사 필요\",\"overlapsReviewedObjective\":false},{\"candidateId\":\"2\",\"areaId\":\"product\",\"objective\":\"체험 프로그램의 구체적인 내용 및 가격을 설정하기\",\"importance\":\"매우 중요\",\"uncertainty\":\"아직 구체화되지 않았다.\",\"prerequisite\":\"양조장과의 협의 필요\",\"overlapsReviewedObjective\":false}],\"selectedCandidateId\":\"1\",\"selectionReason\":\"고객층을 명확히 정의하는 것이 사업의 방향성을 정하는 데 중요하기 때문이다.\",\"nextVerification\":\"고객층을 정의하기 위해 시장 조사 및 설문 조사를 실시할 예정이다.\",\"nextQuestions\":[{\"text\":\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"verificationPurpose\":\"고객층을 정의하기 위한 구체적인 조사 방법이 필요하다.\",\"choices\":[\"설문조사 실시\",\"관광객 인터뷰 진행\",\"경쟁사 분석\"]},{\"text\":\"체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?\",\"verificationPurpose\":\"체험 프로그램의 가격 및 내용 설정을 위한 요소가 필요하다.\",\"choices\":[\"비용 분석\",\"시장 가격 조사\",\"고객 피드백 수집\"]}],\"nextQuestionChoices\":[[\"설문조사 실시\",\"관광객 인터뷰 진행\",\"경쟁사 분석\"],[\"비용 분석\",\"시장 가격 조사\",\"고객 피드백 수집\"]],\"impactOnPreviousJudgment\":\"이번 답변은 사업의 방향성이 불확실하다는 점을 강조하며, 기존 판단에 영향을 미친다. 사업 모델의 잠재력은 여전히 존재하지만, 핵심 요소가 정해지지 않아 성공 가능성은 높아지지 않았다.\",\"keptBusinessPremise\":\"전통주 체험 프로그램은 관광객의 수요를 충족시킬 수 있는 가능성이 높다.\",\"executionPossibility\":\"사업의 실행 가능성은 현재로서는 낮다.\",\"updatedJudgment\":\"사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.\",\"judgmentReason\":\"사업의 핵심 요소가 정해지지 않아 방향성이 불확실하다.\"}",
+        "usage": {
+          "inputTokens": 15761,
+          "outputTokens": 1121,
+          "totalTokens": 16882
+        },
+        "usageKnown": true,
+        "latencyMs": 10222
+      },
+      "error": null,
+      "sentAnswers": [
+        {
+          "questionId": "q1",
+          "choiceId": "c4",
+          "choiceLabel": "아직 핵심을 정하지 못했다"
+        }
+      ],
+      "sentUnlinked": "SIMULATION. 양조장 한 곳에 문의했지만 아직 참여 의향은 확인하지 못했다."
+    },
+    {
+      "index": 3,
+      "round": 3,
+      "sent": true,
+      "request": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.2,
+        "maxTokens": 2400,
+        "messages": [
+          {
+            "role": "system",
+            "content": "당신은 초기 창업자의 사업 전략을 함께 검토하는 파트너다. 당신은 단순한 사업 아이디어 평가자가 아니라 지속적으로 사업을 발전시키는 전략 컨설턴트다. 최초 사업 아이디어와 모든 이전 검토 및 파운더 답변을 종합해 이해한다. 파운더의 답변을 단순 요약하지 말고 사업 모델에 미치는 영향을 판단한다. 다음 질문은 이전 질문의 후속이 아니다. 확인된 것, 아직 중요한 미확인, 다음 판단을 가장 크게 바꾸는 영역을 가른 뒤 그 영역의 사업 목적을 고른다. 고객, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 질문은 현재 사업 상황에 맞춰 고르며 고정된 순서를 강제하지 않는다. 이전에 답변된 질문을 단순히 반복하지 않는다. 질문의 표현이 아니라 질문이 해결하려는 사업 목적이 이전 질문과 달라야 한다. 기존 판단을 유지하거나 바꿀 수 있으며 그 이유를 사업 맥락에서 적는다. 확인되지 않은 주장은 검증된 사실로 취급하지 않는다. 사업의 잠재력과 실제 실행 가능성을 구분한다. 이미 해결된 영역은 근거와 함께 해결 상태로 남긴다. 이 호출은 한 단계의 통합 재분석이다. 아래 순서로 분석한 뒤 그 결과만 JSON으로 쓴다. 판단 예시는 다른 사업이다. 그 문장을 출력에 복사하지 말고 이번 사업으로 다시 쓴다. 이전 판단이 점포는 없으나 좋은 기회라는 문장이면 그 문장을 다시 쓰지 않는다. 사업 모델의 잠재력은 고객에게 가치를 줄 여지로 남을 수 있다. 이번 답이 상권이 좋을 것 같다이면 그 말은 미확인 주장이고 unverifiedClaims다. verifiedFacts는 빈 배열이다. 확인된 협력이나 점포는 없다. 실행 가능성은 검증되지 않았다. judgmentEffect에는 잠재력은 남을 수 있으나 상권 주장은 유지하지 않으며 성공 가능성은 높아지지 않았다라고 적는다. updatedJudgment는 새 문장으로 유지할 잠재력, 근거가 부족한 주장, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. 남은 위험은 점포와 조건이 없다는 현재 빈칸이다. unresolvedIssues에는 점포가 없다는 현재 빈칸을 새로 적는다. 다음 질문은 방금 물은 문장의 단어를 바꾼 질문이 아니다. 방금 답한 목적과 다른 미확인 영역이다. 그 존재 질문에 이미 답이 있으면 같은 질문을 반복하지 않고 아직 확인되지 않은 다른 영역을 고른다. 1. stagePairs의 각 답을 questionId로 읽는다. question, offeredChoices, choiceId, choiceLabel, supplement는 한 답이다. priorStagePairs는 이전 단계의 맥락이고 answerInterpretation에 넣지 않는다. 각 답에 meaning, founderBasis, observedEvidence, judgmentEffect, openRisk를 적는다. meaning은 그 답이 새로 준 정보와 그 정보가 주장인지 미확인인지 적는다. 연습 입력을 사실로 부르지 않는다. founderBasis는 Founder가 그렇게 말한 이유다. 이유 없이 가능성만 말하면 근거가 답에 없다고 적는다. observedEvidence는 접촉, 합의, 입금처럼 실제로 확인된 것이다. 없으면 확인된 접촉이나 합의가 없다고 적고, 가능성 주장을 확인된 사실로 올리지 않는다. answerSource.source가 simulation이거나 답이 SIMULATION으로 시작하면 연습 입력이고 실제 Founder 답변과 구분한다. 그 문장에 이는 사실이다라고 쓰지 않는다. 사실을 제공한다라고도 쓰지 않는다. Founder가 문의하거나 접촉했다고 말해도 그 말은 주장이다. 상대의 기록, 회신, 합의가 없으면 답 문장을 observedEvidence로 옮기지 않는다. 한 답 안의 주장, 없는 반응, 없는 참여 의향, 없는 조건은 서로 다른 정보다. 하나를 사실로 나머지를 덮지 않는다. 문의 주장만으로 협력 가능성을 높이지 않는다. judgmentEffect는 이 답 때문에 이전 판단에서 유지되는 것과 바뀌는 것, 그리고 그 이유다. 사업 모델의 잠재력을 유지하는 것과 미확인 주장을 유지하는 것을 가른다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다. 확인되지 않은 가능성으로 성공 가능성을 높이지 않는다. 긍정적인 전망이라고 쓰지 않는다. 확인되지 않은 공급이나 계약을 끝난 사실로 쓰지 않는다. openRisk는 이 답이 남긴 미검증 위험이다. 다섯 문장이 choiceLabel이나 supplement와 같으면 해석이 아니다. 2. 확인된 사실, 주장, 가설을 가른다. Founder의 가능성 판단, 선호, 기대는 unverifiedClaims로 남긴다. 별도 증거가 없는 주장과 계획은 verifiedFacts에 넣지 않는다. 없으면 빈 배열이다. 접촉, 협력 의사, 합의, 공급 조건이 없으면 그 기대를 사업 성과나 성공 가능성의 근거로 쓰지 않는다. 긍정적 사업 판단은 verifiedFacts의 별도 근거가 있을 때만 적는다. 근거가 없으면 그 문장은 창업자의 기대이고 파트너 확보와 실행은 검증되지 않았다고 적는다. 코드가 붙인 분류가 있어도 그 문장을 사실로 승격하지 않는다. 3. 최초 입력과 지금까지의 답으로 사업 전체를 다시 적는다. customer, problem, value, product, market, revenueModel, operations, supply, marketing, competition, executionNote, risks다. 정보가 부족한 칸은 부족하다고 적는다. supply와 marketing은 supplyState, marketingState와 함께 적는다. state는 confirmed, unconfirmed, not_analyzed다. not_analyzed의 문장은 아직 분석되지 않았다. unconfirmed의 문장은 아직 확인되지 않았다. confirmed는 그 두 문장이 아닌 확인된 내용이다. 빈 문자열과 공백은 실패다. value와 product도 빈 문자열이면 실패다. 요청에 문장이 있으면 지우지 말고 이번 답에 맞게 다시 쓴다. 요청에 아직 분석되지 않았다만 있으면 그 상태를 유지하거나 이번 답으로 알게 된 범위만 적는다. 부모의 빈 문자열은 요청에 없고 state는 not_analyzed다. 입력에도 없으면 unconfirmed로 둔다. 입력에 없는 공급 계약, 마케팅 성과, 수익, 상품을 만들어 내지 않는다. 점수를 만들지 않는다. executionNote는 실행이 확인됐는지에 대한 문장이고 높다 또는 낮다가 아니다. 확인된 접촉이 없으면 운영 계획을 실행이 끝난 것처럼 적지 않는다. 4. impactOnPreviousJudgment, updatedJudgment, judgmentReason은 서로 다른 역할의 새 문장이다. 사업 모델의 잠재력, Founder의 미확인 주장, 실제 확인된 협력, 실행 가능성, 새로 보인 위험을 한 덩어리로 유지하지 않는다. 잠재력은 유지할 수 있다. 확인된 접촉이나 합의가 없으면 협력 가능성이 높다는 판단은 유지하지 않는다. impactOnPreviousJudgment는 이번 답이 그 구분 중 어디에 영향을 주는지다. updatedJudgment는 priorJudgmentText를 출력하지 않는 현재 판단이다. 사업 모델의 잠재력은 유지할 수 있다. 협력의 실행 가능성은 그 잠재력과 따로 재평가한다. 새 사실이 없어도 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. judgmentReason은 그 구분의 이유다. 남은 위험은 빼지 말고 unresolvedIssues에 현재 빈칸으로 적는다. unresolvedIssues는 priorUnresolvedIssues와 다른 새 문장이다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건을 한 문장으로 뭉치지 않는다. 새로 보인 위험도 거기 적는다. 세 문장을 한 문장으로 반복하지 않는다. priorJudgmentText를 세 칸에 그대로 붙이지 않는다. updatedJudgment가 priorJudgmentText와 같거나 그 문장을 포함하면 재평가가 아니다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다. 미확인 주장을 긍정적인 전망으로 쓰지 않는다. 이번 답이 그 위험을 해소하지 않으면 위험을 빼지 않는다. 코드는 결론을 정하지 않는다. 5. 다음 검증은 statedRecord와 areaStatus를 읽고 objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId로 하나 고른다. 코드는 질문 문장을 정하지 않는다. 코드는 후보도 고르지 않는다. 질문 개수도 당신이 정한다. priorReview는 판단을 갱신할 때 읽고 질문의 주제로 고정하지 않는다. overlapsReviewedObjective가 true인 후보는 고르지 않는다. closedQuestions의 사업 목적은 끝난 목적이다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 이미 답한 질문은 표현만 바꾸어 다시 묻지 않는다. 다음 질문의 사업 목적은 방금 답한 질문의 목적과 달라야 한다. 고정된 질문 순서는 없다. areaStatus의 배열 순서는 우선순위가 아니다. 고객, 문제, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 해결된 내용은 근거와 함께 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다. consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다. originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. priorHypotheses와 doNotCopy.priorUnresolvedIssues는 가설이거나 이전 목록이다. unresolvedIssues는 그 목록을 그대로 복사하지 않고 이번 답이 남긴 빈칸과 새로 보인 빈칸만 적는다. 근거가 없으면 미해결로 남긴다. JSON만 반환한다. 키 순서는 answerInterpretation, statementReadings, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, objectiveCandidates, selectedCandidateId, selectionReason, nextVerification, nextQuestions, nextQuestionChoices, impactOnPreviousJudgment, keptBusinessPremise, executionPossibility, updatedJudgment, judgmentReason 이다. answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다. nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. verificationPurpose는 질문 문장과 다른 불확실성이다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다. nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다."
+          },
+          {
+            "role": "user",
+            "content": "{\"businessState\":{\"areaOrderIsNotPriority\":true,\"statedRecord\":{\"originalIdea\":\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\",\"answers\":[{\"questionId\":\"q1\",\"source\":\"founder\",\"index\":0,\"statement\":\"아직 핵심을 정하지 못했다\"},{\"questionId\":\"q1\",\"source\":\"founder\",\"index\":1,\"statement\":\"아직 핵심을 정하지 못했다\"},{\"questionId\":\"q1\",\"source\":\"founder\",\"index\":0,\"statement\":\"설문조사 실시\"},{\"questionId\":\"q1\",\"source\":\"founder\",\"index\":1,\"statement\":\"설문조사 실시\"},{\"questionId\":\"q2\",\"source\":\"founder\",\"index\":0,\"statement\":\"비용 분석\"},{\"questionId\":\"q2\",\"source\":\"founder\",\"index\":1,\"statement\":\"비용 분석\"}],\"confirmed\":[]},\"areaStatus\":[{\"areaId\":\"customer\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"},{\"areaId\":\"problem\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"},{\"areaId\":\"product\",\"status\":\"not_analyzed\",\"basis\":\"field\"},{\"areaId\":\"supply\",\"status\":\"not_analyzed\",\"basis\":\"field\"},{\"areaId\":\"price\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"},{\"areaId\":\"revenue\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"},{\"areaId\":\"market\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"},{\"areaId\":\"marketing\",\"status\":\"not_analyzed\",\"basis\":\"field\"},{\"areaId\":\"operations\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"},{\"areaId\":\"risk\",\"status\":\"not_analyzed\",\"basis\":\"no_evidence\"}],\"priorReview\":{\"judgment\":\"사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.\",\"reviewedObjectives\":[\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?\"],\"hypotheses\":[],\"unresolved\":[\"사업의 방향성이 불확실하다.\"],\"resolved\":[],\"operations\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"risks\":[\"양조장과의 협업이 원활하지 않을 경우\",\"관광객 수요 변동성\",\"경쟁업체의 증가\"]}},\"currentAnswerStatements\":[{\"questionId\":\"q1\",\"source\":\"founder\",\"index\":0,\"statement\":\"설문조사 실시\"},{\"questionId\":\"q1\",\"source\":\"founder\",\"index\":1,\"statement\":\"설문조사 실시\"},{\"questionId\":\"q2\",\"source\":\"founder\",\"index\":0,\"statement\":\"비용 분석\"},{\"questionId\":\"q2\",\"source\":\"founder\",\"index\":1,\"statement\":\"비용 분석\"}],\"closedQuestions\":[{\"questionId\":\"q1\",\"text\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"askAgain\":false},{\"questionId\":\"q1\",\"text\":\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"askAgain\":false},{\"questionId\":\"q2\",\"text\":\"체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?\",\"askAgain\":false}],\"revisionTask\":{\"updatedJudgment\":\"priorJudgmentText를 출력하지 않는다. 그 문장을 유지라고 다시 적는 것은 재평가가 아니다. 새 문장에서 사업 모델의 잠재력과 미확인 주장을 가른다. 확인된 접촉이 없으면 협력 가능성이 높다는 판단을 유지하지 않는다. 유지할 부분, 근거가 부족한 부분, 지금 가장 중요한 미해결 위험, 추가 검증이 필요한 이유를 적는다. verifiedFacts가 비어 있으면 judgmentEffect에 성공 가능성은 높아지지 않았다라고 적는다. judgmentEffect와 judgmentReason은 updatedJudgment와 같은 판단이고 유지된 전제를 같이 적는다.\",\"unresolvedIssues\":\"priorUnresolvedIssues와 같은 문장을 두지 않는다. unresolvedIssues의 개수는 currentAnswerStatements와 같다. 각 문장이 남긴 위험을 새 문장으로 하나씩 적는다. 주장한 행동, 없는 반응, 없는 의향, 없는 조건이 서로 다르면 한 문장으로 뭉치지 않는다. priorHypotheses를 복사하지 않는다.\",\"nextQuestion\":\"질문 문장은 당신이 고른다. 질문 개수도 당신이 정한다. objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId의 목적만 묻는다. priorReview는 판단 갱신에만 쓰고 질문의 주제로 고정하지 않는다. priorQuestionText와 같은 목적을 다른 말로 묻지 않는다. 방금 답한 질문을 반복하지 않는다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 단어만 바꾼 질문은 같은 목적이다. 미확인 영역은 areaStatus에서 고른다. 고정된 질문 순서는 없다. 영역 목록은 순서가 아니다. 해결된 내용은 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다.\"},\"stagePairs\":[{\"questionId\":\"q1\",\"question\":\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"offeredChoices\":[{\"choiceId\":\"c1\",\"label\":\"설문조사 실시\"},{\"choiceId\":\"c2\",\"label\":\"관광객 인터뷰 진행\"},{\"choiceId\":\"c3\",\"label\":\"경쟁사 분석\"}],\"choiceId\":\"c1\",\"choiceLabel\":\"설문조사 실시\",\"supplement\":\"설문조사 실시\",\"status\":\"answered\"},{\"questionId\":\"q2\",\"question\":\"체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?\",\"offeredChoices\":[{\"choiceId\":\"c1\",\"label\":\"비용 분석\"},{\"choiceId\":\"c2\",\"label\":\"시장 가격 조사\"},{\"choiceId\":\"c3\",\"label\":\"고객 피드백 수집\"}],\"choiceId\":\"c1\",\"choiceLabel\":\"비용 분석\",\"supplement\":\"비용 분석\",\"status\":\"answered\"}],\"priorStagePairs\":[{\"questionId\":\"q1\",\"question\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"offeredChoices\":[{\"choiceId\":\"c1\",\"label\":\"양조장의 생산 과정 및 시설에 대한 이해\"},{\"choiceId\":\"c2\",\"label\":\"체험 프로그램의 세부 내용 및 가격 논의\"},{\"choiceId\":\"c3\",\"label\":\"온라인 마케팅 전략에 대한 협의\"},{\"choiceId\":\"c4\",\"label\":\"아직 핵심을 정하지 못했다\"},{\"choiceId\":\"other\",\"label\":\"기타 / 직접 입력\"}],\"choiceId\":\"c4\",\"choiceLabel\":\"아직 핵심을 정하지 못했다\",\"supplement\":\"아직 핵심을 정하지 못했다\",\"status\":\"answered\"}],\"unlinkedStatements\":[{\"feedbackId\":\"5cf0e33d-f772-4e64-8b00-b633251aced5\",\"questionId\":null,\"choiceId\":null,\"text\":\"SIMULATION. 양조장 한 곳에 문의했지만 아직 참여 의향은 확인하지 못했다.\",\"submittedAt\":\"2026-11-02T01:59:56.692Z\",\"provenance\":\"SIMULATION\",\"epistemicStatus\":\"FOUNDER_CLAIM\",\"evidenceId\":null}],\"answerRecords\":[{\"feedbackId\":\"c656bad8-8525-4240-9611-9b3347712d6a\",\"questionId\":\"q1\",\"choiceId\":\"c4\",\"text\":\"아직 핵심을 정하지 못했다\",\"submittedAt\":\"2026-11-02T01:59:56.691Z\",\"provenance\":\"FOUNDER_INPUT\",\"epistemicStatus\":\"FOUNDER_CLAIM\",\"evidenceId\":null},{\"feedbackId\":\"22068b42-9dfe-4613-9496-342cc40d119e\",\"questionId\":\"q1\",\"choiceId\":\"c1\",\"text\":\"설문조사 실시\",\"submittedAt\":\"2026-11-02T02:00:06.954Z\",\"provenance\":\"FOUNDER_INPUT\",\"epistemicStatus\":\"FOUNDER_CLAIM\",\"evidenceId\":null},{\"feedbackId\":\"eb4144f2-d64e-4782-ad15-c319f9bb0daa\",\"questionId\":\"q2\",\"choiceId\":\"c1\",\"text\":\"비용 분석\",\"submittedAt\":\"2026-11-02T02:00:06.955Z\",\"provenance\":\"FOUNDER_INPUT\",\"epistemicStatus\":\"FOUNDER_CLAIM\",\"evidenceId\":null}],\"stagePartial\":false,\"answerReading\":[{\"questionId\":\"q1\",\"kinds\":[\"choice\"]},{\"questionId\":\"q1\",\"kinds\":[\"choice\"]},{\"questionId\":\"q2\",\"kinds\":[\"choice\"]}],\"answerSource\":[{\"questionId\":\"q1\",\"source\":\"founder\"},{\"questionId\":\"q1\",\"source\":\"founder\"},{\"questionId\":\"q2\",\"source\":\"founder\"}],\"evidenceLedger\":{\"newFounderInformation\":true,\"unresolvedStillApplies\":false,\"verifiedFacts\":[],\"founderClaims\":[],\"unresolved\":[],\"priorGoals\":[],\"stillUnknown\":[]},\"originalInput\":\"다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.\",\"firstAnalysis\":{\"summary\":\"이 사업은 전통주를 좋아하는 내국인과 외국인을 대상으로 양조장 체험을 제공하고, 이를 통해 개인별 다양한 경험을 중시하는 관광객의 요구를 충족시키려는 것이다. 또한, 양조장의 온라인 마케팅을 지원하여 사업의 성장을 도모하고자 한다.\",\"priorJudgmentText\":\"전통주 체험 프로그램은 관광객의 수요를 충족시킬 수 있는 가능성이 높으며, 양조장과의 협업이 성공적으로 이루어질 경우 수익성이 있을 것으로 판단된다.\",\"priorAssumptions\":[\"관광객들이 전통주 체험에 대한 수요가 높을 것이다.\",\"양조장과의 협업이 성공적으로 이루어질 것이다.\",\"온라인 마케팅이 효과적으로 작용할 것이다.\"],\"priorVerificationText\":\"양조장과의 협업 가능성을 확인하기 위해 초기 미팅을 진행한다.\",\"priorQuestionText\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"customer\":\"전통주를 좋아하는 내국인 및 외국인 관광객\",\"problem\":\"관광객들이 개인별 다양한 경험을 원하지만, 전통주 체험을 제공하는 곳이 부족하다.\",\"market\":\"전통주에 관심이 있는 관광객 시장\",\"revenueModel\":\"가설이며 원문에서 확인되지 않았다(참가비). 체험 프로그램 참가비 및 양조장에서의 판매 수익을 통해 수익을 창출할 것으로 예상된다.\",\"unresolvedIssues\":[],\"product\":\"아직 분석되지 않았다\",\"supply\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"marketing\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"priorHypotheses\":[\"관광객들이 전통주 체험에 대한 수요가 높을 것이다.\",\"양조장과의 협업이 성공적으로 이루어질 것이다.\",\"온라인 마케팅이 효과적으로 작용할 것이다.\"]},\"latestAnalysis\":{\"customer\":\"전통주를 좋아하는 내국인 및 외국인 관광객\",\"problem\":\"관광객들이 개인별 다양한 경험을 원하지만, 전통주 체험을 제공하는 곳이 부족하다.\",\"market\":\"전통주에 관심이 있는 관광객 시장\",\"revenueModel\":\"가설이며 원문에서 확인되지 않았다(참가비). 체험 프로그램 참가비 및 양조장에서의 판매 수익을 통해 수익을 창출할 것으로 예상된다.\",\"execution\":\"\",\"priorRisks\":[\"양조장과의 협업이 원활하지 않을 경우\",\"관광객 수요 변동성\",\"경쟁업체의 증가\"],\"uncertain\":[\"사업의 방향성이 불확실하다.\"],\"hypotheses\":[],\"priorJudgmentText\":\"사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.\",\"priorQuestionText\":\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"priorReasonText\":\"사업의 핵심 요소가 정해지지 않아 방향성이 불확실하다.\",\"answerHint\":\"선택하거나 직접 적습니다. 확인된 사실과 계획을 구분합니다.\",\"claimConfirmation\":null,\"analysis\":{\"summary\":\"이번 답변은 사업의 방향성이 불확실하다는 점을 강조하며, 기존 판단에 영향을 미친다. 사업 모델의 잠재력은 여전히 존재하지만, 핵심 요소가 정해지지 않아 성공 가능성은 높아지지 않았다.\",\"value\":\"양조장에서 직접 전통주를 만들고 마시는 체험을 통해 관광객들에게 독특한 경험을 제공한다.\",\"operatingModel\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"payer\":\"\",\"competition\":\"기존의 주류 체험 프로그램 및 관광 서비스 제공업체와 경쟁할 것이다.\",\"operations\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"profitability\":\"\",\"strengths\":[],\"product\":\"아직 분석되지 않았다\",\"supply\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"marketing\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"priorAssumptions\":[],\"priorEvidenceNotes\":[],\"founderFacts\":[],\"priorInferences\":[\"사업의 핵심 요소가 정해지지 않았다.\"],\"priorJudgmentText\":\"사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.\",\"priorChoices\":[{\"id\":\"c1\",\"label\":\"설문조사 실시\"},{\"id\":\"c2\",\"label\":\"관광객 인터뷰 진행\"},{\"id\":\"c3\",\"label\":\"경쟁사 분석\"}],\"priorVerificationText\":\"고객층을 정의하기 위해 시장 조사 및 설문 조사를 실시할 예정이다.\"}},\"priorQuestionTexts\":[\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?\"],\"answerLinks\":[{\"sourceReviewId\":\"48d06eaa-ad74-4851-a919-fbd8ecefdc1a\",\"questionId\":\"q1\",\"question\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"choiceId\":\"c4\",\"choiceLabel\":\"아직 핵심을 정하지 못했다\",\"supplement\":\"아직 핵심을 정하지 못했다\",\"submittedAt\":\"2026-11-02T01:59:56.691Z\",\"status\":\"answered\"},{\"sourceReviewId\":\"5f6d705d-fe2a-468f-97be-da16482abd32\",\"questionId\":\"q1\",\"question\":\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"choiceId\":\"c1\",\"choiceLabel\":\"설문조사 실시\",\"supplement\":\"설문조사 실시\",\"submittedAt\":\"2026-11-02T02:00:06.954Z\",\"status\":\"answered\"},{\"sourceReviewId\":\"5f6d705d-fe2a-468f-97be-da16482abd32\",\"questionId\":\"q2\",\"question\":\"체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?\",\"choiceId\":\"c1\",\"choiceLabel\":\"비용 분석\",\"supplement\":\"비용 분석\",\"submittedAt\":\"2026-11-02T02:00:06.955Z\",\"status\":\"answered\"}],\"priorReadings\":[{\"reviewId\":\"48d06eaa-ad74-4851-a919-fbd8ecefdc1a\",\"priorJudgmentText\":\"전통주 체험 프로그램은 관광객의 수요를 충족시킬 수 있는 가능성이 높으며, 양조장과의 협업이 성공적으로 이루어질 경우 수익성이 있을 것으로 판단된다.\",\"judgmentReason\":\"\",\"impactOnPreviousJudgment\":\"\",\"resolvedIssues\":[],\"unresolvedIssues\":[],\"customer\":\"전통주를 좋아하는 내국인 및 외국인 관광객\",\"problem\":\"관광객들이 개인별 다양한 경험을 원하지만, 전통주 체험을 제공하는 곳이 부족하다.\",\"revenueModel\":\"가설이며 원문에서 확인되지 않았다(참가비). 체험 프로그램 참가비 및 양조장에서의 판매 수익을 통해 수익을 창출할 것으로 예상된다.\",\"product\":\"아직 분석되지 않았다\",\"supply\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"marketing\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"priorQuestionText\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"priorHypotheses\":[\"관광객들이 전통주 체험에 대한 수요가 높을 것이다.\",\"양조장과의 협업이 성공적으로 이루어질 것이다.\",\"온라인 마케팅이 효과적으로 작용할 것이다.\"]},{\"reviewId\":\"5f6d705d-fe2a-468f-97be-da16482abd32\",\"priorJudgmentText\":\"사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.\",\"judgmentReason\":\"사업의 핵심 요소가 정해지지 않아 방향성이 불확실하다.\",\"impactOnPreviousJudgment\":\"이번 답변은 사업의 방향성이 불확실하다는 점을 강조하며, 기존 판단에 영향을 미친다. 사업 모델의 잠재력은 여전히 존재하지만, 핵심 요소가 정해지지 않아 성공 가능성은 높아지지 않았다.\",\"resolvedIssues\":[],\"unresolvedIssues\":[\"사업의 방향성이 불확실하다.\"],\"customer\":\"전통주를 좋아하는 내국인 및 외국인 관광객\",\"problem\":\"관광객들이 개인별 다양한 경험을 원하지만, 전통주 체험을 제공하는 곳이 부족하다.\",\"revenueModel\":\"가설이며 원문에서 확인되지 않았다(참가비). 체험 프로그램 참가비 및 양조장에서의 판매 수익을 통해 수익을 창출할 것으로 예상된다.\",\"product\":\"아직 분석되지 않았다\",\"supply\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"marketing\":{\"state\":\"not_analyzed\",\"text\":\"아직 분석되지 않았다\"},\"priorQuestionText\":\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"priorHypotheses\":[]}],\"doNotCopy\":{\"priorJudgmentText\":\"사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.\",\"priorQuestionText\":\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"priorUnresolvedIssues\":[\"사업의 방향성이 불확실하다.\"]},\"consultingPath\":[{\"order\":1,\"reviewId\":\"5f6d705d-fe2a-468f-97be-da16482abd32\",\"choice\":\"아직 핵심을 정하지 못했다\",\"supplement\":\"아직 핵심을 정하지 못했다\",\"answeredQuestion\":\"양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?\",\"priorJudgmentText\":\"사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.\",\"priorQuestionText\":\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"priorAssumptions\":[],\"priorRisks\":[\"양조장과의 협업이 원활하지 않을 경우\",\"관광객 수요 변동성\",\"경쟁업체의 증가\"],\"judgmentStatus\":\"adopted\"}],\"priorAnalyses\":[{\"reviewId\":\"5f6d705d-fe2a-468f-97be-da16482abd32\",\"priorJudgmentText\":\"사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.\",\"priorQuestionText\":\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"priorAssumptions\":[],\"priorRisks\":[\"양조장과의 협업이 원활하지 않을 경우\",\"관광객 수요 변동성\",\"경쟁업체의 증가\"]}]}"
+          }
+        ]
+      },
+      "response": {
+        "id": "chatcmpl-Efbd9RroEWRZwQtaeBwxSkYw9Vm74",
+        "model": "gpt-4o-mini-2024-07-18",
+        "finishReason": "stop",
+        "content": "{\"answerInterpretation\":[{\"questionId\":\"q1\",\"choiceId\":\"c1\",\"meaning\":\"설문조사를 실시하겠다는 결정은 고객층을 정의하기 위한 구체적인 행동으로, 이는 사업의 방향성을 명확히 하는 데 기여할 수 있다. 이는 확인된 사실이 아니다.\",\"founderBasis\":\"고객층을 정의하기 위해 설문조사를 실시하겠다는 의도를 표현했다.\",\"observedEvidence\":\"확인된 접촉이나 합의가 없다.\",\"judgmentEffect\":\"사업의 방향성을 명확히 하는 데 도움이 될 수 있지만, 여전히 성공 가능성은 높아지지 않았다.\",\"openRisk\":\"설문조사 결과가 예상과 다를 경우 고객층 정의에 어려움이 있을 수 있다.\"},{\"questionId\":\"q2\",\"choiceId\":\"c1\",\"meaning\":\"비용 분석을 통해 체험 프로그램의 구체적인 내용 및 가격을 설정하겠다는 결정은 사업의 실행 가능성을 높일 수 있는 행동이다. 이는 확인된 사실이 아니다.\",\"founderBasis\":\"체험 프로그램의 가격을 설정하기 위해 비용 분석이 필요하다고 판단했다.\",\"observedEvidence\":\"확인된 접촉이나 합의가 없다.\",\"judgmentEffect\":\"비용 분석을 통해 사업의 실행 가능성을 높일 수 있지만, 여전히 성공 가능성은 높아지지 않았다.\",\"openRisk\":\"비용 분석이 부정확할 경우 프로그램 가격 설정에 문제가 발생할 수 있다.\"}],\"statementReadings\":[{\"questionId\":\"q1\",\"index\":0,\"statement\":\"설문조사 실시\",\"source\":\"founder\",\"kind\":\"stated_action\",\"certainty\":\"claim_only\",\"openGap\":\"설문조사 결과가 예상과 다를 경우 고객층 정의에 어려움이 있을 수 있다.\"},{\"questionId\":\"q1\",\"index\":1,\"statement\":\"설문조사 실시\",\"source\":\"founder\",\"kind\":\"stated_action\",\"certainty\":\"claim_only\",\"openGap\":\"설문조사 결과가 예상과 다를 경우 고객층 정의에 어려움이 있을 수 있다.\"},{\"questionId\":\"q2\",\"index\":0,\"statement\":\"비용 분석\",\"source\":\"founder\",\"kind\":\"stated_action\",\"certainty\":\"claim_only\",\"openGap\":\"비용 분석이 부정확할 경우 프로그램 가격 설정에 문제가 발생할 수 있다.\"},{\"questionId\":\"q2\",\"index\":1,\"statement\":\"비용 분석\",\"source\":\"founder\",\"kind\":\"stated_action\",\"certainty\":\"claim_only\",\"openGap\":\"비용 분석이 부정확할 경우 프로그램 가격 설정에 문제가 발생할 수 있다.\"}],\"verifiedFacts\":[],\"unverifiedClaims\":[\"설문조사를 실시하겠다는 결정은 고객층을 정의하기 위한 구체적인 행동이다.\",\"비용 분석을 통해 체험 프로그램의 구체적인 내용 및 가격을 설정하겠다는 결정은 사업의 실행 가능성을 높일 수 있다.\"],\"assumptions\":[],\"resolvedIssues\":[],\"unresolvedIssues\":[\"설문조사 결과가 예상과 다를 경우 고객층 정의에 어려움이 있을 수 있다.\",\"비용 분석이 부정확할 경우 프로그램 가격 설정에 문제가 발생할 수 있다.\"],\"customer\":\"전통주를 좋아하는 내국인 및 외국인 관광객\",\"problem\":\"관광객들이 개인별 다양한 경험을 원하지만, 전통주 체험을 제공하는 곳이 부족하다.\",\"value\":\"양조장에서 직접 전통주를 만들고 마시는 체험을 통해 관광객들에게 독특한 경험을 제공한다.\",\"product\":\"아직 분석되지 않았다\",\"market\":\"전통주에 관심이 있는 관광객 시장\",\"revenueModel\":\"가설이며 원문에서 확인되지 않았다(참가비). 체험 프로그램 참가비 및 양조장에서의 판매 수익을 통해 수익을 창출할 것으로 예상된다.\",\"operations\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"supply\":\"아직 분석되지 않았다\",\"supplyState\":\"not_analyzed\",\"marketing\":\"아직 분석되지 않았다\",\"marketingState\":\"not_analyzed\",\"competition\":\"기존의 주류 체험 프로그램 및 관광 서비스 제공업체와 경쟁할 것이다.\",\"executionNote\":\"양조장과의 협업을 통해 체험 프로그램을 운영하고, 온라인 마케팅을 통해 고객을 유치한다.\",\"risks\":[\"양조장과의 협업이 원활하지 않을 경우\",\"관광객 수요 변동성\",\"경쟁업체의 증가\"],\"objectiveCandidates\":[{\"candidateId\":\"1\",\"areaId\":\"customer\",\"objective\":\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"importance\":\"중요\",\"uncertainty\":\"고객층 정의가 불확실하다.\",\"prerequisite\":\"설문조사 결과가 필요하다.\",\"overlapsReviewedObjective\":false},{\"candidateId\":\"2\",\"areaId\":\"price\",\"objective\":\"체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?\",\"importance\":\"중요\",\"uncertainty\":\"가격 설정이 불확실하다.\",\"prerequisite\":\"비용 분석이 필요하다.\",\"overlapsReviewedObjective\":false}],\"selectedCandidateId\":\"1\",\"selectionReason\":\"고객층 정의가 사업의 방향성을 결정짓는 중요한 요소이기 때문에 우선적으로 조사해야 한다.\",\"nextVerification\":\"고객층을 정의하기 위해 설문조사를 실시할 예정이다.\",\"nextQuestions\":[{\"text\":\"전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?\",\"verificationPurpose\":\"고객층 정의가 불확실하다.\",\"choices\":[\"설문조사 실시\",\"관광객 인터뷰 진행\",\"경쟁사 분석\"]},{\"text\":\"체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?\",\"verificationPurpose\":\"가격 설정이 불확실하다.\",\"choices\":[\"비용 분석\",\"시장 가격 조사\",\"고객 피드백 수집\"]}],\"nextQuestionChoices\":[[\"설문조사 실시\",\"관광객 인터뷰 진행\",\"경쟁사 분석\"],[\"비용 분석\",\"시장 가격 조사\",\"고객 피드백 수집\"]],\"impactOnPreviousJudgment\":\"이번 답변은 사업의 방향성이 불확실하다는 점을 강조하며, 기존 판단에 영향을 미친다. 사업 모델의 잠재력은 여전히 존재하지만, 핵심 요소가 정해지지 않아 성공 가능성은 높아지지 않았다.\",\"keptBusinessPremise\":\"사업의 방향성이 불확실하다.\",\"executionPossibility\":\"사업의 실행 가능성은 고객층 정의와 가격 설정에 따라 달라질 것이다.\",\"updatedJudgment\":\"사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.\",\"judgmentReason\":\"사업의 핵심 요소가 정해지지 않아 방향성이 불확실하다.\"}",
+        "usage": {
+          "inputTokens": 16807,
+          "outputTokens": 1473,
+          "totalTokens": 18280
+        },
+        "usageKnown": true,
+        "latencyMs": 14435
+      },
+      "error": null,
+      "sentAnswers": [
+        {
+          "questionId": "q1",
+          "choiceId": "c1",
+          "choiceLabel": "설문조사 실시"
+        },
+        {
+          "questionId": "q2",
+          "choiceId": "c1",
+          "choiceLabel": "비용 분석"
+        }
+      ],
+      "sentUnlinked": null
+    }
+  ],
+  "reviews": [
+    {
+      "round": 1,
+      "reviewId": "48d06eaa-ad74-4851-a919-fbd8ecefdc1a",
+      "parentReviewId": null,
+      "status": "succeeded",
+      "error": null,
+      "model": "gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "evidence": "live_network",
+      "callCount": 1,
+      "promptTokens": 3692,
+      "completionTokens": 820,
+      "totalTokens": 4512,
+      "usageKnown": true,
+      "latencyMs": 8295,
+      "judgment": "전통주 체험 프로그램은 관광객의 수요를 충족시킬 수 있는 가능성이 높으며, 양조장과의 협업이 성공적으로 이루어질 경우 수익성이 있을 것으로 판단된다.",
+      "nextQuestion": "양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?"
+    },
+    {
+      "round": 2,
+      "reviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+      "parentReviewId": "48d06eaa-ad74-4851-a919-fbd8ecefdc1a",
+      "status": "succeeded",
+      "error": null,
+      "model": "gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "evidence": "live_network",
+      "callCount": 1,
+      "promptTokens": 15761,
+      "completionTokens": 1121,
+      "totalTokens": 16882,
+      "usageKnown": true,
+      "latencyMs": 10222,
+      "judgment": "사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.",
+      "nextQuestion": "전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?"
+    },
+    {
+      "round": 3,
+      "reviewId": "0e75ff46-88fd-4ce2-b567-bdc3f3048531",
+      "parentReviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+      "status": "failed",
+      "error": "stage_judgment_copied,stage_questions_repeated",
+      "model": "gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "evidence": "live_network",
+      "callCount": 1,
+      "promptTokens": 16807,
+      "completionTokens": 1473,
+      "totalTokens": 18280,
+      "usageKnown": true,
+      "latencyMs": 14435,
+      "judgment": "사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.",
+      "nextQuestion": "전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?"
+    }
+  ],
+  "checks": [
+    {
+      "id": 1,
+      "name": "prior_business_delivered",
+      "result": "PASS",
+      "quote": "다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이"
+    },
+    {
+      "id": 2,
+      "name": "prior_questions_and_answers_together",
+      "result": "PASS",
+      "quote": "양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까? / 아직 핵심을 정하지 못했다"
+    },
+    {
+      "id": 3,
+      "name": "current_answer_present",
+      "result": "PASS",
+      "quote": "SIMULATION. 양조장 한 곳에 문의했지만 아직 참여 의향은 확인하지 못했다."
+    },
+    {
+      "id": 4,
+      "name": "feedback_and_next_question",
+      "result": "PASS",
+      "quote": "사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다. / 전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?"
+    },
+    {
+      "id": 5,
+      "name": "saved_and_passed_next_round",
+      "result": "PASS",
+      "quote": "양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?"
+    },
+    {
+      "id": 6,
+      "name": "original_idea_present_at_round_4",
+      "result": "NOT RUN",
+      "quote": null
+    }
+  ],
+  "oldAnalysisBriefs": {
+    "dropped": false,
+    "notes": [
+      {
+        "callIndex": 1,
+        "round": 1,
+        "priorAnalysesSent": null,
+        "stageAnswerRowsBeforeCall": 0,
+        "dropped": false
+      },
+      {
+        "callIndex": 2,
+        "round": 2,
+        "priorAnalysesSent": 0,
+        "stageAnswerRowsBeforeCall": 0,
+        "dropped": false
+      },
+      {
+        "callIndex": 3,
+        "round": 3,
+        "priorAnalysesSent": 1,
+        "stageAnswerRowsBeforeCall": 1,
+        "dropped": false
+      }
+    ]
+  },
+  "tokenUsage": {
+    "source": "repository_reported_not_invoice",
+    "usageKnown": true,
+    "promptTokens": 36260,
+    "completionTokens": 3414,
+    "totalTokens": 39674,
+    "byReview": [
+      {
+        "reviewId": "48d06eaa-ad74-4851-a919-fbd8ecefdc1a",
+        "promptTokens": 3692,
+        "completionTokens": 820,
+        "totalTokens": 4512,
+        "usageKnown": true
+      },
+      {
+        "reviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+        "promptTokens": 15761,
+        "completionTokens": 1121,
+        "totalTokens": 16882,
+        "usageKnown": true
+      },
+      {
+        "reviewId": "0e75ff46-88fd-4ce2-b567-bdc3f3048531",
+        "promptTokens": 16807,
+        "completionTokens": 1473,
+        "totalTokens": 18280,
+        "usageKnown": true
+      }
+    ]
   }
 }
