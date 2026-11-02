@@ -4,6 +4,12 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Structured Output 복구
+
+**상태:** 2026-11-02 19:46 KST `stage_reanalysis`의 `nextQuestions.items.required`에 `reaskReason`을 넣었다. 타입은 `["string", "null"]`이다. 다른 strict 스키마 6개는 property와 required가 이미 일치했다. 단위 150건은 통과했다. GPT 호출은 0회다. 부모는 `5f6d705d-fe2a-468f-97be-da16482abd32`다. 실패 행 `0e75ff46-88fd-4ce2-b567-bdc3f3048531`은 바꾸지 않았다. 제품 저장소와 화면은 NOT RUN이다. 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-STRUCTURED-OUTPUT.md`다. Production은 잠금이다.
+
+---
+
 ## GPT 런타임 재확인
 
 **상태:** 2026-11-02 19:20 KST 이 프로세스 `bc-089fd7eb-dd2b-5690-b7ba-dd5ccc56854d`의 `GPT_API_KEY`는 PRESENT다. 승인된 3차 1회는 요청이 프로세스를 떠났고 OpenAI가 completion 전에 HTTP 400을 반환했다. strict `stage_reanalysis`의 `nextQuestions.items`에 `reaskReason`이 properties에만 있고 `required`에는 없다. 응답 id는 없다. 단계 파서는 실행되지 않았다. 저장 행 `e229ba92-1ded-4a18-841d-6de86ac869c3`는 failed이고 sections는 null이다. 부모는 `5f6d705d-fe2a-468f-97be-da16482abd32`다. 실패 행 `0e75ff46-88fd-4ce2-b567-bdc3f3048531`은 넣지 않았다. 재시도는 0회다. 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-GPT-RUNTIME-RECHECK.md`다. Production과 Supabase는 호출하지 않았다. 스키마는 고치지 않았다.
