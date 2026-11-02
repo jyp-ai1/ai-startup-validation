@@ -4,6 +4,12 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint 2 대화 연속성 구현
+
+**상태:** 2026-11-03 08:42 KST stage 요청에 `previousAnswers`, `unresolvedGaps`, `currentStage`를 넣었다. 실행 보고도 `FOUNDER_CLAIM`으로 남는다. 관련 테스트 56 passed. 이 프로세스 비밀 목록에 `GPT_API_KEY`가 없어 3차와 4차 호출은 BLOCKED다. Sprint 2는 PARTIAL이다. 실패 증거 해시는 유지됐다. 보고서는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-CONVERSATION-CONTINUITY-FINAL.md`다.
+
+---
+
 ## Sprint 2 대화 연속성 준비
 
 **상태:** 2026-11-03 08:22 KST 화면과 인증은 제외했다. 저장 3차 응답을 현재 파서로 다시 읽으면 `stage_questions_repeated`와 `stage_objective_overlap`이고 섹션은 null이다. GPT HTTP는 0회다. 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 보고서는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-CONVERSATION-CONTINUITY-FINAL.md`다.

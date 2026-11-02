@@ -1,8 +1,55 @@
-# Sprint 2 — 대화 연속성 구조 최종 준비
+# Sprint 2 — 대화 연속성 구조
 
-확인: 2026-11-03 08:22 KST
+확인: 2026-11-03 08:42 KST
 
-Sprint 2는 PARTIAL이다. 이번 구간은 대화 연속성 준비다. Founder 화면, Google 로그인, UI는 다루지 않았다. GPT HTTP는 0회다. Production 배포는 하지 않았다. Sprint 3는 시작하지 않았다.
+Sprint 2는 PARTIAL이다. 통합 재분석 요청에 답변 원문, 부족분, 현재 단계를 넣었다. 실제 GPT 3차와 4차는 이 프로세스에 `GPT_API_KEY`가 없어 호출하지 못했다. 계정 비밀 목록에도 그 이름이 없다. Founder 화면, Google 로그인, UI는 다루지 않았다. Production 배포는 하지 않았다. Sprint 3는 시작하지 않았다.
+
+## 이번 구현
+
+`buildProductReanalysisRequest`의 stage 요청에 세 필드를 추가했다. 기존 필드와 파서는 유지했다. 질문 문장과 판단 문장은 넣지 않았다.
+
+| 필드 | 내용 |
+| --- | --- |
+| `previousAnswers` | `questionKey`, 답 원문, `answerLevel`, `provenance`, `epistemicStatus` |
+| `unresolvedGaps` | `verified`가 false인 답의 키와 아직 확인되지 않은 문장 |
+| `currentStage` | `integrated_reanalysis` 또는 `answers_incomplete`, 이전 분석 수, 답변 수 |
+
+`reported_result`와 `planned_action`은 말로 구분한다. 둘 다 `epistemicStatus`는 `FOUNDER_CLAIM`이고 `verified`는 false다. 실행했다고 적은 문장을 `VERIFIED_FACT`로 올리지 않는다.
+
+테스트 `puts gap, stage, and founder-claim level on the integrated request`가 키 `parent-review:q1`, `parent-review:q2`와 두 수준, 부족분 2건, 단계 `integrated_reanalysis`를 확인했다. 같은 질문 문장을 다시 넣은 응답은 `stage_questions_repeated`이고 섹션은 null이다. `ai-pm-founder-context` 3, `ai-pm-e2e-continuity` 2, `ai-pm-continuity-contract` 5, `ai-pm-consulting-stage` 42, `ai-pm-strict-schema` 4가 통과했다. 네트워크 호출은 없다.
+
+## 실제 GPT
+
+이 프로세스의 주입 비밀은 `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`뿐이다. `GPT_API_KEY`는 없다. `OPENAI_API_KEY`로 대체하지 않았다. 3차와 4차 호출은 BLOCKED다. 4차는 성공한 3차가 없으므로 NOT RUN이다.
+
+실패 증거 SHA-256 `6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd`는 유지됐다. 성공 2차 `5f6d705d-fe2a-468f-97be-da16482abd32`와 실패 3차 `0e75ff46-88fd-4ce2-b567-bdc3f3048531`은 수정하지 않았다.
+
+## 판정
+
+| 완료 조건 | 판정 |
+| --- | --- |
+| 최초 사업 아이디어 보존 | PASS |
+| 이전 분석 이력 연결 | PASS |
+| 질문·답변 출처 연결 | PASS |
+| 추가 의견 보존 | PASS |
+| 답변 상태 구분 | PASS |
+| 통합 재분석 정상 동작 | BLOCKED |
+| 질문 반복 방지 | PARTIAL |
+| 부족분 후속 질문 생성 | BLOCKED |
+| 답변에 따른 분석 갱신 | BLOCKED |
+| 호출 통제 정상 동작 | PASS |
+| 실제 GPT 3차 연속성 | BLOCKED |
+| 실제 GPT 4차 연속성 | NOT RUN |
+| 저장 및 재조회 | PASS |
+| 실패 시 데이터 무결성 | PASS |
+
+통합 재분석, 부족분 질문, 분석 갱신, 3차와 4차는 모델 응답이 있어야 PASS다. 이번 호출은 0회다.
+
+구현 커밋은 `2bf059ab0e2139d176e5b932a6f354799afd37d6`다.
+
+## 2026-11-03 08:22 KST 준비 기록
+
+Sprint 2는 PARTIAL이다. 아래는 그 시점의 저장 요청 점검이다. Founder 화면, Google 로그인, UI는 다루지 않았다. GPT HTTP는 0회다. Production 배포는 하지 않았다. Sprint 3는 시작하지 않았다.
 
 제품 모듈은 바꾸지 않았다. 기준은 PR #228, #229, #230, #231, #232다. 부모는 성공한 2차 `5f6d705d-fe2a-468f-97be-da16482abd32`다. 실패 3차 `0e75ff46-88fd-4ce2-b567-bdc3f3048531`은 수정하거나 삭제하지 않았다. 증거 파일 SHA-256은 `6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd`다.
 
