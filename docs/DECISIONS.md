@@ -2700,6 +2700,52 @@ A live round 3 read the prior answers and still selected an investigation object
 
 ---
 
+## ADR-080: Open objective ids are the only continuation the model may select
+
+**Status:** Accepted  
+**Date:** 2026-11-03  
+**Sprint:** Sprint 2 conversation continuity  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The live round stored as `8ec32bae-461b-449a-99b7-db95a92fb2c0` received the objective ledger and still returned the already answered question sentences with the resolved objective ids. The parser rejected that response. The ledger and the rejection stay. The response contract did not stop the model from naming a resolved id, and `judgmentReason` had no structured source for the Founder answer.
+
+### Decision
+
+1. The stage request schema lists `continuesObjectiveId` as the open objective ids for that call, plus `__new__`. Resolved ids are not in the enum. OpenAI strict structured output accepts a per-request string enum, so this constraint is compatible with the current schema checker.
+2. The server still rejects a resolved id, an unknown id, a repeated question sentence, and a reworded purpose that overlaps a closed purpose. `__new__` is allowed only when the purpose is not one of those closed purposes. A shared business topic with a different verification purpose stays allowed. Remainder links stay open.
+3. `answerEvidence` carries `questionKey`, the answer text, `provenance`, and `epistemicStatus` for each current answer. `epistemicStatus` is `FOUNDER_CLAIM`. A missing row, a different question key, a different provenance, or `VERIFIED_FACT` is rejected. `judgmentReason` still has to include the answer text and the keep-or-change explanation.
+4. A failed stage row is reused for the same answers, so a parse failure does not call the provider again and does not change the succeeded parent.
+5. Stored failed rows and `docs/evidence/ALABOM/AI-PM/sprint-2-e2e-live-gpt.json` stay unchanged.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Keep a free-string objective id and reject only after the call | No schema change | The model can still spend the call on a resolved id |
+| Ask the model to echo the whole resolved and unresolved lists | The lists would be visible in the output | The server already owns those lists, and a copy error would fail a valid question |
+| Hardcode the closed customer and price purposes | Would block this one business | The next business question would be fixed in code |
+
+### Consequences
+
+**Positive:**
+
+- A resolved objective id is absent from the structured-output enum for that call.
+- The answer source is checked separately from the judgment sentence.
+- The same stage answers do not produce a second provider call after a rejected response.
+
+**Negative:**
+
+- A stage response that omits `answerEvidence` fails on a new call. Stored rows are not rewritten.
+
+**Neutral:**
+
+- Supabase product-path checks use an injected response. They are not a live GPT result.
+- Production stays locked.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

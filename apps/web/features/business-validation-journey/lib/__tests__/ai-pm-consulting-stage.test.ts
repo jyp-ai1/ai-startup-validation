@@ -19,6 +19,7 @@ import {
   buildProductReanalysisRequest,
   buildVerificationObjectives,
   judgeStageContract,
+  NEW_OBJECTIVE_CONTINUATION,
   consultingQuestions,
   founderAnswerKinds,
   pairConsultingStage,
@@ -32,6 +33,7 @@ import {
   type AiPmReviewView,
 } from '../ai-pm-review';
 import { openAiPmReviewStore, type ReviewSections, type StagePair, type StagePriorReading, type StoredFeedback, type StoredReview } from '../ai-pm-review-store';
+import { strictSchemaIssues } from '../strict-json-schema';
 
 const NOW = '2026-10-31T07:40:00.000Z';
 const IDEA = '도심 독서 모임. 참가자는 직장인이고 아직 운영 전이다. 가격은 정하지 않았다.';
@@ -90,6 +92,31 @@ function unresolvedObjectiveId(payload: Record<string, unknown> | null): string 
   return objectives?.unresolved?.find((row) => row.objectiveId)?.objectiveId ?? '';
 }
 
+function answerEvidenceRows(payload: Record<string, unknown> | null) {
+  const pairs = Array.isArray(payload?.stagePairs)
+    ? (payload.stagePairs as Array<{
+        questionKey?: string;
+        questionId?: string;
+        status?: string;
+        choiceLabel?: string | null;
+        supplement?: string;
+      }>)
+    : [];
+  return pairs
+    .filter((pair) => pair.status === 'answered')
+    .map((pair) => {
+      const raw = `${pair.choiceLabel ?? ''}\n${pair.supplement ?? ''}`;
+      const strip = (value: string) => value.replace(/^\s*SIMULATION\b[.:]?\s*/iu, '').trim();
+      const label = strip(pair.choiceLabel ?? '');
+      return {
+        questionKey: pair.questionKey || pair.questionId || '',
+        answerText: label || strip(pair.supplement ?? ''),
+        provenance: /^\s*SIMULATION\b/m.test(raw) ? 'SIMULATION' : 'FOUNDER_INPUT',
+        epistemicStatus: 'FOUNDER_CLAIM',
+      };
+    });
+}
+
 function contractReply(request: ChatRequest, judgment: string, questions: string[]): string {
   const payload = requestPayload(request);
   if (!payload || !Array.isArray(payload.stagePairs)) return stageRaw(judgment, questions);
@@ -117,6 +144,7 @@ function contractReply(request: ChatRequest, judgment: string, questions: string
     impactOnPreviousJudgment: '이번 답이 기존 판단에 준 영향이다.',
     updatedJudgment: `유지: 확인 전 위험은 남는다. 이번 답: ${judgment} 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.`,
     judgmentReason: withAnswerGrounds('지불 확인이 없어 판단을 유지한다.', cites),
+    answerEvidence: answerEvidenceRows(payload),
     verifiedFacts: [],
     unverifiedClaims: [],
     assumptions: ['가격은 확인되지 않았다'],
@@ -495,6 +523,7 @@ describe('consulting stage batch', () => {
         'executionPossibility',
         'updatedJudgment',
         'judgmentReason',
+        'answerEvidence',
       ]);
     }
   });
@@ -3391,6 +3420,20 @@ describe('consulting stage batch', () => {
     expect(sent.unresolved.map((row) => row.objectiveId)).toContain(remainderId);
     expect(sent.unresolved.map((row) => row.objectiveId)).toContain(`${round1}:q1`);
     expect(request.messages.find((message) => message.role === 'system')?.content).toContain('verificationObjectives.unresolved의 objectiveId만');
+    expect(request.responseFormat?.type).toBe('json_schema');
+    if (request.responseFormat?.type === 'json_schema') {
+      expect(strictSchemaIssues(request.responseFormat.schema)).toEqual([]);
+      const allowed = (
+        request.responseFormat.schema.properties as {
+          nextQuestions: { items: { properties: { continuesObjectiveId: { enum?: string[] } } } };
+        }
+      ).nextQuestions.items.properties.continuesObjectiveId.enum;
+      expect(allowed).toContain(remainderId);
+      expect(allowed).toContain(`${round1}:q1`);
+      expect(allowed).toContain(NEW_OBJECTIVE_CONTINUATION);
+      expect(allowed).not.toContain(surveyKey);
+      expect(allowed).not.toContain(priceKey);
+    }
     const asked = [meeting, surveyQuestion, priceQuestion];
     const contract = {
       askedQuestions: asked,
@@ -3615,6 +3658,204 @@ describe('consulting stage batch', () => {
     expect(states[1]?.answerLevel).toBe('menu_choice');
     expect(states[0]?.question).not.toBe(states[1]?.question);
   });
+
+  it('rejects the latest live round 3 sentence repeat and a reworded purpose, and allows a new gap', () => {
+    const round1 = '48d06eaa-ad74-4851-a919-fbd8ecefdc1a';
+    const round2 = '5f6d705d-fe2a-468f-97be-da16482abd32';
+    const round3 = '8ec32bae-461b-449a-99b7-db95a92fb2c0';
+    const meeting = '양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?';
+    const surveyQuestion = '전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?';
+    const priceQuestion = '체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?';
+    const keptJudgment = '사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.';
+    const prior = liveObjectivePair('q1', meeting, '아직 핵심을 정하지 못했다');
+    const survey = liveObjectivePair('q1', surveyQuestion, '설문조사 실시');
+    const price = liveObjectivePair('q2', priceQuestion, '비용 분석');
+    const links = [prior, survey, price].map((pair, index) => ({
+      sourceReviewId: index === 0 ? round1 : round2,
+      questionId: pair.questionId,
+      question: pair.question,
+      choiceId: pair.choiceId,
+      choiceLabel: pair.choiceLabel,
+      supplement: pair.supplement,
+      submittedAt: NOW,
+      status: 'answered' as const,
+    }));
+    const objectives = buildVerificationObjectives(buildAnsweredQuestionState([prior, survey, price], links));
+    const contract = {
+      askedQuestions: [meeting, surveyQuestion, priceQuestion],
+      pairs: [survey, price],
+      closedSentences: [prior, survey, price].flatMap((pair) => [pair.question, pair.choiceLabel ?? '', pair.supplement]),
+      priorJudgmentText: keptJudgment,
+      objectives,
+    };
+    const grounded = '설문조사 실시와 비용 분석은 방법 이름만 새로 확인했다. 실행 결과와 응답은 없다. 그래서 방향성 판단은 유지한다. 남은 불확실성은 실행 여부와 응답 결과다.';
+    const repeatedSentences = judgeStageContract(
+      liveRound3Body({
+        continuesObjectiveId: `${round2}:q1`,
+        judgmentReason: '사업의 핵심 요소가 정해지지 않아 방향성이 불확실하다.',
+        objective: surveyQuestion,
+        questions: [
+          { text: surveyQuestion, purpose: '고객층을 정의하기 위한 조사 방법을 확인하기 위함이다.' },
+          { text: priceQuestion, purpose: '체험 프로그램의 가격 설정을 위한 요소를 확인하기 위함이다.' },
+        ],
+      }),
+      contract,
+    );
+    expect(repeatedSentences.sections).toBeNull();
+    expect(repeatedSentences.issues).toContain('stage_questions_repeated');
+    expect(repeatedSentences.issues).toContain('stage_objective_reselected');
+    expect(repeatedSentences.issues).toContain('stage_judgment_ungrounded');
+    expect(repeatedSentences.issues).not.toContain('stage_judgment_copied');
+    const reworded = judgeStageContract(
+      liveRound3Body({
+        continuesObjectiveId: `${round2}:q1:remainder`,
+        judgmentReason: grounded,
+        objective: '실행 대상, 실행 여부, 응답 결과는 이 답에 없다.',
+        questions: [
+          { text: '설문조사 결과를 바탕으로 고객층을 정의하기 위해 어떤 추가 조치를 취해야 할까?', purpose: '고객층 정의를 위한 조사 방법을 확인하기 위함.' },
+          { text: '비용 분석 결과를 바탕으로 체험 프로그램의 가격을 설정하기 위해 어떤 요소를 추가로 고려해야 할까?', purpose: '가격 설정을 위한 추가 요소를 확인하기 위함.' },
+        ],
+      }),
+      contract,
+    );
+    expect(reworded.sections).toBeNull();
+    expect(reworded.issues).toContain('stage_purpose_repeated');
+    expect(reworded.issues).not.toContain('stage_objective_reselected');
+    const fresh = judgeStageContract(
+      liveRound3Body({
+        continuesObjectiveId: NEW_OBJECTIVE_CONTINUATION,
+        judgmentReason: grounded,
+        objective: '참여 의향을 적은 기록이 있는지는 아직 확인되지 않았다.',
+        questions: [
+          { text: '양조장 참여 의향을 적은 기록이 있는가?', purpose: '참여 의향을 적은 기록의 유무' },
+          { text: '협력 조건을 적은 문서가 있는가?', purpose: '협력 조건을 적은 문서의 유무' },
+        ],
+      }),
+      contract,
+    );
+    expect(fresh.issues).not.toContain('stage_purpose_repeated');
+    expect(fresh.issues).not.toContain('stage_questions_repeated');
+    expect(fresh.issues).not.toContain('stage_objective_reselected');
+    expect(fresh.issues).not.toContain('stage_answer_evidence_mismatch');
+    expect(fresh.sections?.nextQuestion).toBe('양조장 참여 의향을 적은 기록이 있는가?');
+    const later = liveObjectivePair('q1', '예약 책임은 어디에 적히는가?', '아직 문서로 남기지 않았다');
+    const laterStates = buildVerificationObjectives(
+      buildAnsweredQuestionState(
+        [prior, survey, price, later],
+        [
+          ...links,
+          {
+            sourceReviewId: round3,
+            questionId: later.questionId,
+            question: later.question,
+            choiceId: later.choiceId,
+            choiceLabel: later.choiceLabel,
+            supplement: later.supplement,
+            submittedAt: NOW,
+            status: 'answered',
+          },
+        ],
+      ),
+    );
+    expect(laterStates.find((row) => row.objectiveId === `${round2}:q1`)).toMatchObject({ status: 'resolved' });
+    expect(laterStates.find((row) => row.objectiveId === `${round2}:q1:remainder`)).toMatchObject({
+      status: 'open',
+      parentObjectiveId: `${round2}:q1`,
+    });
+    expect(laterStates.find((row) => row.objectiveId === `${round3}:q1:remainder`)?.parentObjectiveId).toBe(`${round3}:q1`);
+    const mismatched = JSON.parse(
+      liveRound3Body({
+        continuesObjectiveId: `${round2}:q1:remainder`,
+        judgmentReason: grounded,
+        objective: '실행 대상, 실행 여부, 응답 결과는 이 답에 없다.',
+        questions: [
+          { text: '실행 대상은 누구인가?', purpose: '실행 대상이 이 답에 없는 빈칸' },
+          { text: '응답 결과는 어디에 적히는가?', purpose: '응답 결과가 이 답에 없는 빈칸' },
+        ],
+      }),
+    ) as { answerEvidence: Array<{ provenance: string; epistemicStatus: string; answerText: string }> };
+    mismatched.answerEvidence[0]!.provenance = 'SIMULATION';
+    const wrongSource = judgeStageContract(JSON.stringify(mismatched), contract);
+    expect(wrongSource.sections).toBeNull();
+    expect(wrongSource.issues).toContain('stage_answer_evidence_mismatch');
+    mismatched.answerEvidence[0]!.provenance = 'FOUNDER_INPUT';
+    mismatched.answerEvidence[0]!.epistemicStatus = 'VERIFIED_FACT';
+    const promoted = judgeStageContract(JSON.stringify(mismatched), contract);
+    expect(promoted.sections).toBeNull();
+    expect(promoted.issues).toContain('stage_answer_evidence_mismatch');
+    const plan = '설문조사를 100명 대상으로 할 예정이다';
+    const [planned] = buildAnsweredQuestionState([levelPair('q9', '조사를 할 것인가?', '설문조사 실시', plan)]);
+    expect(planned).toMatchObject({ answerLevel: 'planned_action', verified: false, answer: { epistemicStatus: 'FOUNDER_CLAIM' } });
+  });
+
+  it('keeps a failed stage call from charging twice or changing the succeeded parent', async () => {
+    const store = openAiPmReviewStore(storePath());
+    let calls = 0;
+    const first = await runFirstReview({
+      store,
+      userId: 'user-recover',
+      projectId: 'project-recover',
+      text: `${IDEA} 실패 복구.`,
+      origin: 'typed',
+      fileName: null,
+      now: NOW,
+      chat: async () => {
+        calls += 1;
+        return reply(stageRaw('가격이 정해지지 않아 판단을 유지한다. 이유는 지불 확인이 없기 때문이다.', FIRST_QUESTIONS));
+      },
+      evidence: 'injected_http',
+    });
+    expect(first.record.status).toBe('succeeded');
+    const parentBefore = await store.readReview('user-recover', first.record.reviewId);
+    const answers = consultingQuestions(first.record.sections).map((question) => ({
+      questionId: question.questionId,
+      comment: '직장인을 고객으로 본다',
+    }));
+    const failed = await submitConsultingStage({
+      store,
+      userId: 'user-recover',
+      projectId: 'project-recover',
+      reviewId: first.record.reviewId,
+      now: NOW,
+      evidence: 'injected_http',
+      answers,
+      chat: async () => {
+        calls += 1;
+        return reply('not-json');
+      },
+    });
+    expect(failed.ok).toBe(true);
+    if (!failed.ok) return;
+    expect(failed.called).toBe(true);
+    expect(failed.record.status).toBe('failed');
+    expect(failed.record.sections).toBeNull();
+    expect(failed.record.callCount).toBe(1);
+    expect(calls).toBe(2);
+    const again = await submitConsultingStage({
+      store,
+      userId: 'user-recover',
+      projectId: 'project-recover',
+      reviewId: first.record.reviewId,
+      now: NOW,
+      evidence: 'injected_http',
+      answers,
+      chat: async () => {
+        calls += 1;
+        return reply('not-json');
+      },
+    });
+    expect(again.ok).toBe(true);
+    if (!again.ok) return;
+    expect(again.called).toBe(false);
+    expect(again.record.reviewId).toBe(failed.record.reviewId);
+    expect(again.record.status).toBe('failed');
+    expect(calls).toBe(2);
+    const parentAfter = await store.readReview('user-recover', first.record.reviewId);
+    expect(parentAfter?.status).toBe('succeeded');
+    expect(parentAfter?.sections?.judgment).toBe(parentBefore?.sections?.judgment);
+    expect(parentAfter?.error).toBeNull();
+    store.close();
+  });
 });
 
 function liveObjectivePair(questionId: string, question: string, choiceLabel: string): StagePair {
@@ -3687,6 +3928,20 @@ function liveRound3Body(input: {
     impactOnPreviousJudgment: '이번 답은 방법 이름만 더했다. 방향성 문장은 유지한다.',
     updatedJudgment: keptJudgment,
     judgmentReason: input.judgmentReason,
+    answerEvidence: [
+      {
+        questionKey: '5f6d705d-fe2a-468f-97be-da16482abd32:q1',
+        answerText: '설문조사 실시',
+        provenance: 'FOUNDER_INPUT',
+        epistemicStatus: 'FOUNDER_CLAIM',
+      },
+      {
+        questionKey: '5f6d705d-fe2a-468f-97be-da16482abd32:q2',
+        answerText: '비용 분석',
+        provenance: 'FOUNDER_INPUT',
+        epistemicStatus: 'FOUNDER_CLAIM',
+      },
+    ],
     verifiedFacts: [],
     unverifiedClaims: ['방법 이름은 실행 결과가 아니다'],
     assumptions: ['응답 결과는 아직 없다'],

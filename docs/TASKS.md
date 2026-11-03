@@ -4,6 +4,12 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint 2 Objective 선택 계약
+
+**상태:** 2026-11-03 11:33 KST 단계 스키마의 `continuesObjectiveId`는 그 호출의 미해결 objective id와 `__new__`만 허용한다. `answerEvidence`는 이번 답의 questionKey, 원문, provenance, `FOUNDER_CLAIM`을 요구한다. 표현만 바꾼 같은 목적은 `stage_purpose_repeated`다. 같은 답의 실패 행은 재호출하지 않는다. 주입 응답으로 Supabase 제품 경로에 성공 행을 저장하고 다른 프로세스가 읽은 뒤 그 행만 지웠다. Founder 검토 70건, Founder 프로젝트 검토 68건, Founder 프로젝트 172건은 그대로다. 증거 SHA-256은 유지됐다. 이 프로세스의 `GPT_API_KEY`는 ABSENT다. 실제 GPT 3차와 4차는 이 기록 시점에는 아직 호출하지 않았다. Sprint 2는 PARTIAL이다.
+
+---
+
 ## Sprint 2 목적 장부 실호출
 
 **상태:** 2026-11-03 11:00 KST 프로세스 `bc-b07269ba-c9b0-5b39-b834-cd59a5451ef7`의 `GPT_API_KEY`는 PRESENT다. 3차 1회는 부모 `5f6d705d-fe2a-468f-97be-da16482abd32`로 나갔고 응답 id는 `chatcmpl-Efy6LWjvUGaBDbECZFAEH3M0wUpke`다. 저장 행 `8ec32bae-461b-449a-99b7-db95a92fb2c0`는 failed이고 오류는 `stage_questions_repeated,stage_objective_overlap,stage_objective_reselected,stage_judgment_ungrounded`이며 sections는 null이다. 재시도는 0회다. 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-OBJECTIVE-LIVE.md`다. 기록 PR은 #238이다. 실패 행 `0e75ff46-88fd-4ce2-b567-bdc3f3048531`과 `9d51935d-891e-424c-b3f1-9b1c5e529c2f`는 넣지 않았다. 증거 해시는 유지됐다.

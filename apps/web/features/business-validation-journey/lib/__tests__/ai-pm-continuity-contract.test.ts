@@ -126,6 +126,12 @@ function continuityFollow(request: ChatRequest): string {
     impactOnPreviousJudgment: '이번 답은 구상과 미정을 말했다. 이전 문장을 유지로 복사하지 않는다.',
     updatedJudgment: '계약 기록은 없다. 상품은 구상이다. 가격은 미정이다. 남은 위험은 협력과 수요다.',
     judgmentReason: `계약 기록과 가격이 없어 실행은 유보한다. 이번 답 ${cites.join(' ')}을 확인했다. 남은 불확실성은 협력이다.`,
+    answerEvidence: answered.map((pair) => ({
+      questionKey: (pair as { questionKey?: string }).questionKey || pair.questionId,
+      answerText: ((pair.choiceLabel ?? '').replace(/^\s*SIMULATION\b[.:]?\s*/iu, '').trim() || (pair.supplement ?? '').replace(/^\s*SIMULATION\b[.:]?\s*/iu, '').trim()),
+      provenance: /^\s*SIMULATION\b/m.test(`${pair.choiceLabel ?? ''}\n${pair.supplement ?? ''}`) ? 'SIMULATION' : 'FOUNDER_INPUT',
+      epistemicStatus: 'FOUNDER_CLAIM',
+    })),
     verifiedFacts: [],
     unverifiedClaims: [ANSWER],
     assumptions: ['협력은 확인되지 않았다'],

@@ -140,6 +140,12 @@ function stageRaw(input: {
     impactOnPreviousJudgment: `${input.judgment}에 이르는 변화다`,
     updatedJudgment: `유지: 공급은 확인되지 않았다. 이번 답: ${input.judgment} 변경: 확인된 협력은 늘지 않는다. 남은 위험: ${input.unresolved[0] ?? '다음 확인이 없다'}`,
     judgmentReason: `${input.judgment}의 이유다. 확인된 협력은 없다. 이번 답 ${cites.join(' ')}을 확인했다. 남은 불확실성은 공급 계약이다.`,
+    answerEvidence: answered.map((pair) => ({
+      questionKey: (pair as { questionKey?: string }).questionKey || pair.questionId,
+      answerText: ((pair.choiceLabel ?? '').replace(/^\s*SIMULATION\b[.:]?\s*/iu, '').trim() || (pair.supplement ?? '').replace(/^\s*SIMULATION\b[.:]?\s*/iu, '').trim()),
+      provenance: /^\s*SIMULATION\b/m.test(`${pair.choiceLabel ?? ''}\n${pair.supplement ?? ''}`) ? 'SIMULATION' : 'FOUNDER_INPUT',
+      epistemicStatus: 'FOUNDER_CLAIM',
+    })),
     verifiedFacts: [],
     unverifiedClaims: ['협력 가능성은 주장이다'],
     assumptions: ['공급 계약은 아직 없다'],
