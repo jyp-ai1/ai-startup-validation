@@ -4,6 +4,12 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint 2 목적 장부 실호출
+
+**상태:** 2026-11-03 11:00 KST 프로세스 `bc-b07269ba-c9b0-5b39-b834-cd59a5451ef7`의 `GPT_API_KEY`는 PRESENT다. 3차 1회는 부모 `5f6d705d-fe2a-468f-97be-da16482abd32`로 나갔고 응답 id는 `chatcmpl-Efy6LWjvUGaBDbECZFAEH3M0wUpke`다. 저장 행 `8ec32bae-461b-449a-99b7-db95a92fb2c0`는 failed이고 오류는 `stage_questions_repeated,stage_objective_overlap,stage_objective_reselected,stage_judgment_ungrounded`이며 sections는 null이다. 재시도는 0회다. 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-OBJECTIVE-LIVE.md`다. 기록 PR은 #238이다. 실패 행 `0e75ff46-88fd-4ce2-b567-bdc3f3048531`과 `9d51935d-891e-424c-b3f1-9b1c5e529c2f`는 넣지 않았다. 증거 해시는 유지됐다.
+
+---
+
 ## Sprint 2 검증 목적 상태
 
 **상태:** 2026-11-03 09:47 KST 질문 문장 중복과 검증 목적 중복을 나눴다. 답변된 질문의 objective id는 `sourceReviewId:questionId`다. 미확인 잔여만 open이다. 해결된 id를 다시 고르면 `stage_objective_reselected`다. 이번 답 원문이 `judgmentReason`에 없으면 `stage_judgment_ungrounded`다. 저장된 3차 필드 재평가의 sections는 null이다. GPT 호출은 0회다. 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-OBJECTIVE-STATE.md`다. 실패 행과 증거 해시는 유지됐다.
