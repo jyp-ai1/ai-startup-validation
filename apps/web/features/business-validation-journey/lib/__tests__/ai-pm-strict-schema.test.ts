@@ -49,7 +49,13 @@ describe('strict json schema', () => {
     const nextQuestions = request.responseFormat.schema.properties as {
       nextQuestions: { items: { required: string[]; properties: { reaskReason: { type: unknown } } } };
     };
-    expect(nextQuestions.nextQuestions.items.required).toEqual(['text', 'choices', 'verificationPurpose', 'reaskReason']);
+    expect(nextQuestions.nextQuestions.items.required).toEqual([
+      'text',
+      'choices',
+      'verificationPurpose',
+      'reaskReason',
+      'continuesObjectiveId',
+    ]);
     expect(nextQuestions.nextQuestions.items.properties.reaskReason.type).toEqual(['string', 'null']);
     expect(request.messages.find((message) => message.role === 'system')?.content).toContain('reaskReason은 null이다');
     expect(strictSchemaIssues(buildFirstReviewRequest('양조장 체험').responseFormat && buildFirstReviewRequest('양조장 체험').responseFormat?.type === 'json_schema' ? buildFirstReviewRequest('양조장 체험').responseFormat.schema : {})).toEqual([]);

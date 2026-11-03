@@ -2657,6 +2657,49 @@ The stored judgment still used an unverified cooperation claim as the current li
 
 ---
 
+## ADR-079: Verification objectives stay open or resolved as data
+
+**Status:** Accepted  
+**Date:** 2026-11-03  
+**Sprint:** Sprint 2 conversation continuity  
+**Authors:** CTO (autonomous)
+
+### Context
+
+A live round 3 read the prior answers and still selected an investigation objective that already had an answer. The new question sentences were different. The judgment sentence matched round 2 and did not cite the new answers. Question-sentence checks did not catch that repeat.
+
+### Decision
+
+1. Each answered question keeps an objective id equal to `sourceReviewId:questionId`. An answer that is still open leaves that id open. Any other answer resolves that id and leaves only the unconfirmed remainder open under `${questionKey}:remainder`.
+2. The stage request sends resolved and unresolved objectives as data. The model chooses the next question. Code does not assign a business topic.
+3. A next question and the selected candidate must continue an unresolved objective id. Selecting a resolved id or a resolved purpose is rejected.
+4. A kept or changed judgment must include the current stage's answer text and say what was newly confirmed, why the judgment is kept or changed, and what uncertainty remains.
+5. Stored failed rows and the existing evidence file stay unchanged. This gate does not call the model.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Reject only identical question sentences | Already implemented | A reworded purpose still repeats a resolved objective |
+| Hardcode customer research and pricing as closed topics | Would block this one failure | The next business question would be fixed in code |
+
+### Consequences
+
+**Positive:**
+
+- The server can reject a resolved objective even when the question sentence is new.
+- A kept judgment without the new answer text is not stored as a completed stage.
+
+**Negative:**
+
+- Older stage responses that lack an objective id and do not quote the answer fail this gate on a new call. Their stored rows are not rewritten.
+
+**Neutral:**
+
+- Production stays locked. Round 4 stays unrun until a later approved call passes this gate.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

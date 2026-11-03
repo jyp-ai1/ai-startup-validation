@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -16,6 +17,7 @@ import {
   buildFirstReviewRequest,
   buildAnsweredQuestionState,
   buildProductReanalysisRequest,
+  buildVerificationObjectives,
   judgeStageContract,
   consultingQuestions,
   founderAnswerKinds,
@@ -66,15 +68,41 @@ function requestPayload(request: ChatRequest): Record<string, unknown> | null {
   }
 }
 
+function answeredCites(payload: Record<string, unknown> | null): string[] {
+  const pairs = Array.isArray(payload?.stagePairs)
+    ? (payload.stagePairs as Array<{ status?: string; choiceLabel?: string | null; supplement?: string }>)
+    : [];
+  return pairs
+    .filter((pair) => pair.status === 'answered')
+    .map((pair) => (pair.choiceLabel ?? '').trim() || (pair.supplement ?? '').trim())
+    .filter((text) => text.replace(/\s+/g, '').length >= 2);
+}
+
+function withAnswerGrounds(reason: string, cites: string[]): string {
+  const compact = reason.replace(/\s+/g, '');
+  const missing = cites.filter((cite) => !compact.includes(cite.replace(/\s+/g, '')));
+  if (missing.length === 0) return reason;
+  return `${reason} 이번 답 ${missing.join(' ')}을 확인했다. 남은 불확실성은 지불이다.`;
+}
+
+function unresolvedObjectiveId(payload: Record<string, unknown> | null): string {
+  const objectives = payload?.verificationObjectives as { unresolved?: Array<{ objectiveId?: string }> } | undefined;
+  return objectives?.unresolved?.find((row) => row.objectiveId)?.objectiveId ?? '';
+}
+
 function contractReply(request: ChatRequest, judgment: string, questions: string[]): string {
   const payload = requestPayload(request);
   if (!payload || !Array.isArray(payload.stagePairs)) return stageRaw(judgment, questions);
   const pairs = payload.stagePairs as Array<{ questionId: string; choiceId: string | null; status: string }>;
   const answered = pairs.filter((pair) => pair.status === 'answered');
+  const continuesObjectiveId = unresolvedObjectiveId(payload);
+  const cites = answeredCites(payload);
   const nextQuestions = questions.map((text) => ({
     text,
     choices: [`${text} 쪽을 먼저 본다`, `${text} 쪽은 아직 정하지 못했다`],
     verificationPurpose: `${text}와 다른 불확실성. 아직 확인하지 않은 다음 검증이다`,
+    reaskReason: null,
+    ...(continuesObjectiveId ? { continuesObjectiveId } : {}),
   }));
   return JSON.stringify({
     answerInterpretation: answered.map((pair) => ({
@@ -88,7 +116,7 @@ function contractReply(request: ChatRequest, judgment: string, questions: string
     })),
     impactOnPreviousJudgment: '이번 답이 기존 판단에 준 영향이다.',
     updatedJudgment: `유지: 확인 전 위험은 남는다. 이번 답: ${judgment} 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.`,
-    judgmentReason: '지불 확인이 없어 판단을 유지한다.',
+    judgmentReason: withAnswerGrounds('지불 확인이 없어 판단을 유지한다.', cites),
     verifiedFacts: [],
     unverifiedClaims: [],
     assumptions: ['가격은 확인되지 않았다'],
@@ -426,7 +454,13 @@ describe('consulting stage batch', () => {
       expect(supply.supply.description).toContain('아직 확인되지 않았다');
       expect(supply.marketing.description).toContain('빈 문자열은 실패다');
       expect(meaning.nextQuestions.items.properties.verificationPurpose.description).toContain('불확실성');
-      expect(meaning.nextQuestions.items.required).toEqual(['text', 'choices', 'verificationPurpose', 'reaskReason']);
+      expect(meaning.nextQuestions.items.required).toEqual([
+        'text',
+        'choices',
+        'verificationPurpose',
+        'reaskReason',
+        'continuesObjectiveId',
+      ]);
       expect(meaning.nextQuestions.items.properties.reaskReason.type).toEqual(['string', 'null']);
       expect(request.responseFormat.schema.required).toEqual([
         'answerInterpretation',
@@ -2128,14 +2162,25 @@ describe('consulting stage batch', () => {
     expect(judged.ok).toBe(true);
     if (!judged.ok) return;
     expect(judged.record.callCount).toBe(1);
+    expect(judged.record.error ?? '').toContain('stage_objective_unlinked');
+    expect(judged.record.error ?? '').toContain('stage_judgment_ungrounded');
     expect(judged.record.error ?? '').not.toContain('stage_reassessment_missing');
-    expect(judged.record.sections).not.toBeNull();
-    expect(judged.record.stageReading?.updatedJudgment).toContain('확인되지 않았다');
-    expect(judged.record.stageReading?.impactOnPreviousJudgment).toContain('유지');
-    expect(judged.record.stageReading?.judgmentReason.length).toBeGreaterThan(0);
-    expect(judged.record.stageReading?.answerInterpretation[0]?.meaning).toContain('확인된 사실이 아니다');
-    expect(judged.record.stageReading?.unresolvedIssues).toContain('양조장 후보가 없다.');
-    expect(judged.record.sections?.nextQuestion).toContain('후보');
+    expect(judged.record.sections).toBeNull();
+    const legacy = judgeStageContract(follow.rounds[0]?.raw ?? '', {
+      askedQuestions: questions.map((question) => question.text),
+      pairs: judged.record.stageAnswers ?? [],
+      closedSentences: (judged.record.stageAnswers ?? []).flatMap((pair) => [pair.question, pair.choiceLabel ?? '', pair.supplement]),
+      priorJudgmentText: parent.record.sections?.analysis?.judgmentDetail || parent.record.sections?.judgment || '',
+      priorUnresolved: [...(parent.record.sections?.uncertain ?? [])],
+    });
+    expect(legacy.issues).not.toContain('stage_reassessment_missing');
+    expect(legacy.sections).not.toBeNull();
+    expect(legacy.reading?.updatedJudgment).toContain('확인되지 않았다');
+    expect(legacy.reading?.impactOnPreviousJudgment).toContain('유지');
+    expect(legacy.reading?.judgmentReason.length).toBeGreaterThan(0);
+    expect(legacy.reading?.answerInterpretation[0]?.meaning).toContain('확인된 사실이 아니다');
+    expect(legacy.reading?.unresolvedIssues).toContain('양조장 후보가 없다.');
+    expect(legacy.sections?.nextQuestion).toContain('후보');
     expect(judged.record.rawContent).toContain('유지, 양조장 협력 가능성이 높다는 주장은 확인되지 않았다');
   });
 
@@ -2182,21 +2227,29 @@ describe('consulting stage batch', () => {
     expect(judged.ok).toBe(true);
     if (!judged.ok) return;
     expect(judged.record.callCount).toBe(1);
-    expect(judged.record.error ?? null).toBeNull();
-    const reread = await store.readReview('user-quality-fix-6', judged.record.reviewId);
-    expect(reread?.error ?? null).toBeNull();
-    expect(reread?.sections?.analysis?.supply).toBe('아직 분석되지 않았다.');
-    expect(reread?.sections?.analysis?.marketing).toBe('아직 분석되지 않았다.');
-    expect(reread?.rawContent).toContain('"supply": "아직 분석되지 않았다."');
-    expect(reread?.rawContent).toContain('"supplyState": "not_analyzed"');
-    expect(reread?.rawContent).toContain('"marketing": "아직 분석되지 않았다."');
-    expect(reread?.rawContent).toContain('"marketingState": "not_analyzed"');
-    expect(reread?.stageReading?.updatedJudgment).toBe(
+    expect(judged.record.error ?? '').toContain('stage_objective_unlinked');
+    expect(judged.record.error ?? '').toContain('stage_judgment_ungrounded');
+    expect(judged.record.sections).toBeNull();
+    const legacy = judgeStageContract(follow.rounds[0]?.raw ?? '', {
+      askedQuestions: questions.map((question) => question.text),
+      pairs: judged.record.stageAnswers ?? [],
+      closedSentences: (judged.record.stageAnswers ?? []).flatMap((pair) => [pair.question, pair.choiceLabel ?? '', pair.supplement]),
+      priorJudgmentText: parent.record.sections?.analysis?.judgmentDetail || parent.record.sections?.judgment || '',
+      priorUnresolved: [...(parent.record.sections?.uncertain ?? [])],
+    });
+    expect(legacy.issues).toEqual([]);
+    expect(legacy.sections?.analysis?.supply).toBe('아직 분석되지 않았다.');
+    expect(legacy.sections?.analysis?.marketing).toBe('아직 분석되지 않았다.');
+    expect(judged.record.rawContent).toContain('"supply": "아직 분석되지 않았다."');
+    expect(judged.record.rawContent).toContain('"supplyState": "not_analyzed"');
+    expect(judged.record.rawContent).toContain('"marketing": "아직 분석되지 않았다."');
+    expect(judged.record.rawContent).toContain('"marketingState": "not_analyzed"');
+    expect(legacy.reading?.updatedJudgment).toBe(
       '사업 모델의 잠재력은 남을 수 있으나, 양조장과의 협력 관계가 불확실하다. 추가 검증이 필요하다.',
     );
-    expect(reread?.sections?.nextQuestion).toBe('양조장과의 접촉이 있었는가?');
-    expect(reread?.stageReading?.verifiedFacts).toEqual([]);
-    expect(reread?.stageReading?.unverifiedClaims?.[0]).toContain('양조장 협력 가능성이 높다고 판단한다');
+    expect(legacy.sections?.nextQuestion).toBe('양조장과의 접촉이 있었는가?');
+    expect(legacy.reading?.verifiedFacts).toEqual([]);
+    expect(legacy.reading?.unverifiedClaims?.[0]).toContain('양조장 협력 가능성이 높다고 판단한다');
   });
 
   it('rejects an unnegated rise and stores a sentence that withdraws that rise', async () => {
@@ -2221,7 +2274,7 @@ describe('consulting stage batch', () => {
           item.meaning = matched.sentence;
           item.judgmentEffect = matched.sentence;
         }
-        parsed.judgmentReason = matched.sentence;
+        parsed.judgmentReason = withAnswerGrounds(matched.sentence, answeredCites(payload));
         parsed.updatedJudgment = matched.sentence;
         parsed.verifiedFacts = [];
       }
@@ -2273,7 +2326,8 @@ describe('consulting stage batch', () => {
     expect(kept?.error ?? null).toBeNull();
     expect(kept?.stageReading?.answerInterpretation[0]?.meaning).toBe(withdrawn);
     expect(kept?.stageReading?.answerInterpretation[0]?.judgmentEffect).toBe(withdrawn);
-    expect(kept?.stageReading?.judgmentReason).toBe(withdrawn);
+    expect(kept?.stageReading?.judgmentReason).toContain(withdrawn);
+    expect(kept?.stageReading?.judgmentReason).toContain('가격은 정하지 않았다');
     expect(kept?.stageReading?.updatedJudgment).toBe(withdrawn);
     expect(kept?.stageReading?.verifiedFacts).toEqual([]);
     expect(kept?.sections?.nextQuestion).toBe('첫 유료 참가자는 있는가?');
@@ -2292,92 +2346,49 @@ describe('consulting stage batch', () => {
     expect(evidence.rounds[1]?.reviewId).toBe('d311d088-71ad-4131-9614-3c8ec178a24a');
     const preservedRaw = evidence.rounds[1]?.raw ?? '';
     expect(preservedRaw).toContain('협력 가능성이 높다는 판단은 유지되지 않는다.');
-    const first = JSON.parse(
-      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-real-gpt-continuity.json', import.meta.url), 'utf8'),
-    ) as { rounds: Array<{ raw: string }> };
-    const second = JSON.parse(
-      readFileSync(new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-quality-fix-6.json', import.meta.url), 'utf8'),
-    ) as { rounds: Array<{ raw: string }> };
-    const store = openAiPmReviewStore(storePath());
-    let injectedCalls = 0;
-    const chat = async (request: ChatRequest) => {
-      injectedCalls += 1;
-      const payload = requestPayload(request);
-      if (!payload || !Array.isArray(payload.stagePairs)) return reply(first.rounds[0]?.raw ?? '');
-      const current = JSON.stringify(payload.stagePairs);
-      return reply(current.includes('문의했다고') ? preservedRaw : (second.rounds[0]?.raw ?? ''));
+    const parsed = JSON.parse(preservedRaw) as {
+      answerInterpretation: Array<{ questionId: string; choiceId: string }>;
+      nextQuestions: Array<{ text: string }>;
     };
-    const userId = 'user-quality-fix-12';
-    const projectId = 'project-quality-fix-12';
-    const parent = await runFirstReview({
-      store,
-      userId,
-      projectId,
-      text: '다양한 관광객이 늘며, 개인별 다양한 경험을 중요시 한다. 우리는 그런 개인별 다양한 경험을 중요시 하는 관광객 중, 전통주(양조장)을 좋아하는 내국인/외국인 대상으로 양조장 체험(만들고, 마시고)을 안내하고 주변을 즐길수 있는 사업을 구상중이며, 이는 양조장의 다양한 온라인 마케팅에서 시행될수 있어서 우리는 그것을 지원하려 한다.',
-      origin: 'typed',
-      fileName: null,
-      now: NOW,
-      chat,
-      evidence: 'injected_http',
+    const pairs: StagePair[] = parsed.answerInterpretation.map((item) => ({
+      questionId: item.questionId,
+      question: '보존된 질문',
+      offeredChoices: [],
+      choiceId: item.choiceId,
+      choiceLabel: null,
+      supplement: evidence.simulationAnswer,
+      status: 'answered',
+    }));
+    const legacy = judgeStageContract(preservedRaw, {
+      askedQuestions: ['이전 질문'],
+      pairs,
     });
-    const firstQuestions = consultingQuestions(parent.record.sections);
-    const secondReview = await submitConsultingStage({
-      store,
-      userId,
-      projectId,
-      reviewId: parent.record.reviewId,
-      now: NOW,
-      answers: firstQuestions.map((question, index) => ({
-        questionId: question.questionId,
-        comment: index === 0 ? '양조장 협력 가능성이 높다고 판단한다. 체험과 시음이 가능한 양조장을 선호한다.' : '추가 사실은 없다.',
-      })),
-      chat,
-      evidence: 'injected_http',
-    });
-    expect(secondReview.ok).toBe(true);
-    if (!secondReview.ok) return;
-    expect(secondReview.record.error ?? null).toBeNull();
-    expect(secondReview.record.sections?.nextQuestion).toContain('접촉');
-    const thirdQuestions = consultingQuestions(secondReview.record.sections);
-    const replay = await submitConsultingStage({
-      store,
-      userId,
-      projectId,
-      reviewId: secondReview.record.reviewId,
-      now: NOW,
-      answers: thirdQuestions.map((question, index) => ({
-        questionId: question.questionId,
-        comment: index === 0 ? evidence.simulationAnswer : '추가 사실은 없다.',
-      })),
-      chat,
-      evidence: 'injected_http',
-    });
-    expect(replay.ok).toBe(true);
-    if (!replay.ok) return;
-    expect(injectedCalls).toBe(3);
-    expect(replay.record.callCount).toBe(1);
-    expect(replay.record.reviewId).not.toBe(evidence.rounds[1]?.reviewId);
-    expect(replay.record.error ?? null).toBeNull();
-    const reread = await store.readReview(userId, replay.record.reviewId);
-    expect(reread?.error ?? null).toBeNull();
-    expect(reread?.stageReading?.answerInterpretation[0]?.meaning).toBe('양조장에 문의했다고 주장하나, 확인된 사실은 없다.');
-    expect(reread?.stageReading?.answerInterpretation[0]?.judgmentEffect).toBe('협력 가능성이 높다는 판단은 유지되지 않는다.');
-    expect(reread?.stageReading?.judgmentReason).toBe(
+    expect(legacy.issues).not.toContain('stage_claim_as_positive');
+    expect(legacy.reading?.answerInterpretation[0]?.meaning).toBe('양조장에 문의했다고 주장하나, 확인된 사실은 없다.');
+    expect(legacy.reading?.answerInterpretation[0]?.judgmentEffect).toBe('협력 가능성이 높다는 판단은 유지되지 않는다.');
+    expect(legacy.reading?.judgmentReason).toBe(
       '협력 가능성이 높다는 판단은 유지되지 않는다. 확인된 접촉이 없으므로 성공 가능성은 높아지지 않았다.',
     );
-    expect(reread?.stageReading?.updatedJudgment).toBe(
+    expect(legacy.reading?.updatedJudgment).toBe(
       '사업 모델의 잠재력은 남을 수 있으나, 협력 가능성은 높지 않다. 현재 가장 중요한 미해결 위험은 양조장과의 협력 관계가 불확실하다는 점이다. 추가 검증이 필요한 이유는 상대의 반응이 없고, 참여 의향이 확인되지 않았기 때문이다.',
     );
-    expect(reread?.stageReading?.verifiedFacts).toEqual([]);
-    expect(reread?.stageReading?.unresolvedIssues).toEqual([
+    expect(legacy.reading?.verifiedFacts).toEqual([]);
+    expect(legacy.reading?.unresolvedIssues).toEqual([
       '양조장과의 협력 관계가 불확실하다.',
       '상대의 반응이 없다.',
       '참여 의향이 확인되지 않았다.',
       '체험과 운영 조건이 합의되지 않았다.',
     ]);
-    expect(reread?.sections?.nextQuestion).toBe('양조장과의 후속 연락이 가능한가?');
-    expect(reread?.rawContent).toContain('협력 가능성이 높다는 판단은 유지되지 않는다.');
-    expect(reread?.rawContent).toContain('"verifiedFacts": []');
+    expect(legacy.sections?.nextQuestion).toBe('양조장과의 후속 연락이 가능한가?');
+    const withLedger = judgeStageContract(preservedRaw, {
+      askedQuestions: ['이전 질문'],
+      pairs,
+      objectives: buildVerificationObjectives(buildAnsweredQuestionState(pairs)),
+    });
+    expect(withLedger.sections).toBeNull();
+    expect(withLedger.issues).toContain('stage_objective_unlinked');
+    expect(withLedger.issues).toContain('stage_judgment_ungrounded');
+    expect(withLedger.issues).not.toContain('stage_claim_as_positive');
     const stillFailed = JSON.parse(readFileSync(evidencePath, 'utf8')) as { rounds: Array<{ rowError: string | null; executionId: string }> };
     expect(stillFailed.rounds[1]?.executionId).toBe('chatcmpl-EfKI4PVBVfvgbQLpkkOODPZkgudWH');
     expect(stillFailed.rounds[1]?.rowError).toBe('stage_claim_as_positive');
@@ -2554,7 +2565,17 @@ describe('consulting stage batch', () => {
       const supplement = JSON.stringify(payload.stagePairs);
       const matched = cases.find((item) => supplement.includes(item.id));
       const parsed = JSON.parse(contractReply(request, '지불은 그대로 미확인이다.', [nextQuestion])) as Record<string, unknown>;
-      if (matched) Object.assign(parsed, matched.patch);
+      if (matched) {
+        Object.assign(parsed, matched.patch);
+        const before = typeof parsed.judgmentReason === 'string' ? parsed.judgmentReason : '';
+        const collapsed = before.length > 0 && before === parsed.updatedJudgment && before === parsed.impactOnPreviousJudgment;
+        const grounded = withAnswerGrounds(before, answeredCites(payload));
+        parsed.judgmentReason = grounded;
+        if (collapsed) {
+          parsed.updatedJudgment = grounded;
+          parsed.impactOnPreviousJudgment = grounded;
+        }
+      }
       return reply(JSON.stringify(parsed));
     };
     for (const item of cases) {
@@ -3313,6 +3334,113 @@ describe('consulting stage batch', () => {
     store.close();
   });
 
+  it('rejects the stored round 3 objective reselection and accepts a remainder link', () => {
+    const evidencePath = new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-e2e-live-gpt.json', import.meta.url);
+    const evidenceFile = readFileSync(evidencePath);
+    expect(createHash('sha256').update(evidenceFile).digest('hex')).toBe('6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd');
+    const round1 = '48d06eaa-ad74-4851-a919-fbd8ecefdc1a';
+    const round2 = '5f6d705d-fe2a-468f-97be-da16482abd32';
+    const meeting = '양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?';
+    const surveyQuestion = '전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?';
+    const priceQuestion = '체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?';
+    const keptJudgment = '사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.';
+    const copiedReason = '사업의 핵심 요소가 정해지지 않아 방향성이 불확실하다.';
+    const prior = liveObjectivePair('q1', meeting, '아직 핵심을 정하지 못했다');
+    const survey = liveObjectivePair('q1', surveyQuestion, '설문조사 실시');
+    const price = liveObjectivePair('q2', priceQuestion, '비용 분석');
+    const links = [prior, survey, price].map((pair, index) => ({
+      sourceReviewId: index === 0 ? round1 : round2,
+      questionId: pair.questionId,
+      question: pair.question,
+      choiceId: pair.choiceId,
+      choiceLabel: pair.choiceLabel,
+      supplement: pair.supplement,
+      submittedAt: NOW,
+      status: 'answered' as const,
+    }));
+    const states = buildAnsweredQuestionState([prior, survey, price], links);
+    const objectives = buildVerificationObjectives(states);
+    const surveyKey = `${round2}:q1`;
+    const priceKey = `${round2}:q2`;
+    const remainderId = `${surveyKey}:remainder`;
+    expect(objectives.filter((row) => row.status === 'resolved').map((row) => row.objectiveId)).toEqual([surveyKey, priceKey]);
+    expect(objectives.find((row) => row.objectiveId === `${round1}:q1`)).toMatchObject({ status: 'open', purpose: meeting });
+    expect(objectives.find((row) => row.objectiveId === remainderId)).toMatchObject({
+      status: 'open',
+      parentObjectiveId: surveyKey,
+      purpose: '실행 대상, 실행 여부, 응답 결과는 이 답에 없다.',
+    });
+    const request = buildProductReanalysisRequest({
+      originalInput: '보존된 3차의 원문 아이디어다.',
+      firstAnalysis: liveSections(keptJudgment),
+      priorTurns: [],
+      priorAnalyses: [],
+      previousQuestions: [meeting, surveyQuestion, priceQuestion],
+      latestAnalysis: liveSections(keptJudgment),
+      founderChoice: null,
+      founderSupplement: '',
+      founderFeedback: null,
+      stagePairs: [survey, price],
+      priorStagePairs: [prior],
+      answerLinks: links,
+      unlinkedStatements: [],
+    });
+    const payload = userPayload(request);
+    const sent = payload.verificationObjectives as { resolved: Array<{ objectiveId: string }>; unresolved: Array<{ objectiveId: string }> };
+    expect(sent.resolved.map((row) => row.objectiveId)).toEqual([surveyKey, priceKey]);
+    expect(sent.unresolved.map((row) => row.objectiveId)).toContain(remainderId);
+    expect(sent.unresolved.map((row) => row.objectiveId)).toContain(`${round1}:q1`);
+    expect(request.messages.find((message) => message.role === 'system')?.content).toContain('verificationObjectives.unresolved의 objectiveId만');
+    const asked = [meeting, surveyQuestion, priceQuestion];
+    const contract = {
+      askedQuestions: asked,
+      pairs: [survey, price],
+      closedSentences: [prior, survey, price].flatMap((pair) => [pair.question, pair.choiceLabel ?? '', pair.supplement]),
+      priorJudgmentText: keptJudgment,
+      objectives,
+    };
+    const rejected = judgeStageContract(liveRound3Body({ continuesObjectiveId: null, judgmentReason: copiedReason, objective: surveyQuestion }), contract);
+    expect(rejected.sections).toBeNull();
+    expect(rejected.issues).toContain('stage_objective_overlap');
+    expect(rejected.issues).toContain('stage_objective_reselected');
+    expect(rejected.issues).toContain('stage_objective_unlinked');
+    expect(rejected.issues).toContain('stage_judgment_ungrounded');
+    expect(rejected.issues).not.toContain('stage_judgment_copied');
+    const accepted = judgeStageContract(
+      liveRound3Body({
+        continuesObjectiveId: remainderId,
+        judgmentReason: '설문조사 실시와 비용 분석은 방법 이름만 새로 확인했다. 실행 결과와 응답은 없다. 그래서 방향성 판단은 유지한다. 남은 불확실성은 실행 여부와 응답 결과다.',
+        objective: '실행 대상, 실행 여부, 응답 결과는 이 답에 없다.',
+        questions: [
+          { text: '실행 대상은 누구인가?', purpose: '실행 대상이 이 답에 없는 빈칸' },
+          { text: '응답 결과는 어디에 적히는가?', purpose: '응답 결과가 이 답에 없는 빈칸' },
+        ],
+      }),
+      contract,
+    );
+    expect(accepted.issues).not.toContain('stage_objective_reselected');
+    expect(accepted.issues).not.toContain('stage_judgment_ungrounded');
+    expect(accepted.issues).not.toContain('stage_objective_unlinked');
+    expect(accepted.issues).not.toContain('stage_objective_overlap');
+    expect(accepted.sections?.judgment).toBe(keptJudgment);
+    const relinked = JSON.parse(
+      liveRound3Body({
+        continuesObjectiveId: surveyKey,
+        judgmentReason: '설문조사 실시와 비용 분석은 방법 이름만 새로 확인했다. 실행 결과와 응답은 없다. 그래서 방향성 판단은 유지한다. 남은 불확실성은 실행 여부와 응답 결과다.',
+        objective: '실행 대상, 실행 여부, 응답 결과는 이 답에 없다.',
+        questions: [
+          { text: '실행 대상은 누구인가?', purpose: '실행 대상이 이 답에 없는 빈칸' },
+          { text: '응답 결과는 어디에 적히는가?', purpose: '응답 결과가 이 답에 없는 빈칸' },
+        ],
+      }),
+    ) as { nextQuestions: Array<{ continuesObjectiveId: string }> };
+    relinked.nextQuestions[0]!.continuesObjectiveId = surveyKey;
+    const reselected = judgeStageContract(JSON.stringify(relinked), contract);
+    expect(reselected.sections).toBeNull();
+    expect(reselected.issues).toContain('stage_objective_reselected');
+    expect(readFileSync(evidencePath).equals(evidenceFile)).toBe(true);
+  });
+
   function levelPair(questionId: string, question: string, choiceLabel: string | null, supplement: string): StagePair {
     return {
       questionId,
@@ -3488,3 +3616,122 @@ describe('consulting stage batch', () => {
     expect(states[0]?.question).not.toBe(states[1]?.question);
   });
 });
+
+function liveObjectivePair(questionId: string, question: string, choiceLabel: string): StagePair {
+  return {
+    questionId,
+    question,
+    offeredChoices: [{ choiceId: 'c1', label: choiceLabel }],
+    choiceId: 'c1',
+    choiceLabel,
+    supplement: choiceLabel,
+    status: 'answered',
+  };
+}
+
+function liveSections(judgment: string): ReviewSections {
+  return {
+    customer: '전통주 체험 고객',
+    problem: '체험 내용이 확인되지 않았다',
+    market: '수요는 입력에 없다',
+    revenueModel: '가격은 가설이다',
+    execution: '운영은 구상이다',
+    risks: ['방향이 불확실하다'],
+    uncertain: ['방향이 불확실하다'],
+    hypotheses: [],
+    judgment,
+    nextQuestion: '다음에 확인할 것은 무엇인가?',
+    nextQuestionReason: '확인된 실행이 없다',
+    answerHint: '선택하거나 직접 적습니다.',
+    claimConfirmation: null,
+  };
+}
+
+function liveRound3Body(input: {
+  continuesObjectiveId: string | null;
+  judgmentReason: string;
+  objective: string;
+  questions?: Array<{ text: string; purpose: string }>;
+}): string {
+  const keptJudgment = '사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.';
+  const questions = input.questions ?? [
+    {
+      text: '설문조사 결과를 바탕으로 고객층을 정의하기 위해 어떤 추가 조치를 취해야 할까?',
+      purpose: '고객층 정의를 위한 추가 조치를 확인하기 위함.',
+      choices: ['고객 피드백 수집', '경쟁사 분석', '관광객 인터뷰 진행'],
+    },
+    {
+      text: '비용 분석 결과를 바탕으로 체험 프로그램의 가격을 설정하기 위해 어떤 요소를 추가로 고려해야 할까?',
+      purpose: '가격 설정을 위한 추가 요소를 확인하기 위함.',
+      choices: ['시장 가격 조사', '고객 피드백 수집', '비용 절감 방안 모색'],
+    },
+  ];
+  const link = input.continuesObjectiveId ? { continuesObjectiveId: input.continuesObjectiveId } : {};
+  const nextQuestions = questions.map((item) => ({
+    text: item.text,
+    choices: 'choices' in item && item.choices ? item.choices : ['실행 대상을 적는다', '아직 실행 대상이 없다'],
+    verificationPurpose: item.purpose,
+    reaskReason: null,
+    ...link,
+  }));
+  return JSON.stringify({
+    answerInterpretation: ['q1', 'q2'].map((questionId) => ({
+      questionId,
+      choiceId: 'c1',
+      meaning: `${questionId} 답은 방법 이름만 말하고 확인된 사실은 늘리지 않는다`,
+      founderBasis: `${questionId}에서 이렇게 말한 이유는 입력에 적힌 방법이다`,
+      observedEvidence: `${questionId}에서 확인된 접촉이나 합의는 없다`,
+      judgmentEffect: `${questionId} 답은 확인된 사실이 아니다. 성공 가능성은 높아지지 않았다.`,
+      openRisk: `${questionId}의 실행 결과는 아직 없다`,
+    })),
+    impactOnPreviousJudgment: '이번 답은 방법 이름만 더했다. 방향성 문장은 유지한다.',
+    updatedJudgment: keptJudgment,
+    judgmentReason: input.judgmentReason,
+    verifiedFacts: [],
+    unverifiedClaims: ['방법 이름은 실행 결과가 아니다'],
+    assumptions: ['응답 결과는 아직 없다'],
+    resolvedIssues: [],
+    unresolvedIssues: ['사업의 방향성이 불확실하다.', '체험 프로그램의 구체적인 내용 및 가격 설정이 필요하다.'],
+    nextVerification: '설문조사 결과를 통해 고객층을 정의하고, 그에 따라 체험 프로그램을 조정할 필요가 있다.',
+    customer: '전통주 체험 고객',
+    problem: '체험 내용이 확인되지 않았다',
+    value: '체험',
+    product: '전통주 체험',
+    market: '수요는 입력에 없다',
+    revenueModel: '가격은 가설이다',
+    operations: '운영은 구상이다',
+    supply: '공급은 입력에 없다',
+    supplyState: 'confirmed',
+    marketing: '알림은 입력에 없다',
+    marketingState: 'confirmed',
+    competition: '경쟁은 확인되지 않았다',
+    executionNote: '실행은 아직 확인되지 않았다',
+    risks: ['방향이 불확실하다'],
+    objectiveCandidates: [
+      {
+        candidateId: 'q1',
+        areaId: 'customer',
+        objective: input.objective,
+        importance: '중요',
+        uncertainty: '고객층 정의가 불확실하다.',
+        prerequisite: '설문조사 결과가 필요하다.',
+        overlapsReviewedObjective: false,
+        ...link,
+      },
+      {
+        candidateId: 'q2',
+        areaId: 'price',
+        objective: '체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?',
+        importance: '중요',
+        uncertainty: '가격 설정이 불확실하다.',
+        prerequisite: '비용 분석 결과가 필요하다.',
+        overlapsReviewedObjective: false,
+        ...link,
+      },
+    ],
+    selectedCandidateId: 'q1',
+    selectionReason: '선택한 후보의 불확실성이 다음 판단에 필요하다.',
+    nextQuestions,
+    nextQuestionChoices: nextQuestions.map((item) => item.choices),
+  });
+}
