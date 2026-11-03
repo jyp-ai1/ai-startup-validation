@@ -4,6 +4,12 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint 2 Objective 연속 요청
+
+**상태:** 2026-11-03 12:02 KST 단계 요청에 `objectiveContinuity`를 넣었다. 해결된 목적, 남은 과제, remainder의 부모, 이번 답의 questionKey와 원문을 같이 보낸다. 지시는 열린 remainder를 `__new__`보다 먼저 잇고, 답 원문을 `judgmentReason`과 `answerEvidence`에 그대로 남기라고 말한다. 파서 거절은 유지한다. 이 기록의 GPT 호출은 0회다. 3차와 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-OBJECTIVE-CONTINUITY.md`다. 증거 SHA-256은 유지됐다.
+
+---
+
 ## Sprint 2 Objective 선택 계약 실호출
 
 **상태:** 2026-11-03 11:43 KST 프로세스 `bc-a9de2c19-8004-59a6-8f68-d7c5d53f8680`의 `GPT_API_KEY`는 PRESENT다. 3차 1회는 부모 `5f6d705d-fe2a-468f-97be-da16482abd32`로 나갔고 응답 id는 `chatcmpl-Efylxn3uegZkpaOdtDNNCKwNtj0ND`다. 저장 행 `a4e3455e-1043-403b-acd5-500c1c81bed4`는 failed이고 오류는 `stage_objective_overlap,stage_objective_reselected,stage_judgment_ungrounded`이며 sections는 null이다. 질문과 후보의 `continuesObjectiveId`는 `__new__`다. 재시도는 0회다. 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-OBJECTIVE-CONTRACT-LIVE.md`다. 실패 행 `0e75ff46-88fd-4ce2-b567-bdc3f3048531`, `9d51935d-891e-424c-b3f1-9b1c5e529c2f`, `8ec32bae-461b-449a-99b7-db95a92fb2c0`는 넣지 않았다. 증거 해시는 유지됐다.
