@@ -164,13 +164,26 @@ function firstFixture(): string {
 
 function contractReply(request: ChatRequest, judgment: string, questions: string[]): string {
   const payload = userJson(request) ?? {};
-  const pairs = (Array.isArray(payload.stagePairs) ? payload.stagePairs : []) as Array<{ questionId: string; choiceId: string | null; status: string }>;
+  const pairs = (Array.isArray(payload.stagePairs) ? payload.stagePairs : []) as Array<{
+    questionId: string;
+    choiceId: string | null;
+    status: string;
+    choiceLabel?: string | null;
+    supplement?: string;
+  }>;
   const answered = pairs.filter((pair) => pair.status === 'answered');
+  const continuesObjectiveId =
+    (payload.verificationObjectives as { unresolved?: Array<{ objectiveId?: string }> } | undefined)?.unresolved?.find((row) => row.objectiveId)
+      ?.objectiveId ?? '';
+  const cites = answered
+    .map((pair) => (pair.choiceLabel ?? '').trim() || (pair.supplement ?? '').trim())
+    .filter((text) => text.replace(/\s+/g, '').length >= 2);
   const nextQuestions = questions.map((text) => ({
     text,
     choices: [`${text} 쪽을 먼저 본다`, `${text} 쪽은 보류한다`],
     verificationPurpose: `${text}와 다른 불확실성. 아직 확인하지 않은 다음 검증이다`,
     reaskReason: null,
+    ...(continuesObjectiveId ? { continuesObjectiveId } : {}),
   }));
   return JSON.stringify({
     answerInterpretation: answered.map((pair) => ({
@@ -184,7 +197,7 @@ function contractReply(request: ChatRequest, judgment: string, questions: string
     })),
     impactOnPreviousJudgment: '이번 답이 기존 판단에 준 영향이다.',
     updatedJudgment: `유지: 확인 전 위험은 남는다. 이번 답: ${judgment} 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.`,
-    judgmentReason: '지불 확인이 없어 판단을 유지한다.',
+    judgmentReason: `지불 확인이 없어 판단을 유지한다. 이번 답 ${cites.join(' ')}을 확인했다. 남은 불확실성은 지불이다.`,
     verifiedFacts: [],
     unverifiedClaims: ['입력된 답은 주장이다'],
     assumptions: ['지불은 아직 가설이다'],

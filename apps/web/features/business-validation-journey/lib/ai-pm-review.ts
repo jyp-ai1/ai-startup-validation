@@ -1970,7 +1970,7 @@ export function stageReanalysisSchema(): Record<string, unknown> {
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['candidateId', 'areaId', 'objective', 'importance', 'uncertainty', 'prerequisite', 'overlapsReviewedObjective'],
+          required: ['candidateId', 'areaId', 'objective', 'importance', 'uncertainty', 'prerequisite', 'overlapsReviewedObjective', 'continuesObjectiveId'],
           properties: {
             candidateId: { ...filled, description: '이 후보의 식별자. selectedCandidateId가 이 값을 가리킨다.' },
             areaId: { ...filled, description: 'areaStatus의 areaId 하나. 코드가 정하지 않는다.' },
@@ -1985,6 +1985,11 @@ export function stageReanalysisSchema(): Record<string, unknown> {
               type: 'boolean',
               description:
                 '이미 검토한 목적과 같으면 true. 표현만 바꾼 목적도 true다. 서버가 questionKey로 구분된 기존 질문의 목적과 비교한다. false라고 적어도 목적이 같으면 새 질문이 아니다.',
+            },
+            continuesObjectiveId: {
+              ...filled,
+              description:
+                'verificationObjectives.unresolved의 objectiveId 하나. resolved의 id는 실패다. 코드가 사업 주제를 정하지 않는다. 질문 문장도 정하지 않는다.',
             },
           },
         },
@@ -2010,7 +2015,7 @@ export function stageReanalysisSchema(): Record<string, unknown> {
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['text', 'choices', 'verificationPurpose', 'reaskReason'],
+          required: ['text', 'choices', 'verificationPurpose', 'reaskReason', 'continuesObjectiveId'],
           properties: {
             text: {
               ...filled,
@@ -2026,6 +2031,11 @@ export function stageReanalysisSchema(): Record<string, unknown> {
               type: ['string', 'null'],
               description:
                 '같은 질문 문장을 통과시키는 필드가 아니다. 새 질문이 기존 답으로 확인되지 않은 정보를 물을 때 그 빈칸과 이유를 적는다. 새 질문이면 null이다. 키를 빼지 않는다. 질문 문장과 같으면 사유가 아니다. 불확실하다만 적으면 사유가 아니다.',
+            },
+            continuesObjectiveId: {
+              ...filled,
+              description:
+                '이 질문이 이어가는 verificationObjectives.unresolved의 objectiveId. 해결된 objectiveId는 실패다. 코드가 고른 전략 주제가 아니다.',
             },
             choices: {
               type: 'array',
@@ -2080,11 +2090,12 @@ function stageReanalysisSystemPrompt(): string {
     '5. 다음 검증은 statedRecord와 areaStatus를 읽고 objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId로 하나 고른다. 코드는 질문 문장을 정하지 않는다. 코드는 후보도 고르지 않는다. 질문 개수도 당신이 정한다. priorReview는 판단을 갱신할 때 읽고 질문의 주제로 고정하지 않는다. overlapsReviewedObjective가 true인 후보는 고르지 않는다. closedQuestions의 사업 목적은 끝난 목적이다. questionId는 회차 안에서 q1부터 다시 매긴다. 질문을 구분할 때는 questionKey를 쓴다. questionKey는 sourceReviewId와 questionId를 잇는다. 이전 회차의 q1과 이번 회차의 q1은 다른 질문이다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 이미 답한 질문은 표현만 바꾸어 다시 묻지 않는다. 같은 질문 문장은 reaskReason이 있어도 실패다. 불충분하면 새 질문으로 확인되지 않은 정보를 묻는다. 불확실하다만 적은 verificationPurpose는 그 사유가 아니다. 다음 질문의 사업 목적은 방금 답한 질문의 목적과 달라야 한다. 서버는 선택한 objective를 기존 질문 목적과 비교한다. overlapsReviewedObjective가 false여도 목적이 같으면 그 후보는 새 질문이 아니다. 고정된 질문 순서는 없다. areaStatus의 배열 순서는 우선순위가 아니다. status가 not_analyzed인 영역만 전달된 문장이 없다. founder_claim, assumption, unconfirmed, claim은 이미 전달된 정보다. informationPresent는 문장이 있다는 뜻이다. verified가 false면 검증된 사실이 아니다. analysisComplete가 false면 그 영역 분석이 끝난 것이 아니다. FOUNDER_CLAIM을 VERIFIED_FACT로 올리지 않는다. provenance가 FOUNDER_INPUT이면 Founder 원문에서 온 주장이다. AI_INFERENCE는 원문에 없는 추론이다. 그 문장을 없는 정보처럼 다시 묻지 않는다. 검증이 필요하면 그 문장과 다른 질문을 할 수 있다. 고객, 문제, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 해결된 내용은 근거와 함께 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. priorHypotheses와 doNotCopy.priorUnresolvedIssues는 가설이거나 이전 목록이다. unresolvedIssues는 그 목록을 그대로 복사하지 않고 이번 답이 남긴 빈칸과 새로 보인 빈칸만 적는다. 근거가 없으면 미해결로 남긴다.',
+    'verificationObjectives.resolved의 objectiveId와 purpose는 이미 답이 붙은 목적이다. 그 id를 다시 고르지 않는다. 표현만 바꾼 목적도 그 id를 다시 고르는 것이다. verificationObjectives.unresolved의 objectiveId만 nextQuestions.continuesObjectiveId와 선택한 후보의 continuesObjectiveId가 된다. 코드는 그 질문을 쓰지 않는다. judgmentReason은 이번 stagePairs의 답 원문을 포함하고, 무엇을 새로 확인했는지, 왜 판단을 유지하거나 바꿨는지, 어떤 불확실성이 남았는지를 적는다. 답 원문이 없으면 근거가 아니다.',
     'JSON만 반환한다.',
     '키 순서는 answerInterpretation, statementReadings, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, objectiveCandidates, selectedCandidateId, selectionReason, nextVerification, nextQuestions, nextQuestionChoices, impactOnPreviousJudgment, keptBusinessPremise, executionPossibility, updatedJudgment, judgmentReason 이다.',
     'answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
     'answeredQuestionState는 질문마다 questionKey, 질문 원문, Founder 답, 출처, 확인된 정보, 미확인 정보, 해결 상태를 담는다. menu_choice는 방법 이름만 확인된 것이고 resolution은 method_selected다. 실행 대상, 실행 여부, 응답 결과는 확인되지 않았다. planned_action은 계획이다. 숫자가 있어도 실행 결과가 아니다. reported_result는 보고된 실행 결과이고 외부 증거가 없으면 verified는 false이며 VERIFIED_FACT가 아니다. stated_without_result는 추가 설명이고 실행 결과나 수치가 없다. unresolved_gap은 아직 모른다고 한 답이다. 이 기록의 analysisComplete는 false다. 같은 질문 문장과 선택 라벨을 다시 묻지 않는다. 새 질문은 unconfirmedAfterAnswer가 비어 있다고 적은 정보를 묻는다. 그 문장은 당신이 쓴다.',
-    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose다. 이미 답한 질문 문장과 같으면 reaskReason이 있어도 실패다. 새 질문이면 reaskReason은 null이다. 키를 빼지 않는다. verificationPurpose는 그 새 질문이 확인하려는 미확인 정보다. 이전 질문이나 답과 같은 목적은 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
+    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose, reaskReason, continuesObjectiveId다. 이미 답한 질문 문장과 같으면 reaskReason이 있어도 실패다. 새 질문이면 reaskReason은 null이다. 키를 빼지 않는다. verificationPurpose는 그 새 질문이 확인하려는 미확인 정보다. 이전 질문이나 답과 같은 목적은 실패다. continuesObjectiveId는 unresolved의 objectiveId다. resolved의 id는 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
   ].join(' ');
 }
@@ -2328,6 +2339,7 @@ export function buildProductReanalysisRequest(input: {
                 epistemicStatus: row.answer.epistemicStatus,
                 gap: row.unconfirmedAfterAnswer,
               })),
+            verificationObjectives: verificationObjectivePayload(buildVerificationObjectives(answeredQuestionState)),
             currentStage: {
               phase: input.stagePartial === true ? 'answers_incomplete' : 'integrated_reanalysis',
               priorReadingCount: (input.priorReadings ?? []).length,
@@ -3267,6 +3279,75 @@ export function buildAnsweredQuestionState(pairs: StagePair[], links: StageAnswe
     });
 }
 
+export type VerificationObjective = {
+  objectiveId: string;
+  questionKey: string;
+  sourceReviewId: string | null;
+  questionId: string;
+  purpose: string;
+  status: 'resolved' | 'open';
+  parentObjectiveId: string | null;
+  answerLevel: AnswerInformationLevel | null;
+  confirmedByAnswer: string | null;
+  remainder: string | null;
+};
+
+/**
+ * One objective id per answered question. An answer that is not still open closes that id.
+ * The unconfirmed remainder stays open under a child id. Topics are not assigned here.
+ */
+export function buildVerificationObjectives(states: AnsweredQuestionState[]): VerificationObjective[] {
+  const rows: VerificationObjective[] = [];
+  for (const state of states) {
+    const base = {
+      questionKey: state.questionKey,
+      sourceReviewId: state.sourceReviewId,
+      questionId: state.questionId,
+      purpose: state.question,
+      answerLevel: state.answerLevel,
+    };
+    if (state.resolution === 'still_open') {
+      rows.push({
+        ...base,
+        objectiveId: state.questionKey,
+        status: 'open',
+        parentObjectiveId: null,
+        confirmedByAnswer: state.confirmedByAnswer,
+        remainder: state.unconfirmedAfterAnswer,
+      });
+      continue;
+    }
+    rows.push({
+      ...base,
+      objectiveId: state.questionKey,
+      status: 'resolved',
+      parentObjectiveId: null,
+      confirmedByAnswer: state.confirmedByAnswer,
+      remainder: null,
+    });
+    rows.push({
+      ...base,
+      objectiveId: `${state.questionKey}:remainder`,
+      purpose: state.unconfirmedAfterAnswer,
+      status: 'open',
+      parentObjectiveId: state.questionKey,
+      confirmedByAnswer: null,
+      remainder: state.unconfirmedAfterAnswer,
+    });
+  }
+  return rows;
+}
+
+function verificationObjectivePayload(rows: VerificationObjective[]): {
+  resolved: VerificationObjective[];
+  unresolved: VerificationObjective[];
+} {
+  return {
+    resolved: rows.filter((row) => row.status === 'resolved'),
+    unresolved: rows.filter((row) => row.status === 'open'),
+  };
+}
+
 function closedQuestionPayload(
   pairs: StagePair[],
   links: StageAnswerLink[] = [],
@@ -3592,16 +3673,70 @@ function textStatesUnnegatedPositiveRise(text: string): boolean {
     .some((sentence) => statesUnnegatedPositiveRise(sentence));
 }
 
-/** The model's false flag does not make a repeated objective a new question. */
-function selectedObjectiveRepeats(parsed: Record<string, unknown>, asked: Set<string>): boolean {
+function answerCite(pair: StagePair): string {
+  const label = stripSimulationMarker(pair.choiceLabel ?? '');
+  if (label) return label;
+  return stripSimulationMarker(pair.supplement);
+}
+
+function objectiveIdField(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+/** Resolved objective ids stay closed. Open ids are the only legal continuation. */
+function objectiveStateIssues(
+  parsed: Record<string, unknown>,
+  objectives: VerificationObjective[] | undefined,
+  nextQuestions: Array<{ continuesObjectiveId?: string }>,
+  pairs: StagePair[],
+  judgmentReason: string | null,
+): string[] {
+  if (!objectives || objectives.length === 0) return [];
+  const issues: string[] = [];
+  const resolved = objectives.filter((row) => row.status === 'resolved');
+  const unresolvedIds = new Set(objectives.filter((row) => row.status === 'open').map((row) => row.objectiveId));
+  const resolvedIds = new Set(resolved.map((row) => row.objectiveId));
+  const resolvedPurposes = new Set(resolved.map((row) => row.purpose));
+  const selected = selectedObjectiveText(parsed);
+  if (selected && (resolvedPurposes.has(selected) || repeatsAskedQuestion(selected, resolvedPurposes))) {
+    issues.push('stage_objective_reselected');
+  }
+  const linkedIds = [
+    ...nextQuestions.map((item) => item.continuesObjectiveId ?? ''),
+    objectiveIdField(selectedCandidate(parsed)?.continuesObjectiveId),
+  ].filter((id) => id.length > 0);
+  if (nextQuestions.length > 0 && nextQuestions.some((item) => !item.continuesObjectiveId)) issues.push('stage_objective_unlinked');
+  for (const id of linkedIds) {
+    if (resolvedIds.has(id)) issues.push('stage_objective_reselected');
+    else if (!unresolvedIds.has(id)) issues.push('stage_objective_unlinked');
+  }
+  const reason = judgmentReason ?? '';
+  const cited = pairs
+    .filter((pair) => pair.status === 'answered')
+    .map(answerCite)
+    .map((text) => compactQuestion(text))
+    .filter((text) => text.length >= 2);
+  if (cited.some((text) => !compactQuestion(reason).includes(text))) issues.push('stage_judgment_ungrounded');
+  return [...new Set(issues)];
+}
+
+function selectedCandidate(parsed: Record<string, unknown>): { objective?: unknown; continuesObjectiveId?: unknown } | undefined {
   const selectedId = typeof parsed.selectedCandidateId === 'string' ? parsed.selectedCandidateId.trim() : '';
-  if (!selectedId || !Array.isArray(parsed.objectiveCandidates)) return false;
-  const selected = parsed.objectiveCandidates.find((item) => {
+  if (!selectedId || !Array.isArray(parsed.objectiveCandidates)) return undefined;
+  return parsed.objectiveCandidates.find((item) => {
     if (!item || typeof item !== 'object' || Array.isArray(item)) return false;
     const id = (item as { candidateId?: unknown }).candidateId;
     return typeof id === 'string' && id.trim() === selectedId;
-  }) as { objective?: unknown } | undefined;
-  const objective = textField(selected?.objective);
+  }) as { objective?: unknown; continuesObjectiveId?: unknown } | undefined;
+}
+
+function selectedObjectiveText(parsed: Record<string, unknown>): string | null {
+  return textField(selectedCandidate(parsed)?.objective);
+}
+
+/** The model's false flag does not make a repeated objective a new question. */
+function selectedObjectiveRepeats(parsed: Record<string, unknown>, asked: Set<string>): boolean {
+  const objective = selectedObjectiveText(parsed);
   if (!objective) return false;
   return asked.has(compactQuestion(objective)) || repeatsAskedQuestion(objective, asked);
 }
@@ -3614,6 +3749,7 @@ export function judgeStageContract(
     closedSentences?: string[];
     priorJudgmentText?: string;
     priorUnresolved?: string[];
+    objectives?: VerificationObjective[];
   },
 ): { sections: ReviewSections | null; issues: string[]; reading: StageReading | null } {
   let parsed: Record<string, unknown>;
@@ -3742,11 +3878,18 @@ export function judgeStageContract(
       const choices = stringArrayField((item as { choices?: unknown }).choices);
       const verificationPurpose = textField((item as { verificationPurpose?: unknown }).verificationPurpose);
       const reaskReason = textField((item as { reaskReason?: unknown }).reaskReason);
+      const continuesObjectiveId = objectiveIdField((item as { continuesObjectiveId?: unknown }).continuesObjectiveId);
       if (!text || !choices || !verificationPurpose) {
         issues.push('stage_fields_missing');
         break;
       }
-      nextQuestions.push({ text, choices, verificationPurpose, ...(reaskReason ? { reaskReason } : {}) });
+      nextQuestions.push({
+        text,
+        choices,
+        verificationPurpose,
+        ...(reaskReason ? { reaskReason } : {}),
+        ...(continuesObjectiveId ? { continuesObjectiveId } : {}),
+      });
     }
   }
   const nextQuestionChoices: string[][] = [];
@@ -3822,6 +3965,9 @@ export function judgeStageContract(
   });
   if (questionRepeats || purposeRepeats) issues.push('stage_questions_repeated');
   if (selectedObjectiveRepeats(parsed, asked)) issues.push('stage_objective_overlap');
+  issues.push(
+    ...objectiveStateIssues(parsed, contract.objectives, nextQuestions, contract.pairs, judgmentReason),
+  );
   const uniqueIssues = [...new Set(issues)];
   if (uniqueIssues.length > 0 || !reading || !businessProfile) return { sections: null, issues: uniqueIssues.length > 0 ? uniqueIssues : ['stage_fields_missing'], reading };
   const firstChoices = choicesFromLabels(reading.nextQuestions[0]?.choices ?? []);
@@ -4052,6 +4198,7 @@ export async function runStageReanalysis(input: {
         parent.stageReading?.unresolvedIssues && parent.stageReading.unresolvedIssues.length > 0
           ? parent.stageReading.unresolvedIssues
           : [...(parent.sections?.uncertain ?? [])],
+      objectives: buildVerificationObjectives(buildAnsweredQuestionState([...priorStagePairs, ...pairs], answerLinks)),
     },
   });
   return { ok: true, called: finished.called, record: finished.record, view: finished.view };
@@ -5494,6 +5641,7 @@ async function finishCall(input: {
     closedSentences?: string[];
     priorJudgmentText?: string;
     priorUnresolved?: string[];
+    objectives?: VerificationObjective[];
   };
   /** Structural reading checks. They do not choose the business judgment. */
   readingIssues?: (content: string) => string[];

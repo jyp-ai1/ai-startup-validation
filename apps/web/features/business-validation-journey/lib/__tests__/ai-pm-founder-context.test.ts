@@ -104,13 +104,27 @@ function stageRaw(input: {
   unresolved: string[];
 }): string {
   const payload = userPayload(input.request);
-  const pairs = (Array.isArray(payload.stagePairs) ? payload.stagePairs : []) as Array<{ questionId: string; choiceId: string | null; status: string }>;
+  const pairs = (Array.isArray(payload.stagePairs) ? payload.stagePairs : []) as Array<{
+    questionId: string;
+    choiceId: string | null;
+    status: string;
+    choiceLabel?: string | null;
+    supplement?: string;
+  }>;
   const answered = pairs.filter((pair) => pair.status === 'answered');
+  const continuesObjectiveId =
+    (payload.verificationObjectives as { unresolved?: Array<{ objectiveId?: string }> } | undefined)?.unresolved?.find((row) => row.objectiveId)
+      ?.objectiveId ?? '';
+  const cites = answered
+    .map((pair) => (pair.choiceLabel ?? '').trim() || (pair.supplement ?? '').trim())
+    .filter((text) => text.replace(/\s+/g, '').length >= 2);
   const nextQuestions = [
     {
       text: input.question,
       choices: ['그 확인을 다음 행동으로 둔다', '아직 그 확인을 시작하지 않는다'],
       verificationPurpose: `${input.question}와 다른 불확실성. 아직 실행으로 확인하지 않은 항목이다`,
+      reaskReason: null,
+      ...(continuesObjectiveId ? { continuesObjectiveId } : {}),
     },
   ];
   return JSON.stringify({
@@ -125,7 +139,7 @@ function stageRaw(input: {
     })),
     impactOnPreviousJudgment: `${input.judgment}에 이르는 변화다`,
     updatedJudgment: `유지: 공급은 확인되지 않았다. 이번 답: ${input.judgment} 변경: 확인된 협력은 늘지 않는다. 남은 위험: ${input.unresolved[0] ?? '다음 확인이 없다'}`,
-    judgmentReason: `${input.judgment}의 이유다. 확인된 협력은 없다`,
+    judgmentReason: `${input.judgment}의 이유다. 확인된 협력은 없다. 이번 답 ${cites.join(' ')}을 확인했다. 남은 불확실성은 공급 계약이다.`,
     verifiedFacts: [],
     unverifiedClaims: ['협력 가능성은 주장이다'],
     assumptions: ['공급 계약은 아직 없다'],
@@ -534,6 +548,16 @@ it('puts gap, stage, and founder-claim level on the integrated request', () => {
   expect(gaps).toHaveLength(2);
   expect(gaps.every((row) => row.epistemicStatus === 'FOUNDER_CLAIM' && row.gap.length > 0)).toBe(true);
   expect(stage).toEqual({ phase: 'integrated_reanalysis', priorReadingCount: 0, answeredCount: 2 });
+  const objectives = payload.verificationObjectives as {
+    resolved: Array<{ objectiveId: string; status: string; purpose: string }>;
+    unresolved: Array<{ objectiveId: string; status: string; parentObjectiveId: string | null; purpose: string }>;
+  };
+  expect(objectives.resolved.map((row) => row.objectiveId)).toEqual(['parent-review:q1', 'parent-review:q2']);
+  expect(objectives.resolved.every((row) => row.status === 'resolved')).toBe(true);
+  expect(objectives.unresolved.map((row) => row.objectiveId)).toEqual(['parent-review:q1:remainder', 'parent-review:q2:remainder']);
+  expect(objectives.unresolved.every((row) => row.status === 'open' && row.parentObjectiveId !== null && row.purpose.length > 0)).toBe(true);
+  expect(JSON.stringify(objectives)).not.toContain('고객층');
+  expect(JSON.stringify(objectives)).not.toContain('가격 설정');
   const repeated = judgeStageContract(
     JSON.stringify({
       answerInterpretation: [],

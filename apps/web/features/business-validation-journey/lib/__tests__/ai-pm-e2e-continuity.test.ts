@@ -112,10 +112,25 @@ function firstRaw(): string {
 }
 
 function stageRaw(request: ChatRequest, round: (typeof NEXT)[number]): string {
-  const pairs = ((userJson(request).stagePairs ?? []) as Array<{ questionId: string; choiceId: string | null; status: string }>).filter(
+  const payload = userJson(request);
+  const pairs = ((payload.stagePairs ?? []) as Array<{ questionId: string; choiceId: string | null; status: string; choiceLabel?: string | null; supplement?: string }>).filter(
     (pair) => pair.status === 'answered',
   );
-  const nextQuestions = [{ text: round.text, choices: round.choices, verificationPurpose: round.purpose }];
+  const continuesObjectiveId =
+    (payload.verificationObjectives as { unresolved?: Array<{ objectiveId?: string }> } | undefined)?.unresolved?.find((row) => row.objectiveId)
+      ?.objectiveId ?? '';
+  const cites = pairs
+    .map((pair) => (pair.choiceLabel ?? '').trim() || (pair.supplement ?? '').trim())
+    .filter((text) => text.replace(/\s+/g, '').length >= 2);
+  const nextQuestions = [
+    {
+      text: round.text,
+      choices: round.choices,
+      verificationPurpose: round.purpose,
+      reaskReason: null,
+      ...(continuesObjectiveId ? { continuesObjectiveId } : {}),
+    },
+  ];
   return JSON.stringify({
     answerInterpretation: pairs.map((pair) => ({
       questionId: pair.questionId,
@@ -128,7 +143,7 @@ function stageRaw(request: ChatRequest, round: (typeof NEXT)[number]): string {
     })),
     impactOnPreviousJudgment: `${round.unresolved} 이번 답의 영향은 직전 문장과 다르다.`,
     updatedJudgment: round.judgment,
-    judgmentReason: `${round.purpose} 그래서 실행은 유보한다.`,
+    judgmentReason: `${round.purpose} 그래서 실행은 유보한다. 이번 답 ${cites.join(' ')}을 확인했다. 남은 불확실성은 협력이다.`,
     verifiedFacts: [],
     unverifiedClaims: [COOPERATION],
     assumptions: ['협력은 확인되지 않았다'],

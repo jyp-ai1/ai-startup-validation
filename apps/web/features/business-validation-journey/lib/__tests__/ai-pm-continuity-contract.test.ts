@@ -95,13 +95,22 @@ function firstRawTwoQuestions(): string {
 }
 
 function continuityFollow(request: ChatRequest): string {
-  const pairs = (userJson(request).stagePairs ?? []) as Array<{ questionId: string; choiceId: string | null; status: string }>;
+  const payload = userJson(request);
+  const pairs = (payload.stagePairs ?? []) as Array<{ questionId: string; choiceId: string | null; status: string; choiceLabel?: string | null; supplement?: string }>;
   const answered = pairs.filter((pair) => pair.status === 'answered');
+  const continuesObjectiveId =
+    (payload.verificationObjectives as { unresolved?: Array<{ objectiveId?: string }> } | undefined)?.unresolved?.find((row) => row.objectiveId)
+      ?.objectiveId ?? '';
+  const cites = answered
+    .map((pair) => (pair.choiceLabel ?? '').trim() || (pair.supplement ?? '').trim())
+    .filter((text) => text.replace(/\s+/g, '').length >= 2);
   const nextQuestions = [
     {
       text: '체험 장소의 수용 인원을 확인했는가?',
       choices: ['장소 수용 인원을 먼저 적는다', '수용 인원은 아직 모른다'],
       verificationPurpose: '장소 수용은 협력과 가격과 다른 미확인이다',
+      reaskReason: null,
+      ...(continuesObjectiveId ? { continuesObjectiveId } : {}),
     },
   ];
   return JSON.stringify({
@@ -116,7 +125,7 @@ function continuityFollow(request: ChatRequest): string {
     })),
     impactOnPreviousJudgment: '이번 답은 구상과 미정을 말했다. 이전 문장을 유지로 복사하지 않는다.',
     updatedJudgment: '계약 기록은 없다. 상품은 구상이다. 가격은 미정이다. 남은 위험은 협력과 수요다.',
-    judgmentReason: '계약 기록과 가격이 없어 실행은 유보한다.',
+    judgmentReason: `계약 기록과 가격이 없어 실행은 유보한다. 이번 답 ${cites.join(' ')}을 확인했다. 남은 불확실성은 협력이다.`,
     verifiedFacts: [],
     unverifiedClaims: [ANSWER],
     assumptions: ['협력은 확인되지 않았다'],
