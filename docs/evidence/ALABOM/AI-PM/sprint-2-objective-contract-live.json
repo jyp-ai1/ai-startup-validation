@@ -1,0 +1,169 @@
+{
+  "kind": "sprint2_objective_contract_live_gpt",
+  "sprint2": "PARTIAL",
+  "checkedAt": "2026-11-03T02:43:37Z",
+  "checkedAtKst": "2026-11-03 11:43:37 KST",
+  "bcId": "bc-a9de2c19-8004-59a6-8f68-d7c5d53f8680",
+  "reusedBcIds": [
+    "bc-e981acef-6442-4642-bef1-b0217b624b88",
+    "bc-b07269ba-c9b0-5b39-b834-cd59a5451ef7"
+  ],
+  "reused": false,
+  "baseCommit": "b6f5afc7755662fbfc7a96b5a55f324ee05840b9",
+  "branch": "cursor/sprint2-objective-contract-live-4b88",
+  "secret": "PRESENT",
+  "keyReadBy": "readGptApiKey",
+  "keyReadNonNull": true,
+  "openReviewChatUsed": false,
+  "openReviewBackendUsed": false,
+  "supabaseCalled": false,
+  "forceNew": false,
+  "modelConstant": "gpt-4o-mini",
+  "temperature": 0.2,
+  "maxTokens": 2400,
+  "schemaName": "stage_reanalysis",
+  "schemaConfirmedBeforeSend": true,
+  "continuesObjectiveIdRequired": true,
+  "questionEnum": [
+    "48d06eaa-ad74-4851-a919-fbd8ecefdc1a:q1",
+    "5f6d705d-fe2a-468f-97be-da16482abd32:q1:remainder",
+    "5f6d705d-fe2a-468f-97be-da16482abd32:q2:remainder",
+    "__new__"
+  ],
+  "candidateEnum": [
+    "48d06eaa-ad74-4851-a919-fbd8ecefdc1a:q1",
+    "5f6d705d-fe2a-468f-97be-da16482abd32:q1:remainder",
+    "5f6d705d-fe2a-468f-97be-da16482abd32:q2:remainder",
+    "__new__"
+  ],
+  "productionDatabase": false,
+  "durable": false,
+  "founderProjectTouched": false,
+  "productionDeployed": false,
+  "sprint3Started": false,
+  "userId": "e2e-live-user",
+  "projectId": "e2e-live-brewery",
+  "evidenceHashBefore": "6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd",
+  "evidenceHashAfter": "6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd",
+  "forbiddenReviewIdsInserted": [],
+  "adapterCalls": 1,
+  "secondAdapterCall": false,
+  "round2Restore": {
+    "reviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+    "parentReviewId": "48d06eaa-ad74-4851-a919-fbd8ecefdc1a",
+    "responseId": "chatcmpl-Efbcz1CJivX9bOCzdUXBBezft1rG2",
+    "objectivesLedger": false,
+    "issues": [],
+    "sectionsPresent": true,
+    "judgment": "사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다."
+  },
+  "round3": {
+    "status": "failed",
+    "called": true,
+    "adapterCalls": 1,
+    "retryCount": 0,
+    "parentReviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+    "reviewId": "a4e3455e-1043-403b-acd5-500c1c81bed4",
+    "responseId": "chatcmpl-Efylxn3uegZkpaOdtDNNCKwNtj0ND",
+    "requestedModel": "gpt-4o-mini",
+    "responseModel": "gpt-4o-mini-2024-07-18",
+    "finishReason": "stop",
+    "promptTokens": 23567,
+    "completionTokens": 1645,
+    "totalTokens": 25212,
+    "latencyMs": 16898,
+    "storedStatus": "failed",
+    "storedError": "stage_objective_overlap,stage_objective_reselected,stage_judgment_ungrounded",
+    "sectionsPresent": false,
+    "questionsStored": false,
+    "judgmentKept": true,
+    "judgment": "사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.",
+    "judgmentReason": "사업의 핵심 요소가 정해지지 않아 방향성이 불확실하다. 설문조사와 비용 분석을 통해 고객층 정의와 가격 설정을 위한 기초 자료를 확보해야 한다.",
+    "reasonCitesSurvey": false,
+    "reasonCitesCost": true,
+    "resolvedObjectiveIds": [
+      "5f6d705d-fe2a-468f-97be-da16482abd32:q1",
+      "5f6d705d-fe2a-468f-97be-da16482abd32:q2"
+    ],
+    "unresolvedObjectiveIds": [
+      "48d06eaa-ad74-4851-a919-fbd8ecefdc1a:q1",
+      "5f6d705d-fe2a-468f-97be-da16482abd32:q1:remainder",
+      "5f6d705d-fe2a-468f-97be-da16482abd32:q2:remainder"
+    ],
+    "continuesObjectiveId": ["__new__", "__new__"],
+    "candidateContinuesObjectiveId": ["__new__", "__new__"],
+    "nextQuestions": [
+      {
+        "text": "설문조사 결과에 따라 고객층을 어떻게 정의할 것인가?",
+        "verificationPurpose": "고객층 정의를 위한 설문조사 결과를 확인하고 분석하기 위함이다.",
+        "continuesObjectiveId": "__new__"
+      },
+      {
+        "text": "비용 분석 결과를 바탕으로 체험 프로그램의 가격을 어떻게 설정할 것인가?",
+        "verificationPurpose": "체험 프로그램의 가격 설정을 위한 비용 분석 결과를 확인하고 분석하기 위함이다.",
+        "continuesObjectiveId": "__new__"
+      }
+    ],
+    "duplicateSentence": false,
+    "duplicatePurpose": false,
+    "requestFields": {
+      "originalInput": true,
+      "previousAnswers": true,
+      "unresolvedGaps": true,
+      "currentStage": true,
+      "verificationObjectivesResolved": true,
+      "verificationObjectivesUnresolved": true,
+      "parentJudgmentIncluded": true
+    }
+  },
+  "round4": {
+    "status": "NOT RUN",
+    "reason": "round3_not_succeeded",
+    "adapterCalls": 0,
+    "retryCount": 0,
+    "parentReviewId": null,
+    "reviewId": null
+  },
+  "reread": {
+    "process": "second",
+    "exitCode": 0,
+    "reviewCount": 3,
+    "users": ["e2e-live-user"],
+    "projects": ["e2e-live-brewery"],
+    "round1": {
+      "reviewId": "48d06eaa-ad74-4851-a919-fbd8ecefdc1a",
+      "parentReviewId": null,
+      "status": "succeeded",
+      "sectionsPresent": true
+    },
+    "round2": {
+      "reviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+      "parentReviewId": "48d06eaa-ad74-4851-a919-fbd8ecefdc1a",
+      "status": "succeeded",
+      "sectionsPresent": true
+    },
+    "round3": {
+      "reviewId": "a4e3455e-1043-403b-acd5-500c1c81bed4",
+      "parentReviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+      "status": "failed",
+      "sectionsPresent": false,
+      "error": "stage_objective_overlap,stage_objective_reselected,stage_judgment_ungrounded"
+    },
+    "round4": null
+  },
+  "sqliteDeleted": true,
+  "checks": [
+    { "name": "round3_stored_succeeded", "result": "FAIL" },
+    { "name": "round4_stored_succeeded", "result": "NOT RUN" },
+    { "name": "round3_reason_cites_answers", "result": "FAIL" },
+    { "name": "resolved_objective_not_reselected", "result": "FAIL" },
+    { "name": "schema_enum_excludes_resolved_ids", "result": "PASS" },
+    { "name": "next_questions_continue_unresolved", "result": "FAIL" },
+    { "name": "round4_parent_is_round3", "result": "NOT RUN" },
+    { "name": "question_sentences_not_repeated", "result": "PASS" },
+    { "name": "question_purposes_not_repeated", "result": "PASS" },
+    { "name": "sections_and_questions_stored", "result": "FAIL" },
+    { "name": "second_process_reread", "result": "PASS" },
+    { "name": "evidence_hash_unchanged", "result": "PASS" }
+  ]
+}
