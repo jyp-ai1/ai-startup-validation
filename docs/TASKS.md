@@ -4,6 +4,12 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint 2 실제 3·4차
+
+**상태:** 2026-11-03 09:18:52 KST 프로세스 `bc-bcc12374-0b75-5a98-8ccf-7b6ed41f5a7a`의 `GPT_API_KEY`는 PRESENT다. 승인된 3차 1회는 부모 `5f6d705d-fe2a-468f-97be-da16482abd32`로 나갔고 응답 id는 `chatcmpl-EfwWjyKi5WlZZSJutipY7lzgc5vhE`다. 저장 행 `9d51935d-891e-424c-b3f1-9b1c5e529c2f`는 failed이고 오류는 `stage_objective_overlap`이며 sections는 null이다. 실패 행 `0e75ff46-88fd-4ce2-b567-bdc3f3048531`은 넣지 않았다. 재시도는 0회다. 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-LIVE-ROUNDS-3-4.md`다. Production과 Supabase는 호출하지 않았다.
+
+---
+
 ## Sprint 2 GPT 비밀 주입 경로
 
 **상태:** 2026-11-03 08:58 KST 같은 환경 `316b619d-a743-11f1-a7d1-d6b4613131ce` 버전 `3184f0c9-a743-11f1-a7d1-d6b4613131ce`에서 이번 프로세스 `bc-e981acef`의 시작 스냅샷에는 `GPT_API_KEY`가 없고, 2026-11-02 19:13 KST 프로세스 `bc-089fd7eb`의 스냅샷에는 있었다. 사용자 비밀은 에이전트 시작 때 붙고 실행 중에는 갱신되지 않는다. 이번 턴 GPT 호출은 0회다. 3차는 BLOCKED, 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 실패 증거 해시는 유지됐다. 보고서는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-GPT-SECRET-INJECTION.md`다.
