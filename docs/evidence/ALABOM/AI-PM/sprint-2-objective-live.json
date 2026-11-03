@@ -1,0 +1,136 @@
+{
+  "kind": "sprint2_objective_live_gpt",
+  "sprint2": "PARTIAL",
+  "checkedAt": "2026-11-03T02:00:01.000Z",
+  "checkedAtKst": "2026-11-03 11:00:01 KST",
+  "bcId": "bc-b07269ba-c9b0-5b39-b834-cd59a5451ef7",
+  "reusedBcId": "bc-e981acef-6442-4642-bef1-b0217b624b88",
+  "reused": false,
+  "baseCommit": "9342d614774c3b1adce6d44e41e757018dfc031c",
+  "basePullRequest": 237,
+  "branch": "cursor/sprint2-gpt-objective-verify-4b88",
+  "recordCommit": null,
+  "recordPullRequest": null,
+  "secret": "PRESENT",
+  "keyReadBy": "readGptApiKey",
+  "openReviewChatUsed": false,
+  "openReviewBackendUsed": false,
+  "supabaseCalled": false,
+  "forceNew": false,
+  "modelConstant": "gpt-4o-mini",
+  "temperature": 0.2,
+  "maxTokens": 2400,
+  "schemaName": "stage_reanalysis",
+  "continuesObjectiveIdRequired": true,
+  "productionDatabase": false,
+  "durable": false,
+  "founderProjectTouched": false,
+  "productionDeployed": false,
+  "sprint3Started": false,
+  "userId": "e2e-live-user",
+  "projectId": "e2e-live-brewery",
+  "evidenceHashBefore": "6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd",
+  "evidenceHashAfter": "6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd",
+  "forbiddenReviewIdsInserted": [],
+  "round2Restore": {
+    "reviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+    "parentReviewId": "48d06eaa-ad74-4851-a919-fbd8ecefdc1a",
+    "responseId": "chatcmpl-Efbcz1CJivX9bOCzdUXBBezft1rG2",
+    "objectivesLedger": false,
+    "issues": [],
+    "sectionsPresent": true,
+    "judgment": "사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다."
+  },
+  "round3": {
+    "status": "failed",
+    "called": true,
+    "adapterCalls": 1,
+    "retryCount": 0,
+    "parentReviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+    "reviewId": "8ec32bae-461b-449a-99b7-db95a92fb2c0",
+    "responseId": "chatcmpl-Efy6LWjvUGaBDbECZFAEH3M0wUpke",
+    "requestedModel": "gpt-4o-mini",
+    "responseModel": "gpt-4o-mini-2024-07-18",
+    "finishReason": "stop",
+    "promptTokens": 22084,
+    "completionTokens": 1506,
+    "totalTokens": 23590,
+    "latencyMs": 16903,
+    "storedStatus": "failed",
+    "storedError": "stage_questions_repeated,stage_objective_overlap,stage_objective_reselected,stage_judgment_ungrounded",
+    "sectionsPresent": false,
+    "questionsStored": false,
+    "judgmentKept": true,
+    "judgment": "사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.",
+    "judgmentReason": "사업의 핵심 요소가 정해지지 않아 방향성이 불확실하다.",
+    "reasonCitesSurvey": false,
+    "reasonCitesCost": false,
+    "resolvedObjectiveIds": [
+      "5f6d705d-fe2a-468f-97be-da16482abd32:q1",
+      "5f6d705d-fe2a-468f-97be-da16482abd32:q2"
+    ],
+    "unresolvedObjectiveIds": [
+      "48d06eaa-ad74-4851-a919-fbd8ecefdc1a:q1",
+      "5f6d705d-fe2a-468f-97be-da16482abd32:q1:remainder",
+      "5f6d705d-fe2a-468f-97be-da16482abd32:q2:remainder"
+    ],
+    "nextQuestions": [
+      {
+        "text": "전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?",
+        "verificationPurpose": "고객층을 정의하기 위한 조사 방법을 확인하기 위함이다.",
+        "continuesObjectiveId": "5f6d705d-fe2a-468f-97be-da16482abd32:q1"
+      },
+      {
+        "text": "체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?",
+        "verificationPurpose": "체험 프로그램의 가격 설정을 위한 요소를 확인하기 위함이다.",
+        "continuesObjectiveId": "5f6d705d-fe2a-468f-97be-da16482abd32:q2"
+      }
+    ],
+    "duplicateSentence": true,
+    "duplicatePurpose": false,
+    "requestFields": {
+      "originalInput": true,
+      "previousAnswers": true,
+      "unresolvedGaps": true,
+      "currentStage": true,
+      "verificationObjectivesResolved": true,
+      "verificationObjectivesUnresolved": true
+    }
+  },
+  "round4": {
+    "status": "NOT RUN",
+    "reason": "round3_not_succeeded",
+    "adapterCalls": 0,
+    "retryCount": 0,
+    "parentReviewId": null,
+    "reviewId": null
+  },
+  "reread": {
+    "process": "second",
+    "exitCode": 0,
+    "reviewCount": 3,
+    "users": ["e2e-live-user"],
+    "projects": ["e2e-live-brewery"],
+    "round3": {
+      "reviewId": "8ec32bae-461b-449a-99b7-db95a92fb2c0",
+      "parentReviewId": "5f6d705d-fe2a-468f-97be-da16482abd32",
+      "status": "failed",
+      "sectionsPresent": false,
+      "error": "stage_questions_repeated,stage_objective_overlap,stage_objective_reselected,stage_judgment_ungrounded"
+    }
+  },
+  "sqliteDeleted": true,
+  "checks": [
+    { "name": "round3_stored_succeeded", "result": "FAIL" },
+    { "name": "round4_stored_succeeded", "result": "NOT RUN" },
+    { "name": "round3_reason_cites_answers", "result": "FAIL" },
+    { "name": "resolved_objective_not_reselected", "result": "FAIL" },
+    { "name": "next_questions_continue_unresolved", "result": "FAIL" },
+    { "name": "round4_parent_is_round3", "result": "NOT RUN" },
+    { "name": "question_sentences_not_repeated", "result": "FAIL" },
+    { "name": "question_purposes_not_repeated", "result": "PASS" },
+    { "name": "sections_and_questions_stored", "result": "FAIL" },
+    { "name": "second_process_reread", "result": "PASS" },
+    { "name": "evidence_hash_unchanged", "result": "PASS" }
+  ]
+}
