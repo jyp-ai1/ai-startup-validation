@@ -4,6 +4,12 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint 2 GPT 3차 준비
+
+**상태:** 2026-11-03 12:10 KST PR #241의 `objectiveContinuity`를 `submitConsultingStage`로 다시 만들었다. 부모는 `5f6d705d-fe2a-468f-97be-da16482abd32`다. 이번 답 원문은 `설문조사 실시`, `비용 분석`이고 둘 다 `menu_choice`, `FOUNDER_CLAIM`이다. 열린 remainder는 `…:q1:remainder`, `…:q2:remainder`다. provider 호출은 0회다. 임시 sqlite만 쓰고 삭제했다. Supabase에는 쓰지 않았다. Sprint 2는 PARTIAL이다. 자료는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-GPT-READINESS.md`다.
+
+---
+
 ## Sprint 2 Objective 연속 요청
 
 **상태:** 2026-11-03 12:02 KST 단계 요청에 `objectiveContinuity`를 넣었다. 해결된 목적, 남은 과제, remainder의 부모, 이번 답의 questionKey와 원문을 같이 보낸다. 지시는 열린 remainder를 `__new__`보다 먼저 잇고, 답 원문을 `judgmentReason`과 `answerEvidence`에 그대로 남기라고 말한다. 파서 거절은 유지한다. 이 기록의 GPT 호출은 0회다. 3차와 4차는 NOT RUN이다. Sprint 2는 PARTIAL이다. 증거는 `docs/evidence/ALABOM/AI-PM/SPRINT-2-OBJECTIVE-CONTINUITY.md`다. 증거 SHA-256은 유지됐다.
