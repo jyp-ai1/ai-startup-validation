@@ -2746,6 +2746,50 @@ The live round stored as `8ec32bae-461b-449a-99b7-db95a92fb2c0` received the obj
 
 ---
 
+## ADR-081: The request tells the model which open remainder to continue
+
+**Status:** Accepted  
+**Date:** 2026-11-03  
+**Sprint:** Sprint 2 conversation continuity  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The live round stored as `a4e3455e-1043-403b-acd5-500c1c81bed4` could not select a resolved objective id. The structured-output enum listed only open ids and `__new__`. The model chose `__new__` and proposed the already closed customer-definition and price-setting purposes again. `judgmentReason` contained `비용 분석` and did not contain the answer text `설문조사 실시`. The parser rejected the response. Adding another enum value does not tell the model that a partial answer leaves a remainder, or that the judgment must quote each answer.
+
+### Decision
+
+1. The stage user payload adds `objectiveContinuity`. Resolved rows carry the objective id, the original purpose, and the resolution grounds. Unresolved rows carry the objective id, the original purpose, the remaining task, the parent id, and either `remainder_of_partial_answer` or `still_open`. `thisRoundAnswers` carries this stage's `questionKey`, the answer text the parser cites, provenance, `FOUNDER_CLAIM`, what that answer confirmed, what it left open, the closed objective id, and the opened remainder id.
+2. The system prompt and the stage revision task tell the model to judge whether this answer closed an open objective, to continue an open remainder before `__new__`, and to use `__new__` only for a verification task that is neither that remaining task nor a resolved purpose. A shared business topic with a different verification task stays allowed. Question sentences stay with the model. Code does not name a business topic.
+3. `judgmentReason` and `answerEvidence.answerText` must contain each current answer text. A topic-level paraphrase is not that text. A kept judgment still has to say what each answer confirmed and what remains open. Founder claims stay `FOUNDER_CLAIM`.
+4. The parser issues from ADR-079 and ADR-080 stay. This change does not weaken them and does not call the model.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Add another parser code for `__new__` | Would still reject this response | The model would spend the next call the same way |
+| Remove `__new__` from the enum | The model could only pick an open id | A genuinely new verification task would have no legal id |
+| Hardcode the closed customer and price purposes | Would block this one business | The next business question would be fixed in code |
+
+### Consequences
+
+**Positive:**
+
+- The request shows the parent purpose and the remaining task on the same unresolved row.
+- The exact answer text the parser requires is in the same payload as the objective state.
+
+**Negative:**
+
+- The instruction change is unproven until a later approved live call. This decision does not make that call.
+
+**Neutral:**
+
+- Stored failed rows and `docs/evidence/ALABOM/AI-PM/sprint-2-e2e-live-gpt.json` stay unchanged.
+- Production stays locked. Sprint 3 stays unstarted.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

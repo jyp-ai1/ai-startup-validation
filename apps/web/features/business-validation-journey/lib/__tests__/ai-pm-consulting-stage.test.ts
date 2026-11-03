@@ -434,7 +434,9 @@ describe('consulting stage batch', () => {
     expect(system).toContain('판단 문장이 이전과 같아도 그 검토가 있으면 재평가다');
     expect(system).toContain('전략 컨설턴트');
     expect(system).toContain('고정된 순서를 강제하지 않는다');
-    expect(system).toContain('사업 목적은 방금 답한 질문의 목적과 달라야 한다');
+    expect(system).toContain('remainingTask를 먼저 잇는다');
+    expect(system).toContain('thisRoundAnswers의 answerText');
+    expect(system).not.toContain('사업 목적은 방금 답한 질문의 목적과 달라야 한다');
     expect(system).toContain('다음 판단을 가장 크게 바꾸는 영역');
     expect(system).not.toContain('어떻게 구체화할 것인가');
     expect(system).not.toContain('순서는 대상이 있는지');
@@ -3419,7 +3421,34 @@ describe('consulting stage batch', () => {
     expect(sent.resolved.map((row) => row.objectiveId)).toEqual([surveyKey, priceKey]);
     expect(sent.unresolved.map((row) => row.objectiveId)).toContain(remainderId);
     expect(sent.unresolved.map((row) => row.objectiveId)).toContain(`${round1}:q1`);
+    const continuity = payload.objectiveContinuity as {
+      order: string;
+      resolved: Array<{ objectiveId: string; originalPurpose: string; resolutionGrounds: string }>;
+      unresolved: Array<{ objectiveId: string; originalPurpose: string; remainingTask: string; parentObjectiveId: string | null; relation: string }>;
+      thisRoundAnswers: Array<{ questionKey: string; answerText: string; provenance: string; epistemicStatus: string; closedObjectiveId: string | null; openedRemainderId: string | null }>;
+    };
+    expect(continuity.order).toContain('__new__보다 먼저');
+    expect(continuity.resolved.find((row) => row.objectiveId === surveyKey)).toMatchObject({
+      originalPurpose: surveyQuestion,
+      resolutionGrounds: '방법으로 선택함: 설문조사 실시',
+    });
+    expect(continuity.unresolved.find((row) => row.objectiveId === remainderId)).toMatchObject({
+      originalPurpose: surveyQuestion,
+      remainingTask: '실행 대상, 실행 여부, 응답 결과는 이 답에 없다.',
+      parentObjectiveId: surveyKey,
+      relation: 'remainder_of_partial_answer',
+    });
+    expect(continuity.unresolved.find((row) => row.objectiveId === `${round1}:q1`)).toMatchObject({
+      originalPurpose: meeting,
+      relation: 'still_open',
+      parentObjectiveId: null,
+    });
+    expect(continuity.thisRoundAnswers.map((row) => row.answerText)).toEqual(['설문조사 실시', '비용 분석']);
+    expect(continuity.thisRoundAnswers.map((row) => row.questionKey)).toEqual([surveyKey, priceKey]);
+    expect(continuity.thisRoundAnswers.every((row) => row.provenance === 'FOUNDER_INPUT' && row.epistemicStatus === 'FOUNDER_CLAIM')).toBe(true);
+    expect(continuity.thisRoundAnswers.find((row) => row.questionKey === surveyKey)?.openedRemainderId).toBe(remainderId);
     expect(request.messages.find((message) => message.role === 'system')?.content).toContain('verificationObjectives.unresolved의 objectiveId만');
+    expect(request.messages.find((message) => message.role === 'system')?.content).toContain('thisRoundAnswers의 answerText');
     expect(request.responseFormat?.type).toBe('json_schema');
     if (request.responseFormat?.type === 'json_schema') {
       expect(strictSchemaIssues(request.responseFormat.schema)).toEqual([]);
@@ -3786,6 +3815,79 @@ describe('consulting stage batch', () => {
     const plan = '설문조사를 100명 대상으로 할 예정이다';
     const [planned] = buildAnsweredQuestionState([levelPair('q9', '조사를 할 것인가?', '설문조사 실시', plan)]);
     expect(planned).toMatchObject({ answerLevel: 'planned_action', verified: false, answer: { epistemicStatus: 'FOUNDER_CLAIM' } });
+  });
+
+  it('rejects the stored continuation-id live round that restated a resolved purpose as __new__', () => {
+    const evidencePath = new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-e2e-live-gpt.json', import.meta.url);
+    const livePath = new URL('../../../../../../docs/evidence/ALABOM/AI-PM/sprint-2-objective-contract-live.json', import.meta.url);
+    expect(createHash('sha256').update(readFileSync(evidencePath)).digest('hex')).toBe('6c21acd7fde676712f879ec4737f620e5c2e9c7f4905b0fafc4d5d52d4244bbd');
+    const live = JSON.parse(readFileSync(livePath, 'utf8')) as {
+      round3: {
+        reviewId: string;
+        storedStatus: string;
+        storedError: string;
+        judgmentReason: string;
+        continuesObjectiveId: string[];
+        nextQuestions: Array<{ text: string; verificationPurpose: string; continuesObjectiveId: string }>;
+      };
+      round4: { status: string };
+    };
+    expect(live.round3.reviewId).toBe('a4e3455e-1043-403b-acd5-500c1c81bed4');
+    expect(live.round3.storedStatus).toBe('failed');
+    expect(live.round4.status).toBe('NOT RUN');
+    const round1 = '48d06eaa-ad74-4851-a919-fbd8ecefdc1a';
+    const round2 = '5f6d705d-fe2a-468f-97be-da16482abd32';
+    const meeting = '양조장과의 협업을 위한 초기 미팅에서 어떤 사항을 논의해야 할까?';
+    const surveyQuestion = '전통주 체험 프로그램의 고객층을 명확히 정의하기 위해 어떤 조사를 해야 할까?';
+    const priceQuestion = '체험 프로그램의 구체적인 내용 및 가격을 설정하기 위해 어떤 요소를 고려해야 할까?';
+    const keptJudgment = '사업의 방향성이 불확실하여 성공 가능성이 낮아졌다. 고객층을 명확히 정의하고 체험 프로그램의 구체적인 내용을 설정하는 것이 필요하다.';
+    const prior = liveObjectivePair('q1', meeting, '아직 핵심을 정하지 못했다');
+    const survey = liveObjectivePair('q1', surveyQuestion, '설문조사 실시');
+    const price = liveObjectivePair('q2', priceQuestion, '비용 분석');
+    const links = [prior, survey, price].map((pair, index) => ({
+      sourceReviewId: index === 0 ? round1 : round2,
+      questionId: pair.questionId,
+      question: pair.question,
+      choiceId: pair.choiceId,
+      choiceLabel: pair.choiceLabel,
+      supplement: pair.supplement,
+      submittedAt: NOW,
+      status: 'answered' as const,
+    }));
+    const objectives = buildVerificationObjectives(buildAnsweredQuestionState([prior, survey, price], links));
+    const contract = {
+      askedQuestions: [meeting, surveyQuestion, priceQuestion],
+      pairs: [survey, price],
+      closedSentences: [prior, survey, price].flatMap((pair) => [pair.question, pair.choiceLabel ?? '', pair.supplement]),
+      priorJudgmentText: keptJudgment,
+      objectives,
+    };
+    const rejected = judgeStageContract(
+      liveRound3Body({
+        continuesObjectiveId: live.round3.continuesObjectiveId[0] ?? NEW_OBJECTIVE_CONTINUATION,
+        judgmentReason: live.round3.judgmentReason,
+        objective: surveyQuestion,
+        questions: live.round3.nextQuestions.map((item) => ({ text: item.text, purpose: item.verificationPurpose })),
+      }),
+      contract,
+    );
+    expect(rejected.sections).toBeNull();
+    for (const issue of live.round3.storedError.split(',')) expect(rejected.issues).toContain(issue);
+    const sameTopic = judgeStageContract(
+      liveRound3Body({
+        continuesObjectiveId: NEW_OBJECTIVE_CONTINUATION,
+        judgmentReason: '설문조사 실시와 비용 분석은 방법 이름만 확인했다. 실행과 응답은 없다. 그래서 방향성 판단은 유지한다. 남은 불확실성은 참여 기록을 적은 문서다.',
+        objective: '참여 기록을 적은 문서가 있는가',
+        questions: [
+          { text: '양조장 참여 의향을 적은 기록이 있는가?', purpose: '참여 의향을 적은 기록의 유무' },
+          { text: '협력 조건을 적은 문서가 있는가?', purpose: '협력 조건을 적은 문서의 유무' },
+        ],
+      }),
+      contract,
+    );
+    expect(sameTopic.issues).not.toContain('stage_purpose_repeated');
+    expect(sameTopic.issues).not.toContain('stage_objective_reselected');
+    expect(sameTopic.sections?.nextQuestion).toBe('양조장 참여 의향을 적은 기록이 있는가?');
   });
 
   it('keeps a failed stage call from charging twice or changing the succeeded parent', async () => {
