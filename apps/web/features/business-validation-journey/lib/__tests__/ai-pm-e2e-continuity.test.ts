@@ -144,6 +144,12 @@ function stageRaw(request: ChatRequest, round: (typeof NEXT)[number]): string {
     impactOnPreviousJudgment: `${round.unresolved} 이번 답의 영향은 직전 문장과 다르다.`,
     updatedJudgment: round.judgment,
     judgmentReason: `${round.purpose} 그래서 실행은 유보한다. 이번 답 ${cites.join(' ')}을 확인했다. 남은 불확실성은 협력이다.`,
+    answerEvidence: pairs.map((pair) => ({
+      questionKey: (pair as { questionKey?: string }).questionKey || pair.questionId,
+      answerText: (pair.choiceLabel ?? '').trim() || (pair.supplement ?? '').trim(),
+      provenance: /^\s*SIMULATION\b/m.test(`${pair.choiceLabel ?? ''}\n${pair.supplement ?? ''}`) ? 'SIMULATION' : 'FOUNDER_INPUT',
+      epistemicStatus: 'FOUNDER_CLAIM',
+    })),
     verifiedFacts: [],
     unverifiedClaims: [COOPERATION],
     assumptions: ['협력은 확인되지 않았다'],

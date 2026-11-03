@@ -1784,11 +1784,35 @@ function productReanalysisSystemPrompt(): string {
   ].join(' ');
 }
 
+/** A next question that names a gap the ledger does not already have. It is not an objective id. */
+export const NEW_OBJECTIVE_CONTINUATION = '__new__';
+
+/**
+ * Strict structured output can constrain continuesObjectiveId to the open ids for this call.
+ * Resolved ids are omitted. __new__ is the only escape, and the server still rejects a repeated purpose.
+ * A static schema keeps a free string so older callers stay valid. An empty enum is not sent.
+ */
+function continuationIdSchema(continuationIds: string[] | undefined, description: string): Record<string, unknown> {
+  if (!continuationIds) return { type: 'string', pattern: '^.+$', description };
+  const openIds = [
+    ...new Set(continuationIds.map((id) => id.trim()).filter((id) => id.length > 0 && id !== NEW_OBJECTIVE_CONTINUATION)),
+  ];
+  return { type: 'string', enum: [...openIds, NEW_OBJECTIVE_CONTINUATION], description };
+}
+
 /** Follow-up reanalysis. The first-review business profile is a different contract. */
-export function stageReanalysisSchema(): Record<string, unknown> {
+export function stageReanalysisSchema(options?: { continuationIds?: string[] }): Record<string, unknown> {
   const text = { type: 'string' };
   const filled = { type: 'string', pattern: '^.+$' };
   const list = { type: 'array', items: filled };
+  const candidateContinuation = continuationIdSchema(
+    options?.continuationIds,
+    'verificationObjectives.unresolved의 objectiveId 하나, 또는 기존 목적과 다른 새 부족분일 때 __new__. resolved의 id는 없다. 코드가 사업 주제를 정하지 않는다. 질문 문장도 정하지 않는다.',
+  );
+  const questionContinuation = continuationIdSchema(
+    options?.continuationIds,
+    '이 질문이 이어가는 verificationObjectives.unresolved의 objectiveId, 또는 기존 목적과 다른 새 부족분일 때 __new__. 해결된 objectiveId는 스키마에 없다. 코드가 고른 전략 주제가 아니다.',
+  );
   return {
     title: 'stage_reanalysis',
     type: 'object',
@@ -1826,6 +1850,7 @@ export function stageReanalysisSchema(): Record<string, unknown> {
       'executionPossibility',
       'updatedJudgment',
       'judgmentReason',
+      'answerEvidence',
     ],
     properties: {
       answerInterpretation: {
@@ -1986,11 +2011,7 @@ export function stageReanalysisSchema(): Record<string, unknown> {
               description:
                 '이미 검토한 목적과 같으면 true. 표현만 바꾼 목적도 true다. 서버가 questionKey로 구분된 기존 질문의 목적과 비교한다. false라고 적어도 목적이 같으면 새 질문이 아니다.',
             },
-            continuesObjectiveId: {
-              ...filled,
-              description:
-                'verificationObjectives.unresolved의 objectiveId 하나. resolved의 id는 실패다. 코드가 사업 주제를 정하지 않는다. 질문 문장도 정하지 않는다.',
-            },
+            continuesObjectiveId: candidateContinuation,
           },
         },
       },
@@ -2032,11 +2053,7 @@ export function stageReanalysisSchema(): Record<string, unknown> {
               description:
                 '같은 질문 문장을 통과시키는 필드가 아니다. 새 질문이 기존 답으로 확인되지 않은 정보를 물을 때 그 빈칸과 이유를 적는다. 새 질문이면 null이다. 키를 빼지 않는다. 질문 문장과 같으면 사유가 아니다. 불확실하다만 적으면 사유가 아니다.',
             },
-            continuesObjectiveId: {
-              ...filled,
-              description:
-                '이 질문이 이어가는 verificationObjectives.unresolved의 objectiveId. 해결된 objectiveId는 실패다. 코드가 고른 전략 주제가 아니다.',
-            },
+            continuesObjectiveId: questionContinuation,
             choices: {
               type: 'array',
               minItems: 2,
@@ -2071,7 +2088,31 @@ export function stageReanalysisSchema(): Record<string, unknown> {
       judgmentReason: {
         ...filled,
         description:
-          'updatedJudgment와 judgmentEffect와 같은 판단의 이유. 유지된 전제와 이번 답의 근거를 같이 적는다. 세 칸을 같은 문장으로 복사하지 않는다. verifiedFacts가 비어 있으면 성공 가능성은 높아지지 않았다와 같은 방향이다. priorJudgmentText를 그대로 붙이지 않는다.',
+          'updatedJudgment와 judgmentEffect와 같은 판단의 이유. 유지된 전제와 이번 답의 근거를 같이 적는다. 이번 stagePairs의 답 원문을 포함하고, 무엇을 새로 확인했는지, 왜 판단을 유지하거나 바꿨는지, 어떤 불확실성이 남았는지를 적는다. 세 칸을 같은 문장으로 복사하지 않는다. verifiedFacts가 비어 있으면 성공 가능성은 높아지지 않았다와 같은 방향이다. priorJudgmentText를 그대로 붙이지 않는다. 답 원문이 없으면 근거가 아니다.',
+      },
+      answerEvidence: {
+        type: 'array',
+        description:
+          '이번 stagePairs의 답마다 하나. questionKey, 답 원문, provenance, epistemicStatus는 입력의 그 답과 같다. 판단을 유지해도 이번 답을 빠뜨리지 않는다. 판단을 바꾸면 그 답을 같은 목록에 둔다. Founder 답과 연습 입력을 VERIFIED_FACT나 EXTERNAL_EVIDENCE로 올리지 않는다. 원문이나 출처가 다르면 실패다.',
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['questionKey', 'answerText', 'provenance', 'epistemicStatus'],
+          properties: {
+            questionKey: { ...filled, description: '이번 답의 questionKey. sourceReviewId와 questionId를 잇는다. 다른 회차의 id를 붙이지 않는다.' },
+            answerText: { ...filled, description: '이번 답의 choiceLabel 또는 supplement 원문. 요약으로 바꾸지 않는다.' },
+            provenance: {
+              type: 'string',
+              enum: ['FOUNDER_INPUT', 'SIMULATION'],
+              description: '그 답의 provenance. Founder 원문은 FOUNDER_INPUT이다. SIMULATION으로 시작한 연습 입력은 SIMULATION이다.',
+            },
+            epistemicStatus: {
+              type: 'string',
+              enum: ['FOUNDER_CLAIM'],
+              description: '이번 답은 Founder의 주장이다. 계획, 방법 선택, 보고된 실행도 외부 증거가 없으면 FOUNDER_CLAIM이다. VERIFIED_FACT가 아니다.',
+            },
+          },
+        },
       },
     },
   };
@@ -2090,12 +2131,12 @@ function stageReanalysisSystemPrompt(): string {
     '5. 다음 검증은 statedRecord와 areaStatus를 읽고 objectiveCandidates를 2개 이상 만든 뒤 selectedCandidateId로 하나 고른다. 코드는 질문 문장을 정하지 않는다. 코드는 후보도 고르지 않는다. 질문 개수도 당신이 정한다. priorReview는 판단을 갱신할 때 읽고 질문의 주제로 고정하지 않는다. overlapsReviewedObjective가 true인 후보는 고르지 않는다. closedQuestions의 사업 목적은 끝난 목적이다. questionId는 회차 안에서 q1부터 다시 매긴다. 질문을 구분할 때는 questionKey를 쓴다. questionKey는 sourceReviewId와 questionId를 잇는다. 이전 회차의 q1과 이번 회차의 q1은 다른 질문이다. priorQuestionText와 같은 목적을 다시 묻지 않는다. 구체적으로만 더한 문장도 같은 질문이다. 단어만 바꾼 질문도 같은 목적이다. 존재 여부에 이미 답이 있으면 그 질문을 반복하지 않는다. 이미 답한 질문은 표현만 바꾸어 다시 묻지 않는다. 같은 질문 문장은 reaskReason이 있어도 실패다. 불충분하면 새 질문으로 확인되지 않은 정보를 묻는다. 불확실하다만 적은 verificationPurpose는 그 사유가 아니다. 다음 질문의 사업 목적은 방금 답한 질문의 목적과 달라야 한다. 서버는 선택한 objective를 기존 질문 목적과 비교한다. overlapsReviewedObjective가 false여도 목적이 같으면 그 후보는 새 질문이 아니다. 고정된 질문 순서는 없다. areaStatus의 배열 순서는 우선순위가 아니다. status가 not_analyzed인 영역만 전달된 문장이 없다. founder_claim, assumption, unconfirmed, claim은 이미 전달된 정보다. informationPresent는 문장이 있다는 뜻이다. verified가 false면 검증된 사실이 아니다. analysisComplete가 false면 그 영역 분석이 끝난 것이 아니다. FOUNDER_CLAIM을 VERIFIED_FACT로 올리지 않는다. provenance가 FOUNDER_INPUT이면 Founder 원문에서 온 주장이다. AI_INFERENCE는 원문에 없는 추론이다. 그 문장을 없는 정보처럼 다시 묻지 않는다. 검증이 필요하면 그 문장과 다른 질문을 할 수 있다. 고객, 문제, 상품, 공급, 시장, 가격, 수익, 마케팅, 운영, 비용, 책임, 위험을 상황 안에서 보되 목록을 순서대로 돌지 않는다. 해결된 내용은 근거와 함께 넘어간다. 그 방향 문장을 질문으로 복사하지 않는다. verificationPurpose에 그 불확실성을 적는다.',
     'consultingPath는 실제 상담 순서다. priorAnalyses는 그 단계의 판단이다. 반복 실험은 대화가 아니다.',
     'originalInput은 최초 사업 아이디어다. 뒤의 답이 생겨도 그 문장을 빼지 않는다. answerLinks는 각 답을 sourceReviewId, questionId, 선택, 보충, submittedAt, status로 그 질문에 붙인다. priorReadings는 같은 사업 연쇄의 이전 분석이다. 이미 해결된 resolvedIssues는 해결된 채로 남긴다. 의향과 기대는 해결이 아니다. priorHypotheses와 doNotCopy.priorUnresolvedIssues는 가설이거나 이전 목록이다. unresolvedIssues는 그 목록을 그대로 복사하지 않고 이번 답이 남긴 빈칸과 새로 보인 빈칸만 적는다. 근거가 없으면 미해결로 남긴다.',
-    'verificationObjectives.resolved의 objectiveId와 purpose는 이미 답이 붙은 목적이다. 그 id를 다시 고르지 않는다. 표현만 바꾼 목적도 그 id를 다시 고르는 것이다. verificationObjectives.unresolved의 objectiveId만 nextQuestions.continuesObjectiveId와 선택한 후보의 continuesObjectiveId가 된다. 코드는 그 질문을 쓰지 않는다. judgmentReason은 이번 stagePairs의 답 원문을 포함하고, 무엇을 새로 확인했는지, 왜 판단을 유지하거나 바꿨는지, 어떤 불확실성이 남았는지를 적는다. 답 원문이 없으면 근거가 아니다.',
+    'verificationObjectives.resolved의 objectiveId와 purpose는 이미 답이 붙은 목적이다. 그 id를 다시 고르지 않는다. 표현만 바꾼 목적도 그 id를 다시 고르는 것이다. verificationObjectives.unresolved의 objectiveId만 nextQuestions.continuesObjectiveId와 선택한 후보의 continuesObjectiveId가 될 수 있다. 그 목록에 없는 새 부족분은 __new__다. __new__의 목적이 이미 해결된 목적과 같으면 실패다. 코드는 그 질문을 쓰지 않는다. 코드는 새 id를 기존 해결 목적에 붙이지 않는다. judgmentReason은 이번 stagePairs의 답 원문을 포함하고, 무엇을 새로 확인했는지, 왜 판단을 유지하거나 바꿨는지, 어떤 불확실성이 남았는지를 적는다. 답 원문이 없으면 근거가 아니다. answerEvidence는 이번 stagePairs의 각 답을 questionKey, 답 원문, provenance, epistemicStatus로 적는다. 판단을 유지해도 그 답을 넣는다. 판단을 바꾸면 바꾼 답을 넣는다. FOUNDER_CLAIM을 VERIFIED_FACT로 쓰지 않는다. 원문이나 출처가 다르면 실패다.',
     'JSON만 반환한다.',
-    '키 순서는 answerInterpretation, statementReadings, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, objectiveCandidates, selectedCandidateId, selectionReason, nextVerification, nextQuestions, nextQuestionChoices, impactOnPreviousJudgment, keptBusinessPremise, executionPossibility, updatedJudgment, judgmentReason 이다.',
+    '키 순서는 answerInterpretation, statementReadings, verifiedFacts, unverifiedClaims, assumptions, resolvedIssues, unresolvedIssues, customer, problem, value, product, market, revenueModel, operations, supply, supplyState, marketing, marketingState, competition, executionNote, risks, objectiveCandidates, selectedCandidateId, selectionReason, nextVerification, nextQuestions, nextQuestionChoices, impactOnPreviousJudgment, keptBusinessPremise, executionPossibility, updatedJudgment, judgmentReason, answerEvidence 이다.',
     'answerInterpretation은 이번 stagePairs의 questionId만 담는다. 이번 단계의 답마다 하나다. choiceId는 그 쌍의 choiceId다. 선택이 없으면 빈 문자열이다.',
     'answeredQuestionState는 질문마다 questionKey, 질문 원문, Founder 답, 출처, 확인된 정보, 미확인 정보, 해결 상태를 담는다. menu_choice는 방법 이름만 확인된 것이고 resolution은 method_selected다. 실행 대상, 실행 여부, 응답 결과는 확인되지 않았다. planned_action은 계획이다. 숫자가 있어도 실행 결과가 아니다. reported_result는 보고된 실행 결과이고 외부 증거가 없으면 verified는 false이며 VERIFIED_FACT가 아니다. stated_without_result는 추가 설명이고 실행 결과나 수치가 없다. unresolved_gap은 아직 모른다고 한 답이다. 이 기록의 analysisComplete는 false다. 같은 질문 문장과 선택 라벨을 다시 묻지 않는다. 새 질문은 unconfirmedAfterAnswer가 비어 있다고 적은 정보를 묻는다. 그 문장은 당신이 쓴다.',
-    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose, reaskReason, continuesObjectiveId다. 이미 답한 질문 문장과 같으면 reaskReason이 있어도 실패다. 새 질문이면 reaskReason은 null이다. 키를 빼지 않는다. verificationPurpose는 그 새 질문이 확인하려는 미확인 정보다. 이전 질문이나 답과 같은 목적은 실패다. continuesObjectiveId는 unresolved의 objectiveId다. resolved의 id는 실패다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
+    'nextQuestions는 서로 다른 질문 1개 이상이다. 개수는 모델이 정한다. 각 원소는 text, choices, verificationPurpose, reaskReason, continuesObjectiveId다. 이미 답한 질문 문장과 같으면 reaskReason이 있어도 실패다. 새 질문이면 reaskReason은 null이다. 키를 빼지 않는다. verificationPurpose는 그 새 질문이 확인하려는 미확인 정보다. 이전 질문이나 답과 같은 목적은 실패다. 표현만 다른 같은 목적도 실패다. 같은 사업 안에서도 확인하려는 정보가 다르면 새 목적이다. continuesObjectiveId는 unresolved의 objectiveId거나, 그 목록에 없는 새 부족분일 때 __new__다. resolved의 id는 실패다. 미확인 remainder는 그 부모의 남은 정보만 잇는다. 부모 질문을 다시 내는 연결이 아니다. choices는 서로 다른 비어 있지 않은 문자열 2개 이상이다.',
     'nextQuestionChoices는 nextQuestions와 같은 순서와 같은 선택지 배열이다.',
   ].join(' ');
 }
@@ -2433,7 +2474,18 @@ export function buildProductReanalysisRequest(input: {
     model: AI_PM_REVIEW_MODEL,
     temperature: 0.2,
     maxTokens: AI_PM_PRODUCT_REANALYSIS_MAX_TOKENS,
-    responseFormat: { type: 'json_schema', schema: stageBatch ? stageReanalysisSchema() : productReanalysisSchema() },
+    responseFormat: {
+      type: 'json_schema',
+      schema: stageBatch
+        ? stageReanalysisSchema({
+            continuationIds: buildVerificationObjectives(
+              buildAnsweredQuestionState([...(input.priorStagePairs ?? []), ...stagePairs], input.answerLinks ?? []),
+            )
+              .filter((row) => row.status === 'open')
+              .map((row) => row.objectiveId),
+          })
+        : productReanalysisSchema(),
+    },
     messages: [
       { role: 'system' as const, content: system },
       { role: 'user' as const, content: user },
@@ -3565,6 +3617,70 @@ function questionPurposeKey(text: string): string {
     .replace(/구체적으로|구체적|정확히|실제로|어떻게|할계획인가|할것인가|계획인가|것인가/g, '');
 }
 
+const PURPOSE_STOP = new Set([
+  '위해',
+  '하기',
+  '해야',
+  '할까',
+  '어떤',
+  '무엇',
+  '어떻게',
+  '위한',
+  '대한',
+  '통해',
+  '이번',
+  '다음',
+  '위함',
+  '이다',
+  '한다',
+  '있는',
+  '하는',
+  '그리고',
+  '또는',
+  '관련',
+  '필요',
+  '추가',
+  '바탕',
+  '따라',
+  '의해',
+  '다시',
+  '새로',
+  '다른',
+  '빈칸',
+  '아직',
+  '결과',
+  '조치',
+  '방법',
+  '요소',
+  '확인',
+  '해야',
+  '취해야',
+]);
+
+function purposeTokens(text: string): string[] {
+  return contentTokens(text).filter((token) => !PURPOSE_STOP.has(token));
+}
+
+function sharedTopicTokens(texts: string[]): Set<string> {
+  const counts = new Map<string, number>();
+  for (const text of texts) {
+    for (const token of new Set(purposeTokens(text))) counts.set(token, (counts.get(token) ?? 0) + 1);
+  }
+  return new Set([...counts].filter(([, count]) => count >= 2).map(([token]) => token));
+}
+
+/** Same verification purpose after a wording change. Shared topic words across closed purposes do not count. */
+function purposeOverlaps(text: string, closed: string[], shared: Set<string>): boolean {
+  const left = purposeTokens(text).filter((token) => !shared.has(token));
+  if (left.length === 0) return false;
+  for (const prior of closed) {
+    const right = new Set(purposeTokens(prior).filter((token) => !shared.has(token)));
+    const overlap = left.filter((token) => right.has(token));
+    if (overlap.length >= 2 && overlap.length / left.length > 0.5) return true;
+  }
+  return false;
+}
+
 /** Same purpose after a wording change. It does not write a replacement question. */
 function repeatsAskedQuestion(text: string, asked: Set<string>): boolean {
   const purpose = questionPurposeKey(text);
@@ -3683,12 +3799,60 @@ function objectiveIdField(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-/** Resolved objective ids stay closed. Open ids are the only legal continuation. */
+function continuationIssue(id: string, unresolvedIds: Set<string>, resolvedIds: Set<string>): string | null {
+  if (id === NEW_OBJECTIVE_CONTINUATION) return null;
+  if (resolvedIds.has(id)) return 'stage_objective_reselected';
+  if (!unresolvedIds.has(id)) return 'stage_objective_unlinked';
+  return null;
+}
+
+function answerEvidenceIssues(
+  parsed: Record<string, unknown>,
+  objectives: VerificationObjective[],
+  pairs: StagePair[],
+): string[] {
+  const raw = parsed.answerEvidence;
+  if (!Array.isArray(raw)) return ['stage_answer_evidence_mismatch'];
+  const items: Array<{ questionKey: string; answerText: string; provenance: string; epistemicStatus: string }> = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return ['stage_answer_evidence_mismatch'];
+    const record = item as Record<string, unknown>;
+    const questionKey = typeof record.questionKey === 'string' ? record.questionKey.trim() : '';
+    const answerText = typeof record.answerText === 'string' ? record.answerText.trim() : '';
+    const provenance = typeof record.provenance === 'string' ? record.provenance.trim() : '';
+    const epistemicStatus = typeof record.epistemicStatus === 'string' ? record.epistemicStatus.trim() : '';
+    if (!questionKey || !answerText || (provenance !== 'FOUNDER_INPUT' && provenance !== 'SIMULATION') || !epistemicStatus) {
+      return ['stage_answer_evidence_mismatch'];
+    }
+    items.push({ questionKey, answerText, provenance, epistemicStatus });
+  }
+  if (items.some((item) => item.epistemicStatus !== 'FOUNDER_CLAIM' || item.provenance === 'EXTERNAL_EVIDENCE')) {
+    return ['stage_answer_evidence_mismatch'];
+  }
+  for (const pair of pairs.filter((item) => item.status === 'answered')) {
+    const parent = objectives.find(
+      (row) =>
+        row.parentObjectiveId === null &&
+        row.questionId === pair.questionId &&
+        compactQuestion(row.purpose) === compactQuestion(pair.question),
+    );
+    const cite = compactQuestion(answerCite(pair));
+    const hit = parent ? items.find((item) => item.questionKey === parent.questionKey) : undefined;
+    const expectedProvenance = answerSource(pair) === 'simulation' ? 'SIMULATION' : 'FOUNDER_INPUT';
+    if (!parent || !hit || cite.length < 2 || hit.provenance !== expectedProvenance || !compactQuestion(hit.answerText).includes(cite)) {
+      return ['stage_answer_evidence_mismatch'];
+    }
+  }
+  return [];
+}
+
+/** Resolved objective ids stay closed. Open ids and __new__ are the only legal continuations. */
 function objectiveStateIssues(
   parsed: Record<string, unknown>,
   objectives: VerificationObjective[] | undefined,
-  nextQuestions: Array<{ continuesObjectiveId?: string }>,
+  nextQuestions: Array<{ text?: string; verificationPurpose?: string; continuesObjectiveId?: string }>,
   pairs: StagePair[],
+  askedQuestions: string[],
   judgmentReason: string | null,
 ): string[] {
   if (!objectives || objectives.length === 0) return [];
@@ -3696,9 +3860,10 @@ function objectiveStateIssues(
   const resolved = objectives.filter((row) => row.status === 'resolved');
   const unresolvedIds = new Set(objectives.filter((row) => row.status === 'open').map((row) => row.objectiveId));
   const resolvedIds = new Set(resolved.map((row) => row.objectiveId));
-  const resolvedPurposes = new Set(resolved.map((row) => row.purpose));
+  const resolvedPurposes = resolved.map((row) => row.purpose);
+  const resolvedPurposeSet = new Set(resolvedPurposes);
   const selected = selectedObjectiveText(parsed);
-  if (selected && (resolvedPurposes.has(selected) || repeatsAskedQuestion(selected, resolvedPurposes))) {
+  if (selected && (resolvedPurposeSet.has(selected) || repeatsAskedQuestion(selected, resolvedPurposeSet))) {
     issues.push('stage_objective_reselected');
   }
   const linkedIds = [
@@ -3707,8 +3872,23 @@ function objectiveStateIssues(
   ].filter((id) => id.length > 0);
   if (nextQuestions.length > 0 && nextQuestions.some((item) => !item.continuesObjectiveId)) issues.push('stage_objective_unlinked');
   for (const id of linkedIds) {
-    if (resolvedIds.has(id)) issues.push('stage_objective_reselected');
-    else if (!unresolvedIds.has(id)) issues.push('stage_objective_unlinked');
+    const issue = continuationIssue(id, unresolvedIds, resolvedIds);
+    if (issue) issues.push(issue);
+  }
+  const shared = sharedTopicTokens(resolvedPurposes);
+  const closedPurposes = [...resolvedPurposes, ...askedQuestions];
+  if (
+    nextQuestions.some((item) => {
+      const text = item.text ?? '';
+      const purpose = item.verificationPurpose ?? '';
+      return (
+        purposeOverlaps(text, closedPurposes, shared) ||
+        purposeOverlaps(purpose, closedPurposes, shared) ||
+        repeatsAskedQuestion(purpose, new Set(closedPurposes))
+      );
+    })
+  ) {
+    issues.push('stage_purpose_repeated');
   }
   const reason = judgmentReason ?? '';
   const cited = pairs
@@ -3717,6 +3897,7 @@ function objectiveStateIssues(
     .map((text) => compactQuestion(text))
     .filter((text) => text.length >= 2);
   if (cited.some((text) => !compactQuestion(reason).includes(text))) issues.push('stage_judgment_ungrounded');
+  issues.push(...answerEvidenceIssues(parsed, objectives, pairs));
   return [...new Set(issues)];
 }
 
@@ -3966,7 +4147,7 @@ export function judgeStageContract(
   if (questionRepeats || purposeRepeats) issues.push('stage_questions_repeated');
   if (selectedObjectiveRepeats(parsed, asked)) issues.push('stage_objective_overlap');
   issues.push(
-    ...objectiveStateIssues(parsed, contract.objectives, nextQuestions, contract.pairs, judgmentReason),
+    ...objectiveStateIssues(parsed, contract.objectives, nextQuestions, contract.pairs, contract.askedQuestions, judgmentReason),
   );
   const uniqueIssues = [...new Set(issues)];
   if (uniqueIssues.length > 0 || !reading || !businessProfile) return { sections: null, issues: uniqueIssues.length > 0 ? uniqueIssues : ['stage_fields_missing'], reading };

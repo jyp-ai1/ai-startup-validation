@@ -177,6 +177,12 @@ function contractReply(request: ChatRequest, judgment: string, questions: string
     impactOnPreviousJudgment: '이번 답이 기존 판단에 준 영향이다.',
     updatedJudgment: `유지: 확인 전 위험은 남는다. 이번 답: ${judgment} 변경: 확인된 사실이 아니면 바꾸지 않는다. 남은 위험: 지불이나 공급은 아직 없다.`,
     judgmentReason: `지불 확인이 없어 판단을 유지한다. 이번 답 ${cites.join(' ')}을 확인했다. 남은 불확실성은 지불이다.`,
+    answerEvidence: answered.map((pair) => ({
+      questionKey: (pair as { questionKey?: string }).questionKey || pair.questionId,
+      answerText: (pair.choiceLabel ?? '').trim() || (pair.supplement ?? '').trim(),
+      provenance: 'FOUNDER_INPUT',
+      epistemicStatus: 'FOUNDER_CLAIM',
+    })),
     verifiedFacts: [],
     unverifiedClaims: ['입력된 답은 주장이다'],
     assumptions: ['지불은 아직 가설이다'],
