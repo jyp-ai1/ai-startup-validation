@@ -14,6 +14,9 @@ https://github.com/jyp-ai1/ai-startup-validation/pull/237
 
 **브랜치:** `cursor/sprint2-gpt-objective-verify-4b88`
 
+**기록 PR:** #238  
+https://github.com/jyp-ai1/ai-startup-validation/pull/238
+
 **기록 커밋:** `a1afae3d25879c378d5e5ecbb9591bb0b19a5250`
 
 ## 비밀 이름

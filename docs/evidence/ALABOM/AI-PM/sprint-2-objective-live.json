@@ -10,7 +10,7 @@
   "basePullRequest": 237,
   "branch": "cursor/sprint2-gpt-objective-verify-4b88",
   "recordCommit": "a1afae3d25879c378d5e5ecbb9591bb0b19a5250",
-  "recordPullRequest": null,
+  "recordPullRequest": 238,
   "secret": "PRESENT",
   "keyReadBy": "readGptApiKey",
   "openReviewChatUsed": false,
