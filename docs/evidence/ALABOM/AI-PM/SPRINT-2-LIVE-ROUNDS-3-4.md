@@ -64,7 +64,7 @@ https://cursor.com/agents/bc-bcc12374-0b75-5a98-8ccf-7b6ed41f5a7a
 2. 4차는 저장된 3차를 상속하지 않았고, 새 미해결을 묻지 않았다. 저장 status가 failed라 4차는 NOT RUN이다.
 3. 새 질문 문장은 이미 답한 세 문장과 같지 않다. 고른 objective는 이미 답한 질문과 같다. 판단 문장은 2차와 같고, 다음 단계 sections는 갱신되지 않았다.
 
-AI은 Founder의 성공 확률을 높이기 위한 다음 개선을 계속 진행 중입니다.
+AI는 Founder의 성공 확률을 높이기 위한 다음 개선을 계속 진행 중입니다.
 
 Next Autonomous Target
-Epic: Sprint 2 대화 연속성 / 진행률: PARTIAL / 예상 완료: CPO가 3·자 실제 대화로 최종 판정 / 다음 보고 08:00 KST
+Epic: Sprint 2 대화 연속성 / 진행률: PARTIAL / 예상 완료: CPO가 3·4차 실제 대화로 최종 판정 / 다음 보고 08:00 KST
