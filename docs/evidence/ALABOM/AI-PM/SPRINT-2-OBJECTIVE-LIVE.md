@@ -14,7 +14,7 @@ https://github.com/jyp-ai1/ai-startup-validation/pull/237
 
 **브랜치:** `cursor/sprint2-gpt-objective-verify-4b88`
 
-**기록 커밋:** 이 보고서를 넣은 커밋. 푸시 뒤 PR 주소는 아래 기록 칸에 남긴다.
+**기록 커밋:** `a1afae3d25879c378d5e5ecbb9591bb0b19a5250`
 
 ## 비밀 이름
 
