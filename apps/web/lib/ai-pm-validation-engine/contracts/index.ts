@@ -38,7 +38,11 @@ export type AnswerBehaviorId =
   | 'irrelevant'
   | 'ambiguous'
   | 'partial'
-  | 'refusal';
+  | 'refusal'
+  /** Sprint 2 — Turn 1..5+ scripted preservation path (calibration harness only). */
+  | 'longitudinal_f11'
+  /** Sprint 2 — revenue assumption → validation → pricing gap (calibration harness only). */
+  | 'longitudinal_f04_pricing';
 
 export type AnswerBehaviorContract = {
   id: AnswerBehaviorId;

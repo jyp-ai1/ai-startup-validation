@@ -28,6 +28,8 @@
     "test:cpo-improvement-calibration": "node scripts/run-cpo-improvement-calibration.mjs",
     "test:cpo-calibration-submission": "node scripts/run-cpo-calibration-submission.mjs",
     "test:cpo-calibration-phase3-confirm": "node scripts/run-cpo-calibration-phase3-confirm.mjs",
+    "test:longitudinal-calibration-pack": "node scripts/run-longitudinal-calibration-pack.mjs",
+    "test:longitudinal-adjudication": "node scripts/run-longitudinal-adjudication.mjs",
     "test:cpo-2pass-evidence": "node scripts/run-cpo-2pass-evidence.mjs",
     "evidence:real-business-review": "node scripts/production-real-business-review-trace.mjs",
     "evidence:phase2-cpo-pack": "node scripts/run-phase2-cpo-review-pack.mjs"

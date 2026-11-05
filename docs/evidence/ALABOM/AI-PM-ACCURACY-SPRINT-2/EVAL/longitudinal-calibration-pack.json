@@ -1,0 +1,4972 @@
+{
+  "generatedAt": "2026-10-02T17:59:51.705Z",
+  "sprint": "AI_PM_ACCURACY_SPRINT_2",
+  "phase": "LONGITUDINAL_CALIBRATION_SET",
+  "scenarios": [
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "checkpoints": [
+        {
+          "turn": 4,
+          "replay": {
+            "businessId": "sb-b2c-saas",
+            "behavior": "longitudinal_f11",
+            "turn": 4,
+            "userInput": "정정합니다. 고객은 직장인·프리랜서 중심이 맞고, SMB도 포함합니다.",
+            "askedGapId": "marketChannel",
+            "askedQuestionText": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "정정합니다. 고객은 직장인·프리랜서 중심이 맞고, SMB도 포함합니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — marketChannel gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-b2c-saas",
+            "behavior": "longitudinal_f11",
+            "turn": 5,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "customer_definition",
+            "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 직장인·프리랜서 중심이 맞고, SMB도 포함합… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "customerPersona",
+            "expectedPriorityGap": null,
+            "reviewRationale": "기존 확인 내용과 충돌 — alternativesCompetitors gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "customer",
+                "gapId": "customerPersona",
+                "priorValue": "정정합니다. 고객은 직장인·프리랜서 중심이 맞고, SMB도 포함합니다.",
+                "newValue": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CONTRADICTED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-b2c-saas",
+            "behavior": "longitudinal_f11",
+            "turn": 6,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "customerPersona",
+            "askedQuestionText": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 직장인·프리랜서 중심이 맞고, SMB도 포함합… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "직장인. 문제: 할 일 분산.이 「B2C SaaS — 개인 생산성 앱. 타겟: 직장인. 문제…」을 풀 때 이미 쓰는 대안·서비스는 무엇인가요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 7,
+          "replay": {
+            "businessId": "sb-b2c-saas",
+            "behavior": "longitudinal_f11",
+            "turn": 7,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "직장인. 문제: 할 일 분산.이 「B2C SaaS — 개인 생산성 앱. 타겟: 직장인. 문제…」을 풀 때 이미 쓰는 대안·서비스는 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — alternativesCompetitors gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "checkpoints": [
+        {
+          "turn": 3,
+          "replay": {
+            "businessId": "sb-b2c-saas",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 3,
+            "userInput": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+            "askedGapId": "problemJtbd",
+            "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "problem",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "ASSUMPTION"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "ASSUMPTION"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "unknown",
+            "actualNextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualNextTargetGap": "marketChannel",
+            "expectedPriorityGap": "marketChannel",
+            "reviewRationale": "답변이 충분합니다 — problemJtbd gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "ASSUMPTION"
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-b2c-saas",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 5,
+            "userInput": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+            "askedGapId": "differentiationVsAlternatives",
+            "askedQuestionText": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "buyer",
+                "value": "고객",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "validation_evidence",
+            "actualNextQuestion": "그 차별점이 고객에게 왜 중요한가요?",
+            "actualNextTargetGap": "validationTestability",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — differentiationVsAlternatives gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "FACT"
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-b2c-saas",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 6,
+            "userInput": "다만 해외 시장은 아직 조사하지 못했습니다.",
+            "askedGapId": "validationTestability",
+            "askedQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "OPEN"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "OPEN"
+            },
+            "expectedQuestionIntent": "validation_evidence",
+            "actualQuestionIntent": "validation_evidence",
+            "actualNextQuestion": "그 차이가 고객에게 체감되는 순간은 언제인가요?",
+            "actualNextTargetGap": "validationTestability",
+            "expectedPriorityGap": "validationTestability",
+            "reviewRationale": "답변이 부분적이거나 관련 정보가 부족합니다 — validationTestability gap 추가 확인.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "checkpoints": [
+        {
+          "turn": 4,
+          "replay": {
+            "businessId": "sb-b2b-saas",
+            "behavior": "longitudinal_f11",
+            "turn": 4,
+            "userInput": "정정합니다. 고객은 중소기업 팀 중심이 맞고, SMB도 포함합니다.",
+            "askedGapId": "marketChannel",
+            "askedQuestionText": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "정정합니다. 고객은 중소기업 팀 중심이 맞고, SMB도 포함합니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — marketChannel gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-b2b-saas",
+            "behavior": "longitudinal_f11",
+            "turn": 5,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "customer_definition",
+            "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 중소기업 팀 중심이 맞고, SMB도 포함합니다… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "customerPersona",
+            "expectedPriorityGap": null,
+            "reviewRationale": "기존 확인 내용과 충돌 — alternativesCompetitors gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "customer",
+                "gapId": "customerPersona",
+                "priorValue": "정정합니다. 고객은 중소기업 팀 중심이 맞고, SMB도 포함합니다.",
+                "newValue": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CONTRADICTED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-b2b-saas",
+            "behavior": "longitudinal_f11",
+            "turn": 6,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "customerPersona",
+            "askedQuestionText": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 중소기업 팀 중심이 맞고, SMB도 포함합니다… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "「B2B SaaS — 10~50명 팀 협업. 구매: 경영진, 사용: 실무자…」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 7,
+          "replay": {
+            "businessId": "sb-b2b-saas",
+            "behavior": "longitudinal_f11",
+            "turn": 7,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "「B2B SaaS — 10~50명 팀 협업. 구매: 경영진, 사용: 실무자…」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — alternativesCompetitors gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "checkpoints": [
+        {
+          "turn": 3,
+          "replay": {
+            "businessId": "sb-b2b-saas",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 3,
+            "userInput": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+            "askedGapId": "problemJtbd",
+            "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "problem",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "ASSUMPTION"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "ASSUMPTION"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "unknown",
+            "actualNextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualNextTargetGap": "marketChannel",
+            "expectedPriorityGap": "marketChannel",
+            "reviewRationale": "답변이 충분합니다 — problemJtbd gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "ASSUMPTION"
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-b2b-saas",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 5,
+            "userInput": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+            "askedGapId": "differentiationVsAlternatives",
+            "askedQuestionText": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "buyer",
+                "value": "고객",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "validation_evidence",
+            "actualNextQuestion": "그 차별점이 고객에게 왜 중요한가요?",
+            "actualNextTargetGap": "validationTestability",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — differentiationVsAlternatives gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "FACT"
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-b2b-saas",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 6,
+            "userInput": "다만 해외 시장은 아직 조사하지 못했습니다.",
+            "askedGapId": "validationTestability",
+            "askedQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "OPEN"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "OPEN"
+            },
+            "expectedQuestionIntent": "validation_evidence",
+            "actualQuestionIntent": "validation_evidence",
+            "actualNextQuestion": "그 차이가 고객에게 체감되는 순간은 언제인가요?",
+            "actualNextTargetGap": "validationTestability",
+            "expectedPriorityGap": "validationTestability",
+            "reviewRationale": "답변이 부분적이거나 관련 정보가 부족합니다 — validationTestability gap 추가 확인.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "checkpoints": [
+        {
+          "turn": 4,
+          "replay": {
+            "businessId": "sb-marketplace",
+            "behavior": "longitudinal_f11",
+            "turn": 4,
+            "userInput": "정정합니다. 고객은 중소기업 수요자 중심이 맞고, SMB도 포함합니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "정정합니다. 고객은 중소기업 수요자 중심이 맞고, SMB도 포함합니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "marketChannel": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "marketChannel": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — alternativesCompetitors gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-marketplace",
+            "behavior": "longitudinal_f11",
+            "turn": 5,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "differentiationVsAlternatives",
+            "askedQuestionText": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "marketChannel": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "marketChannel": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "customer_definition",
+            "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 중소기업 수요자 중심이 맞고, SMB도 포함합… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "customerPersona",
+            "expectedPriorityGap": null,
+            "reviewRationale": "기존 확인 내용과 충돌 — differentiationVsAlternatives gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "customer",
+                "gapId": "customerPersona",
+                "priorValue": "정정합니다. 고객은 중소기업 수요자 중심이 맞고, SMB도 포함합니다.",
+                "newValue": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CONTRADICTED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-marketplace",
+            "behavior": "longitudinal_f11",
+            "turn": 6,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "customerPersona",
+            "askedQuestionText": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 중소기업 수요자 중심이 맞고, SMB도 포함합… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "marketChannel": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "marketChannel": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」가 대안과 갈리는 핵심 한 가지는 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 7,
+          "replay": {
+            "businessId": "sb-marketplace",
+            "behavior": "longitudinal_f11",
+            "turn": 7,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "differentiationVsAlternatives",
+            "askedQuestionText": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」가 대안과 갈리는 핵심 한 가지는 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "marketChannel": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "marketChannel": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "validation_evidence",
+            "actualNextQuestion": "그 차별점이 고객에게 왜 중요한가요?",
+            "actualNextTargetGap": "validationTestability",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — differentiationVsAlternatives gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "checkpoints": [
+        {
+          "turn": 3,
+          "replay": {
+            "businessId": "sb-marketplace",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 3,
+            "userInput": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+            "askedGapId": "problemJtbd",
+            "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "problem",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "ASSUMPTION"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "ASSUMPTION"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "marketChannel": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "marketChannel": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "답변이 충분합니다 — problemJtbd gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "ASSUMPTION"
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-marketplace",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 5,
+            "userInput": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+            "askedGapId": "differentiationVsAlternatives",
+            "askedQuestionText": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "marketChannel": "CLOSED",
+              "payer": "CONTRADICTED",
+              "problemJtbd": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "marketChannel": "CLOSED",
+              "payer": "CONTRADICTED",
+              "problemJtbd": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "payer_user",
+            "actualNextQuestion": "「결제자」에 두 가지 답이 있습니다. A) 핵심 문제는 적합 전문가 찾기 어려움입니다. · B) 실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 … — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "payer",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "기존 확인 내용과 충돌 — differentiationVsAlternatives gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "buyer",
+                "gapId": "payer",
+                "priorValue": "핵심 문제는 적합 전문가 찾기 어려움입니다.",
+                "newValue": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-marketplace",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 6,
+            "userInput": "다만 해외 시장은 아직 조사하지 못했습니다.",
+            "askedGapId": "payer",
+            "askedQuestionText": "「결제자」에 두 가지 답이 있습니다. A) 핵심 문제는 적합 전문가 찾기 어려움입니다. · B) 실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 … — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "buyer",
+                "value": "다만 해외 시장은 아직 조사하지 못했습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "다만 해외 시장은 아직 조사하지 못했습니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "marketChannel": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "marketChannel": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」가 대안과 갈리는 핵심 한 가지는 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "답변이 충분합니다 — payer gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "checkpoints": [
+        {
+          "turn": 4,
+          "replay": {
+            "businessId": "sb-commerce",
+            "behavior": "longitudinal_f11",
+            "turn": 4,
+            "userInput": "정정합니다. 고객은 20~40대 건강 관심 소비자 중심이 맞고, SMB도 포함합니다.",
+            "askedGapId": "marketChannel",
+            "askedQuestionText": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "정정합니다. 고객은 20~40대 건강 관심 소비자 중심이 맞고, SMB도 포함합니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — marketChannel gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-commerce",
+            "behavior": "longitudinal_f11",
+            "turn": 5,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "customer_definition",
+            "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 20~40대 건강 관심 소비자 중심이 맞고, … · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "customerPersona",
+            "expectedPriorityGap": null,
+            "reviewRationale": "기존 확인 내용과 충돌 — alternativesCompetitors gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "customer",
+                "gapId": "customerPersona",
+                "priorValue": "정정합니다. 고객은 20~40대 건강 관심 소비자 중심이 맞고, SMB도 포함합니다.",
+                "newValue": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CONTRADICTED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-commerce",
+            "behavior": "longitudinal_f11",
+            "turn": 6,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "customerPersona",
+            "askedQuestionText": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 20~40대 건강 관심 소비자 중심이 맞고, … · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 7,
+          "replay": {
+            "businessId": "sb-commerce",
+            "behavior": "longitudinal_f11",
+            "turn": 7,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "validation_evidence",
+            "actualNextQuestion": "그 차별점이 고객에게 왜 중요한가요?",
+            "actualNextTargetGap": "validationTestability",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — alternativesCompetitors gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "checkpoints": [
+        {
+          "turn": 3,
+          "replay": {
+            "businessId": "sb-commerce",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 3,
+            "userInput": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+            "askedGapId": "problemJtbd",
+            "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "problem",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "ASSUMPTION"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "ASSUMPTION"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "unknown",
+            "actualNextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualNextTargetGap": "marketChannel",
+            "expectedPriorityGap": "marketChannel",
+            "reviewRationale": "답변이 충분합니다 — problemJtbd gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "ASSUMPTION"
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-commerce",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 5,
+            "userInput": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+            "askedGapId": "validationTestability",
+            "askedQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "validationTestability": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "validationTestability": "OPEN"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "validationTestability": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "validationTestability": "OPEN"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "validation_evidence",
+            "actualNextQuestion": "그 차이가 고객에게 체감되는 순간은 언제인가요?",
+            "actualNextTargetGap": "validationTestability",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "답변이 부분적이거나 관련 정보가 부족합니다 — validationTestability gap 추가 확인.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-commerce",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 6,
+            "userInput": "다만 해외 시장은 아직 조사하지 못했습니다.",
+            "askedGapId": "validationTestability",
+            "askedQuestionText": "그 차이가 고객에게 체감되는 순간은 언제인가요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "validationTestability": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "validationTestability": "OPEN"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "validationTestability": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "validationTestability": "OPEN"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "validation_evidence",
+            "actualNextQuestion": "그 차이가 고객에게 체감되는 순간은 언제인가요?",
+            "actualNextTargetGap": "validationTestability",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "답변이 부분적이거나 관련 정보가 부족합니다 — validationTestability gap 추가 확인.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "checkpoints": [
+        {
+          "turn": 4,
+          "replay": {
+            "businessId": "sb-subscription",
+            "behavior": "longitudinal_f11",
+            "turn": 4,
+            "userInput": "정정합니다. 고객은 콘텐츠 소비자 중심이 맞고, SMB도 포함합니다.",
+            "askedGapId": "marketChannel",
+            "askedQuestionText": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "정정합니다. 고객은 콘텐츠 소비자 중심이 맞고, SMB도 포함합니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "답변이 충분합니다 — marketChannel gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-subscription",
+            "behavior": "longitudinal_f11",
+            "turn": 5,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "customer_definition",
+            "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 콘텐츠 소비자 중심이 맞고, SMB도 포함합니… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "customerPersona",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "기존 확인 내용과 충돌 — alternativesCompetitors gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "customer",
+                "gapId": "customerPersona",
+                "priorValue": "정정합니다. 고객은 콘텐츠 소비자 중심이 맞고, SMB도 포함합니다.",
+                "newValue": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CONTRADICTED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-subscription",
+            "behavior": "longitudinal_f11",
+            "turn": 6,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "customerPersona",
+            "askedQuestionText": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 콘텐츠 소비자 중심이 맞고, SMB도 포함합니… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 7,
+          "replay": {
+            "businessId": "sb-subscription",
+            "behavior": "longitudinal_f11",
+            "turn": 7,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "답변이 충분합니다 — alternativesCompetitors gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "checkpoints": [
+        {
+          "turn": 3,
+          "replay": {
+            "businessId": "sb-subscription",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 3,
+            "userInput": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+            "askedGapId": "problemJtbd",
+            "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "problem",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "ASSUMPTION"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "ASSUMPTION"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "unknown",
+            "actualNextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualNextTargetGap": "marketChannel",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "답변이 충분합니다 — problemJtbd gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "ASSUMPTION"
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-subscription",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 5,
+            "userInput": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+            "askedGapId": "differentiationVsAlternatives",
+            "askedQuestionText": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CONTRADICTED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CONTRADICTED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "payer_user",
+            "actualNextQuestion": "「결제자」에 두 가지 답이 있습니다. A) 핵심 문제는 지속 구독 가치 불확실입니다. · B) 실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 … — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "payer",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "기존 확인 내용과 충돌 — differentiationVsAlternatives gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "buyer",
+                "gapId": "payer",
+                "priorValue": "핵심 문제는 지속 구독 가치 불확실입니다.",
+                "newValue": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-subscription",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 6,
+            "userInput": "다만 해외 시장은 아직 조사하지 못했습니다.",
+            "askedGapId": "payer",
+            "askedQuestionText": "「결제자」에 두 가지 답이 있습니다. A) 핵심 문제는 지속 구독 가치 불확실입니다. · B) 실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 … — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "buyer",
+                "value": "다만 해외 시장은 아직 조사하지 못했습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "다만 해외 시장은 아직 조사하지 못했습니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」가 대안과 갈리는 핵심 한 가지는 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "답변이 충분합니다 — payer gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "checkpoints": [
+        {
+          "turn": 4,
+          "replay": {
+            "businessId": "sb-local",
+            "behavior": "longitudinal_f11",
+            "turn": 4,
+            "userInput": "정정합니다. 고객은 1~3호점 F&B 사장 중심이 맞고, SMB도 포함합니다.",
+            "askedGapId": "marketChannel",
+            "askedQuestionText": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "3호점",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — marketChannel gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-local",
+            "behavior": "longitudinal_f11",
+            "turn": 5,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "customer_definition",
+            "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 3호점 · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "customerPersona",
+            "expectedPriorityGap": null,
+            "reviewRationale": "기존 확인 내용과 충돌 — alternativesCompetitors gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "customer",
+                "gapId": "customerPersona",
+                "priorValue": "3호점",
+                "newValue": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CONTRADICTED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-local",
+            "behavior": "longitudinal_f11",
+            "turn": 6,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "customerPersona",
+            "askedQuestionText": "「고객」에 두 가지 답이 있습니다. A) 3호점 · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 7,
+          "replay": {
+            "businessId": "sb-local",
+            "behavior": "longitudinal_f11",
+            "turn": 7,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — alternativesCompetitors gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "checkpoints": [
+        {
+          "turn": 3,
+          "replay": {
+            "businessId": "sb-local",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 3,
+            "userInput": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+            "askedGapId": "problemJtbd",
+            "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "problem",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "ASSUMPTION"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "ASSUMPTION"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "unknown",
+            "actualNextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualNextTargetGap": "marketChannel",
+            "expectedPriorityGap": "marketChannel",
+            "reviewRationale": "답변이 충분합니다 — problemJtbd gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "ASSUMPTION"
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-local",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 5,
+            "userInput": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+            "askedGapId": "differentiationVsAlternatives",
+            "askedQuestionText": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CONTRADICTED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CONTRADICTED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "payer_user",
+            "actualNextQuestion": "「결제자」에 두 가지 답이 있습니다. A) 핵심 문제는 온라인 홍보 시간 부족입니다. · B) 실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 … — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "payer",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "기존 확인 내용과 충돌 — differentiationVsAlternatives gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "buyer",
+                "gapId": "payer",
+                "priorValue": "핵심 문제는 온라인 홍보 시간 부족입니다.",
+                "newValue": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-local",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 6,
+            "userInput": "다만 해외 시장은 아직 조사하지 못했습니다.",
+            "askedGapId": "payer",
+            "askedQuestionText": "「결제자」에 두 가지 답이 있습니다. A) 핵심 문제는 온라인 홍보 시간 부족입니다. · B) 실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 … — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "buyer",
+                "value": "다만 해외 시장은 아직 조사하지 못했습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "다만 해외 시장은 아직 조사하지 못했습니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」가 대안과 갈리는 핵심 한 가지는 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "답변이 충분합니다 — payer gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "checkpoints": [
+        {
+          "turn": 4,
+          "replay": {
+            "businessId": "sb-platform",
+            "behavior": "longitudinal_f11",
+            "turn": 4,
+            "userInput": "정정합니다. 고객은 스타트업 개발팀 중심이 맞고, SMB도 포함합니다.",
+            "askedGapId": "marketChannel",
+            "askedQuestionText": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "정정합니다. 고객은 스타트업 개발팀 중심이 맞고, SMB도 포함합니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — marketChannel gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-platform",
+            "behavior": "longitudinal_f11",
+            "turn": 5,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "customer_definition",
+            "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 스타트업 개발팀 중심이 맞고, SMB도 포함합… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "customerPersona",
+            "expectedPriorityGap": null,
+            "reviewRationale": "기존 확인 내용과 충돌 — alternativesCompetitors gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "customer",
+                "gapId": "customerPersona",
+                "priorValue": "정정합니다. 고객은 스타트업 개발팀 중심이 맞고, SMB도 포함합니다.",
+                "newValue": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CONTRADICTED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-platform",
+            "behavior": "longitudinal_f11",
+            "turn": 6,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "customerPersona",
+            "askedQuestionText": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 스타트업 개발팀 중심이 맞고, SMB도 포함합… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 7,
+          "replay": {
+            "businessId": "sb-platform",
+            "behavior": "longitudinal_f11",
+            "turn": 7,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — alternativesCompetitors gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "checkpoints": [
+        {
+          "turn": 3,
+          "replay": {
+            "businessId": "sb-platform",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 3,
+            "userInput": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+            "askedGapId": "problemJtbd",
+            "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "problem",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "ASSUMPTION"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "ASSUMPTION"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "unknown",
+            "actualNextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualNextTargetGap": "marketChannel",
+            "expectedPriorityGap": "marketChannel",
+            "reviewRationale": "답변이 충분합니다 — problemJtbd gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "ASSUMPTION"
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-platform",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 5,
+            "userInput": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+            "askedGapId": "differentiationVsAlternatives",
+            "askedQuestionText": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CONTRADICTED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CONTRADICTED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "payer_user",
+            "actualNextQuestion": "「결제자」에 두 가지 답이 있습니다. A) 핵심 문제는 API 연동·운영 부담입니다. · B) 실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 … — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "payer",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "기존 확인 내용과 충돌 — differentiationVsAlternatives gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "buyer",
+                "gapId": "payer",
+                "priorValue": "핵심 문제는 API 연동·운영 부담입니다.",
+                "newValue": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-platform",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 6,
+            "userInput": "다만 해외 시장은 아직 조사하지 못했습니다.",
+            "askedGapId": "payer",
+            "askedQuestionText": "「결제자」에 두 가지 답이 있습니다. A) 핵심 문제는 API 연동·운영 부담입니다. · B) 실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 … — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "buyer",
+                "value": "다만 해외 시장은 아직 조사하지 못했습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "다만 해외 시장은 아직 조사하지 못했습니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」가 대안과 갈리는 핵심 한 가지는 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "답변이 충분합니다 — payer gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "checkpoints": [
+        {
+          "turn": 4,
+          "replay": {
+            "businessId": "sb-hardware",
+            "behavior": "longitudinal_f11",
+            "turn": 4,
+            "userInput": "정정합니다. 고객은 제조 SMB 중심이 맞고, SMB도 포함합니다.",
+            "askedGapId": "marketChannel",
+            "askedQuestionText": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "정정합니다. 고객은 제조 SMB 중심이 맞고, SMB도 포함합니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — marketChannel gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-hardware",
+            "behavior": "longitudinal_f11",
+            "turn": 5,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "customer_definition",
+            "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 제조 SMB 중심이 맞고, SMB도 포함합니다… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "customerPersona",
+            "expectedPriorityGap": null,
+            "reviewRationale": "기존 확인 내용과 충돌 — alternativesCompetitors gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "customer",
+                "gapId": "customerPersona",
+                "priorValue": "정정합니다. 고객은 제조 SMB 중심이 맞고, SMB도 포함합니다.",
+                "newValue": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CONTRADICTED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-hardware",
+            "behavior": "longitudinal_f11",
+            "turn": 6,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "customerPersona",
+            "askedQuestionText": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 제조 SMB 중심이 맞고, SMB도 포함합니다… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 7,
+          "replay": {
+            "businessId": "sb-hardware",
+            "behavior": "longitudinal_f11",
+            "turn": 7,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — alternativesCompetitors gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "checkpoints": [
+        {
+          "turn": 3,
+          "replay": {
+            "businessId": "sb-hardware",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 3,
+            "userInput": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+            "askedGapId": "problemJtbd",
+            "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "problem",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "ASSUMPTION"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "ASSUMPTION"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "unknown",
+            "actualNextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualNextTargetGap": "marketChannel",
+            "expectedPriorityGap": "marketChannel",
+            "reviewRationale": "답변이 충분합니다 — problemJtbd gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "ASSUMPTION"
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-hardware",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 5,
+            "userInput": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+            "askedGapId": "differentiationVsAlternatives",
+            "askedQuestionText": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "buyer",
+                "value": "고객",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "validation_evidence",
+            "actualNextQuestion": "그 차별점이 고객에게 왜 중요한가요?",
+            "actualNextTargetGap": "validationTestability",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — differentiationVsAlternatives gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "FACT"
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-hardware",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 6,
+            "userInput": "다만 해외 시장은 아직 조사하지 못했습니다.",
+            "askedGapId": "validationTestability",
+            "askedQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "OPEN"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "OPEN"
+            },
+            "expectedQuestionIntent": "validation_evidence",
+            "actualQuestionIntent": "validation_evidence",
+            "actualNextQuestion": "그 차이가 고객에게 체감되는 순간은 언제인가요?",
+            "actualNextTargetGap": "validationTestability",
+            "expectedPriorityGap": "validationTestability",
+            "reviewRationale": "답변이 부분적이거나 관련 정보가 부족합니다 — validationTestability gap 추가 확인.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "checkpoints": [
+        {
+          "turn": 4,
+          "replay": {
+            "businessId": "sb-professional",
+            "behavior": "longitudinal_f11",
+            "turn": 4,
+            "userInput": "정정합니다. 고객은 초기 스타트업 CEO 중심이 맞고, SMB도 포함합니다.",
+            "askedGapId": "marketChannel",
+            "askedQuestionText": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "정정합니다. 고객은 초기 스타트업 CEO 중심이 맞고, SMB도 포함합니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — marketChannel gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-professional",
+            "behavior": "longitudinal_f11",
+            "turn": 5,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "customer_definition",
+            "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 초기 스타트업 CEO 중심이 맞고, SMB도 … · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "customerPersona",
+            "expectedPriorityGap": null,
+            "reviewRationale": "기존 확인 내용과 충돌 — alternativesCompetitors gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "customer",
+                "gapId": "customerPersona",
+                "priorValue": "정정합니다. 고객은 초기 스타트업 CEO 중심이 맞고, SMB도 포함합니다.",
+                "newValue": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CONTRADICTED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-professional",
+            "behavior": "longitudinal_f11",
+            "turn": 6,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "customerPersona",
+            "askedQuestionText": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 초기 스타트업 CEO 중심이 맞고, SMB도 … · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 7,
+          "replay": {
+            "businessId": "sb-professional",
+            "behavior": "longitudinal_f11",
+            "turn": 7,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — alternativesCompetitors gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "checkpoints": [
+        {
+          "turn": 3,
+          "replay": {
+            "businessId": "sb-professional",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 3,
+            "userInput": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+            "askedGapId": "problemJtbd",
+            "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "problem",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "ASSUMPTION"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "ASSUMPTION"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "unknown",
+            "actualNextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualNextTargetGap": "marketChannel",
+            "expectedPriorityGap": "marketChannel",
+            "reviewRationale": "답변이 충분합니다 — problemJtbd gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "ASSUMPTION"
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-professional",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 5,
+            "userInput": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+            "askedGapId": "differentiationVsAlternatives",
+            "askedQuestionText": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CONTRADICTED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CONTRADICTED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "payer_user",
+            "actualNextQuestion": "「결제자」에 두 가지 답이 있습니다. A) 핵심 문제는 GTM 실행 리소스 부족입니다. · B) 실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 … — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "payer",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "기존 확인 내용과 충돌 — differentiationVsAlternatives gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "buyer",
+                "gapId": "payer",
+                "priorValue": "핵심 문제는 GTM 실행 리소스 부족입니다.",
+                "newValue": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-professional",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 6,
+            "userInput": "다만 해외 시장은 아직 조사하지 못했습니다.",
+            "askedGapId": "payer",
+            "askedQuestionText": "「결제자」에 두 가지 답이 있습니다. A) 핵심 문제는 GTM 실행 리소스 부족입니다. · B) 실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 … — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "buyer",
+                "value": "다만 해외 시장은 아직 조사하지 못했습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "다만 해외 시장은 아직 조사하지 못했습니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "PARTIAL",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」가 대안과 갈리는 핵심 한 가지는 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": "revenueModel",
+            "reviewRationale": "답변이 충분합니다 — payer gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "checkpoints": [
+        {
+          "turn": 4,
+          "replay": {
+            "businessId": "sb-ai-service",
+            "behavior": "longitudinal_f11",
+            "turn": 4,
+            "userInput": "정정합니다. 고객은 PM·기획자 중심이 맞고, SMB도 포함합니다.",
+            "askedGapId": "marketChannel",
+            "askedQuestionText": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "정정합니다. 고객은 PM·기획자 중심이 맞고, SMB도 포함합니다.",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — marketChannel gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-ai-service",
+            "behavior": "longitudinal_f11",
+            "turn": 5,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CONTRADICTED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "customer_definition",
+            "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 PM·기획자 중심이 맞고, SMB도 포함합니다… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualNextTargetGap": "customerPersona",
+            "expectedPriorityGap": null,
+            "reviewRationale": "기존 확인 내용과 충돌 — alternativesCompetitors gap 해소 필요.",
+            "contradictions": [
+              {
+                "factKey": "customer",
+                "gapId": "customerPersona",
+                "priorValue": "정정합니다. 고객은 PM·기획자 중심이 맞고, SMB도 포함합니다.",
+                "newValue": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+                "resolutionRequired": true
+              }
+            ]
+          },
+          "customerPersona": "CONTRADICTED",
+          "pricingHint": null,
+          "contradictionCount": 1,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-ai-service",
+            "behavior": "longitudinal_f11",
+            "turn": 6,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "customerPersona",
+            "askedQuestionText": "「고객」에 두 가지 답이 있습니다. A) 정정합니다. 고객은 PM·기획자 중심이 맞고, SMB도 포함합니다… · B) 실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말… — 어느 쪽이 맞나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CONTRADICTED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "alternatives_competition",
+            "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualNextTargetGap": "alternativesCompetitors",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        },
+        {
+          "turn": 7,
+          "replay": {
+            "businessId": "sb-ai-service",
+            "behavior": "longitudinal_f11",
+            "turn": 7,
+            "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+            "askedGapId": "alternativesCompetitors",
+            "askedQuestionText": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+            "actualFacts": [
+              {
+                "key": "customer",
+                "value": "50대 남성 기업 IT 담당자",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "CONFLICT",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "alternativesCompetitors": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "differentiation",
+            "actualNextQuestion": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualNextTargetGap": "differentiationVsAlternatives",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — alternativesCompetitors gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "checkpoints": [
+        {
+          "turn": 3,
+          "replay": {
+            "businessId": "sb-ai-service",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 3,
+            "userInput": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+            "askedGapId": "problemJtbd",
+            "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "problem",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "market",
+                "value": "중소기업 고객이 월 10만원을 낼 것 같습니다. 아직 검증하지 않았습니다.",
+                "evidenceClass": "ASSUMPTION"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "ASSUMPTION"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "PARTIAL",
+              "revenueModel": "PARTIAL"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "unknown",
+            "actualNextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+            "actualNextTargetGap": "marketChannel",
+            "expectedPriorityGap": "marketChannel",
+            "reviewRationale": "답변이 충분합니다 — problemJtbd gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "ASSUMPTION"
+        },
+        {
+          "turn": 5,
+          "replay": {
+            "businessId": "sb-ai-service",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 5,
+            "userInput": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+            "askedGapId": "differentiationVsAlternatives",
+            "askedQuestionText": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+            "actualFacts": [
+              {
+                "key": "buyer",
+                "value": "고객",
+                "evidenceClass": "FACT"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원",
+                "evidenceClass": "FACT"
+              }
+            ],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED"
+            },
+            "expectedQuestionIntent": "unknown",
+            "actualQuestionIntent": "validation_evidence",
+            "actualNextQuestion": "그 차별점이 고객에게 왜 중요한가요?",
+            "actualNextTargetGap": "validationTestability",
+            "expectedPriorityGap": null,
+            "reviewRationale": "답변이 충분합니다 — differentiationVsAlternatives gap CLOSED, 다음 주제로 진행.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": "FACT"
+        },
+        {
+          "turn": 6,
+          "replay": {
+            "businessId": "sb-ai-service",
+            "behavior": "longitudinal_f04_pricing",
+            "turn": 6,
+            "userInput": "다만 해외 시장은 아직 조사하지 못했습니다.",
+            "askedGapId": "validationTestability",
+            "askedQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+            "actualFacts": [],
+            "expectedFactsHint": "Per cluster CPO rubric",
+            "expectedState": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "CLOSED"
+            },
+            "actualState": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "OPEN"
+            },
+            "expectedGaps": {
+              "customerPersona": "OPEN",
+              "problemStatement": "OPEN",
+              "payerUser": "OPEN",
+              "wtp": "OPEN",
+              "businessOneLiner": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "CLOSED"
+            },
+            "actualGaps": {
+              "businessOneLiner": "CLOSED",
+              "customerPersona": "CLOSED",
+              "payer": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "marketChannel": "CLOSED",
+              "revenueModel": "CLOSED",
+              "alternativesCompetitors": "CLOSED",
+              "differentiationVsAlternatives": "CLOSED",
+              "validationTestability": "OPEN"
+            },
+            "expectedQuestionIntent": "validation_evidence",
+            "actualQuestionIntent": "validation_evidence",
+            "actualNextQuestion": "그 차이가 고객에게 체감되는 순간은 언제인가요?",
+            "actualNextTargetGap": "validationTestability",
+            "expectedPriorityGap": "validationTestability",
+            "reviewRationale": "답변이 부분적이거나 관련 정보가 부족합니다 — validationTestability gap 추가 확인.",
+            "contradictions": []
+          },
+          "customerPersona": "CLOSED",
+          "pricingHint": null,
+          "contradictionCount": 0,
+          "revenueEvidenceClass": null
+        }
+      ]
+    }
+  ]
+}

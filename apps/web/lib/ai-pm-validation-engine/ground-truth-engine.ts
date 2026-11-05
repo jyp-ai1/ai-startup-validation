@@ -45,7 +45,8 @@ export function applyGroundTruthAnswer(input: {
       from,
       to,
       trigger:
-        input.behavior === 'contradiction' && input.turn >= 4
+        (input.behavior === 'contradiction' && input.turn >= 4) ||
+          (input.behavior === 'longitudinal_f11' && input.turn >= 5)
           ? 'contradiction'
           : 'answer',
     });
@@ -53,7 +54,10 @@ export function applyGroundTruthAnswer(input: {
     facts = { ...facts, [slot]: value };
   };
 
-  if (input.behavior === 'contradiction' && input.turn >= 4) {
+  if (
+    (input.behavior === 'contradiction' && input.turn >= 4) ||
+    (input.behavior === 'longitudinal_f11' && input.turn >= 5)
+  ) {
     for (const tr of correctionTransition('customerPersona')) {
       transitionLog = appendTransition(transitionLog, tr);
     }
